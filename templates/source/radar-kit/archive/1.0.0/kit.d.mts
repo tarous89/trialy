@@ -1,0 +1,25 @@
+/* Types for kit.mjs (the Bio Radars kit generator library). Radar definitions are JSON; see templates/source/radars/<slug>/radar.json. */
+export type RadarDefinition=Record<string,any>;
+export const KIT_VERSION:string;
+export const REQUIRED_RULES:string[];
+export const IMPACT:string[];
+export const DIRECTION:string[];
+export const EVENT_STATUS:string[];
+export const SOURCE_STATUS:string[];
+export const USER_OWNED_TRACKER:string[];
+export const USER_OWNED_EVENTS:string[];
+export function roles(radar:RadarDefinition):{settings:string;scopes:string;tracker:string;events:string;runs:string};
+export function settingsFields():any[];
+export function scopeFields():any[];
+export function trackerFields(radar:RadarDefinition):any[];
+export function eventFields(radar:RadarDefinition):any[];
+export function runFields():any[];
+export function installerSchema(radar:RadarDefinition):Record<string,any>;
+export function outputContract(radar:RadarDefinition):any;
+export function defaultTemplate(radar:RadarDefinition):{instruction:string;rules:string[]};
+export function cadenceTrigger(radar:RadarDefinition):any;
+export function recipes(radar:RadarDefinition):any[];
+export function functionDecls(radar:RadarDefinition,sources:{common:string;brief:string;digest:string;alert:string}):any[];
+export function radarRuntime(radar:RadarDefinition):any;
+export function layoutSchema(radar:RadarDefinition):{screens:{id:string;label:string}[];groups:Record<string,{id:string;label:string}[]>};
+export function catalogText(radar:RadarDefinition):{instructions:string;documentation:any};

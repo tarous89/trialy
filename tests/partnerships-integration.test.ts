@@ -36,7 +36,7 @@ async function suite(){
  await pg.query('INSERT INTO users(id,subject,email,name) VALUES($1::uuid,$1::text,$2,$3)',[human.userId,'anna@northwind.invalid','Anna (fictional)']);
  await pg.query("INSERT INTO oauth_tokens(hash,user_id,client_id,kind,family,expires_at) VALUES($1,$2,$3,'refresh',$4,$5)",[randomUUID(),human.userId,ai.clientId,ai.connectionFamily,Date.now()+86400000]);
  await syncTemplateCatalog(raw);
- // Partnerships 2.1.0 is approved by the seed; Data Room is still a draft in the repository catalog, and Contracts 1.0.0 and Programs 2.1.0 were withdrawn (migrations 073, 074), so they are approved only inside this disposable database.
+ // Partnerships 2.1.0 is approved by the seed; Data Room is still a draft in the repository catalog, and Contracts 1.0.0 and Programs 2.1.0 were withdrawn (migrations 073, 075), so they are approved only inside this disposable database.
  assert.equal((await pg.query<any>("SELECT status FROM app_template_catalog WHERE template_id='life.partnership-tracker' AND version='2.1.0'")).rows[0].status,'approved');
  await pg.query("UPDATE app_template_catalog SET status='approved' WHERE (template_id='life.partnership-tracker' AND version='2.1.0') OR (template_id='life.contracts' AND version='1.0.0') OR (template_id='life.data-room' AND version='1.0.0') OR (template_id='life.project-oversight' AND version='2.1.0')");
  const f=new WorkspaceFoundation(db),s=new Service(db),catalog=new AppTemplates(undefined,db);

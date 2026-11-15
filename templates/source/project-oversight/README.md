@@ -1,6 +1,6 @@
 # Programs 2.2.0 (`life.project-oversight`)
 
-Milestones, dependencies, risks and decisions across all programs. Scope: [PROGRAMS.md](../../../docs/product/app-template-blueprints/apps/PROGRAMS.md). It follows [modular apps and shared data](../../../docs/product/MODULAR_APPS_AND_SHARED_DATA.md). It replaced Project Oversight 1.0.1 as a new major version. Released packages are archived byte-for-byte under `archive/<version>/` (1.0.1, 2.0.0, 2.1.0); their catalog JSON is unchanged. Saved apps are not migrated. **2.2.0 is published** (owner approval, 15 November 2026; seed entry and migration 074 withdrawing 2.1.0) (scope: [PROGRAMS.md §14](../../../docs/product/app-template-blueprints/apps/PROGRAMS.md#14-programs-220-assistant-control-team-notifications-and-the-weekly-digest)).
+Milestones, dependencies, risks and decisions across all programs. Scope: [PROGRAMS.md](../../../docs/product/app-template-blueprints/apps/PROGRAMS.md). It follows [modular apps and shared data](../../../docs/product/MODULAR_APPS_AND_SHARED_DATA.md). It replaced Project Oversight 1.0.1 as a new major version. Released packages are archived byte-for-byte under `archive/<version>/` (1.0.1, 2.0.0, 2.1.0); their catalog JSON is unchanged. Saved apps are not migrated. **2.2.0 is published** (owner approval, 15 November 2026; seed entry and migration 075 withdrawing 2.1.0) (scope: [PROGRAMS.md §14](../../../docs/product/app-template-blueprints/apps/PROGRAMS.md#14-programs-220-assistant-control-team-notifications-and-the-weekly-digest)).
 
 ## Files
 
@@ -70,4 +70,4 @@ Published 15 November 2026 ([PROGRAMS.md §14](../../../docs/product/app-templat
 - **Automations.** Six install recommendations, on by default: the AI weekly digest (saves a `programs.digests` row, then emails the owner, only when something needs attention) and five member notices. The digest without AI is a later feature. The 2.1.0 monthly reminder, slip notice and status draft are removed.
 - **Mobile.** The drawer scrolls as one page at 390 px (fixes an overlap 2.1.0 had with the slip section open).
 
-**Publication:** `templates/catalog-seed.json` names 2.2.0; migration 074 and `catalog-retirements.json` withdraw 2.1.0; gallery media `life.project-oversight@2.2.0`; `scripts/profile-app-performance.ts` profiles 2.2.0.
+**Publication:** `templates/catalog-seed.json` names 2.2.0; migration 075 and `catalog-retirements.json` withdraw 2.1.0; gallery media `life.project-oversight@2.2.0`; `scripts/profile-app-performance.ts` profiles 2.2.0.

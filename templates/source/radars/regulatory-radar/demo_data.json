@@ -1,0 +1,354 @@
+{
+ "asOf": "2026-11-16",
+ "note": "Fictional demo data for Regulatory Radar. Every company, asset, identifier and URL is invented; .invalid domains resolve nowhere.",
+ "records": [
+  {
+   "role": "regulatoryradar.settings",
+   "id": "00000000-0000-4000-8000-000000000001",
+   "version": 0,
+   "data": {
+    "lookback_days": 90,
+    "research_template_version": 1
+   }
+  },
+  {
+   "role": "regulatoryradar.scopes",
+   "id": "00000000-0000-4000-8000-000000000002",
+   "version": 0,
+   "data": {
+    "name": "Fibrosis (fictional)",
+    "definition": "{\"agencies\": \"fibrosis\"}",
+    "sources": "[{\"name\": \"FDA\", \"covers\": \"Guidances, Federal Register notices, designations, advisory committee calendars.\", \"priority\": 1, \"notes\": \"Use the public site on the web.\"}, {\"name\": \"EMA\", \"covers\": \"Scientific guidelines, consultations, CHMP and COMP highlights, PRIME.\", \"priority\": 2, \"notes\": \"Use the public site on the web.\"}, {\"name\": \"MHRA\", \"covers\": \"UK guidance, consultations and decisions.\", \"priority\": 3, \"notes\": \"Use the public site on the web.\"}, {\"name\": \"National agencies\", \"covers\": \"PMDA, Health Canada, Swissmedic and others for your scope.\", \"priority\": 4, \"notes\": \"Use the public site on the web.\"}, {\"name\": \"Official journals\", \"covers\": \"Federal Register, Official Journal of the EU.\", \"priority\": 5, \"notes\": \"Use the public site on the web.\"}]",
+    "watchlist": "[]",
+    "status": "active",
+    "archived": false
+   }
+  },
+  {
+   "role": "regulatoryradar.runs",
+   "id": "00000000-0000-4000-8000-000000000003",
+   "version": 0,
+   "data": {
+    "run_id": "00000000-0000-4000-9100-000000000001",
+    "scope_ids": "[\"00000000-0000-4000-8000-000000000002\"]",
+    "kind": "build",
+    "run_on": "2026-11-02",
+    "assistant": "claude",
+    "research_template_version": 1,
+    "sources_report": "[{\"scope_id\": \"00000000-0000-4000-8000-000000000002\", \"sources\": [{\"name\": \"FDA\", \"status\": \"used\", \"note\": \"\"}, {\"name\": \"EMA\", \"status\": \"used\", \"note\": \"\"}, {\"name\": \"MHRA\", \"status\": \"not_relevant\", \"note\": \"\"}, {\"name\": \"National agencies\", \"status\": \"not_relevant\", \"note\": \"\"}, {\"name\": \"Official journals\", \"status\": \"not_reachable\", \"note\": \"\"}]}]",
+    "items_added": 6,
+    "items_updated": 0,
+    "events_added": 6,
+    "summary": "Fictional run for the demo. Two changes this week.",
+    "status": "completed"
+   }
+  },
+  {
+   "role": "regulatoryradar.runs",
+   "id": "00000000-0000-4000-8000-000000000004",
+   "version": 0,
+   "data": {
+    "run_id": "00000000-0000-4000-9100-000000000002",
+    "scope_ids": "[\"00000000-0000-4000-8000-000000000002\"]",
+    "kind": "refresh",
+    "run_on": "2026-11-09",
+    "assistant": "claude",
+    "research_template_version": 1,
+    "sources_report": "[{\"scope_id\": \"00000000-0000-4000-8000-000000000002\", \"sources\": [{\"name\": \"FDA\", \"status\": \"used\", \"note\": \"\"}, {\"name\": \"EMA\", \"status\": \"used\", \"note\": \"\"}, {\"name\": \"MHRA\", \"status\": \"not_relevant\", \"note\": \"\"}, {\"name\": \"National agencies\", \"status\": \"not_relevant\", \"note\": \"\"}, {\"name\": \"Official journals\", \"status\": \"not_reachable\", \"note\": \"\"}]}]",
+    "items_added": 1,
+    "items_updated": 2,
+    "events_added": 6,
+    "summary": "Fictional run for the demo. Two changes this week.",
+    "status": "completed"
+   }
+  },
+  {
+   "role": "regulatoryradar.runs",
+   "id": "00000000-0000-4000-8000-000000000005",
+   "version": 0,
+   "data": {
+    "run_id": "00000000-0000-4000-9100-000000000003",
+    "scope_ids": "[\"00000000-0000-4000-8000-000000000002\"]",
+    "kind": "refresh",
+    "run_on": "2026-11-16",
+    "assistant": "claude",
+    "research_template_version": 1,
+    "sources_report": "[{\"scope_id\": \"00000000-0000-4000-8000-000000000002\", \"sources\": [{\"name\": \"FDA\", \"status\": \"used\", \"note\": \"\"}, {\"name\": \"EMA\", \"status\": \"used\", \"note\": \"\"}, {\"name\": \"MHRA\", \"status\": \"not_relevant\", \"note\": \"\"}, {\"name\": \"National agencies\", \"status\": \"not_relevant\", \"note\": \"\"}, {\"name\": \"Official journals\", \"status\": \"not_reachable\", \"note\": \"\"}]}]",
+    "items_added": 1,
+    "items_updated": 2,
+    "events_added": 6,
+    "summary": "Fictional run for the demo. Two changes this week.",
+    "status": "completed"
+   }
+  },
+  {
+   "role": "regulatoryradar.items",
+   "id": "00000000-0000-4000-8000-000000000006",
+   "version": 0,
+   "data": {
+    "agency": "EMA",
+    "kind": "consultation",
+    "title": "Draft guideline on inhaled products (fictional)",
+    "date": "2026-11-02",
+    "status": "open",
+    "deadline": "2027-01-31",
+    "deadline_estimated": false,
+    "programs_affected": "NWB-101 inhaled formulation: device data requirements",
+    "summary": "Fictional summary of the document.",
+    "natural_key": "ema|draft guideline on inhaled products (fictional)|2026-11-02",
+    "scope_id": "00000000-0000-4000-8000-000000000002",
+    "sources": "[{\"title\": \"Source (fictional)\", \"url\": \"https://news.example.invalid/ema-draft-guideline-on-inhaled-products-(fictional)-2026-11-02\", \"date\": \"2026-11-16\"}]",
+    "last_verified_on": "2026-11-16",
+    "last_changed_run_id": "00000000-0000-4000-9100-000000000003",
+    "changed_fields": "[\"kind\"]",
+    "watched": true,
+    "dismissed": false
+   }
+  },
+  {
+   "role": "regulatoryradar.items",
+   "id": "00000000-0000-4000-8000-000000000007",
+   "version": 0,
+   "data": {
+    "agency": "FDA",
+    "kind": "guidance",
+    "title": "Final guidance on rare lung disease endpoints (fictional)",
+    "date": "2026-11-10",
+    "status": "final",
+    "deadline_estimated": false,
+    "programs_affected": "NWB-101 phase 3 endpoint choice",
+    "summary": "Fictional summary of the document.",
+    "natural_key": "fda|final guidance on rare lung disease endpoints (fictional)|2026-11-10",
+    "scope_id": "00000000-0000-4000-8000-000000000002",
+    "sources": "[{\"title\": \"Source (fictional)\", \"url\": \"https://news.example.invalid/fda-final-guidance-on-rare-lung-disease-endpoints-(fictional)-2026-11-10\", \"date\": \"2026-11-16\"}]",
+    "last_verified_on": "2026-11-16",
+    "last_changed_run_id": "00000000-0000-4000-9100-000000000001",
+    "changed_fields": "[]",
+    "watched": false,
+    "dismissed": false
+   }
+  },
+  {
+   "role": "regulatoryradar.items",
+   "id": "00000000-0000-4000-8000-000000000008",
+   "version": 0,
+   "data": {
+    "agency": "FDA",
+    "kind": "adcom",
+    "title": "Pulmonary-Allergy advisory committee: Brevaloxin (fictional)",
+    "date": "2026-11-12",
+    "status": "scheduled",
+    "deadline": "2027-01-22",
+    "deadline_estimated": true,
+    "programs_affected": "Competitor read-through",
+    "summary": "Fictional summary of the document.",
+    "natural_key": "fda|pulmonary-allergy advisory committee: brevaloxin (fictional)|2026-11-12",
+    "scope_id": "00000000-0000-4000-8000-000000000002",
+    "sources": "[{\"title\": \"Source (fictional)\", \"url\": \"https://news.example.invalid/fda-pulmonary-allergy-advisory-committee:-brevaloxin-(fictional)-2026-11-12\", \"date\": \"2026-11-16\"}]",
+    "last_verified_on": "2026-11-16",
+    "last_changed_run_id": "00000000-0000-4000-9100-000000000001",
+    "changed_fields": "[]",
+    "watched": false,
+    "dismissed": false
+   }
+  },
+  {
+   "role": "regulatoryradar.items",
+   "id": "00000000-0000-4000-8000-000000000009",
+   "version": 0,
+   "data": {
+    "agency": "EMA",
+    "kind": "designation",
+    "title": "Orphan designation for FX-207 (fictional)",
+    "date": "2026-10-28",
+    "status": "granted",
+    "deadline_estimated": false,
+    "programs_affected": "Competitor in IPF",
+    "summary": "Fictional summary of the document.",
+    "natural_key": "ema|orphan designation for fx-207 (fictional)|2026-10-28",
+    "scope_id": "00000000-0000-4000-8000-000000000002",
+    "sources": "[{\"title\": \"Source (fictional)\", \"url\": \"https://news.example.invalid/ema-orphan-designation-for-fx-207-(fictional)-2026-10-28\", \"date\": \"2026-11-16\"}]",
+    "last_verified_on": "2026-11-16",
+    "last_changed_run_id": "00000000-0000-4000-9100-000000000001",
+    "changed_fields": "[]",
+    "watched": false,
+    "dismissed": false
+   }
+  },
+  {
+   "role": "regulatoryradar.items",
+   "id": "00000000-0000-4000-8000-000000000010",
+   "version": 0,
+   "data": {
+    "agency": "MHRA",
+    "kind": "policy",
+    "title": "Updated clinical trials regulations (fictional)",
+    "date": "2026-10-15",
+    "status": "final",
+    "deadline": "2027-04-01",
+    "deadline_estimated": false,
+    "programs_affected": "UK sites for phase 3",
+    "summary": "Fictional summary of the document.",
+    "natural_key": "mhra|updated clinical trials regulations (fictional)|2026-10-15",
+    "scope_id": "00000000-0000-4000-8000-000000000002",
+    "sources": "[{\"title\": \"Source (fictional)\", \"url\": \"https://news.example.invalid/mhra-updated-clinical-trials-regulations-(fictional)-2026-10-15\", \"date\": \"2026-11-16\"}]",
+    "last_verified_on": "2026-11-16",
+    "last_changed_run_id": "00000000-0000-4000-9100-000000000001",
+    "changed_fields": "[]",
+    "watched": false,
+    "dismissed": false
+   }
+  },
+  {
+   "role": "regulatoryradar.items",
+   "id": "00000000-0000-4000-8000-000000000011",
+   "version": 0,
+   "data": {
+    "agency": "FDA",
+    "kind": "decision",
+    "title": "Complete response letter for FX-305 (fictional)",
+    "date": "2026-10-05",
+    "status": "issued",
+    "deadline_estimated": false,
+    "programs_affected": "Competitor read-through",
+    "summary": "Fictional summary of the document.",
+    "natural_key": "fda|complete response letter for fx-305 (fictional)|2026-10-05",
+    "scope_id": "00000000-0000-4000-8000-000000000002",
+    "sources": "[{\"title\": \"Source (fictional)\", \"url\": \"https://news.example.invalid/fda-complete-response-letter-for-fx-305-(fictional)-2026-10-05\", \"date\": \"2026-11-16\"}]",
+    "last_verified_on": "2026-11-16",
+    "last_changed_run_id": "00000000-0000-4000-9100-000000000003",
+    "changed_fields": "[\"new\"]",
+    "watched": false,
+    "dismissed": false
+   }
+  },
+  {
+   "role": "regulatoryradar.events",
+   "id": "00000000-0000-4000-8000-000000000012",
+   "version": 0,
+   "data": {
+    "scope_id": "00000000-0000-4000-8000-000000000002",
+    "item_id": "00000000-0000-4000-8000-000000000006",
+    "natural_key": "ema|draft guideline on inhaled products (fictional)|2026-11-02|consultation_open|2027-01-31",
+    "kind": "consultation_open",
+    "title": "EMA consultation on inhaled products closes (fictional)",
+    "summary": "Fictional event for the demo.",
+    "occurred_on": "2027-01-31",
+    "occurred_month": "2027-01",
+    "expected": true,
+    "impact": "high",
+    "direction": "threat",
+    "so_what": "Could change the plan for NWB-101 (fictional).",
+    "sources": "[{\"title\": \"Source (fictional)\", \"url\": \"https://news.example.invalid/e0\", \"date\": \"2027-01-31\"}]",
+    "run_id": "00000000-0000-4000-9100-000000000003",
+    "status": "new"
+   }
+  },
+  {
+   "role": "regulatoryradar.events",
+   "id": "00000000-0000-4000-8000-000000000013",
+   "version": 0,
+   "data": {
+    "scope_id": "00000000-0000-4000-8000-000000000002",
+    "item_id": "00000000-0000-4000-8000-000000000007",
+    "natural_key": "fda|final guidance on rare lung disease endpoints (fictional)|2026-11-10|guidance|2026-11-10",
+    "kind": "guidance",
+    "title": "FDA final guidance on rare lung disease endpoints (fictional)",
+    "summary": "Fictional event for the demo.",
+    "occurred_on": "2026-11-10",
+    "occurred_month": "2026-11",
+    "expected": false,
+    "impact": "high",
+    "direction": "threat",
+    "so_what": "Could change the plan for NWB-101 (fictional).",
+    "sources": "[{\"title\": \"Source (fictional)\", \"url\": \"https://news.example.invalid/e1\", \"date\": \"2026-11-10\"}]",
+    "run_id": "00000000-0000-4000-9100-000000000003",
+    "status": "new"
+   }
+  },
+  {
+   "role": "regulatoryradar.events",
+   "id": "00000000-0000-4000-8000-000000000014",
+   "version": 0,
+   "data": {
+    "scope_id": "00000000-0000-4000-8000-000000000002",
+    "item_id": "00000000-0000-4000-8000-000000000008",
+    "natural_key": "fda|pulmonary-allergy advisory committee: brevaloxin (fictional)|2026-11-12|adcom|2027-01-22",
+    "kind": "adcom",
+    "title": "Advisory committee on Brevaloxin (fictional)",
+    "summary": "Fictional event for the demo.",
+    "occurred_on": "2027-01-22",
+    "occurred_month": "2027-01",
+    "expected": true,
+    "impact": "medium",
+    "direction": "neutral",
+    "sources": "[{\"title\": \"Source (fictional)\", \"url\": \"https://news.example.invalid/e2\", \"date\": \"2027-01-22\"}]",
+    "run_id": "00000000-0000-4000-9100-000000000001",
+    "status": "new"
+   }
+  },
+  {
+   "role": "regulatoryradar.events",
+   "id": "00000000-0000-4000-8000-000000000015",
+   "version": 0,
+   "data": {
+    "scope_id": "00000000-0000-4000-8000-000000000002",
+    "item_id": "00000000-0000-4000-8000-000000000009",
+    "natural_key": "ema|orphan designation for fx-207 (fictional)|2026-10-28|designation|2026-10-28",
+    "kind": "designation",
+    "title": "Orphan designation for FX-207 (fictional)",
+    "summary": "Fictional event for the demo.",
+    "occurred_on": "2026-10-28",
+    "occurred_month": "2026-10",
+    "expected": false,
+    "impact": "medium",
+    "direction": "neutral",
+    "sources": "[{\"title\": \"Source (fictional)\", \"url\": \"https://news.example.invalid/e3\", \"date\": \"2026-10-28\"}]",
+    "run_id": "00000000-0000-4000-9100-000000000001",
+    "status": "reviewed"
+   }
+  },
+  {
+   "role": "regulatoryradar.events",
+   "id": "00000000-0000-4000-8000-000000000016",
+   "version": 0,
+   "data": {
+    "scope_id": "00000000-0000-4000-8000-000000000002",
+    "item_id": "00000000-0000-4000-8000-000000000010",
+    "natural_key": "mhra|updated clinical trials regulations (fictional)|2026-10-15|policy|2027-04-01",
+    "kind": "policy",
+    "title": "MHRA clinical trial rules apply (fictional)",
+    "summary": "Fictional event for the demo.",
+    "occurred_on": "2027-04-01",
+    "occurred_month": "2027-04",
+    "expected": true,
+    "impact": "low",
+    "direction": "neutral",
+    "sources": "[{\"title\": \"Source (fictional)\", \"url\": \"https://news.example.invalid/e4\", \"date\": \"2027-04-01\"}]",
+    "run_id": "00000000-0000-4000-9100-000000000001",
+    "status": "reviewed"
+   }
+  },
+  {
+   "role": "regulatoryradar.events",
+   "id": "00000000-0000-4000-8000-000000000017",
+   "version": 0,
+   "data": {
+    "scope_id": "00000000-0000-4000-8000-000000000002",
+    "item_id": "00000000-0000-4000-8000-000000000011",
+    "natural_key": "fda|complete response letter for fx-305 (fictional)|2026-10-05|regulatory_decision|2026-10-05",
+    "kind": "regulatory_decision",
+    "title": "CRL for FX-305 (fictional)",
+    "summary": "Fictional event for the demo.",
+    "occurred_on": "2026-10-05",
+    "occurred_month": "2026-10",
+    "expected": false,
+    "impact": "low",
+    "direction": "neutral",
+    "sources": "[{\"title\": \"Source (fictional)\", \"url\": \"https://news.example.invalid/e5\", \"date\": \"2026-10-05\"}]",
+    "run_id": "00000000-0000-4000-9100-000000000001",
+    "status": "reviewed"
+   }
+  }
+ ]
+}

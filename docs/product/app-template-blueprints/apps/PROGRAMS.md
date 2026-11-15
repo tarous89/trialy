@@ -223,7 +223,7 @@ All links optional; Programs works alone.
 
 ## 14. Programs 2.2.0: assistant control, team notifications and the weekly digest
 
-**Status:** Built and **published** 15 November 2026 (owner approval) as `life.project-oversight` 2.2.0 in place of 2.1.0: the seed names 2.2.0 and migration 074 withdraws 2.1.0 once. Package `templates/source/project-oversight/`; 2.1.0 is archived unchanged under `archive/2.1.0/` and its installer entry points there. Saved apps are not migrated. Where this section conflicts with §3–§11, this section wins.
+**Status:** Built and **published** 15 November 2026 (owner approval) as `life.project-oversight` 2.2.0 in place of 2.1.0: the seed names 2.2.0 and migration 075 withdraws 2.1.0 once. Package `templates/source/project-oversight/`; 2.1.0 is archived unchanged under `archive/2.1.0/` and its installer entry points there. Saved apps are not migrated. Where this section conflicts with §3–§11, this section wins.
 
 **Why.** Programs 2.1.0 (12 November) came before the platform's app standards of 13–14 November: app commands and "Edit in App" (template guidance 1.3.31), and the app automation rules ([app automations](../../RECOMMENDED_AUTOMATIONS.md); research must save to the app, PR #169; declared, default-on install recommendations; E5–E7). Runway 2.2.0, Contracts 1.1.0, Partnerships 2.1.0 and Fundraise 2.0.0 already follow them.
 

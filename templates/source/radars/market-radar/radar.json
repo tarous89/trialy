@@ -1,0 +1,196 @@
+{
+  "kit": "1.1.0",
+  "slug": "market-radar",
+  "id": "life.market-radar",
+  "version": "1.0.0",
+  "name": "Market Radar",
+  "prefix": "marketradar",
+  "trackerTable": "products",
+  "trackerLabel": "Products",
+  "itemLabel": "product",
+  "itemsLabel": "products",
+  "cadence": "monthly",
+  "itemNameField": "name",
+  "comingDays": 180,
+  "scopeFields": [
+    {
+      "key": "indication",
+      "name": "Indication",
+      "kind": "text",
+      "required": true,
+      "placeholder": "e.g. idiopathic pulmonary fibrosis"
+    },
+    {
+      "key": "regions",
+      "name": "Countries or regions",
+      "kind": "text",
+      "placeholder": "e.g. US, EU, UK, Germany, France, Japan"
+    }
+  ],
+  "trackerFields": [
+    {
+      "key": "name",
+      "name": "Product",
+      "kind": "text",
+      "required": true
+    },
+    {
+      "key": "organization_id",
+      "name": "Company",
+      "kind": "text",
+      "description": "Record ID of an organizations record."
+    },
+    {
+      "key": "company_name",
+      "name": "Company name",
+      "kind": "text"
+    },
+    {
+      "key": "indication",
+      "name": "Indication",
+      "kind": "text"
+    },
+    {
+      "key": "approvals",
+      "name": "Approvals",
+      "kind": "text",
+      "description": "One line per region: region, date, label highlights. Separate lines with \"; \"."
+    },
+    {
+      "key": "access",
+      "name": "Access and pricing",
+      "kind": "text",
+      "description": "One line per country: status, price note, decision date. Separate lines with \"; \"."
+    },
+    {
+      "key": "guideline_position",
+      "name": "Guideline position",
+      "kind": "text"
+    },
+    {
+      "key": "sales_reported",
+      "name": "Sales reported",
+      "kind": "text",
+      "description": "Latest reported period, amount, currency and source, as reported."
+    },
+    {
+      "key": "next_decision",
+      "name": "Next decision",
+      "kind": "text"
+    },
+    {
+      "key": "next_decision_on",
+      "name": "Next decision date",
+      "kind": "date"
+    },
+    {
+      "key": "next_decision_estimated",
+      "name": "Decision date is an estimate",
+      "kind": "boolean"
+    }
+  ],
+  "naturalKey": {
+    "label": "company, product and indication",
+    "rule": "Company name, product name (brand, or INN) and indication in lower case, joined by \"|\", e.g. \"cedarline pharma|fictorel|ipf\"."
+  },
+  "dateField": {
+    "key": "next_decision_on",
+    "estimated": "next_decision_estimated",
+    "label": "Next decision"
+  },
+  "eventKinds": [
+    {
+      "key": "approval",
+      "label": "Approval"
+    },
+    {
+      "key": "label_change",
+      "label": "Label change"
+    },
+    {
+      "key": "launch",
+      "label": "Launch"
+    },
+    {
+      "key": "hta_decision",
+      "label": "HTA decision"
+    },
+    {
+      "key": "pricing",
+      "label": "Pricing"
+    },
+    {
+      "key": "guideline",
+      "label": "Guideline"
+    },
+    {
+      "key": "sales_reported",
+      "label": "Sales reported"
+    }
+  ],
+  "digestSection": {
+    "title": "Approvals, HTA and pricing decisions",
+    "kinds": [
+      "approval",
+      "hta_decision",
+      "pricing",
+      "label_change"
+    ],
+    "hint": "approvals, HTA, pricing, labels"
+  },
+  "listColumns": [
+    "name",
+    "company_name",
+    "indication",
+    "guideline_position",
+    "next_decision",
+    "next_decision_on",
+    "sales_reported"
+  ],
+  "optionLabels": {
+    "hta_decision": "HTA decision"
+  },
+  "sources": [
+    {
+      "name": "FDA",
+      "covers": "Approvals, labels and supplements (Drugs@FDA, Purple Book).",
+      "priority": 1,
+      "notes": "Use the public site on the web."
+    },
+    {
+      "name": "EMA",
+      "covers": "EPARs, CHMP opinions, label variations.",
+      "priority": 2,
+      "notes": "Use the public site on the web."
+    },
+    {
+      "name": "HTA bodies (NICE, G-BA, HAS)",
+      "covers": "Appraisals, benefit ratings and reimbursement decisions.",
+      "priority": 3,
+      "notes": "Add other national HTA bodies for your countries."
+    },
+    {
+      "name": "Company reports",
+      "covers": "Quarterly and annual reports with product sales.",
+      "priority": 4,
+      "notes": "Record sales as reported, with period and currency."
+    },
+    {
+      "name": "Guideline societies",
+      "covers": "Treatment guidelines and their updates.",
+      "priority": 5,
+      "notes": "Use the public site on the web."
+    }
+  ],
+  "instruction": "You watch the market for the scopes below. For each active scope, find marketed and filed products in its indication and countries or regions, and changes since the last run: approvals, label changes, launches, HTA decisions, pricing and reimbursement decisions, guideline updates and reported sales. Keep one row per company, product and indication with approvals, access, guideline position, the latest reported sales and the next decision; record each change as an event. Record amounts as reported with their period and currency; never add different currencies or estimate unreported sales. Mark anticipated decision dates as estimates.",
+  "examplePrompts": [
+    {
+      "prompt": "Set up Market Radar for IPF in the US and the big EU markets and build it now.",
+      "expectedBehavior": "Install Market Radar, add a scope (indication, regions), then Build now in chat: products with approvals, access and sales as reported, events and a run with its source report."
+    },
+    {
+      "prompt": "Which HTA decisions are expected for IPF products in the next six months?",
+      "expectedBehavior": "Read Market Radar products and events for the scope and list upcoming decisions, marked est. where anticipated. Nothing is written."
+    }
+  ]
+}

@@ -1299,6 +1299,1769 @@
           ]
         }
       }
+    },
+    "dealradar.events": {
+      "name": "Deal Radar events",
+      "kind": "output",
+      "writer": "life.deal-radar",
+      "description": "Events from Deal Radar (radar.v1): deal announced, deal terminated, option exercised. Readers use rows whose status is new or reviewed; dismissed rows (status dismissed) are never counted. Estimated dates have expected true.",
+      "versions": {
+        "radar.v1": {
+          "fields": [
+            {
+              "key": "scope_id",
+              "name": "Scope",
+              "kind": "text",
+              "required": true,
+              "multiple": false,
+              "description": "Record ID of a scopes record."
+            },
+            {
+              "key": "program_id",
+              "name": "Program",
+              "kind": "text",
+              "required": false,
+              "multiple": false,
+              "description": "Record ID of a programs record."
+            },
+            {
+              "key": "organization_id",
+              "name": "Organization",
+              "kind": "text",
+              "required": false,
+              "multiple": false,
+              "description": "Record ID of an organizations record."
+            },
+            {
+              "key": "item_id",
+              "name": "Item",
+              "kind": "text",
+              "required": false,
+              "multiple": false,
+              "description": "Record ID of the deal in the Deals table."
+            },
+            {
+              "key": "natural_key",
+              "name": "Key",
+              "kind": "text",
+              "required": true,
+              "multiple": false,
+              "description": "The item key plus kind and date, so the same event is merged."
+            },
+            {
+              "key": "kind",
+              "name": "Kind",
+              "kind": "select",
+              "required": true,
+              "multiple": false,
+              "options": [
+                "deal_announced",
+                "deal_terminated",
+                "option_exercised"
+              ]
+            },
+            {
+              "key": "title",
+              "name": "Title",
+              "kind": "text",
+              "required": true,
+              "multiple": false
+            },
+            {
+              "key": "summary",
+              "name": "Summary",
+              "kind": "text",
+              "required": false,
+              "multiple": false
+            },
+            {
+              "key": "occurred_on",
+              "name": "Date",
+              "kind": "date",
+              "required": false,
+              "multiple": false
+            },
+            {
+              "key": "occurred_month",
+              "name": "Month",
+              "kind": "text",
+              "required": false,
+              "multiple": false,
+              "description": "YYYY-MM of the date, for the calendar."
+            },
+            {
+              "key": "expected",
+              "name": "Expected (estimate)",
+              "kind": "boolean",
+              "required": false,
+              "multiple": false
+            },
+            {
+              "key": "expected_window",
+              "name": "Expected window",
+              "kind": "text",
+              "required": false,
+              "multiple": false
+            },
+            {
+              "key": "impact",
+              "name": "Impact",
+              "kind": "select",
+              "required": true,
+              "multiple": false,
+              "options": [
+                "high",
+                "medium",
+                "low",
+                "none"
+              ]
+            },
+            {
+              "key": "direction",
+              "name": "Direction",
+              "kind": "select",
+              "required": false,
+              "multiple": false,
+              "options": [
+                "threat",
+                "opportunity",
+                "neutral"
+              ]
+            },
+            {
+              "key": "so_what",
+              "name": "So what",
+              "kind": "text",
+              "required": false,
+              "multiple": false
+            },
+            {
+              "key": "sources",
+              "name": "Sources",
+              "kind": "text",
+              "required": true,
+              "multiple": false,
+              "description": "JSON array [{title, url, date}]."
+            },
+            {
+              "key": "run_id",
+              "name": "Run",
+              "kind": "text",
+              "required": false,
+              "multiple": false
+            },
+            {
+              "key": "status",
+              "name": "Status",
+              "kind": "select",
+              "required": true,
+              "multiple": false,
+              "options": [
+                "new",
+                "reviewed",
+                "dismissed"
+              ],
+              "description": "Research writes new; people mark reviewed or dismissed."
+            },
+            {
+              "key": "dismiss_reason",
+              "name": "Dismiss reason",
+              "kind": "text",
+              "required": false,
+              "multiple": false
+            },
+            {
+              "key": "reviewed_by",
+              "name": "Reviewed by",
+              "kind": "text",
+              "required": false,
+              "multiple": false
+            },
+            {
+              "key": "archived",
+              "name": "Archived",
+              "kind": "boolean",
+              "required": false,
+              "multiple": false
+            }
+          ]
+        }
+      }
+    },
+    "dealradar.deals": {
+      "name": "Deal Radar: deals",
+      "kind": "output",
+      "writer": "life.deal-radar",
+      "description": "Deals from Deal Radar (radar.v1). Readers use rows that are not dismissed (dismissed true is never counted); amounts are only those publicly disclosed (disclosed true); never add different currencies.",
+      "versions": {
+        "radar.v1": {
+          "fields": [
+            {
+              "key": "kind",
+              "name": "Kind",
+              "kind": "select",
+              "required": false,
+              "multiple": false,
+              "options": [
+                "license",
+                "partnership",
+                "option",
+                "acquisition",
+                "collaboration"
+              ]
+            },
+            {
+              "key": "title",
+              "name": "Title",
+              "kind": "text",
+              "required": true,
+              "multiple": false
+            },
+            {
+              "key": "announced_on",
+              "name": "Announced",
+              "kind": "date",
+              "required": false,
+              "multiple": false
+            },
+            {
+              "key": "organization_ids",
+              "name": "Parties",
+              "kind": "text",
+              "required": false,
+              "multiple": false,
+              "description": "Comma-separated organizations record IDs."
+            },
+            {
+              "key": "parties",
+              "name": "Party names",
+              "kind": "text",
+              "required": false,
+              "multiple": false
+            },
+            {
+              "key": "asset",
+              "name": "Asset",
+              "kind": "text",
+              "required": false,
+              "multiple": false
+            },
+            {
+              "key": "modality",
+              "name": "Modality",
+              "kind": "text",
+              "required": false,
+              "multiple": false
+            },
+            {
+              "key": "indication",
+              "name": "Indication",
+              "kind": "text",
+              "required": false,
+              "multiple": false
+            },
+            {
+              "key": "stage",
+              "name": "Asset stage",
+              "kind": "text",
+              "required": false,
+              "multiple": false
+            },
+            {
+              "key": "upfront",
+              "name": "Upfront",
+              "kind": "number",
+              "required": false,
+              "multiple": false
+            },
+            {
+              "key": "milestones",
+              "name": "Milestones",
+              "kind": "number",
+              "required": false,
+              "multiple": false
+            },
+            {
+              "key": "total",
+              "name": "Total value",
+              "kind": "number",
+              "required": false,
+              "multiple": false
+            },
+            {
+              "key": "currency",
+              "name": "Currency",
+              "kind": "text",
+              "required": false,
+              "multiple": false
+            },
+            {
+              "key": "royalties_note",
+              "name": "Royalties",
+              "kind": "text",
+              "required": false,
+              "multiple": false
+            },
+            {
+              "key": "disclosed",
+              "name": "Terms disclosed",
+              "kind": "boolean",
+              "required": false,
+              "multiple": false
+            },
+            {
+              "key": "natural_key",
+              "name": "Key",
+              "kind": "text",
+              "required": true,
+              "multiple": false,
+              "description": "Party names in alphabetical order, lower case, then the kind and the announcement date, joined by \"|\". The same deal reported within 7 days is the same deal: reuse its key."
+            },
+            {
+              "key": "scope_id",
+              "name": "Scope",
+              "kind": "text",
+              "required": true,
+              "multiple": false,
+              "description": "Record ID of a scopes record."
+            },
+            {
+              "key": "program_id",
+              "name": "Program",
+              "kind": "text",
+              "required": false,
+              "multiple": false,
+              "description": "Record ID of a programs record."
+            },
+            {
+              "key": "sources",
+              "name": "Sources",
+              "kind": "text",
+              "required": true,
+              "multiple": false,
+              "description": "JSON array [{title, url, date}]. A row without a source cannot be saved."
+            },
+            {
+              "key": "last_verified_on",
+              "name": "Last verified",
+              "kind": "date",
+              "required": false,
+              "multiple": false
+            },
+            {
+              "key": "last_changed_run_id",
+              "name": "Changed in run",
+              "kind": "text",
+              "required": false,
+              "multiple": false,
+              "description": "Run ID of the latest run that changed this row."
+            },
+            {
+              "key": "changed_fields",
+              "name": "Changed fields",
+              "kind": "text",
+              "required": false,
+              "multiple": false,
+              "description": "JSON array of field keys the latest run changed; [\"new\"] for a row the run added."
+            },
+            {
+              "key": "seen_run_id",
+              "name": "Seen run",
+              "kind": "text",
+              "required": false,
+              "multiple": false,
+              "description": "Set by a person: the run whose changes they have seen."
+            },
+            {
+              "key": "watched",
+              "name": "Watched",
+              "kind": "boolean",
+              "required": false,
+              "multiple": false,
+              "description": "Set by a person."
+            },
+            {
+              "key": "dismissed",
+              "name": "Dismissed",
+              "kind": "boolean",
+              "required": false,
+              "multiple": false,
+              "description": "Set by a person. A dismissed item is not recreated."
+            },
+            {
+              "key": "user_notes",
+              "name": "Notes",
+              "kind": "text",
+              "required": false,
+              "multiple": false,
+              "description": "Written by people only."
+            },
+            {
+              "key": "archived",
+              "name": "Archived",
+              "kind": "boolean",
+              "required": false,
+              "multiple": false
+            }
+          ]
+        }
+      }
+    },
+    "fundingradar.events": {
+      "name": "Funding Radar events",
+      "kind": "output",
+      "writer": "life.funding-radar",
+      "description": "Events from Funding Radar (radar.v1): financing, ipo, grant. Readers use rows whose status is new or reviewed; dismissed rows (status dismissed) are never counted. Estimated dates have expected true.",
+      "versions": {
+        "radar.v1": {
+          "fields": [
+            {
+              "key": "scope_id",
+              "name": "Scope",
+              "kind": "text",
+              "required": true,
+              "multiple": false,
+              "description": "Record ID of a scopes record."
+            },
+            {
+              "key": "program_id",
+              "name": "Program",
+              "kind": "text",
+              "required": false,
+              "multiple": false,
+              "description": "Record ID of a programs record."
+            },
+            {
+              "key": "organization_id",
+              "name": "Organization",
+              "kind": "text",
+              "required": false,
+              "multiple": false,
+              "description": "Record ID of an organizations record."
+            },
+            {
+              "key": "item_id",
+              "name": "Item",
+              "kind": "text",
+              "required": false,
+              "multiple": false,
+              "description": "Record ID of the financing in the Financings table."
+            },
+            {
+              "key": "natural_key",
+              "name": "Key",
+              "kind": "text",
+              "required": true,
+              "multiple": false,
+              "description": "The item key plus kind and date, so the same event is merged."
+            },
+            {
+              "key": "kind",
+              "name": "Kind",
+              "kind": "select",
+              "required": true,
+              "multiple": false,
+              "options": [
+                "financing",
+                "ipo",
+                "grant"
+              ]
+            },
+            {
+              "key": "title",
+              "name": "Title",
+              "kind": "text",
+              "required": true,
+              "multiple": false
+            },
+            {
+              "key": "summary",
+              "name": "Summary",
+              "kind": "text",
+              "required": false,
+              "multiple": false
+            },
+            {
+              "key": "occurred_on",
+              "name": "Date",
+              "kind": "date",
+              "required": false,
+              "multiple": false
+            },
+            {
+              "key": "occurred_month",
+              "name": "Month",
+              "kind": "text",
+              "required": false,
+              "multiple": false,
+              "description": "YYYY-MM of the date, for the calendar."
+            },
+            {
+              "key": "expected",
+              "name": "Expected (estimate)",
+              "kind": "boolean",
+              "required": false,
+              "multiple": false
+            },
+            {
+              "key": "expected_window",
+              "name": "Expected window",
+              "kind": "text",
+              "required": false,
+              "multiple": false
+            },
+            {
+              "key": "impact",
+              "name": "Impact",
+              "kind": "select",
+              "required": true,
+              "multiple": false,
+              "options": [
+                "high",
+                "medium",
+                "low",
+                "none"
+              ]
+            },
+            {
+              "key": "direction",
+              "name": "Direction",
+              "kind": "select",
+              "required": false,
+              "multiple": false,
+              "options": [
+                "threat",
+                "opportunity",
+                "neutral"
+              ]
+            },
+            {
+              "key": "so_what",
+              "name": "So what",
+              "kind": "text",
+              "required": false,
+              "multiple": false
+            },
+            {
+              "key": "sources",
+              "name": "Sources",
+              "kind": "text",
+              "required": true,
+              "multiple": false,
+              "description": "JSON array [{title, url, date}]."
+            },
+            {
+              "key": "run_id",
+              "name": "Run",
+              "kind": "text",
+              "required": false,
+              "multiple": false
+            },
+            {
+              "key": "status",
+              "name": "Status",
+              "kind": "select",
+              "required": true,
+              "multiple": false,
+              "options": [
+                "new",
+                "reviewed",
+                "dismissed"
+              ],
+              "description": "Research writes new; people mark reviewed or dismissed."
+            },
+            {
+              "key": "dismiss_reason",
+              "name": "Dismiss reason",
+              "kind": "text",
+              "required": false,
+              "multiple": false
+            },
+            {
+              "key": "reviewed_by",
+              "name": "Reviewed by",
+              "kind": "text",
+              "required": false,
+              "multiple": false
+            },
+            {
+              "key": "archived",
+              "name": "Archived",
+              "kind": "boolean",
+              "required": false,
+              "multiple": false
+            }
+          ]
+        }
+      }
+    },
+    "fundingradar.financings": {
+      "name": "Funding Radar: financings",
+      "kind": "output",
+      "writer": "life.funding-radar",
+      "description": "Financings from Funding Radar (radar.v1). Readers use rows that are not dismissed (dismissed true is never counted); amounts are as announced; never add different currencies.",
+      "versions": {
+        "radar.v1": {
+          "fields": [
+            {
+              "key": "kind",
+              "name": "Kind",
+              "kind": "select",
+              "required": false,
+              "multiple": false,
+              "options": [
+                "seed",
+                "series",
+                "crossover",
+                "ipo",
+                "follow_on",
+                "grant",
+                "debt"
+              ]
+            },
+            {
+              "key": "company_id",
+              "name": "Company",
+              "kind": "text",
+              "required": false,
+              "multiple": false,
+              "description": "Record ID of an organizations record."
+            },
+            {
+              "key": "company_name",
+              "name": "Company name",
+              "kind": "text",
+              "required": true,
+              "multiple": false
+            },
+            {
+              "key": "announced_on",
+              "name": "Announced",
+              "kind": "date",
+              "required": false,
+              "multiple": false
+            },
+            {
+              "key": "amount",
+              "name": "Amount",
+              "kind": "number",
+              "required": false,
+              "multiple": false
+            },
+            {
+              "key": "currency",
+              "name": "Currency",
+              "kind": "text",
+              "required": false,
+              "multiple": false
+            },
+            {
+              "key": "lead_investor_ids",
+              "name": "Lead investors",
+              "kind": "text",
+              "required": false,
+              "multiple": false,
+              "description": "Comma-separated organizations record IDs."
+            },
+            {
+              "key": "lead_investors",
+              "name": "Lead investor names",
+              "kind": "text",
+              "required": false,
+              "multiple": false
+            },
+            {
+              "key": "investor_ids",
+              "name": "Investors",
+              "kind": "text",
+              "required": false,
+              "multiple": false,
+              "description": "Comma-separated organizations record IDs."
+            },
+            {
+              "key": "investors",
+              "name": "Investor names",
+              "kind": "text",
+              "required": false,
+              "multiple": false
+            },
+            {
+              "key": "stage",
+              "name": "Stage",
+              "kind": "text",
+              "required": false,
+              "multiple": false
+            },
+            {
+              "key": "modality",
+              "name": "Modality",
+              "kind": "text",
+              "required": false,
+              "multiple": false
+            },
+            {
+              "key": "indication",
+              "name": "Indication",
+              "kind": "text",
+              "required": false,
+              "multiple": false
+            },
+            {
+              "key": "use_of_proceeds",
+              "name": "Use of proceeds",
+              "kind": "text",
+              "required": false,
+              "multiple": false
+            },
+            {
+              "key": "natural_key",
+              "name": "Key",
+              "kind": "text",
+              "required": true,
+              "multiple": false,
+              "description": "Company name in lower case, the kind and the announcement date, joined by \"|\". The same round reported within 7 days is the same round: reuse its key."
+            },
+            {
+              "key": "scope_id",
+              "name": "Scope",
+              "kind": "text",
+              "required": true,
+              "multiple": false,
+              "description": "Record ID of a scopes record."
+            },
+            {
+              "key": "program_id",
+              "name": "Program",
+              "kind": "text",
+              "required": false,
+              "multiple": false,
+              "description": "Record ID of a programs record."
+            },
+            {
+              "key": "sources",
+              "name": "Sources",
+              "kind": "text",
+              "required": true,
+              "multiple": false,
+              "description": "JSON array [{title, url, date}]. A row without a source cannot be saved."
+            },
+            {
+              "key": "last_verified_on",
+              "name": "Last verified",
+              "kind": "date",
+              "required": false,
+              "multiple": false
+            },
+            {
+              "key": "last_changed_run_id",
+              "name": "Changed in run",
+              "kind": "text",
+              "required": false,
+              "multiple": false,
+              "description": "Run ID of the latest run that changed this row."
+            },
+            {
+              "key": "changed_fields",
+              "name": "Changed fields",
+              "kind": "text",
+              "required": false,
+              "multiple": false,
+              "description": "JSON array of field keys the latest run changed; [\"new\"] for a row the run added."
+            },
+            {
+              "key": "seen_run_id",
+              "name": "Seen run",
+              "kind": "text",
+              "required": false,
+              "multiple": false,
+              "description": "Set by a person: the run whose changes they have seen."
+            },
+            {
+              "key": "watched",
+              "name": "Watched",
+              "kind": "boolean",
+              "required": false,
+              "multiple": false,
+              "description": "Set by a person."
+            },
+            {
+              "key": "dismissed",
+              "name": "Dismissed",
+              "kind": "boolean",
+              "required": false,
+              "multiple": false,
+              "description": "Set by a person. A dismissed item is not recreated."
+            },
+            {
+              "key": "user_notes",
+              "name": "Notes",
+              "kind": "text",
+              "required": false,
+              "multiple": false,
+              "description": "Written by people only."
+            },
+            {
+              "key": "archived",
+              "name": "Archived",
+              "kind": "boolean",
+              "required": false,
+              "multiple": false
+            }
+          ]
+        }
+      }
+    },
+    "literatureradar.events": {
+      "name": "Literature Radar events",
+      "kind": "output",
+      "writer": "life.literature-radar",
+      "description": "Events from Literature Radar (radar.v1): publication, conference data, retraction. Readers use rows whose status is new or reviewed; dismissed rows (status dismissed) are never counted. Estimated dates have expected true.",
+      "versions": {
+        "radar.v1": {
+          "fields": [
+            {
+              "key": "scope_id",
+              "name": "Scope",
+              "kind": "text",
+              "required": true,
+              "multiple": false,
+              "description": "Record ID of a scopes record."
+            },
+            {
+              "key": "program_id",
+              "name": "Program",
+              "kind": "text",
+              "required": false,
+              "multiple": false,
+              "description": "Record ID of a programs record."
+            },
+            {
+              "key": "organization_id",
+              "name": "Organization",
+              "kind": "text",
+              "required": false,
+              "multiple": false,
+              "description": "Record ID of an organizations record."
+            },
+            {
+              "key": "item_id",
+              "name": "Item",
+              "kind": "text",
+              "required": false,
+              "multiple": false,
+              "description": "Record ID of the publication in the Publications table."
+            },
+            {
+              "key": "natural_key",
+              "name": "Key",
+              "kind": "text",
+              "required": true,
+              "multiple": false,
+              "description": "The item key plus kind and date, so the same event is merged."
+            },
+            {
+              "key": "kind",
+              "name": "Kind",
+              "kind": "select",
+              "required": true,
+              "multiple": false,
+              "options": [
+                "publication",
+                "conference_data",
+                "retraction"
+              ]
+            },
+            {
+              "key": "title",
+              "name": "Title",
+              "kind": "text",
+              "required": true,
+              "multiple": false
+            },
+            {
+              "key": "summary",
+              "name": "Summary",
+              "kind": "text",
+              "required": false,
+              "multiple": false
+            },
+            {
+              "key": "occurred_on",
+              "name": "Date",
+              "kind": "date",
+              "required": false,
+              "multiple": false
+            },
+            {
+              "key": "occurred_month",
+              "name": "Month",
+              "kind": "text",
+              "required": false,
+              "multiple": false,
+              "description": "YYYY-MM of the date, for the calendar."
+            },
+            {
+              "key": "expected",
+              "name": "Expected (estimate)",
+              "kind": "boolean",
+              "required": false,
+              "multiple": false
+            },
+            {
+              "key": "expected_window",
+              "name": "Expected window",
+              "kind": "text",
+              "required": false,
+              "multiple": false
+            },
+            {
+              "key": "impact",
+              "name": "Impact",
+              "kind": "select",
+              "required": true,
+              "multiple": false,
+              "options": [
+                "high",
+                "medium",
+                "low",
+                "none"
+              ]
+            },
+            {
+              "key": "direction",
+              "name": "Direction",
+              "kind": "select",
+              "required": false,
+              "multiple": false,
+              "options": [
+                "threat",
+                "opportunity",
+                "neutral"
+              ]
+            },
+            {
+              "key": "so_what",
+              "name": "So what",
+              "kind": "text",
+              "required": false,
+              "multiple": false
+            },
+            {
+              "key": "sources",
+              "name": "Sources",
+              "kind": "text",
+              "required": true,
+              "multiple": false,
+              "description": "JSON array [{title, url, date}]."
+            },
+            {
+              "key": "run_id",
+              "name": "Run",
+              "kind": "text",
+              "required": false,
+              "multiple": false
+            },
+            {
+              "key": "status",
+              "name": "Status",
+              "kind": "select",
+              "required": true,
+              "multiple": false,
+              "options": [
+                "new",
+                "reviewed",
+                "dismissed"
+              ],
+              "description": "Research writes new; people mark reviewed or dismissed."
+            },
+            {
+              "key": "dismiss_reason",
+              "name": "Dismiss reason",
+              "kind": "text",
+              "required": false,
+              "multiple": false
+            },
+            {
+              "key": "reviewed_by",
+              "name": "Reviewed by",
+              "kind": "text",
+              "required": false,
+              "multiple": false
+            },
+            {
+              "key": "archived",
+              "name": "Archived",
+              "kind": "boolean",
+              "required": false,
+              "multiple": false
+            }
+          ]
+        }
+      }
+    },
+    "pipelineradar.events": {
+      "name": "Pipeline Radar events",
+      "kind": "output",
+      "writer": "life.pipeline-radar",
+      "description": "Events from Pipeline Radar (radar.v1): new entrant, phase change, partnership, discontinuation, readout, other. Readers use rows whose status is new or reviewed; dismissed rows (status dismissed) are never counted. Estimated dates have expected true.",
+      "versions": {
+        "radar.v1": {
+          "fields": [
+            {
+              "key": "scope_id",
+              "name": "Scope",
+              "kind": "text",
+              "required": true,
+              "multiple": false,
+              "description": "Record ID of a scopes record."
+            },
+            {
+              "key": "program_id",
+              "name": "Program",
+              "kind": "text",
+              "required": false,
+              "multiple": false,
+              "description": "Record ID of a programs record."
+            },
+            {
+              "key": "organization_id",
+              "name": "Organization",
+              "kind": "text",
+              "required": false,
+              "multiple": false,
+              "description": "Record ID of an organizations record."
+            },
+            {
+              "key": "item_id",
+              "name": "Item",
+              "kind": "text",
+              "required": false,
+              "multiple": false,
+              "description": "Record ID of the asset in the Assets table."
+            },
+            {
+              "key": "natural_key",
+              "name": "Key",
+              "kind": "text",
+              "required": true,
+              "multiple": false,
+              "description": "The item key plus kind and date, so the same event is merged."
+            },
+            {
+              "key": "kind",
+              "name": "Kind",
+              "kind": "select",
+              "required": true,
+              "multiple": false,
+              "options": [
+                "new_entrant",
+                "phase_change",
+                "partnership",
+                "discontinuation",
+                "readout",
+                "other"
+              ]
+            },
+            {
+              "key": "title",
+              "name": "Title",
+              "kind": "text",
+              "required": true,
+              "multiple": false
+            },
+            {
+              "key": "summary",
+              "name": "Summary",
+              "kind": "text",
+              "required": false,
+              "multiple": false
+            },
+            {
+              "key": "occurred_on",
+              "name": "Date",
+              "kind": "date",
+              "required": false,
+              "multiple": false
+            },
+            {
+              "key": "occurred_month",
+              "name": "Month",
+              "kind": "text",
+              "required": false,
+              "multiple": false,
+              "description": "YYYY-MM of the date, for the calendar."
+            },
+            {
+              "key": "expected",
+              "name": "Expected (estimate)",
+              "kind": "boolean",
+              "required": false,
+              "multiple": false
+            },
+            {
+              "key": "expected_window",
+              "name": "Expected window",
+              "kind": "text",
+              "required": false,
+              "multiple": false
+            },
+            {
+              "key": "impact",
+              "name": "Impact",
+              "kind": "select",
+              "required": true,
+              "multiple": false,
+              "options": [
+                "high",
+                "medium",
+                "low",
+                "none"
+              ]
+            },
+            {
+              "key": "direction",
+              "name": "Direction",
+              "kind": "select",
+              "required": false,
+              "multiple": false,
+              "options": [
+                "threat",
+                "opportunity",
+                "neutral"
+              ]
+            },
+            {
+              "key": "so_what",
+              "name": "So what",
+              "kind": "text",
+              "required": false,
+              "multiple": false
+            },
+            {
+              "key": "sources",
+              "name": "Sources",
+              "kind": "text",
+              "required": true,
+              "multiple": false,
+              "description": "JSON array [{title, url, date}]."
+            },
+            {
+              "key": "run_id",
+              "name": "Run",
+              "kind": "text",
+              "required": false,
+              "multiple": false
+            },
+            {
+              "key": "status",
+              "name": "Status",
+              "kind": "select",
+              "required": true,
+              "multiple": false,
+              "options": [
+                "new",
+                "reviewed",
+                "dismissed"
+              ],
+              "description": "Research writes new; people mark reviewed or dismissed."
+            },
+            {
+              "key": "dismiss_reason",
+              "name": "Dismiss reason",
+              "kind": "text",
+              "required": false,
+              "multiple": false
+            },
+            {
+              "key": "reviewed_by",
+              "name": "Reviewed by",
+              "kind": "text",
+              "required": false,
+              "multiple": false
+            },
+            {
+              "key": "archived",
+              "name": "Archived",
+              "kind": "boolean",
+              "required": false,
+              "multiple": false
+            }
+          ]
+        }
+      }
+    },
+    "marketradar.events": {
+      "name": "Market Radar events",
+      "kind": "output",
+      "writer": "life.market-radar",
+      "description": "Events from Market Radar (radar.v1): approval, label change, launch, hta decision, pricing, guideline, sales reported. Readers use rows whose status is new or reviewed; dismissed rows (status dismissed) are never counted. Estimated dates have expected true.",
+      "versions": {
+        "radar.v1": {
+          "fields": [
+            {
+              "key": "scope_id",
+              "name": "Scope",
+              "kind": "text",
+              "required": true,
+              "multiple": false,
+              "description": "Record ID of a scopes record."
+            },
+            {
+              "key": "program_id",
+              "name": "Program",
+              "kind": "text",
+              "required": false,
+              "multiple": false,
+              "description": "Record ID of a programs record."
+            },
+            {
+              "key": "organization_id",
+              "name": "Organization",
+              "kind": "text",
+              "required": false,
+              "multiple": false,
+              "description": "Record ID of an organizations record."
+            },
+            {
+              "key": "item_id",
+              "name": "Item",
+              "kind": "text",
+              "required": false,
+              "multiple": false,
+              "description": "Record ID of the product in the Products table."
+            },
+            {
+              "key": "natural_key",
+              "name": "Key",
+              "kind": "text",
+              "required": true,
+              "multiple": false,
+              "description": "The item key plus kind and date, so the same event is merged."
+            },
+            {
+              "key": "kind",
+              "name": "Kind",
+              "kind": "select",
+              "required": true,
+              "multiple": false,
+              "options": [
+                "approval",
+                "label_change",
+                "launch",
+                "hta_decision",
+                "pricing",
+                "guideline",
+                "sales_reported"
+              ]
+            },
+            {
+              "key": "title",
+              "name": "Title",
+              "kind": "text",
+              "required": true,
+              "multiple": false
+            },
+            {
+              "key": "summary",
+              "name": "Summary",
+              "kind": "text",
+              "required": false,
+              "multiple": false
+            },
+            {
+              "key": "occurred_on",
+              "name": "Date",
+              "kind": "date",
+              "required": false,
+              "multiple": false
+            },
+            {
+              "key": "occurred_month",
+              "name": "Month",
+              "kind": "text",
+              "required": false,
+              "multiple": false,
+              "description": "YYYY-MM of the date, for the calendar."
+            },
+            {
+              "key": "expected",
+              "name": "Expected (estimate)",
+              "kind": "boolean",
+              "required": false,
+              "multiple": false
+            },
+            {
+              "key": "expected_window",
+              "name": "Expected window",
+              "kind": "text",
+              "required": false,
+              "multiple": false
+            },
+            {
+              "key": "impact",
+              "name": "Impact",
+              "kind": "select",
+              "required": true,
+              "multiple": false,
+              "options": [
+                "high",
+                "medium",
+                "low",
+                "none"
+              ]
+            },
+            {
+              "key": "direction",
+              "name": "Direction",
+              "kind": "select",
+              "required": false,
+              "multiple": false,
+              "options": [
+                "threat",
+                "opportunity",
+                "neutral"
+              ]
+            },
+            {
+              "key": "so_what",
+              "name": "So what",
+              "kind": "text",
+              "required": false,
+              "multiple": false
+            },
+            {
+              "key": "sources",
+              "name": "Sources",
+              "kind": "text",
+              "required": true,
+              "multiple": false,
+              "description": "JSON array [{title, url, date}]."
+            },
+            {
+              "key": "run_id",
+              "name": "Run",
+              "kind": "text",
+              "required": false,
+              "multiple": false
+            },
+            {
+              "key": "status",
+              "name": "Status",
+              "kind": "select",
+              "required": true,
+              "multiple": false,
+              "options": [
+                "new",
+                "reviewed",
+                "dismissed"
+              ],
+              "description": "Research writes new; people mark reviewed or dismissed."
+            },
+            {
+              "key": "dismiss_reason",
+              "name": "Dismiss reason",
+              "kind": "text",
+              "required": false,
+              "multiple": false
+            },
+            {
+              "key": "reviewed_by",
+              "name": "Reviewed by",
+              "kind": "text",
+              "required": false,
+              "multiple": false
+            },
+            {
+              "key": "archived",
+              "name": "Archived",
+              "kind": "boolean",
+              "required": false,
+              "multiple": false
+            }
+          ]
+        }
+      }
+    },
+    "patentradar.events": {
+      "name": "Patent Radar events",
+      "kind": "output",
+      "writer": "life.patent-radar",
+      "description": "Events from Patent Radar (radar.v1): published, granted, legal event, opposition, expiry upcoming. Readers use rows whose status is new or reviewed; dismissed rows (status dismissed) are never counted. Estimated dates have expected true.",
+      "versions": {
+        "radar.v1": {
+          "fields": [
+            {
+              "key": "scope_id",
+              "name": "Scope",
+              "kind": "text",
+              "required": true,
+              "multiple": false,
+              "description": "Record ID of a scopes record."
+            },
+            {
+              "key": "program_id",
+              "name": "Program",
+              "kind": "text",
+              "required": false,
+              "multiple": false,
+              "description": "Record ID of a programs record."
+            },
+            {
+              "key": "organization_id",
+              "name": "Organization",
+              "kind": "text",
+              "required": false,
+              "multiple": false,
+              "description": "Record ID of an organizations record."
+            },
+            {
+              "key": "item_id",
+              "name": "Item",
+              "kind": "text",
+              "required": false,
+              "multiple": false,
+              "description": "Record ID of the patent family in the Patent families table."
+            },
+            {
+              "key": "natural_key",
+              "name": "Key",
+              "kind": "text",
+              "required": true,
+              "multiple": false,
+              "description": "The item key plus kind and date, so the same event is merged."
+            },
+            {
+              "key": "kind",
+              "name": "Kind",
+              "kind": "select",
+              "required": true,
+              "multiple": false,
+              "options": [
+                "patent_published",
+                "patent_granted",
+                "legal_event",
+                "opposition",
+                "expiry_upcoming"
+              ]
+            },
+            {
+              "key": "title",
+              "name": "Title",
+              "kind": "text",
+              "required": true,
+              "multiple": false
+            },
+            {
+              "key": "summary",
+              "name": "Summary",
+              "kind": "text",
+              "required": false,
+              "multiple": false
+            },
+            {
+              "key": "occurred_on",
+              "name": "Date",
+              "kind": "date",
+              "required": false,
+              "multiple": false
+            },
+            {
+              "key": "occurred_month",
+              "name": "Month",
+              "kind": "text",
+              "required": false,
+              "multiple": false,
+              "description": "YYYY-MM of the date, for the calendar."
+            },
+            {
+              "key": "expected",
+              "name": "Expected (estimate)",
+              "kind": "boolean",
+              "required": false,
+              "multiple": false
+            },
+            {
+              "key": "expected_window",
+              "name": "Expected window",
+              "kind": "text",
+              "required": false,
+              "multiple": false
+            },
+            {
+              "key": "impact",
+              "name": "Impact",
+              "kind": "select",
+              "required": true,
+              "multiple": false,
+              "options": [
+                "high",
+                "medium",
+                "low",
+                "none"
+              ]
+            },
+            {
+              "key": "direction",
+              "name": "Direction",
+              "kind": "select",
+              "required": false,
+              "multiple": false,
+              "options": [
+                "threat",
+                "opportunity",
+                "neutral"
+              ]
+            },
+            {
+              "key": "so_what",
+              "name": "So what",
+              "kind": "text",
+              "required": false,
+              "multiple": false
+            },
+            {
+              "key": "sources",
+              "name": "Sources",
+              "kind": "text",
+              "required": true,
+              "multiple": false,
+              "description": "JSON array [{title, url, date}]."
+            },
+            {
+              "key": "run_id",
+              "name": "Run",
+              "kind": "text",
+              "required": false,
+              "multiple": false
+            },
+            {
+              "key": "status",
+              "name": "Status",
+              "kind": "select",
+              "required": true,
+              "multiple": false,
+              "options": [
+                "new",
+                "reviewed",
+                "dismissed"
+              ],
+              "description": "Research writes new; people mark reviewed or dismissed."
+            },
+            {
+              "key": "dismiss_reason",
+              "name": "Dismiss reason",
+              "kind": "text",
+              "required": false,
+              "multiple": false
+            },
+            {
+              "key": "reviewed_by",
+              "name": "Reviewed by",
+              "kind": "text",
+              "required": false,
+              "multiple": false
+            },
+            {
+              "key": "archived",
+              "name": "Archived",
+              "kind": "boolean",
+              "required": false,
+              "multiple": false
+            }
+          ]
+        }
+      }
+    },
+    "regulatoryradar.events": {
+      "name": "Regulatory Radar events",
+      "kind": "output",
+      "writer": "life.regulatory-radar",
+      "description": "Events from Regulatory Radar (radar.v1): guidance, designation, advisory committee, decision, policy, consultation open. Readers use rows whose status is new or reviewed; dismissed rows (status dismissed) are never counted. Estimated dates have expected true.",
+      "versions": {
+        "radar.v1": {
+          "fields": [
+            {
+              "key": "scope_id",
+              "name": "Scope",
+              "kind": "text",
+              "required": true,
+              "multiple": false,
+              "description": "Record ID of a scopes record."
+            },
+            {
+              "key": "program_id",
+              "name": "Program",
+              "kind": "text",
+              "required": false,
+              "multiple": false,
+              "description": "Record ID of a programs record."
+            },
+            {
+              "key": "organization_id",
+              "name": "Organization",
+              "kind": "text",
+              "required": false,
+              "multiple": false,
+              "description": "Record ID of an organizations record."
+            },
+            {
+              "key": "item_id",
+              "name": "Item",
+              "kind": "text",
+              "required": false,
+              "multiple": false,
+              "description": "Record ID of the regulatory item in the Regulatory items table."
+            },
+            {
+              "key": "natural_key",
+              "name": "Key",
+              "kind": "text",
+              "required": true,
+              "multiple": false,
+              "description": "The item key plus kind and date, so the same event is merged."
+            },
+            {
+              "key": "kind",
+              "name": "Kind",
+              "kind": "select",
+              "required": true,
+              "multiple": false,
+              "options": [
+                "guidance",
+                "designation",
+                "adcom",
+                "regulatory_decision",
+                "policy",
+                "consultation_open"
+              ]
+            },
+            {
+              "key": "title",
+              "name": "Title",
+              "kind": "text",
+              "required": true,
+              "multiple": false
+            },
+            {
+              "key": "summary",
+              "name": "Summary",
+              "kind": "text",
+              "required": false,
+              "multiple": false
+            },
+            {
+              "key": "occurred_on",
+              "name": "Date",
+              "kind": "date",
+              "required": false,
+              "multiple": false
+            },
+            {
+              "key": "occurred_month",
+              "name": "Month",
+              "kind": "text",
+              "required": false,
+              "multiple": false,
+              "description": "YYYY-MM of the date, for the calendar."
+            },
+            {
+              "key": "expected",
+              "name": "Expected (estimate)",
+              "kind": "boolean",
+              "required": false,
+              "multiple": false
+            },
+            {
+              "key": "expected_window",
+              "name": "Expected window",
+              "kind": "text",
+              "required": false,
+              "multiple": false
+            },
+            {
+              "key": "impact",
+              "name": "Impact",
+              "kind": "select",
+              "required": true,
+              "multiple": false,
+              "options": [
+                "high",
+                "medium",
+                "low",
+                "none"
+              ]
+            },
+            {
+              "key": "direction",
+              "name": "Direction",
+              "kind": "select",
+              "required": false,
+              "multiple": false,
+              "options": [
+                "threat",
+                "opportunity",
+                "neutral"
+              ]
+            },
+            {
+              "key": "so_what",
+              "name": "So what",
+              "kind": "text",
+              "required": false,
+              "multiple": false
+            },
+            {
+              "key": "sources",
+              "name": "Sources",
+              "kind": "text",
+              "required": true,
+              "multiple": false,
+              "description": "JSON array [{title, url, date}]."
+            },
+            {
+              "key": "run_id",
+              "name": "Run",
+              "kind": "text",
+              "required": false,
+              "multiple": false
+            },
+            {
+              "key": "status",
+              "name": "Status",
+              "kind": "select",
+              "required": true,
+              "multiple": false,
+              "options": [
+                "new",
+                "reviewed",
+                "dismissed"
+              ],
+              "description": "Research writes new; people mark reviewed or dismissed."
+            },
+            {
+              "key": "dismiss_reason",
+              "name": "Dismiss reason",
+              "kind": "text",
+              "required": false,
+              "multiple": false
+            },
+            {
+              "key": "reviewed_by",
+              "name": "Reviewed by",
+              "kind": "text",
+              "required": false,
+              "multiple": false
+            },
+            {
+              "key": "archived",
+              "name": "Archived",
+              "kind": "boolean",
+              "required": false,
+              "multiple": false
+            }
+          ]
+        }
+      }
     }
   }
 }
