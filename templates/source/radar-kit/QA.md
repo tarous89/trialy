@@ -9,6 +9,6 @@ Run on 14 November 2026 with fictional data only: production QuickJS, disposable
 | `scripts/test-trial-radar-browser.ts` | Production sanitized frame at 1440 and 390 px: four screens without overflow, watch a trial, dismiss an event with a typed reason, the calendar, a template version, the layout gear | pass |
 | `node scripts/build-radar-templates.mjs --check` (in `npm run build`) | Generated files are current | verified |
 
-Render times with 5,000 events and 2,000 trials on the in-process test database (first render, ms): overview ~7,800, tracker ~1,500, events ~2,000, feed ~2,000, calendar ~1,900, setup ~1,100. Every screen reads at most about 15 bounded pages.
+Render times with 5,000 events and 2,000 trials on the in-process test database (first render, ms): overview ~5,200, tracker ~1,350, events ~1,800, feed ~1,850, calendar ~1,750, setup ~950 (CI runners are about 1.4x slower). Every screen reads at most about 12 bounded pages.
 
 Not verified here: a live Claude or ChatGPT scheduled run against the real registries and TrialAgents Intel, delivery through the production email provider, and the deployed catalog. These are separate outcomes.
