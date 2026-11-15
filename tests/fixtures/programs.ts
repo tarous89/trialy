@@ -17,7 +17,7 @@ export async function programsFixture(opts:{demo?:boolean}={}){
  await db.query('INSERT INTO users(id,subject,email,name) VALUES($1,$2,$3,$4)',[actor.userId,actor.userId,'programs@example.invalid','Programs fixture']);
  const f=new WorkspaceFoundation(db),s=new Service(db),w=await s.createWorkspace(actor,'Programs fixture');
  async function save(op:any){const p=await s.preview(actor,w.id,op);return s.commit(actor,p.id,p.digest);}
- const schemas=JSON.parse(await readFile('templates/source/project-oversight/schema.example.json','utf8')),map:any={},bindings:any[]=[],fields:any[]=[];
+ const schemas=JSON.parse(await readFile('templates/source/project-oversight/archive/2.1.0/schema.example.json','utf8')),map:any={},bindings:any[]=[],fields:any[]=[];
  for(const [role,def] of Object.entries(schemas) as [string,any][]){
   const id=(await save({kind:'create_type',name:def.name,fields:def.fields})).objects[0].id;
   map[role]={typeId:id,fields:def.logicalFields,writableFields:def.readOnly?[]:Object.keys(def.logicalFields)};
@@ -25,7 +25,7 @@ export async function programsFixture(opts:{demo?:boolean}={}){
   fields.push(...def.fields.map((x:any)=>({id:manifestFieldId(role,x.key),typeId:id,field:x.key,schemaVersion:0,kind:x.kind,mode:def.readOnly?'read':'write'})));
  }
  const ids:Record<string,string>={};
- if(opts.demo!==false){const demo=JSON.parse(await readFile('templates/source/project-oversight/demo_data.json','utf8')).records;
+ if(opts.demo!==false){const demo=JSON.parse(await readFile('templates/source/project-oversight/archive/2.1.0/demo_data.json','utf8')).records;
   for(const r of demo){const data=Object.fromEntries(Object.entries(r.data).filter(([,v])=>v!==null).map(([k,v])=>[k,REF_KEYS.includes(k)?ids[v as string]:v]));
    ids[r.id]=(await save({kind:'create_record',typeId:map[r.role].typeId,data})).objects[0].id;}}
  const entry=await appTemplates.read({templateId:'life.project-oversight',version:'2.1.0'});
