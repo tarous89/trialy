@@ -11,7 +11,7 @@ Validated against the repository host on 15 November 2026 with disposable PGlite
 | `node --import tsx --test tests/programs-commands.test.ts` | 9/9 passed (QuickJS; the design inspector on settings, digests, the team form and the slip dialog at 1440 and 390 px) |
 | `node --import tsx --test tests/programs-automations.test.ts` | 2/2 passed (real installer, setup reconciliation, write scopes, record-date dispatch and the assignment email in the outbox) |
 | `node --import tsx --test tests/programs.test.ts` | 14/14 passed (the archived 2.1.0, unchanged) |
-| Related suites (catalog, installers, Runway, Contracts, Fundraise, Partnerships, Data Room, CRO Selection, integrations, app commands, recipes) | See the commit message for the run |
+| 24 related suites (catalog, installers, archive-first, data access, Runway, Contracts, Fundraise, Partnerships, Data Room, CRO Selection, integrations, app commands, recipes) at concurrency 4 | 169/172; the 3 failures (2 in `automation-recipes`, 1 in `fundraise-automations`) were timing-dependent and pass when those two files are re-run on their own, on this branch and on the base commit |
 
 Browser checks used this container's Chromium through a `PLAYWRIGHT_BROWSERS_PATH` that maps the pinned Playwright 1.51.1 browser names to the installed build. Test code was not changed for this.
 
