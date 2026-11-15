@@ -1157,3 +1157,9 @@ PR #214 merged as `e50602db40385e5a3d54747759a793f1fb3747fc` after exact-head pr
 - Primary evidence checked 15 November 2026: https://floatapp.com/xero-cash-flow-forecast (one-way read-only Xero, daily/on-demand imports, excluded purchase orders/tracking categories); https://www.ncsc.gov.uk/collection/cloud/the-cloud-security-principles/principle-13-audit-information-and-alerting-for-customers (audit scope, availability, format/retention; guidance reviewed 7 June 2023). No unsupported compliance claim or pricing estimate.
 - Fictional test independently verified with decimal arithmetic: EUR 1m opening 31 December, 100k monthly January–March, extra 200k February payment, no other inputs: closes 900k, 600k, 500k; adding contingent 300k March gives 800k. The guide asks the buyer to run this test, not claiming it was run in a host. Fifteen questions, one reusable evidence row, two images, local anchors and JavaScript syntax checked.
 - Not published. Resume full exact-head predeploy, artifact inspection, merge and independent live verification. Counts remain 43 published; 4 unfinished including deferred A9.
+
+
+### E6 validation correction — 15 November 2026
+
+- Initial predeploy `43691796636` passed 290 tests, snapshot build and metadata/discovery but rejected the CTA markup: the final card was outside the final article section. Source fixed without weakening the check.
+- PR #224 now has head `170d8fd19ee5df93120a5c4e31c81624418326bd`; full predeploy `43692062839` is running. Tests, candidate snapshot, Runway desktop/mobile and showcase passed so far. Full gate, visual artifact review, merge and live verification remain. E6 is not Published.
