@@ -42,7 +42,7 @@ Titles below are editorial candidates, not verified product claims. When a title
 | D5 | Forecast CRO costs and vendor payments: reconcile what is still payable | Published — live verified 14 November 2026; PR #213, release `737d8dcafa887324da8ec275fcdc9493bff364e2` | https://trialagents.com/apps/cro-costs-vendor-payments-biotech-budget |
 | D6 | Biotech hiring vs outsourcing: compare cash through the handover | Published — live verified 14 November 2026; PR #214, release `e50602db40385e5a3d54747759a793f1fb3747fc` | https://trialagents.com/apps/biotech-hiring-vs-outsourcing-cash-runway |
 | D7 | Plan biotech runway around a funding round: find the gap before the cash arrives | Published — live verified 14 November 2026 UTC; PR #215, release `86345a49f823289757ef4990b06183ede4b2b487` | https://trialagents.com/apps/biotech-runway-next-funding-round |
-| D8 | Financial planning for grant-funded biotechs: separate award, claim and cash | In progress — PR #216; exact-head validation and visual review pending | — |
+| D8 | Financial planning for grant-funded biotechs: separate award, claim and cash | Merged — deployment pending/unverified; PR #216 | — |
 | D9 | Cash Runway Planning for Biotechs with Multiple R&D Programs | Queued — verify and publish | — |
 | D10 | Biotech Board Reporting: How to Present Burn Rate, Runway, and Financial Risks | Queued — verify and publish | — |
 | D11 | How CRO Payment Timing Changes Biotech Cash Runway | Already covered / published | [Live article](https://trialagents.com/apps/cro-payment-timing-biotech-cash-runway) |
@@ -930,3 +930,9 @@ PR #214 merged as `e50602db40385e5a3d54747759a793f1fb3747fc` after exact-head pr
 - [Source PR #216](https://github.com/tarous89/trialagents-public/pull/216), head `53cc8f34a9fa8af9ae8e45bdf84c062bd46e6218`; proposed URL https://trialagents.com/apps/grant-funded-biotech-financial-planning. Title: **Financial planning for grant-funded biotechs: separate award, claim and cash**. Refines the proposed 'Best tools' title to avoid a duplicate Series B ranking and unsupported superlatives; retains software selection by responsibility and a concrete Series D grant workflow.
 - Current repository catalog now includes life.cash-runway 2.2.0 (`templates/apps/life.cash-runway-2.2.0.json`, blob `343f0753248cc977a59cac67b3ed9ac6594c98c0`). Reviewed its cash calculation, status, input, access and integration documentation. D8 avoids obsolete two-review scenario-saving instructions. Existing saved apps are not automatically migrated; approved 2.1 browser media is explicitly labeled. No live 2.2 host acceptance test claimed.
 - Not published. Resume PR #216 through exact-head predeploy, screenshot review, merge and independent live verification before selecting another topic.
+
+
+### D8 merged checkpoint — 2026-11-15 00:03:42 UTC
+
+- PR #216 merged as `21fbe16da15aad15a6625e63762634b5f2598822` after exact-head predeploy run 43655560627 passed both jobs. Inspected desktop 1440px and mobile 390px screenshots in artifact 14137774525, bound to head `53cc8f34a9fa8af9ae8e45bdf84c062bd46e6218`; no layout blocker. Tables use contained horizontal scrolling on mobile.
+- Not yet Published. Existing automatic deployment pending. Poll https://trialagents.com/apps/grant-funded-biotech-financial-planning every 30–60 seconds for up to 15 minutes and independently verify the article, schema, discovery, assets and homepage-identical analytics chain. Resume this release before a new draft if interrupted.
