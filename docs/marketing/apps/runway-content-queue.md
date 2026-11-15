@@ -44,7 +44,7 @@ Titles below are editorial candidates, not verified product claims. When a title
 | D7 | Plan biotech runway around a funding round: find the gap before the cash arrives | Published — live verified 14 November 2026 UTC; PR #215, release `86345a49f823289757ef4990b06183ede4b2b487` | https://trialagents.com/apps/biotech-runway-next-funding-round |
 | D8 | Financial planning for grant-funded biotechs: separate award, claim and cash | Published — live verified 15 November 2026; PR #216, release `21fbe16da15aad15a6625e63762634b5f2598822` | https://trialagents.com/apps/grant-funded-biotech-financial-planning |
 | D9 | Cash runway across multiple R&D programs: separate shared costs from savings | Published — live verified 15 November 2026; PR #217, release `83872bb00cfbea1736874e2f0642506f3f8ea2ad` | https://trialagents.com/apps/multiple-rd-programs-biotech-cash-runway |
-| D10 | Biotech board reporting: explain what changed in cash runway | In progress — PR #218; exact-head validation and visual review pending | — |
+| D10 | Biotech board reporting: explain what changed in cash runway | Merged — deployment pending/unverified; PR #218 | — |
 | D11 | How CRO Payment Timing Changes Biotech Cash Runway | Already covered / published | [Live article](https://trialagents.com/apps/cro-payment-timing-biotech-cash-runway) |
 | D12 | How to Forecast Cash to the Next Phase I Milestone | Queued — verify and publish | — |
 | E1 | Free Biotech Cash Runway Template: Excel vs Customizable App | Queued — verify and publish | — |
@@ -984,3 +984,10 @@ PR #214 merged as `e50602db40385e5a3d54747759a793f1fb3747fc` after exact-head pr
 - [PR #218](https://github.com/tarous89/trialagents-public/pull/218), head `a27064ae6381b3429166541b3d5861296ecb4b71`, prepares **Biotech board reporting: explain what changed in cash runway** at https://trialagents.com/apps/biotech-board-reporting-cash-runway. Distinct intent: communicate frozen close versus live forecast changes and a board decision, rather than another generic variance or funding article.
 - Reviewed life.cash-runway 2.2.0 source/doc blob `343f0753248cc977a59cac67b3ed9ac6594c98c0`: month close snapshot metrics, budget locks, variance, runway bridge, app-command setup, customization and linked-source limitations. Genuine 2.1 browser demo images are labeled and separate from independently tested fictional figures. No live assistant acceptance claimed.
 - Not published. Resume exact-head full predeploy, desktop/mobile artifact review, merge and independent live verification before another topic.
+
+
+### D10 merged — deployment pending/unverified
+
+- PR #218 merged at 2026-11-15 02:04:53 UTC, release `75e16b6633534d28daac38917cc6b95ad2e67a02`.
+- Exact-head predeploy **43665391307** passed validate and seo-container on `a27064ae6381b3429166541b3d5861296ecb4b71`. Desktop 1440px/mobile 390px artifact **14141513272** visually inspected: all sections, standard horizontally scrollable tables, genuine images, shared shell and final CTA passed.
+- Waiting for existing automatic GitHub-to-CDN build and independent changed-URL verification. Initial HTTP 404 is pending propagation, not an authentication blocker. Resume this release before another topic until verified.
