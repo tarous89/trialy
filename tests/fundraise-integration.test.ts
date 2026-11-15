@@ -102,8 +102,8 @@ test('integration test, Fundraise first: manual engagement and milestones, then 
   for(const role of ['dataroom.access_grants','dataroom.engagement','programs.plan_items']){assert.ok(map[role].typeId,role);assert.ok(map[role].writableFields.length>0,role+' is writable (own entries)');}
   let o=await x.offers(w,id);
   assert.deepEqual([o['dataroom.access_grants'].source,o['dataroom.engagement'].source,o['programs.plan_items'].source],['own','own','own']);
-  // The catalog has no approved Data Room template yet, so the platform offers no "Add Data Room"; Programs 2.1.0 is approved, so "Add Programs" is offered.
-  assert.equal(o['dataroom.access_grants'].offer,null);assert.equal(o['programs.plan_items'].offer,'install');
+  // Data Room 1.1.0 and Programs 2.1.0 are approved, so the platform offers "Add Data Room" and "Add Programs".
+  assert.equal(o['dataroom.access_grants'].offer,'install');assert.equal(o['programs.plan_items'].offer,'install');
   // Manual data: an investor, a round, an opportunity, access and views entered in Fundraise's own tables; one own milestone for a tranche.
   const northlake=await x.save(w,map.organizations.typeId,{name:'Northlake Bio Ventures',org_type:'investor',archived:false});
   await x.save(w,map['fundraise.investor_profiles'].typeId,{organization_id:northlake,investor_type:'specialist_ls_vc',profile_status:'accepted',tier:'a',archived:false});
@@ -115,7 +115,7 @@ test('integration test, Fundraise first: manual engagement and milestones, then 
   await x.save(w,map['fundraise.tranches'].typeId,{round_id:round,tranche_no:1,amount:7500000,currency:'EUR',condition:'First close',status:'expected'});
   await x.save(w,map['fundraise.tranches'].typeId,{round_id:round,tranche_no:2,amount:7500000,currency:'EUR',condition:'Lead candidate nominated',milestone_id:ownMile,expected_on:'2027-07-31',status:'expected'});
   let eng=text((await x.open(w,id,{section:'engagement'})).html);
-  assert.match(eng,/Your own entries/);assert.match(eng,/Northlake Bio Ventures — Seed room \(manual\)/);assert.match(eng,/Deck/);assert.doesNotMatch(eng,/Add Data Room|Use its data/);
+  assert.match(eng,/Your own entries/);assert.match(eng,/Northlake Bio Ventures — Seed room \(manual\)/);assert.match(eng,/Deck/);assert.match(eng,/Add Data Room/,'Data Room 1.1.0 is published, so it is offered');assert.doesNotMatch(eng,/Use its data/);
   let rd=(await x.open(w,id,{section:'round'})).html;
   assert.match(rd,/Works with Programs\. <button type="button" class="fr-linkbtn" data-trialy-integration="install programs\.plan_items">Add Programs<\/button>/);
   assert.match(text(rd),/Lead candidate nominated Lead candidate nomination 31 Jul 2027 Expected On track \(planned, 30 Jun 2027\)/);assert.match(text(rd),/First close — — Expected No milestone/);

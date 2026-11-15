@@ -66,10 +66,13 @@ async function notices(tx:Connection,a:Actor,w:string,g:any,exchanges:any[],type
  return {...r,emails:noticeRecipients(r.emails)};
 }
 async function questionRow(tx:Connection,w:string,questionId:string){const q=(await tx.query('SELECT * FROM exchange_questions WHERE id=$1 AND workspace_id=$2',[questionId,w])).rows[0];if(!q)fail(404,'not_found','Question not found');return q;}
-/** Since when a digest covers documents for this person: their last digest, else the approval. */
-async function digestSince(tx:Connection,g:any,e:any){const last=(await tx.query("SELECT created_at FROM exchange_events WHERE exchange_id=$1 AND kind='digest_sent' ORDER BY created_at DESC LIMIT 1",[e.id])).rows[0];return last?.created_at??g.digest?.approvedAt??e.created_at;}
+/** Since when an update notice covers documents for this person: their last digest or "documents updated" email, else the digest approval, else their invitation. */
+async function digestSince(tx:Connection,g:any,e:any){const last=(await tx.query("SELECT created_at FROM exchange_events WHERE exchange_id=$1 AND (kind='digest_sent' OR (kind='email_sent' AND detail->>'emailType'='documents_updated')) ORDER BY created_at DESC LIMIT 1",[e.id])).rows[0];return last?.created_at??g.digest?.approvedAt??e.created_at;}
 export async function digestItems(tx:Connection,g:any,e:any,since?:any){const view=await roomView(tx,g,e,(await gateState(tx,g,e)).unlocked);return changedSince(view,since??await digestSince(tx,g,e));}
-export const digestDocuments=async(tx:Connection,g:any,e:any)=>{const items=await digestItems(tx,g,e);return items.length?documentLines(items):'No new or updated documents.';};
+/** The person's own list of new and updated documents at their open levels (since their last notice), or the chosen versions they can open. */
+/** Chosen document versions this person can open now, whenever they changed (a person's "Notify parties" send). */
+async function chosenItems(tx:Connection,g:any,e:any,only:string[]){const view=await roomView(tx,g,e,(await gateState(tx,g,e)).unlocked);return view.open.filter(d=>only.includes(d.versionId)).map(d=>({versionId:d.versionId,documentId:d.documentId,title:titleOf(d),section:d.section?.number??'',kind:d.updatedAt?'updated':'new'}));}
+export const digestDocuments=async(tx:Connection,g:any,e:any,only?:string[])=>{const items=only?await chosenItems(tx,g,e,only):await digestItems(tx,g,e);return items.length?documentLines(items):'No new or updated documents.';};
 
 export async function roomReview(tx:Connection,a:Actor,w:string,op:RoomOperation):Promise<any>{
  if(op.kind==='set_exchange_levels'){
@@ -89,6 +92,7 @@ export async function roomReview(tx:Connection,a:Actor,w:string,op:RoomOperation
  const g=await groupRow(tx,w,op.groupId);await exchangeAuthority(tx,a,w,g.app_id,true);
  if(op.kind==='archive_exchange_group'){if(g.archived===op.archived)fail(409,'unchanged',op.archived?'Already archived':'Not archived');return {groupId:g.id,title:g.title,archived:op.archived,live:(await liveRoomExchanges(tx,g.id)).length,effect:op.archived?'Archive this exchange group: every link stops working and tracked tables stop updating. Everything received is kept.':'Restore this exchange group: links that have not expired or been revoked work again.'};}
  requireRoom(g);if(g.archived)fail(409,'group_archived','This room is archived');
+ if(op.kind==='set_exchange_room_notices'){if(op.expectedVersion!==g.version)fail(409,'stale_version','Exchange group changed; prepare again');if((g.notify_access_ending!==false)===op.notifyAccessEnding)fail(409,'unchanged',op.notifyAccessEnding?'Access-ending reminders are already on':'Access-ending reminders are already off');return {groupId:g.id,version:g.version,title:g.title,notifyAccessEnding:op.notifyAccessEnding,effect:op.notifyAccessEnding?'Remind the workspace 7 days before a person\'s access to this room ends. Nothing is sent to parties.':'Stop the access-ending reminders for this room. Access still ends on its date; emails you already approved for parties are unchanged.'};}
  if(op.kind==='publish_exchange_answer'){
   const q=op.questionId?await questionRow(tx,w,op.questionId):null;if(q&&q.group_id!==g.id)fail(404,'not_found','Question not found in this room');
   if(op.scope==='level'&&!(g.levels as any[]).some(l=>l.key===op.level))fail(400,'invalid_level','Choose a level of this room');if(op.scope==='room'&&op.level)fail(400,'invalid_level','A room-wide answer has no level');
@@ -135,6 +139,7 @@ export async function commitRoomOperation(tx:Connection,a:Actor,w:string,op:Room
   await logExchange(tx,e,'answered',{questionId:q.id,answerId,supersedes:op.supersedes??null,authorization},a);return {status:'saved',answerId,emails:review.email?await queueNotices(tx,w,g,review.email):[]};
  }
  const g=await groupRow(tx,w,op.groupId);
+ if(op.kind==='set_exchange_room_notices'){await tx.query('UPDATE exchange_groups SET notify_access_ending=$3,version=version+1 WHERE id=$1 AND workspace_id=$2',[g.id,w,op.notifyAccessEnding]);await audit(tx,a,p,'exchange.room_notices_set',g.id,{notifyAccessEnding:g.notify_access_ending!==false},{notifyAccessEnding:op.notifyAccessEnding,authorization});return {status:'saved',groupId:g.id,notifyAccessEnding:op.notifyAccessEnding};}
  if(op.kind==='archive_exchange_group'){await tx.query('UPDATE exchange_groups SET archived=$3,version=version+1 WHERE id=$1 AND workspace_id=$2',[g.id,w,op.archived]);await audit(tx,a,p,op.archived?'exchange.group_archived':'exchange.group_restored',g.id,{archived:g.archived},{archived:op.archived,authorization});return {status:'saved',groupId:g.id,archived:op.archived};}
  if(op.kind==='publish_exchange_answer'){
   const answerId=randomUUID();
@@ -257,7 +262,7 @@ export async function runExchangeDigests(db:Database){
 export async function sweepExchangeRooms(db:Database){
  const log=async(sql:string,kind:string,detail:(e:any)=>any)=>{const due=(await db.query(sql)).rows;for(const e of due)await db.transaction(tx=>logExchange(tx,e,kind,detail(e)));return due.length;};
  const live="g.kind='room' AND NOT g.archived AND e.revoked_at IS NULL";
- let n=await log(`SELECT e.* FROM exchanges e JOIN exchange_groups g ON g.id=e.group_id WHERE ${live} AND e.expires_at>now() AND e.expires_at<=now()+interval '7 days' AND NOT EXISTS(SELECT 1 FROM exchange_events v WHERE v.exchange_id=e.id AND v.kind='access_ending' AND v.created_at>coalesce((SELECT max(created_at) FROM exchange_events x WHERE x.exchange_id=e.id AND x.kind='extended'),'-infinity'::timestamptz)) LIMIT 100`,'access_ending',e=>({expiresAt:e.expires_at}));
+ let n=await log(`SELECT e.* FROM exchanges e JOIN exchange_groups g ON g.id=e.group_id WHERE ${live} AND g.notify_access_ending AND e.expires_at>now() AND e.expires_at<=now()+interval '7 days' AND NOT EXISTS(SELECT 1 FROM exchange_events v WHERE v.exchange_id=e.id AND v.kind='access_ending' AND v.created_at>coalesce((SELECT max(created_at) FROM exchange_events x WHERE x.exchange_id=e.id AND x.kind='extended'),'-infinity'::timestamptz)) LIMIT 100`,'access_ending',e=>({expiresAt:e.expires_at}));
  n+=await log(`SELECT e.* FROM exchanges e JOIN exchange_groups g ON g.id=e.group_id WHERE ${live} AND e.expires_at<=now() AND e.expires_at>now()-interval '30 days' AND NOT EXISTS(SELECT 1 FROM exchange_events v WHERE v.exchange_id=e.id AND v.kind='access_ended') LIMIT 100`,'access_ended',e=>({expiresAt:e.expires_at}));
  const engaged=`${live} AND g.notify_engagement AND (e.expires_at IS NULL OR e.expires_at>now())`;
  n+=await log(`SELECT e.* FROM exchanges e JOIN exchange_groups g ON g.id=e.group_id WHERE ${engaged} AND NOT EXISTS(SELECT 1 FROM exchange_events v WHERE v.exchange_id=e.id AND v.kind='hot' AND v.created_at>now()-interval '7 days')

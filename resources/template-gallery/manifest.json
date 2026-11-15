@@ -166,5 +166,9 @@
   "life.regulatory-radar@1.0.0": {
     "catalogDigest": "1acaca1f51f4c5d612754f048a06ae3cec373fd2645151f3bcffb99a97265990",
     "previewSha256": "6f566e923f0b7c268110f12394c532232243ff58349888b50cf7fc47a75a5d08"
+  },
+  "life.data-room@1.1.0": {
+    "catalogDigest": "908ca6f72018f98fcaf22da7b0be78eb3f383264aa527e98281468bdd388e011",
+    "previewSha256": "036e65d0dd36455438a131ed0caec4ff40fda4f38ad517b65878a144cf60c80d"
   }
 }

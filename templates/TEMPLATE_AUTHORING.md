@@ -1,6 +1,14 @@
 # TrialAgents template authoring standard
 
-Version: 1.3.31
+Version: 1.3.32
+
+## Who can run and change app code (1.3.32)
+
+Owner decision, 15 November 2026. Access is enforced by the platform on every read an app makes, with the caller's own permissions (documents, folders, tables, fields, Claude/ChatGPT settings). The source text itself is guarded as follows:
+- **The workspace owner, and the owner's own Claude or ChatGPT,** may open, run and change any app's code.
+- **Unchanged catalog code** (the approved template code behind the generated `templateConfiguration` and `templateBindings` lines) may be opened and run by anyone allowed to use the app, including their assistant, even when some documents or fields are hidden from them. Saving it unchanged (install, layout reviews, configuration) is not a code change.
+- **Changing code** (custom code or edits to a template's code) needs full access: the owner, or a member with no documents, folders or fields hidden from them (and, for their assistant, none hidden from it). Others get `code_change_restricted`; layout, settings and record changes stay available to them. Once changed, the code is custom and only people (and assistants) with full access can open it.
+- Keep catalog templates free of workspace data, and keep user customization in settings, layout and records where possible, so restricted members and their assistants can keep using commands.
 
 ## Installed app functions (E7, 1.3.30)
 

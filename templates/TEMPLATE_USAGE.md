@@ -1,6 +1,10 @@
 # Using TrialAgents templates and optional tasks
 
-Version: 1.3.31
+Version: 1.3.32
+
+## Running and changing app code (1.3.32)
+
+Every read an app makes is checked against your own permissions. Unchanged catalog apps can be run by anyone allowed to use them, including their assistant, so app commands work even when some documents or fields are hidden from the assistant. The owner's assistant can run and change any app. Changing an app's code needs full access; otherwise the platform answers `code_change_restricted`: offer a layout, settings or record change instead, or ask the owner.
 
 ## App access and saved research results (1.3.29)
 

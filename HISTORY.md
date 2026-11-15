@@ -1,3 +1,18 @@
+## 15 November 2026 — Data Room 1.1.0 published; app code access rule
+
+Data Room 1.1.0 (`life.data-room`) is published at the owner's request (seed entry; 1.0.0 was never approved and stays byte-identical, source in `templates/source/data-room/archive/1.0.0/`). Scope and decisions D1–D6: [DATA_ROOM.md §14](docs/product/app-template-blueprints/apps/DATA_ROOM.md#14-data-room-110-platform-standards-assistant-control-and-notifications).
+
+What changes in the app:
+- **App commands.** 32 commands (12 read, 19 propose, 1 layout) through the same handler as clicks. Commands never share, send or change a live room.
+- **Customization without code.** Custom fields on rooms, index items, parties and questions (`settings.custom_fields`); form layouts for rooms, items and questions. Hidden columns from the layout gear now apply (1.0.0 read the wrong key separator).
+- **Notifications.** Notify parties (chosen documents to all or chosen parties, one confirmed send) replaces the automatic daily digest. Access-ending reminder is a switch per room. Instant emails for party questions and notes are the platform's existing workspace notifications, now documented.
+- **One automation.** Weekly room summary to the owner (Mondays 08:00), written by the read-only helper `room_summary`; on by default at install, optional.
+
+Platform:
+- **App code access (owner decision):** reads made by running an app are always checked against the caller's own permissions. The workspace owner and the owner's assistant can run and change any app; unchanged approved catalog code can be run by anyone allowed to use the app (and their assistant); changing code needs full access (`code_change_restricted` otherwise). `src/workspace/service.ts` `componentSourcePolicy`, new `src/workspace/catalog-source.ts`; template guidance 1.3.32.
+- **Rooms:** `set_exchange_room_notices` / `exchange.setRoomNotices` and `notifyAccessEnding` (migration 076); `prepare_exchange_email` accepts `versionIds` for `documents_updated`, and "since" counts the person's last documents email.
+
+Tests: `tests/data-room-commands.test.ts`, `tests/app-source-access.test.ts` (new); Data Room unit, integration and browser tests updated; `tests/workspace.test.ts` now expects the owner's assistant to read app source.
 ## 15 November 2026 — Programs 2.2.0 published
 
 New immutable version `life.project-oversight` 2.2.0. It aligns Programs with the app commands, Edit in App and app automation standards, following owner decisions P1–P5 in [PROGRAMS.md §14](docs/product/app-template-blueprints/apps/PROGRAMS.md#14-programs-220-assistant-control-team-notifications-and-the-weekly-digest).

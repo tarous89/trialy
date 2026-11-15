@@ -122,5 +122,9 @@
   "life.regulatory-radar": {
     "schema": "templates/source/radars/regulatory-radar/schema.example.json",
     "version": "1.0.0"
+  },
+  "life.data-room": {
+    "schema": "templates/source/data-room/schema.example.json",
+    "version": "1.1.0"
   }
 }

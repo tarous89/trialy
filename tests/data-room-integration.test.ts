@@ -4,6 +4,7 @@ import {randomUUID} from 'node:crypto';
 import {dataRoomSuite,text} from './fixtures/data-room.js';
 import {prepareExchangeEmailBatch,listExchanges} from '../src/domain/external-exchange.js';
 import {roleTables,tableCompatible,readerAccepts,contractRegistry} from '../src/workspace/role-contracts.js';
+import {runAppCommand} from '../src/workspace/app-commands.js';
 
 /* DATA_ROOM.md §13 through the real installer, app runtime, workspace review, platform exchange in room mode (EXTERNAL_EXCHANGE.md §5),
  * party pages under the runtime role, platform tracking and email delivery. Fictional data only; disposable databases. */
@@ -23,7 +24,7 @@ async function newRoom(x:any,ui:any,map:any,form:any){
  return {room,levels,items};}
 async function attach(ui:any,item:any,versionId:string,levelId:string,extra:any={}){await ui.click('panel:attach:'+item.id);await ui.submit('save-attach',{version_id:versionId,level_id:levelId,ready:'on',...extra});await ui.approve();}
 
-test('Acceptance 1, 4, 6, 8: financing room end to end — template, gaps, two levels, three investors in one confirmed send, views tracked, versions and digest, assistants draft only',async()=>{
+test('Acceptance 1, 4, 6, 8: financing room end to end — template, gaps, two levels, three investors in one confirmed send, views tracked, versions and Notify parties, access-ending switch, assistants run commands and draft only',async()=>{
  const x=await dataRoomSuite();const {f,actor,ai,T}=x;
  try{
   const w=await setUp(x,'Northwind Bio');const {receipt}=await x.install(w,T.room,'Data Room');const id=receipt.appId,map=x.mapOf(await x.comp(w,id)),tid=(r:string)=>map[r].typeId;
@@ -76,23 +77,33 @@ test('Acceptance 1, 4, 6, 8: financing room end to end — template, gaps, two l
   // Tracked fields cannot be edited by people or assistants.
   const anaGrant=(await x.rows(tid('dataroom.access_grants'))).find((r:any)=>r.data.recipient_email==='ana@alder.invalid');
   for(const who of [actor,ai])await assert.rejects(async()=>{const p=await x.s.preview(who,w,{kind:'update_record',recordId:anaGrant.id,expectedVersion:anaGrant.version,data:{status:'revoked'}});await x.s.commit(actor,p.id,p.digest);},/recorded by TrialAgents/);
-  // 7. A new version keeps its place, shows Updated, and the approved daily digest lists it.
+  // 7. A new version keeps its place and shows Updated; the person then tells parties about it with Notify parties (no automatic digest).
   const deckDoc=(await x.pg.query<any>('SELECT document_id FROM document_versions WHERE id=$1',[deck])).rows[0].document_id;
   const p2=await x.s.previewFile(actor,w,{filename:'Investor presentation.pdf',mime:'application/pdf',bytes:Buffer.from('%PDF deck v2'),ai:false,documentId:deckDoc,expectedVersion:0});const deck2=(await x.s.commit(actor,p2.id,p2.digest)).objects[0].versionId;
   // Their last visit was two hours ago (the platform moves "since your last visit" forward on a visit 30 minutes or more after the previous one).
   await x.pg.query("UPDATE exchange_visits SET last_seen_at=now()-interval '2 hours',previous_seen_at=NULL WHERE exchange_id=ANY($1::uuid[])",[g1.exchanges.map((e:any)=>e.id)]);
   await x.pg.query("UPDATE exchange_groups SET documents=(SELECT jsonb_agg(d||jsonb_build_object('addedAt',(now()-interval '3 hours')::text)) FROM jsonb_array_elements(documents) d) WHERE id=$1",[g1.id]);
-  // The owner approves the daily digest text first; the digest then lists what changes after that.
-  await ui.open({section:'rooms',roomId:room.id});await ui.click('panel:digest');await ui.submit('digest',{on:'on',subject:'{title}: documents added or updated',body:'Dear {recipient_name},\n\n{documents}\n\n{link}'});
-  assert.equal(ui.last.proposal.body.kind,'approve_exchange_digest');await assert.rejects(()=>f.confirm({...ai,actionConfirmed:true},w,ui.last.proposal.id,ui.last.proposal.digest),/cannot approve|person|unrestricted document access/);await ui.approve();
   await ui.open({section:'index',roomId:room.id});assert.match(ui.html,/Use version 1/);await ui.click('use-version:'+all.find((i:any)=>i.data.title==='Presentation deck').id);
   assert.equal(ui.last.proposal.body.kind,'replace_exchange_document');assert.equal(ui.last.proposal.body.records.changes[0].data.version_id,deck2);await ui.approve();
   const upd=(await ana.get()).body.index.find((s:any)=>s.number==='1').documents.find((d:any)=>d.title==='Presentation deck');assert.deepEqual([upd.versionId,upd.badge],[deck2,'updated']);
-  assert.equal(await x.digests(),3);await x.deliver();const dg=mails(x.sent,/documents added or updated/);assert.equal(dg.length,3);assert.ok(dg.every((m:any)=>/Presentation deck \(updated\)/.test(m.text)&&!/Financial statements/.test(m.text)),dg.map((m:any)=>m.text).join("\n=====\n").slice(0,1500));
-  assert.equal(await x.digests(),0,'once a day');
-  // 8. Assistants prepare the same operations (prepare_workspace_change): every grant, level change, publication, acceptance and revocation is a review they cannot confirm.
-  // (An assistant cannot run the app's source here at all: the workspace holds documents that are not AI-readable.)
-  await assert.rejects(()=>x.app(w,id,ai).open({section:'parties'}),/unrestricted document access/);
+  assert.equal(await x.digests(),0,'nothing is sent automatically');
+  await ui.open({section:'rooms',roomId:room.id});assert.doesNotMatch(text(ui.html),/daily digest/i);await ui.click('panel:notify');assert.match(ui.html,new RegExp('name="d_'+deck2+'"[^>]* checked'));
+  await ui.submit('notify-prepare',{['d_'+deck2]:'on',who:'all'});assert.equal(ui.state().panel.emailType,'documents_updated');assert.equal(ui.state().panel.ids.length,3);
+  await ui.submit('prepare-send',{subject:'{title}: documents added or updated',body:'Dear {recipient_name},\n\n{documents}\n\n{link}',name_kind:'organization'});assert.equal(ui.state().batch.recipients.length,3);
+  assert.ok(ui.state().batch.recipients.every((r:any)=>/Presentation deck \(updated\)/.test(r.text)&&!/Financial statements/.test(r.text)));
+  await ui.click('confirm-send');await ui.approve();
+  await x.deliver();const dg=mails(x.sent,/documents added or updated/);assert.equal(dg.length,3,'one confirmed send');assert.ok(dg.every((m:any)=>/Presentation deck \(updated\)/.test(m.text)&&!/Financial statements/.test(m.text)),dg.map((m:any)=>m.text).join("\n=====\n").slice(0,1500));
+  // The access-ending reminder is a room switch: turning it off on the live room is one review with the record.
+  await ui.open({section:'rooms',roomId:room.id});await ui.click('access-reminder:'+room.id+':off');assert.equal(ui.last.proposal.body.kind,'set_exchange_room_notices');await ui.approve();
+  assert.equal((await x.room(w,'room:'+room.id)).notifyAccessEnding,false);assert.equal((await x.rows(tid('dataroom.rooms'))).find((r:any)=>r.id===room.id).data.access_ending_reminder,false);
+  // 8. Owner decision (15 November 2026): the owner's own assistant can run the app although some documents are not AI-readable.
+  // Every read is still limited by the platform: no links, no documents without AI access. Commands give the app's own results.
+  const aiUi=x.app(w,id,ai);await aiUi.open({section:'parties',roomId:room.id});assert.doesNotMatch(aiUi.html,/\/exchange#/);assert.doesNotMatch(aiUi.html,/Investor presentation\.pdf/,'no document names without AI access');
+  const cur=(await f.readComponent(actor,w,id)).component;
+  const pr=await runAppCommand(f,ai,w,{appId:id,expectedVersion:cur.version,command:'parties.read',input:{room_id:room.id},requestKey:randomUUID()});
+  assert.equal(pr.ok,true,pr.error);assert.deepEqual(pr.result.parties.map((p:any)=>p.status).sort(),['active','active','invited']);assert.ok(!JSON.stringify(pr).includes('/exchange#'));
+  const ar=await runAppCommand(f,ai,w,{appId:id,expectedVersion:cur.version,command:'record.archive',input:{role:'rooms',id:room.id},requestKey:randomUUID()});assert.equal(ar.ok,false);assert.match(ar.error,/person does it with a click/);
+  // Assistants prepare the same operations (prepare_workspace_change): every grant, level change, publication, acceptance and revocation is a review they cannot confirm.
   for(const op of [{kind:'revoke_exchange',exchangeId:exOf[g('birch')],reason:'Process closed'},{kind:'set_exchange_levels',exchangeId:exOf[g('birch')],levels:g1.levels.map((l:any)=>l.key)},{kind:'invite_exchange',groupId:g1.id,recipients:[{emails:['new@x.invalid'],recordId:await x.save(w,tid('dataroom.access_grants'),{room_id:room.id,recipient_email:'new@x.invalid'})}],levels:[g1.levels[0].key]},{kind:'publish_exchange_answer',groupId:g1.id,question:'Q?',body:'A.',scope:'room'},{kind:'approve_exchange_digest',groupId:g1.id,expectedVersion:(await x.room(w,'room:'+room.id)).version,text:null}]){
    const pv=await f.preview(ai,w,op);await assert.rejects(()=>f.confirm({...ai,actionConfirmed:true},w,pv.id,pv.digest),/cannot approve|person|unrestricted document access/,op.kind);}
   assert.ok(!JSON.stringify((await (await x.party(L[g('birch')],'ben@birch.invalid')).get()).body).includes('Financial statements'),'nothing changed');

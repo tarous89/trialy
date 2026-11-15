@@ -340,14 +340,6 @@
         "description": "An answer needs approval before it is sent or published. Default on."
       },
       {
-        "key": "notify_updates_default",
-        "name": "Updates digest on for new rooms",
-        "kind": "boolean",
-        "required": false,
-        "multiple": false,
-        "ai": true
-      },
-      {
         "key": "entry_text",
         "name": "Entry step text",
         "kind": "text",
@@ -376,6 +368,15 @@
         "multiple": false,
         "ai": true,
         "description": "JSON: {\"<email type>\":{\"<purpose>|all\":{subject,body}}}. Saved by the app from Settings."
+      },
+      {
+        "key": "custom_fields",
+        "name": "Custom fields",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "description": "JSON list of fields added to rooms, index items, parties or questions: [{role,key,label,kind,options}]. Changed through reviewed changes."
       }
     ],
     "logicalFields": {
@@ -383,10 +384,10 @@
       "view_only_default": "view_only_default",
       "quiet_days": "quiet_days",
       "qa_approval_required": "qa_approval_required",
-      "notify_updates_default": "notify_updates_default",
       "entry_text": "entry_text",
       "sender_display": "sender_display",
-      "email_texts": "email_texts"
+      "email_texts": "email_texts",
+      "custom_fields": "custom_fields"
     }
   },
   "dataroom.templates": {
@@ -549,12 +550,13 @@
         "description": "Record ID of a people record."
       },
       {
-        "key": "notify_updates",
-        "name": "Updates digest",
+        "key": "access_ending_reminder",
+        "name": "Access-ending reminder",
         "kind": "boolean",
         "required": false,
         "multiple": false,
-        "ai": true
+        "ai": true,
+        "description": "Remind the workspace 7 days before a party's access ends. On by default; nothing is sent to parties."
       },
       {
         "key": "exchange_group_id",
@@ -593,7 +595,7 @@
       "cda_option": "cda_option",
       "welcome_note": "welcome_note",
       "contact_person_id": "contact_person_id",
-      "notify_updates": "notify_updates",
+      "access_ending_reminder": "access_ending_reminder",
       "exchange_group_id": "exchange_group_id",
       "owner": "owner",
       "archived": "archived"

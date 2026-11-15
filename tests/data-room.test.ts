@@ -11,13 +11,17 @@ const ROOM2=(demo.records as any[]).find(r=>r.role==='dataroom.rooms'&&r.data.pu
 const rowsOf=(role:string)=>(demo.records as any[]).filter(r=>r.role===role);
 
 test('package: catalog entry, seven screens, limits, build --check, installer and registry (dataroom.v1 writer, partnering)',async()=>{
- assert.equal(entry.id,'life.data-room');assert.equal(entry.version,'1.0.0');assert.equal(entry.name,'Data Room');assert.ok(appTemplateEntry.safeParse(JSON.parse(await readFile('templates/apps/life.data-room-1.0.0.json','utf8'))).success);
+ assert.equal(entry.id,'life.data-room');assert.equal(entry.version,'1.1.0');assert.equal(entry.name,'Data Room');assert.ok(appTemplateEntry.safeParse(JSON.parse(await readFile('templates/apps/life.data-room-1.1.0.json','utf8'))).success);
+ // 1.0.0 stays byte-identical (catalog JSON and archived source package).
+ assert.ok(appTemplateEntry.safeParse(JSON.parse(await readFile('templates/apps/life.data-room-1.0.0.json','utf8'))).success);
+ assert.equal(JSON.parse(await readFile('templates/apps/life.data-room-1.0.0.json','utf8')).version,'1.0.0');
  const layout=JSON.parse(/^const templateLayoutSchema=(.+);$/m.exec(await readFile('templates/source/data-room/data-room.source.js','utf8'))![1]);
  assert.deepEqual(layout.screens.map((s:any)=>s.id),['overview','rooms','index','parties','activity','qa','settings']);
- assert.ok(entry.source!.length<=180000,"source "+entry.source!.length);assert.ok(Buffer.byteLength(JSON.stringify(entry))<=300000);
+ assert.ok(entry.source!.length<=240000,"source "+entry.source!.length);assert.ok(Buffer.byteLength(await readFile('templates/apps/life.data-room-1.1.0.json'))<=300000);
  assert.match(execFileSync('node',['scripts/build-data-room-template.mjs','--check'],{encoding:'utf8'}),/verified/);
- assert.equal(JSON.parse(await readFile('templates/catalog-installers.json','utf8'))['life.data-room@1.0.0'],'templates/source/data-room/schema.example.json');
- assert.ok(!JSON.stringify(JSON.parse(await readFile('templates/catalog-seed.json','utf8'))).includes('life.data-room'),'a draft until the owner approves it');
+ const installers=JSON.parse(await readFile('templates/catalog-installers.json','utf8'));
+ assert.equal(installers['life.data-room@1.1.0'],'templates/source/data-room/schema.example.json');assert.equal(installers['life.data-room@1.0.0'],'templates/source/data-room/archive/1.0.0/schema.example.json');
+ assert.equal(JSON.parse(await readFile('templates/catalog-seed.json','utf8'))['life.data-room'].version,'1.1.0','published (owner approval, 15 November 2026)');
  const reg=JSON.parse(await readFile('templates/contracts/outputs.json','utf8'));
  for(const role of ['dataroom.access_grants','dataroom.engagement']){
   assert.equal(reg.roles[role].writer,'life.data-room');
@@ -52,7 +56,7 @@ test('built-in index templates: four purposes, the standard 9-section index, req
 test('new room → structure (levels follow the CDA option) → items; readiness counts required minus not applicable',async()=>{
  const rows=fresh(),o=await render(rows,{section:'rooms'},{kind:'click',action:'panel:newroom'});assert.match(o.html,/role="dialog" aria-modal="true" aria-label="New room"/);
  const c=await render(rows,o.state,{kind:'submit',action:'create-room',form:{name:'Series A extension',purpose:'partnering',template_id:'builtin:partnering',cda_option:'send_pdf',round_id:'',opportunity_ref:'Cedarline collaboration'}});
- assert.equal(c.changes.length,1);assert.deepEqual({...c.changes[0].data,program_ids:undefined},{name:'Series A extension',purpose:'partnering',status:'preparing',program_ids:undefined,round_id:null,opportunity_ref:'Cedarline collaboration',template_id:'builtin:partnering',cda_option:'send_pdf',welcome_note:null,contact_person_id:null,notify_updates:false,owner:null});
+ assert.equal(c.changes.length,1);assert.deepEqual({...c.changes[0].data,program_ids:undefined},{name:'Series A extension',purpose:'partnering',status:'preparing',program_ids:undefined,round_id:null,opportunity_ref:'Cedarline collaboration',template_id:'builtin:partnering',cda_option:'send_pdf',welcome_note:null,contact_person_id:null,access_ending_reminder:true,owner:null});
  approve(rows,c.changes);const id=rows[rows.length-1].id;
  const s=await render(rows,{section:'rooms',roomId:id},{kind:'click',action:'setup-structure:'+id});
  const lv=s.changes.filter((x:any)=>x.typeId==='dataroom.levels');assert.deepEqual(lv.map((x:any)=>[x.data.name,x.data.entry]),[['Non-confidential','none'],['Confidential','signed_cda']]);
