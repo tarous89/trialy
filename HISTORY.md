@@ -13,6 +13,25 @@ Platform:
 - **Rooms:** `set_exchange_room_notices` / `exchange.setRoomNotices` and `notifyAccessEnding` (migration 075); `prepare_exchange_email` accepts `versionIds` for `documents_updated`, and "since" counts the person's last documents email.
 
 Tests: `tests/data-room-commands.test.ts`, `tests/app-source-access.test.ts` (new); Data Room unit, integration and browser tests updated; `tests/workspace.test.ts` now expects the owner's assistant to read app source.
+## 15 November 2026 — Partnerships 2.2.0 published
+
+Partnerships 2.2.0 (`life.partnership-tracker`) is published at the owner's request. It aligns the app with the platform standards that shipped after 2.1.0 ([PARTNERSHIPS.md §12b](docs/product/app-template-blueprints/apps/PARTNERSHIPS.md)), with no platform change.
+
+What changes in the app:
+- **App commands.** 50 commands (18 read, 31 propose, `layout.save`) cover every screen and control. Propose commands replay the screens' own handler, now one `handle` function, so the review is identical to the click path; proposals are buffered into one review. Custom stages, new activity kinds and custom fields return `schema_change` naming the table change still needed.
+- **Integration standard.** Agreements (via `roles.list`) and linked Data Room access (via `integrations.list`) are labelled "From *App*" with Edit in *App* (`data-trialy-open`). Hand-entered access is refused in the form and the command while Data Room is linked. Bound fields this version does not know show as read-only "Additional fields".
+- **Automations.** The digest is now the email step of `partner_research`, one automation (E5); 2.1.0's separate `partner_digest` is gone. Every read binding is `fields:"all"` with confidential `exceptFields` (E6), so custom fields no longer stop research or briefs.
+- **Layout fix.** The native gear stores column visibility as `group:column`, but 2.1.0 read only `group.column`, so hiding a column with the gear had no effect. 2.2.0 reads both, and `layout.save` writes `group:column`.
+- **Settings.** JSON settings are compared by content, so re-saving an unchanged form proposes nothing.
+
+Publication:
+- `templates/catalog-seed.json` names 2.2.0, so the sync after migrations imports it approved. As with Runway 2.2.0, there is no migration: 2.1.0 stays approved in existing catalogs, the gallery and `list_app_templates` show the latest approved version, and installed 2.1.0 apps are unchanged.
+- The 2.1.0 package is archived byte-identical under `templates/source/partnership-tracker/archive/2.1.0/`. Its installer entry points there, so its preview hash still matches.
+- The build keeps line 2 (`appCommands`) verbatim, and its limits follow the catalog (240,000 source characters, 380,000 bytes).
+- The gallery has the `life.partnership-tracker@2.2.0` screenshot and manifest entry.
+
+Tests: `tests/partnerships-commands.test.ts` (new) covers the declaration, read results, click-path parity, buffering, customization, integrations and Additional fields. `tests/partnerships.test.ts` and `tests/partnerships-integration.test.ts` are updated, including E5/E6 on the real recipe path and commands through `run_app_command`. The browser test still passes.
+
 ## 15 November 2026 — Bio Radars waves 2 and 3: Pipeline, Literature 2.0.0, Deal, Funding, Patent, Market and Regulatory Radar (published)
 
 The other seven Bio Radars are built as definitions on the radar kit, now 1.1.0: Pipeline Radar 1.0.0 (`life.pipeline-radar`), Literature Radar 2.0.0 (`life.literature-radar`), Deal Radar 1.0.0 (`life.deal-radar`) and Funding Radar 1.0.0 (`life.funding-radar`), weekly; Patent Radar 1.0.0 (`life.patent-radar`, "Not legal advice", expiries 24 months ahead), Market Radar 1.0.0 (`life.market-radar`) and Regulatory Radar 1.0.0 (`life.regulatory-radar`), monthly. The owner approved all seven the same day, each an independent app: the catalog seed names them, migration 074 withdraws Literature Radar 1.2.2 (existing installs unchanged), and each has a gallery card and screenshot. All eight radars are filed under the Research workflow in the gallery.

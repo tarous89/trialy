@@ -17,22 +17,25 @@ const ORG=(name:string)=>id('organizations',d=>d.name===name),OPP=(name:string)=
 const bool=(v:any)=>v===true||v==='true';
 const SCREENS=['overview','pipeline','partners','conferences','activity','research','settings'];
 
-test('package: catalog entry, seven screens, limits, build --check, installer, draft status, retirement of 1.1.1',async()=>{
- assert.equal(entry.id,'life.partnership-tracker');assert.equal(entry.version,'2.1.0');assert.equal(entry.name,'Partnerships');
- assert.ok(appTemplateEntry.safeParse(JSON.parse(await readFile('templates/apps/life.partnership-tracker-2.1.0.json','utf8'))).success);
+test('package: catalog entry, seven screens, limits, build --check, installer, seed, 2.1.0 archived unchanged, retirement of 1.1.1',async()=>{
+ assert.equal(entry.id,'life.partnership-tracker');assert.equal(entry.version,'2.2.0');assert.equal(entry.name,'Partnerships');
+ assert.ok(appTemplateEntry.safeParse(JSON.parse(await readFile('templates/apps/life.partnership-tracker-2.2.0.json','utf8'))).success);
+ // 2.1.0 is published and immutable: its catalog JSON and package stay byte-identical (archive/2.1.0 holds the package and its preview).
+ const v21=JSON.parse(await readFile('templates/apps/life.partnership-tracker-2.1.0.json','utf8'));assert.equal(v21.version,'2.1.0');assert.equal(v21.recommendedAutomations.length,3);
+ assert.equal(JSON.parse(await readFile(root+'archive/2.1.0/catalog.metadata.json','utf8')).version,'2.1.0');assert.match(await readFile(root+'archive/2.1.0/partnerships.source.js','utf8'),/Partnerships 2\.1\.0/);
  const layout=JSON.parse(/^const templateLayoutSchema=(.+);$/m.exec(await readFile(root+'partnerships.source.js','utf8'))![1]);
  assert.deepEqual(layout.screens.map((s:any)=>s.id),SCREENS);
- assert.ok(entry.source!.length<=180000,'source '+entry.source!.length);assert.ok(Buffer.byteLength(JSON.stringify(entry))<=300000);
+ assert.ok(entry.source!.length<=240000,'source '+entry.source!.length);assert.ok(Buffer.byteLength(JSON.stringify(entry))<=380000);
  assert.doesNotMatch(entry.source!,/const templateConfiguration|const templateBindings/,'the host prepends configuration and bindings');
  assert.match(execFileSync('node',['scripts/build-partnerships-template.mjs','--check'],{encoding:'utf8'}),/verified/);
  assert.match(execFileSync('node',['scripts/build-partnership-template.mjs','--check'],{encoding:'utf8'}),/1\.1\.1: catalog and preview verified/);
  const installers=JSON.parse(await readFile('templates/catalog-installers.json','utf8'));
- assert.equal(installers['life.partnership-tracker@2.1.0'],root+'schema.example.json');assert.equal(installers['life.partnership-tracker@2.0.0'],root+'archive/2.0.0/schema.example.json');assert.equal(installers['life.partnership-tracker@1.1.1'],root+'archive/1.1.1/schema_mapping.example.json');
+ assert.equal(installers['life.partnership-tracker@2.2.0'],root+'schema.example.json');assert.equal(installers['life.partnership-tracker@2.1.0'],root+'archive/2.1.0/schema.example.json');assert.equal(installers['life.partnership-tracker@2.0.0'],root+'archive/2.0.0/schema.example.json');assert.equal(installers['life.partnership-tracker@1.1.1'],root+'archive/1.1.1/schema_mapping.example.json');
  // 2.0.0 was imported as a draft by an earlier deployment; catalog rows are immutable, so its files stay byte-identical in the archive.
  const old=JSON.parse(await readFile('templates/apps/life.partnership-tracker-2.0.0.json','utf8'));assert.equal(old.version,'2.0.0');assert.equal(old.recommendedAutomations,undefined);
  assert.equal(JSON.stringify(Object.keys(JSON.parse(await readFile(root+'archive/2.0.0/schema.example.json','utf8')))),JSON.stringify(Object.keys(schema).filter(k=>k!=='partnerships.research_reports')));
- // Owner approval (14 Nov 2026): the seed names 2.1.0; migration 071 withdraws 1.1.1 once.
- const seed=JSON.parse(await readFile('templates/catalog-seed.json','utf8'));assert.deepEqual(seed['life.partnership-tracker'],{schema:root+'schema.example.json',version:'2.1.0'});
+ // Owner approval (15 Nov 2026): the seed names 2.2.0 (2.1.0 stays approved for existing catalogs, as for Runway 2.2.0); migration 071 withdrew 1.1.1 once.
+ const seed=JSON.parse(await readFile('templates/catalog-seed.json','utf8'));assert.deepEqual(seed['life.partnership-tracker'],{schema:root+'schema.example.json',version:'2.2.0'});
  assert.match(await readFile('migrations/071_approve_partnerships_2_1_0.sql','utf8'),/SET status='draft' WHERE template_id='life\.partnership-tracker' AND version='1\.1\.1' AND status='approved'/);
  const ret=JSON.parse(await readFile('templates/catalog-retirements.json','utf8')).retirements.find((r:any)=>r.templateId==='life.partnership-tracker');
  assert.deepEqual([ret.version,ret.replacedBy],['1.1.1','life.partnership-tracker@2.1.0']);
@@ -225,22 +228,28 @@ test('acceptance 4 (app side): target suggestions accepted into an opportunity, 
  const q=/id="pt-digest">([\s\S]*?)<\/pre>/.exec((await render(quiet,{section:'settings'})).html)![1];assert.equal(q,'Nothing moved, nothing is due and there are no new signals this week.\n\nOpen Partnerships →');
 });
 
-test('acceptance 4 (automations): research, digest and briefs are install recipes; research saves to the app; settings hold no schedule',async()=>{
- const recipes=readRecipes(entry);assert.deepEqual(recipes.unavailable,[]);assert.deepEqual(recipes.recommended.map(r=>r.key),['partner_research','partner_digest','meeting_briefs']);
- const [res,dig,brief]=recipes.recommended as any[];
+test('acceptance 4 (automations): research with its digest email (one automation) and briefs are install recipes; reads follow the app\'s fields; settings hold no schedule',async()=>{
+ const recipes=readRecipes(entry);assert.deepEqual(recipes.unavailable,[]);assert.deepEqual(recipes.recommended.map(r=>r.key),['partner_research','meeting_briefs']);
+ const [res,brief]=recipes.recommended as any[];
  const w=schedule.parse(res.trigger) as any;assert.deepEqual([w.frequency,w.weekdays,w.time,w.timeZone],['weekly',[1],'07:00','Europe/Berlin']);assert.equal(nextCalendar(w,new Date('2026-11-14T12:00:00Z')).toISOString(),'2026-11-16T06:00:00.000Z');
  // Research must store its results: create-only signals and one report per run, nothing else (no opportunities, stages or other apps).
  assert.deepEqual(res.research.writeBindings.map((b:any)=>[b.role,b.allowCreate,b.allowUpdate]),[['partnerships.signals',true,false],['partnerships.research_reports',true,false]]);
  assert.deepEqual(brief.research.writeBindings.map((b:any)=>[b.role,b.allowCreate,b.allowUpdate]),[['partnerships.briefs',true,false]]);
- for(const r of [res,brief])for(const b of [...r.research.readBindings,...r.research.writeBindings])for(const k of b.fields)assert.ok(schema[b.role].logicalFields[k],b.role+'.'+k);
+ for(const r of [res,brief])for(const b of r.research.writeBindings)for(const k of b.fields)assert.ok(schema[b.role].logicalFields[k],b.role+'.'+k);
+ // E6: every read follows the fields the app binds now or later (custom fields never stop the automation); confidential fields stay excluded.
+ for(const r of [res,brief])for(const b of r.research.readBindings){assert.equal(b.fields,'all',b.role);for(const k of b.exceptFields??[])assert.ok(Object.values(schema[b.role].logicalFields).includes(k),b.role+'.'+k);}
+ const exc=(r:any,role:string)=>r.research.readBindings.find((b:any)=>b.role===role).exceptFields??[];
+ for(const k of ['fit_rationale','tags','agreement_id'])assert.ok(exc(res,'partnerships.opportunities').includes(k),k);for(const k of ['summary','outcome','materials'])assert.ok(exc(res,'partnerships.activities').includes(k),k);
+ assert.ok(exc(res,'partnerships.settings').includes('team_members'));assert.ok(!res.research.readBindings.some((b:any)=>b.role==='agreements'||b.role.startsWith('dataroom.')),'never agreements or Data Room values');
  assert.match(res.research.instructions,/Every run, also when nothing new was found, save one partnerships\.research_reports row/);
  assert.match(res.research.instructions,/at most 3 items per section[\s\S]*150 words[\s\S]*empty sections left out[\s\S]*no deal terms/);
- assert.deepEqual(dig.trigger,{kind:'after',recipe:'partner_research',when:'completed'});assert.match(dig.email.text,/\{\{run\.summary\}\}/);
+ // E5: the digest is the email step of the research automation, sent after every completed run (also with no findings).
+ assert.deepEqual(res.email,{subject:'Partnerships digest',text:'{{run.summary}}',when:'completed',fields:[]});assert.equal(res.email.memberField,undefined);
  assert.deepEqual([brief.trigger.kind,brief.trigger.role,brief.trigger.field,brief.trigger.offsetMinutes],['record_date','partnerships.activities','occurred_on',-1440]);assert.match(brief.research.instructions,/status draft/);
  // The app holds no schedule or recipients and shows the automations it is linked to, plus each run's saved report.
  const rows=fresh(),st=await render(rows,{section:'settings'}),t=text(st.html);
  assert.doesNotMatch(st.html,/pt-schedule|digest_cadence|digest_recipients|research_enabled/);
- assert.match(t,/Partner research Weekly, Monday 07:00[\s\S]*Digest email After each research run[\s\S]*Meeting briefs The day before linked meetings[\s\S]*Last research report: 9 Nov 2026/);
+ assert.match(t,/Partner research and digest Weekly, Monday 07:00[\s\S]*emails the digest to workspace members\. One automation, one switch\.[\s\S]*Meeting briefs The day before linked meetings[\s\S]*Last research report: 9 Nov 2026/);
  assert.match(st.html,/href="https:\/\/platform\.trialagents\.com\/automations"/);
  const runs=text((await render(rows,{section:'research',rsub:'runs'})).html);assert.match(runs,/9 Nov 2026 week of 9 Nov 4 3 Partnerships · week of 9 Nov/);assert.match(runs,/2 Nov 2026 week of 2 Nov 1 0/);
  // The digest preview uses the cadence of the latest report (weekly here), and still renders before any report exists.
@@ -331,7 +340,7 @@ test('acceptance 7 and 8: no screen or action sends email or contacts partners; 
  for(const r of rowsOf('partnerships.opportunities').slice(0,6))await all({},{kind:'click',action:'open:opp:'+r.id});
  for(const r of rowsOf('organizations').slice(0,4))await all({},{kind:'click',action:'open:org:'+r.id});
  for(const a of ['panel:log','panel:fu','panel:meeting','add:opps','add:people','add:confs'])await all({section:'conferences'},{kind:'click',action:a});
- assert.deepEqual([...seen].sort(),['documents.list','integrations.list','records.read'].sort());
+ assert.deepEqual([...seen].sort(),['documents.list','integrations.list','records.read','roles.list'].sort(),'reads only: roles.list names the apps that write read-only roles');
  // Writes come only from records.propose; a read-only copy or an unsaved preview proposes nothing.
  const o=OPP('Ironvale: NWB-101 Japan rights');
  const ro=await render(rows,{panel:{type:'opp',id:o,version:0}},{kind:'submit',action:'move-stage',form:{to:'cda'}},{writable:false});assert.equal(ro.changes.length,0);assert.match(ro.state.notice,/cannot/);

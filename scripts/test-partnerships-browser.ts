@@ -3,7 +3,7 @@ import {chromium} from 'playwright';
 import assert from 'node:assert/strict';
 import {partnershipsFixture} from '../tests/fixtures/partnerships.js';
 import {frontendFrameDocument} from '../src/shared/frontend-frame.js';
-/* Partnerships 2.1.0 in the production sanitized frame with a manifest attached (PARTNERSHIPS.md §13), at 1440 and 390 px:
+/* Partnerships 2.2.0 in the production sanitized frame with a manifest attached (PARTNERSHIPS.md §13), at 1440 and 390 px:
  * seven screens (no page overflow, no error banner) and every acceptance criterion through the real UI and the reviewed path:
  * 1 conference prep, view and after-event outcome; 2 after-meeting log; 3 gates; 4 research review and digest; 5 saved views;
  * 6 funnel and win/loss; 7 no outreach; 8 proposals only; 9 layout gear (archiving is covered by the integration test); 10 layout. */

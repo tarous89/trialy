@@ -83,3 +83,4 @@ button,input,select,textarea{font:inherit;color:inherit}button{cursor:pointer}bu
 @media(max-width:720px){.pt-funnel li{grid-template-columns:minmax(0,1fr) auto}.pt-funnel .pt-bar{grid-column:1/-1;order:3}.pt-board{grid-auto-columns:minmax(200px,82%)}.pt-filter-row{gap:12px}.pt-filter-row .pt-field{flex:1 1 140px;max-width:none}.pt-toolbar .pt-select{max-width:120px}.pt-hide-xs{display:none}}
 .pt-show-xs{display:none}
 @media(max-width:720px){.pt-show-xs{display:inline}}
+.pt-from{display:inline-block;margin-left:4px;padding:1px 7px;border-radius:999px;background:#EEF3F7;color:var(--muted);font-size:12px;font-weight:600}

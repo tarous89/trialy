@@ -21,6 +21,7 @@ import {dispatchDue} from '../src/automations/worker.js';
 import {nextCalendar} from '../src/automations/schedules.js';
 import {AppActions,dispatchAppActions} from '../src/app-services/service.js';
 import {inspectAppDesign} from '../src/workspace/design-quality.js';
+import {listAppCommands,runAppCommand,resolveAppOpen} from '../src/workspace/app-commands.js';
 import type {Actor} from '../src/shared/schema.js';
 
 /* PARTNERSHIPS.md §13 end to end: disposable database with every migration and the runtime role, the real catalog installer and
@@ -36,11 +37,11 @@ async function suite(){
  await pg.query('INSERT INTO users(id,subject,email,name) VALUES($1::uuid,$1::text,$2,$3)',[human.userId,'anna@northwind.invalid','Anna (fictional)']);
  await pg.query("INSERT INTO oauth_tokens(hash,user_id,client_id,kind,family,expires_at) VALUES($1,$2,$3,'refresh',$4,$5)",[randomUUID(),human.userId,ai.clientId,ai.connectionFamily,Date.now()+86400000]);
  await syncTemplateCatalog(raw);
- // Partnerships 2.1.0 is approved by the seed; Data Room is still a draft in the repository catalog and is approved only inside this disposable database.
- assert.equal((await pg.query<any>("SELECT status FROM app_template_catalog WHERE template_id='life.partnership-tracker' AND version='2.1.0'")).rows[0].status,'approved');
- await pg.query("UPDATE app_template_catalog SET status='approved' WHERE (template_id='life.partnership-tracker' AND version='2.1.0') OR (template_id='life.contracts' AND version='1.0.0') OR (template_id='life.data-room' AND version='1.0.0')");
+ // Partnerships 2.2.0 is approved by the seed; Data Room is still a draft in the repository catalog and is approved only inside this disposable database.
+ assert.equal((await pg.query<any>("SELECT status FROM app_template_catalog WHERE template_id='life.partnership-tracker' AND version='2.2.0'")).rows[0].status,'approved');
+ await pg.query("UPDATE app_template_catalog SET status='approved' WHERE (template_id='life.partnership-tracker' AND version='2.2.0') OR (template_id='life.contracts' AND version='1.0.0') OR (template_id='life.data-room' AND version='1.0.0')");
  const f=new WorkspaceFoundation(db),s=new Service(db),catalog=new AppTemplates(undefined,db);
- const T={bd:await catalog.read({templateId:'life.partnership-tracker',version:'2.1.0'}),contracts:await catalog.read({templateId:'life.contracts',version:'1.0.0'}),room:await catalog.read({templateId:'life.data-room',version:'1.0.0'}),programs:await catalog.read({templateId:'life.project-oversight',version:'2.1.0'})};
+ const T={bd:await catalog.read({templateId:'life.partnership-tracker',version:'2.2.0'}),contracts:await catalog.read({templateId:'life.contracts',version:'1.0.0'}),room:await catalog.read({templateId:'life.data-room',version:'1.0.0'}),programs:await catalog.read({templateId:'life.project-oversight',version:'2.1.0'})};
  const install=async(w:string,t:any,name:string,connections:Record<string,string>={})=>{const target={install:{templateId:t.id,version:t.version,digest:t.digest,name,requestKey:randomUUID()}};const step=await dataAccessStep(f,human,w,target);
   return {step,receipt:step.needed?await confirmDataAccess(f,human,w,{...target,connections,stepDigest:step.digest,...(step.automations.length?{automations:step.automations.map((r:any)=>({key:r.key,enabled:true,settings:{}}))}:{})}):await installCatalogApp(f,human,w,target.install)};};
  const comp=async(w:string,id:string)=>(await f.readComponent(human,w,id)).component;
@@ -102,6 +103,13 @@ test('Acceptance 9 and package: install alone, with Contracts and Data Room (any
   const ui2=x.app(w2,b.receipt.appId);await ui2.open({});await ui2.click('open:opp:'+o2);await ui2.submit('save-gates',{cda_agreement_id:cda,dataroom_room_id:room,term_sheet_agreement_id:'',agreement_id:''});await ui2.approve();
   await ui2.click('open:opp:'+o2);const t2=text(ui2.html);assert.match(t2,/CDA CDA: Cedarline \(mutual\) Signed, active/);assert.match(t2,/Data room NWB-101 licensing room Active/);assert.match(t2,/Engagement: 6 views, about 24 min, last 11 Nov 2026/);
   assert.doesNotMatch(ui2.html,/Record data room access by hand/,'linked Data Room data is read-only here');
+  // 2.2.0: values from the writing apps are labelled and open there (the host resolves the writer; the app never sees its ID).
+  assert.match(ui2.html,/<span class="pt-from">From Contracts<\/span>/);assert.match(ui2.html,new RegExp('data-trialy-open="agreements '+cda+'">Edit in Contracts</button>'));
+  assert.match(ui2.html,/<span class="pt-from">From Data Room<\/span>/);assert.match(ui2.html,new RegExp('data-trialy-open="dataroom\\.access_grants '+grant+'">Edit in Data Room</button>'));
+  const open:any=await resolveAppOpen(x.f,x.human,w2,{appId:b.receipt.appId,role:'agreements',recordId:cda});assert.deepEqual([open.kind,open.appName],['app','Contracts']);assert.ok(open.href.includes(k2.receipt.appId)&&open.href.includes(cda),open.href);
+  // The command path refuses hand-entered access while Data Room is linked, like the hidden form.
+  const bc=await x.comp(w2,b.receipt.appId),refused=await runAppCommand(x.f,x.human,w2,{appId:bc.id,expectedVersion:bc.version,command:'data_room_access.add',input:{opportunity_id:o2,room_name:'Other room',status:'invited'},requestKey:randomUUID()});
+  assert.equal(refused.ok,false);assert.match(String(refused.error),/comes from Data Room and is read only here/);
  });}finally{await x.pg.close();}
 });
 
@@ -131,14 +139,25 @@ test('Acceptance 2, 6 and 8: after-meeting log with stage history through the re
   // An assistant running the app gets a proposal it cannot confirm; a person confirms it.
   const bot=x.app(w,id,x.ai);await bot.open({});await bot.click('open:opp:'+opp.id);await bot.submit('move-stage',{to:'lost',on:'2026-11-14',reason:'No budget'});
   assert.ok(bot.last.proposal);await assert.rejects(()=>x.f.confirm(x.ai,w,bot.last.proposal.id,bot.last.proposal.digest));assert.equal((await x.rows(T('partnerships.opportunities')))[0].data.stage,'non_confidential');
+  // 2.2.0 app commands on the real path: listed, run as the assistant, confirmed only by the person; reads are the app's own results.
+  const c=await x.comp(w,id),cl=await listAppCommands(x.f,x.ai,w,{appId:c.id});assert.equal(cl.commands.length,50);
+  const run=(command:string,input:any,who:Actor=x.ai)=>runAppCommand(x.f,who,w,{appId:c.id,expectedVersion:c.version,command,input,requestKey:randomUUID()});
+  const mv=await run('opportunity.move_stage',{opportunity_id:opp.id,to:'cda',on:'2026-11-14',note:'CDA sent'});assert.equal(mv.ok,true,mv.error);assert.ok(mv.proposal);
+  assert.equal((await x.rows(T('partnerships.opportunities')))[0].data.stage,'non_confidential','nothing changes before the person confirms');
+  await assert.rejects(()=>x.f.confirm(x.ai,w,mv.proposal!.previewId,mv.proposal!.digest));await x.f.confirm(x.human,w,mv.proposal!.previewId,mv.proposal!.digest);
+  assert.equal((await x.rows(T('partnerships.opportunities')))[0].data.stage,'cda');assert.deepEqual((await x.rows(T('partnerships.stage_history'))).at(-1).data.to_stage,'cda');
+  const fu=await run('follow_up.complete',{follow_up_id:(await x.rows(T('partnerships.follow_ups')))[0].id});assert.equal(fu.ok,true,fu.error);await x.f.confirm(x.human,w,fu.proposal!.previewId,fu.proposal!.digest);
+  const read=await run('opportunity.read',{opportunity_id:opp.id});assert.equal(read.ok,true,read.error);assert.equal(read.result.stage,'cda');assert.equal(read.result.follow_ups.filter((f:any)=>f.status==='done').length,1);
+  const ov=await run('overview.read',{});assert.equal(ov.result.funnel.reached.cda,1);
+  const lay=await run('layout.save',{hide:['pipeline.fit']});assert.equal(lay.ok,true,lay.error);assert.ok(lay.proposal,'presentation-only layout review');
  });}finally{await x.pg.close();}
 });
 
-test('Acceptance 4, 7, 8 and 9: Add app selects research, digest and briefs; research saves signals, targets and a report; the digest reaches members only; schedule changes on the automation; archive pauses',async()=>{
+test('Acceptance 4, 7, 8 and 9: Add app selects research (with its digest email, one automation) and briefs; research saves signals, targets and a report; the digest reaches members only; schedule changes on the automation; archive pauses',async()=>{
  const x=await suite();const oldKey=process.env.CONNECTOR_ENCRYPTION_KEY;process.env.CONNECTOR_ENCRYPTION_KEY=randomBytes(32).toString('base64');process.env.APP_AUTOMATION_RECIPES_ENABLED='true';
  const transport=async(req:any)=>{const body=JSON.parse(req.body);return {status:200,body:body.type==='verification'?JSON.stringify({challenge:body.challenge}):'{}',bytes:2,durationMs:1};};
  const reconcile=async(appId:string)=>{for(let i=0;i<4;i++){while(await withDatabaseContext({service:'worker'},()=>reconcileRecipeSetups(x.db)));await x.pg.query("UPDATE automation_recipe_setups SET available_at=now() WHERE app_id=$1 AND status='pending'",[appId]);}
-  return (await x.pg.query<any>('SELECT recipe_key,status,diagnostic,definition_id,definition_version FROM automation_recipe_setups WHERE app_id=$1 ORDER BY recipe_key',[appId])).rows;};
+  return (await x.pg.query<any>('SELECT recipe_key,status,diagnostic,definition_id,definition_version,follow_up_id FROM automation_recipe_setups WHERE app_id=$1 ORDER BY recipe_key',[appId])).rows;};
  try{await withActor(x.human,async()=>{
   const w=await x.workspace('Research');
   // The user's runner (connected and verified once), before the app is added.
@@ -148,15 +167,18 @@ test('Acceptance 4, 7, 8 and 9: Add app selects research, digest and briefs; res
   const verify=(await s.agenda(x.ai,w,runner.id)).rows[0],vc:any=await s.claim(x.ai,w,{runnerId:runner.id,occurrenceId:verify.id,requestKey:randomUUID()});
   const [ready]=await Promise.all([s.setup(x.human,w,1),new Promise<void>((res,rej)=>setTimeout(()=>{void s.finish(x.ai,w,{occurrenceId:verify.id,claimToken:vc.claimToken}).then(()=>res(),rej);},25))]);assert.equal(ready.state,'ready');
   // Add app: the three install recommendations are offered selected; one approval installs the app and enables them after commit.
-  const {step,receipt}=await x.install(w,x.T.bd,'Partnerships');assert.deepEqual(step.automations.map((r:any)=>r.key),['partner_research','partner_digest','meeting_briefs']);
+  const {step,receipt}=await x.install(w,x.T.bd,'Partnerships');assert.deepEqual(step.automations.map((r:any)=>r.key),['partner_research','meeting_briefs']);
   const id=receipt.appId,map=x.mapOf(await x.comp(w,id)),T=(r:string)=>map[r].typeId;assert.ok(T('partnerships.research_reports'));
-  const setups=await reconcile(id);assert.deepEqual(setups.map((r:any)=>[r.recipe_key,r.status]),[['meeting_briefs','active'],['partner_digest','active'],['partner_research','active']],JSON.stringify(setups));
+  const setups=await reconcile(id);assert.deepEqual(setups.map((r:any)=>[r.recipe_key,r.status]),[['meeting_briefs','active'],['partner_research','active']],JSON.stringify(setups));
   const S=(k:string)=>setups.find((r:any)=>r.recipe_key===k),mon={id:S('partner_research').definition_id,version:S('partner_research').definition_version};
   // Research must store its results: one create-only grant on signals and one on research reports, nothing else; briefs only on briefs.
   const scopes=async(monitorId:string)=>{const r=await m.read(x.ai,w,monitorId);assert.equal(r.config.storeResults,true);return r.context.writeScopes.map((g:any,i:number)=>({scopeId:r.config.writeScopes[i].scopeId,typeId:g.body.bindings[0].typeId,create:g.body.allowCreate,update:g.body.allowUpdate}));};
   const rs=await scopes(mon.id);assert.deepEqual(rs.map((g:any)=>[g.typeId,g.create,g.update]).sort(),[[T('partnerships.research_reports'),true,false],[T('partnerships.signals'),true,false]].sort());
   assert.deepEqual((await scopes(S('meeting_briefs').definition_id)).map((g:any)=>[g.typeId,g.create,g.update]),[[T('partnerships.briefs'),true,false]]);
-  const digest=(await x.pg.query<any>('SELECT id,config FROM app_actions WHERE id=$1',[S('partner_digest').definition_id])).rows[0];assert.equal(digest.config.trigger.automationId,mon.id);assert.deepEqual(digest.config.steps[0].to,['anna@northwind.invalid']);
+  // E5: the digest is the email step of the research automation (follow_up_of), released by each completed run, also with no findings.
+  const digest=(await x.pg.query<any>('SELECT id,config,follow_up_of FROM app_actions WHERE id=$1',[S('partner_research').follow_up_id])).rows[0];assert.equal(digest.follow_up_of,mon.id);assert.equal(digest.config.trigger.automationId,mon.id);assert.equal(digest.config.trigger.includeEmpty,true);assert.equal(digest.config.steps[0].text,'{{run.summary}}');
+  // E6: reads follow the app's fields (dynamic bindings, with the confidential exclusions).
+  const rcfg=(await m.read(x.ai,w,mon.id)).config,opRead=rcfg.readBindings.find((b:any)=>b.typeId===T('partnerships.opportunities'));assert.equal(opRead.dynamic,true);assert.ok(opRead.exceptFields.includes('fit_rationale'));assert.ok(!opRead.fields.includes('fit_rationale')&&opRead.fields.includes('stage'));assert.deepEqual(digest.config.steps[0].to,['anna@northwind.invalid']);
   const weekly=(readRecipes(x.T.bd).recommended[0] as any).trigger,due=(await x.pg.query<any>('SELECT next_at FROM automation_dispatch WHERE monitor_id=$1',[mon.id])).rows[0]?.next_at;
   assert.equal(new Date(due).toISOString(),nextCalendar(weekly,new Date()).toISOString(),'weekly on Monday at 07:00 Europe/Berlin');assert.equal(new Date(due).getUTCDay(),1);
   assert.equal((await manage.readiness(x.human,w,mon.id,[digest.id])).ready,true);
@@ -218,7 +240,7 @@ test('Recipes: without a ready background runner nothing is activated, setup sta
   const {receipt}=await x.install(w,x.T.bd,'Partnerships');
   for(let i=0;i<4;i++)await withDatabaseContext({service:'worker'},()=>reconcileRecipeSetups(x.db));
   const rows=(await x.pg.query<any>('SELECT recipe_key,status FROM automation_recipe_setups WHERE app_id=$1 ORDER BY recipe_key',[receipt.appId])).rows;
-  assert.deepEqual(rows.map((r:any)=>r.recipe_key),['meeting_briefs','partner_digest','partner_research']);assert.ok(rows.every((r:any)=>r.status!=='active'),'no runner yet: nothing is active');
+  assert.deepEqual(rows.map((r:any)=>r.recipe_key),['meeting_briefs','partner_research']);assert.ok(rows.every((r:any)=>r.status!=='active'),'no runner yet: nothing is active');
   assert.equal((await x.pg.query('SELECT id FROM app_monitors WHERE app_id=$1',[receipt.appId])).rows.length,0);
   const ui=x.app(w,receipt.appId);for(const section of SCREENS){await ui.open({section});assert.doesNotMatch(ui.html,/could not be shown|pt-banner bad/,section);}
  });}finally{delete process.env.APP_AUTOMATION_RECIPES_ENABLED;await x.pg.close();}
