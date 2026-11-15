@@ -1,6 +1,6 @@
 # Trial Radar 1.0.0 (`life.trial-radar`)
 
-Watches clinical trials for one or more scopes: registrations and changes (status, dates, enrollment, endpoints), readouts, results postings and stopped trials. Built on the [Bio Radars kit](../../radar-kit/README.md); scope: [BIO_RADAR.md](../../../../docs/product/app-template-blueprints/apps/BIO_RADAR.md) §2, §3 (Trial row) and §5. **Draft until approved:** the catalog seed does not approve it.
+Watches clinical trials for one or more scopes: registrations and changes (status, dates, enrollment, endpoints), readouts, results postings and stopped trials. Built on the [Bio Radars kit](../../radar-kit/README.md); scope: [BIO_RADAR.md](../../../../docs/product/app-template-blueprints/apps/BIO_RADAR.md) §2, §3 (Trial row) and §5. **Published:** approved by the owner on 15 November 2026; `templates/catalog-seed.json` approves 1.0.0 on first import.
 
 | File | Purpose |
 |---|---|

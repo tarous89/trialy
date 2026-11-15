@@ -33,8 +33,8 @@ test('package: the generator is deterministic and the catalog entry, recipes, fu
  assert.deepEqual([out.kind,out.writer],['output','life.trial-radar']);assert.match(out.description,/dismissed rows .* are never counted/);
  assert.deepEqual(out.versions['radar.v1'].fields.map((f:any)=>f.key),schema['trialradar.events'].fields.map((f:any)=>f.key));
  assert.equal(JSON.parse(await readFile('templates/catalog-installers.json','utf8'))['life.trial-radar@1.0.0'],'templates/source/radars/trial-radar/schema.example.json');
- // Draft until approved: the seed does not approve Trial Radar.
- assert.ok(!JSON.parse(await readFile('templates/catalog-seed.json','utf8'))['life.trial-radar']);
+ // Published on owner approval (15 Nov 2026): the seed approves 1.0.0 on first import.
+ assert.equal(JSON.parse(await readFile('templates/catalog-seed.json','utf8'))['life.trial-radar'].version,'1.0.0');
  // Trial specifics (§3): scope fields, tracker fields, natural key, event kinds, digest section, sources with TrialAgents Intel first.
  assert.deepEqual(radar.scopeFields.map((f:any)=>f.key),['indication','interventions','sponsors','phases','countries']);
  for(const k of ['registry_ids','title','sponsor_id','asset','phase','status','enrollment','primary_endpoint','primary_completion','completion_estimated','countries','sites_count','last_change'])assert.ok(schema['trialradar.trials'].fields.some((f:any)=>f.key===k),k);
