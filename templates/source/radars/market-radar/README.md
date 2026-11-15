@@ -1,6 +1,6 @@
 # Market Radar 1.0.0 (`life.market-radar`)
 
-Watches the market for one or more scopes: approvals, label changes, launches, HTA, pricing and reimbursement decisions, guidelines and reported sales, one row per company, product and indication. Sales are recorded as reported, per currency. Built on the [Bio Radars kit](../../radar-kit/README.md) 1.1.0; scope: [BIO_RADAR.md](../../../../docs/product/app-template-blueprints/apps/BIO_RADAR.md) §2, §3 and §5. **Draft:** not in `templates/catalog-seed.json` until the owner approves it.
+Watches the market for one or more scopes: approvals, label changes, launches, HTA, pricing and reimbursement decisions, guidelines and reported sales, one row per company, product and indication. Sales are recorded as reported, per currency. Built on the [Bio Radars kit](../../radar-kit/README.md) 1.1.0; scope: [BIO_RADAR.md](../../../../docs/product/app-template-blueprints/apps/BIO_RADAR.md) §2, §3 and §5. **Published:** approved by the owner on 15 November 2026; `templates/catalog-seed.json` approves it on first import (migration 074).
 
 | File | Purpose |
 |---|---|

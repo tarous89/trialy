@@ -30,6 +30,8 @@ Contracts (`life.contracts`) 1.1.0 is published in place of 1.0.0 (owner approva
 
 Fundraise (`life.investor-crm`) 2.0.0 is published (owner approval, 14 November 2026; scope BT2-03; seed entry and migration 072 withdrawing Investor CRM 1.0.1). It declares two install recommendations, weekly investor research (saves proposed investors and a research report, create only) and one weekly digest email of progress and research, ships two read-only app helpers (E7) that write the digest text and the research brief, and lets Claude or ChatGPT add custom fields, rename stages and set preferences through reviewed changes ([FUNDRAISE.md](docs/product/app-template-blueprints/apps/FUNDRAISE.md) §8 and §8a).
 
+Bio Radars are published (owner approval, 15 November 2026; scope [BIO_RADAR.md](docs/product/app-template-blueprints/apps/BIO_RADAR.md)): Trial Radar 1.0.0 (#179) on kit 1.0.0; Pipeline, Deal, Funding, Patent, Market and Regulatory Radar 1.0.0 and Literature Radar 2.0.0 on kit 1.1.0, each an independent app. Migration 074 withdraws Literature Radar 1.2.2.
+
 Contracts (`life.contracts`) 1.0.0 is published (owner approval, 12 November 2026; scope BT2-04; seed entry and migration 063): the shared `agreements` register with Contracts-owned optional core fields, the `contracts.obligations` output (contracts.v1), Programs milestones as an in-app integration, signed originals as TrialAgents documents, and assistant extraction that a person verifies in the app. Saved apps can now read documents (`documents.list/search/text/quote`) and ask the host to open the platform upload review (`data-trialy-document`); template guidance 1.3.21.
 
 ## Creation, customization and shared data

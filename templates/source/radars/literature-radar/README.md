@@ -1,8 +1,8 @@
 # Literature Radar 2.0.0 (`life.literature-radar`)
 
-Watches the literature for one or more scopes: publications, conference data and retractions, one row per DOI or PMID, with a must-read section in the digest and an optional synthesis prompt per scope. Built on the [Bio Radars kit](../../radar-kit/README.md) 1.1.0; scope: [BIO_RADAR.md](../../../../docs/product/app-template-blueprints/apps/BIO_RADAR.md) §2, §3 and §5. **Draft:** not in `templates/catalog-seed.json` until the owner approves it.
+Watches the literature for one or more scopes: publications, conference data and retractions, one row per DOI or PMID, with a must-read section in the digest and an optional synthesis prompt per scope. Built on the [Bio Radars kit](../../radar-kit/README.md) 1.1.0; scope: [BIO_RADAR.md](../../../../docs/product/app-template-blueprints/apps/BIO_RADAR.md) §2, §3 and §5. **Published:** approved by the owner on 15 November 2026; `templates/catalog-seed.json` approves it on first import (migration 074).
 
-**Version 2.0.0** rebuilds Literature Radar on the kit. The published 1.2.2 stays in the catalog and existing installs are unchanged; 2.0.0 is a separate install. Reading-queue fields `queue_status` and `assignee` belong to the team: research never writes them.
+**Version 2.0.0** rebuilds Literature Radar on the kit. It is published in place of 1.2.2: migration 074 withdraws 1.2.2 from the catalog (listed in `templates/catalog-retirements.json`). Existing 1.2.2 installs keep their saved source and data; 2.0.0 is a separate install. Reading-queue fields `queue_status` and `assignee` belong to the team: research never writes them.
 
 | File | Purpose |
 |---|---|

@@ -1,6 +1,6 @@
 # Deal Radar 1.0.0 (`life.deal-radar`)
 
-Watches licensing, collaboration and M&A deals for one or more scopes, one row per parties, kind and date. Only publicly disclosed amounts are recorded; the digest lists the largest disclosed deals and a period total per currency (currencies are never added together). Built on the [Bio Radars kit](../../radar-kit/README.md) 1.1.0; scope: [BIO_RADAR.md](../../../../docs/product/app-template-blueprints/apps/BIO_RADAR.md) §2, §3 and §5. **Draft:** not in `templates/catalog-seed.json` until the owner approves it.
+Watches licensing, collaboration and M&A deals for one or more scopes, one row per parties, kind and date. Only publicly disclosed amounts are recorded; the digest lists the largest disclosed deals and a period total per currency (currencies are never added together). Built on the [Bio Radars kit](../../radar-kit/README.md) 1.1.0; scope: [BIO_RADAR.md](../../../../docs/product/app-template-blueprints/apps/BIO_RADAR.md) §2, §3 and §5. **Published:** approved by the owner on 15 November 2026; `templates/catalog-seed.json` approves it on first import (migration 074).
 
 | File | Purpose |
 |---|---|

@@ -1,6 +1,6 @@
 # Funding Radar 1.0.0 (`life.funding-radar`)
 
-Watches financings, IPOs and grants for one or more scopes, one row per company, kind and date, with amounts as announced and lead investors. The digest lists rounds in your space with a period total per currency. Built on the [Bio Radars kit](../../radar-kit/README.md) 1.1.0; scope: [BIO_RADAR.md](../../../../docs/product/app-template-blueprints/apps/BIO_RADAR.md) §2, §3 and §5. **Draft:** not in `templates/catalog-seed.json` until the owner approves it.
+Watches financings, IPOs and grants for one or more scopes, one row per company, kind and date, with amounts as announced and lead investors. The digest lists rounds in your space with a period total per currency. Built on the [Bio Radars kit](../../radar-kit/README.md) 1.1.0; scope: [BIO_RADAR.md](../../../../docs/product/app-template-blueprints/apps/BIO_RADAR.md) §2, §3 and §5. **Published:** approved by the owner on 15 November 2026; `templates/catalog-seed.json` approves it on first import (migration 074).
 
 | File | Purpose |
 |---|---|

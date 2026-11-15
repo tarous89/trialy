@@ -15,14 +15,14 @@ const seed=JSON.parse(await readFile('templates/catalog-seed.json','utf8')),outp
 
 for(const slug of SLUGS){
  const h=await radarHarness(slug),{radar,entry,schema,T}=h,rows0=()=>h.fresh();
- test(`${radar.name}: package, roles, contract, recipes and functions on kit 1.1.0; a draft until approved`,async()=>{
+ test(`${radar.name}: package, roles, contract, recipes and functions on kit 1.1.0; published through the seed`,async()=>{
   const raw=JSON.parse(await readFile(`templates/apps/${radar.id}-${radar.version}.json`,'utf8'));
   appTemplateEntry.parse(raw);validateRecipeDeclarations(raw);validateAppFunctions(raw,Object.keys(schema));assert.equal(radar.kit,'1.1.0');assert.ok(raw.source.length<180000);
   assert.deepEqual(Object.keys(schema),['organizations','programs',T('settings'),T('scopes'),T('tracker'),T('events'),T('runs')]);
   assert.equal(schema[T('events')].contract,'radar.v1');assert.equal(outputs[T('events')].writer,radar.id);
   assert.equal(schema[T('tracker')].contract,radar.trackerOutput?'radar.v1':radar.prefix+'.v1');assert.equal(!!outputs[T('tracker')],!!radar.trackerOutput,'tracker output registered only when the radar publishes it');
   assert.equal(installers[radar.id+'@'+radar.version],'templates/source/radars/'+slug+'/schema.example.json');
-  assert.notEqual(seed[radar.id]?.version,radar.version,'draft until the owner approves it');
+  assert.deepEqual(seed[radar.id],{schema:'templates/source/radars/'+slug+'/schema.example.json',version:radar.version},'published on owner approval (15 Nov 2026)');
   const [scan,alert]=readRecipes(raw).recommended as any[];assert.deepEqual([scan.key,alert.key],['scan','alert']);assert.ok(scan.research&&scan.email);
   const g=scan.research.writeBindings.find((b:any)=>b.role===T('tracker'));assert.deepEqual(g.exceptFields,kit.userOwned(radar));
   assert.equal(scan.trigger.time,'07:00');assert.equal(scan.trigger.frequency,radar.cadence);
@@ -54,15 +54,15 @@ for(const slug of SLUGS){
  });
 }
 
-test('Literature Radar 2.0.0: synthesis note per scope, reading queue kept by people, must-read papers in the digest; 1.2.2 stays installable',async()=>{
+test('Literature Radar 2.0.0: synthesis note per scope, reading queue kept by people, must-read papers in the digest; 1.2.2 is retired, its package unchanged',async()=>{
  const h=await radarHarness('literature-radar'),rows=h.fresh(),s=h.session(rows);
  await s.open({section:'setup'});await s.click('new:scope');assert.match(s.html,/<textarea[^>]*name="def_synthesis"/,'the synthesis note is a multi-line field');
  await s.open({section:'tracker',panel:null});assert.match(h.text(s.html),/Reading queue/);await s.change('flt:queue_status','to_read');assert.ok(s.calls.some((c:any)=>c.v.filters?.queue_status==='to_read'),'the reading queue is a server-side filter');
  const run=rows.find(r=>r.role==='literatureradar.runs'&&r.data.run_on==='2026-11-16')!;const d=(await h.runFunction('digest_summary',rows,{records:[],run:{id:run.data.run_id,summary:run.data.summary}})).out;
  assert.match(d.text,/Must-read papers\n- .*: /);
  assert.ok(kit.userOwned(h.radar).includes('queue_status')&&kit.userOwned(h.radar).includes('assignee'));
- // The released 1.x line is unchanged and still approved by the seed.
- assert.equal(seed['life.literature-radar'].version,'1.2.2');await readFile('templates/apps/life.literature-radar-1.2.2.json','utf8');
+ // 2.0.0 replaces 1.2.2 in the seed (migration 074 withdraws 1.2.2); the 1.2.2 package is unchanged for existing installs.
+ assert.equal(seed['life.literature-radar'].version,'2.0.0');await readFile('templates/apps/life.literature-radar-1.2.2.json','utf8');
 });
 
 test('Deal and Funding Radar: trackers are radar.v1 outputs; digests show the largest disclosed amounts per currency and the most active investors',async()=>{

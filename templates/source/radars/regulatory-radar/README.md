@@ -1,6 +1,6 @@
 # Regulatory Radar 1.0.0 (`life.regulatory-radar`)
 
-Watches regulators for one or more scopes: guidances, designations, advisory committees, decisions, policy changes and open consultations, one row per agency, title and date, with the programs each one affects. Built on the [Bio Radars kit](../../radar-kit/README.md) 1.1.0; scope: [BIO_RADAR.md](../../../../docs/product/app-template-blueprints/apps/BIO_RADAR.md) §2, §3 and §5. **Draft:** not in `templates/catalog-seed.json` until the owner approves it.
+Watches regulators for one or more scopes: guidances, designations, advisory committees, decisions, policy changes and open consultations, one row per agency, title and date, with the programs each one affects. Built on the [Bio Radars kit](../../radar-kit/README.md) 1.1.0; scope: [BIO_RADAR.md](../../../../docs/product/app-template-blueprints/apps/BIO_RADAR.md) §2, §3 and §5. **Published:** approved by the owner on 15 November 2026; `templates/catalog-seed.json` approves it on first import (migration 074).
 
 | File | Purpose |
 |---|---|
