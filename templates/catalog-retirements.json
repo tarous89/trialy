@@ -23,6 +23,13 @@
       "decided": "2026-11-14"
     },
     {
+      "templateId": "life.contracts",
+      "version": "1.0.0",
+      "replacedBy": "life.contracts@1.1.0",
+      "reason": "Contracts 1.1.0 (CONTRACTS.md §12) replaces 1.0.0: counterparty on obligations, full assistant control, no automations; withdrawn on approval by migration 073.",
+      "decided": "2026-11-14"
+    },
+    {
       "templateId": "life.investor-crm",
       "version": "1.0.1",
       "replacedBy": "life.investor-crm@2.0.0",

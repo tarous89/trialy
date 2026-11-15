@@ -248,7 +248,6 @@
    "data": {
     "default_currency": "EUR",
     "reminder_days": "30, 60, 90",
-    "digest_day": 1,
     "agreement_types": null,
     "obligation_kinds": null
    }

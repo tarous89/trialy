@@ -1,4 +1,27 @@
-# Contracts 1.0.0 validation
+# Contracts 1.1.0 validation
+
+Validated on 14 November 2026 against the repository host using disposable PGlite databases and fictional data only. This was not a deployed account. The 1.0.0 record follows below unchanged, and it is also archived at `archive/1.0.0/QA.md`.
+
+**Catalog status:** published at the owner's request on 14 November 2026. `templates/catalog-seed.json` names 1.1.0, and migration 073 withdraws 1.0.0 once (`templates/catalog-retirements.json`). The deployment is rehearsed in `tests/template-catalog.test.ts`. Gallery screenshot: `resources/template-gallery/life.contracts@1.1.0.jpg`.
+
+## Commands and outcomes (1.1.0)
+
+| Command | Outcome |
+| --- | --- |
+| `node scripts/build-contracts-template.mjs --check` (in `npm run build`) | Passes; the catalog JSON and preview are current. |
+| `npx tsc --noEmit` | Passes. |
+| `tests/contracts.test.ts` | All pass. The 1.0.0 cases, plus: counterparty default and override, a pre-1.1.0 table without the field, no digest day, app-calculated dates over wrong stored values, From Programs labels, Additional fields, and no automation declared. |
+| `tests/contracts-integration.test.ts` | 5/5 on 1.1.0, including a custom app reading `contracts.obligations` as `contracts.v1` (the superset rule). |
+| `scripts/test-contracts-browser.ts` | Passes: seven screens at 1440 and 390 px in the production frame, reviewed saves, upload hook and native layout. |
+| `npm test` | 631 of 632 pass. The one failure, `tests/monitoring-pv-integration.test.ts` (CO06 design check, `overlapping_controls`), also fails without this change in this environment, which uses a newer local Chromium build. It is unrelated to Contracts. |
+
+## Not verified here (1.1.0)
+
+- A real Claude or ChatGPT session filling in a contract through the 1.1.0 instructions. The 1.0.0 MCP extraction tests still pass on 1.1.0.
+
+---
+
+# Contracts 1.0.0 validation (record)
 
 Validated against the repository host on 12 November 2026 with disposable PGlite databases, the real catalog sync, installer, Add app step, in-app integration dialog, reviewed write path, document upload, the text-extraction worker and the real MCP endpoints, using fictional data only. Not a deployed account.
 

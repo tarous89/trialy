@@ -1,0 +1,1008 @@
+{
+ "agreements": {
+  "name": "Agreements",
+  "contract": "core.v1",
+  "fields": [
+   {
+    "key": "name",
+    "name": "Name",
+    "kind": "text",
+    "required": true,
+    "multiple": false,
+    "ai": true
+   },
+   {
+    "key": "counterparty_id",
+    "name": "Counterparty",
+    "kind": "text",
+    "required": false,
+    "multiple": false,
+    "ai": true,
+    "description": "Record ID of an organizations record."
+   },
+   {
+    "key": "agreement_type",
+    "name": "Agreement type",
+    "kind": "text",
+    "required": false,
+    "multiple": false,
+    "ai": true
+   },
+   {
+    "key": "status",
+    "name": "Status",
+    "kind": "text",
+    "required": false,
+    "multiple": false,
+    "ai": true
+   },
+   {
+    "key": "effective_date",
+    "name": "Effective date",
+    "kind": "date",
+    "required": false,
+    "multiple": false,
+    "ai": true
+   },
+   {
+    "key": "expiry_date",
+    "name": "Expiry date",
+    "kind": "date",
+    "required": false,
+    "multiple": false,
+    "ai": true
+   },
+   {
+    "key": "archived",
+    "name": "Archived",
+    "kind": "boolean",
+    "required": false,
+    "multiple": false,
+    "ai": true
+   },
+   {
+    "key": "parent_id",
+    "name": "Parent agreement",
+    "kind": "text",
+    "required": false,
+    "multiple": false,
+    "ai": true,
+    "description": "Record ID of the master agreements record (MSA for a SOW, licence for a sublicence)."
+   },
+   {
+    "key": "program_id",
+    "name": "Program",
+    "kind": "text",
+    "required": false,
+    "multiple": false,
+    "ai": true,
+    "description": "Record ID of a programs record."
+   },
+   {
+    "key": "study_id",
+    "name": "Study",
+    "kind": "text",
+    "required": false,
+    "multiple": false,
+    "ai": true,
+    "description": "Record ID of a studies record."
+   },
+   {
+    "key": "total_value",
+    "name": "Total value",
+    "kind": "money",
+    "required": false,
+    "multiple": false,
+    "ai": true
+   },
+   {
+    "key": "currency",
+    "name": "Currency",
+    "kind": "select",
+    "required": false,
+    "multiple": false,
+    "ai": true,
+    "options": [
+     "USD",
+     "EUR",
+     "GBP",
+     "CHF",
+     "CAD",
+     "AUD",
+     "JPY",
+     "CNY",
+     "SEK",
+     "DKK",
+     "NOK",
+     "INR"
+    ]
+   },
+   {
+    "key": "signed_on",
+    "name": "Signed on",
+    "kind": "date",
+    "required": false,
+    "multiple": false,
+    "ai": true
+   },
+   {
+    "key": "owner",
+    "name": "Owner",
+    "kind": "text",
+    "required": false,
+    "multiple": false,
+    "ai": true,
+    "description": "Internal owner (plain-text name)."
+   }
+  ],
+  "logicalFields": {
+   "name": "name",
+   "counterparty_id": "counterparty_id",
+   "agreement_type": "agreement_type",
+   "status": "status",
+   "effective_date": "effective_date",
+   "expiry_date": "expiry_date",
+   "archived": "archived",
+   "parent_id": "parent_id",
+   "program_id": "program_id",
+   "study_id": "study_id",
+   "total_value": "total_value",
+   "currency": "currency",
+   "signed_on": "signed_on",
+   "owner": "owner"
+  }
+ },
+ "organizations": {
+  "name": "Organizations",
+  "contract": "core.v1",
+  "fields": [
+   {
+    "key": "name",
+    "name": "Name",
+    "kind": "text",
+    "required": true,
+    "multiple": false,
+    "ai": true
+   },
+   {
+    "key": "org_type",
+    "name": "Type",
+    "kind": "select",
+    "required": false,
+    "multiple": false,
+    "ai": true,
+    "options": [
+     "company",
+     "investor",
+     "cro",
+     "cdmo",
+     "site",
+     "funder",
+     "partner",
+     "agency",
+     "other"
+    ]
+   },
+   {
+    "key": "country",
+    "name": "Country",
+    "kind": "text",
+    "required": false,
+    "multiple": false,
+    "ai": true
+   },
+   {
+    "key": "website",
+    "name": "Website",
+    "kind": "text",
+    "required": false,
+    "multiple": false,
+    "ai": true
+   },
+   {
+    "key": "archived",
+    "name": "Archived",
+    "kind": "boolean",
+    "required": false,
+    "multiple": false,
+    "ai": true
+   }
+  ],
+  "logicalFields": {
+   "name": "name",
+   "org_type": "org_type",
+   "country": "country",
+   "website": "website",
+   "archived": "archived"
+  }
+ },
+ "people": {
+  "name": "People",
+  "contract": "core.v1",
+  "optional": true,
+  "fields": [
+   {
+    "key": "name",
+    "name": "Name",
+    "kind": "text",
+    "required": true,
+    "multiple": false,
+    "ai": true
+   },
+   {
+    "key": "organization_id",
+    "name": "Organization",
+    "kind": "text",
+    "required": false,
+    "multiple": false,
+    "ai": true,
+    "description": "Record ID of an organizations record."
+   },
+   {
+    "key": "title",
+    "name": "Title",
+    "kind": "text",
+    "required": false,
+    "multiple": false,
+    "ai": true
+   },
+   {
+    "key": "email",
+    "name": "Email",
+    "kind": "text",
+    "required": false,
+    "multiple": false,
+    "ai": true
+   },
+   {
+    "key": "archived",
+    "name": "Archived",
+    "kind": "boolean",
+    "required": false,
+    "multiple": false,
+    "ai": true
+   }
+  ],
+  "logicalFields": {
+   "name": "name",
+   "organization_id": "organization_id",
+   "title": "title",
+   "email": "email",
+   "archived": "archived"
+  }
+ },
+ "programs": {
+  "name": "Programs",
+  "contract": "core.v1",
+  "optional": true,
+  "fields": [
+   {
+    "key": "name",
+    "name": "Name",
+    "kind": "text",
+    "required": true,
+    "multiple": false,
+    "ai": true
+   },
+   {
+    "key": "code",
+    "name": "Code",
+    "kind": "text",
+    "required": false,
+    "multiple": false,
+    "ai": true
+   },
+   {
+    "key": "indication",
+    "name": "Indication",
+    "kind": "text",
+    "required": false,
+    "multiple": false,
+    "ai": true
+   },
+   {
+    "key": "modality",
+    "name": "Modality",
+    "kind": "select",
+    "required": false,
+    "multiple": false,
+    "ai": true,
+    "options": [
+     "small_molecule",
+     "biologic",
+     "antibody",
+     "cell_therapy",
+     "gene_therapy",
+     "rna",
+     "vaccine",
+     "device",
+     "other"
+    ]
+   },
+   {
+    "key": "stage",
+    "name": "Stage",
+    "kind": "select",
+    "required": true,
+    "multiple": false,
+    "ai": true,
+    "options": [
+     "discovery",
+     "preclinical",
+     "ind_enabling",
+     "phase_1",
+     "phase_2",
+     "phase_3",
+     "registration",
+     "approved"
+    ]
+   },
+   {
+    "key": "lead",
+    "name": "Lead",
+    "kind": "text",
+    "required": false,
+    "multiple": false,
+    "ai": true
+   },
+   {
+    "key": "status",
+    "name": "Status",
+    "kind": "select",
+    "required": false,
+    "multiple": false,
+    "ai": true,
+    "options": [
+     "active",
+     "paused",
+     "stopped",
+     "partnered"
+    ]
+   },
+   {
+    "key": "archived",
+    "name": "Archived",
+    "kind": "boolean",
+    "required": false,
+    "multiple": false,
+    "ai": true
+   }
+  ],
+  "logicalFields": {
+   "name": "name",
+   "code": "code",
+   "indication": "indication",
+   "modality": "modality",
+   "stage": "stage",
+   "lead": "lead",
+   "status": "status",
+   "archived": "archived"
+  }
+ },
+ "studies": {
+  "name": "Studies",
+  "contract": "core.v1",
+  "optional": true,
+  "fields": [
+   {
+    "key": "name",
+    "name": "Name",
+    "kind": "text",
+    "required": true,
+    "multiple": false,
+    "ai": true
+   },
+   {
+    "key": "program_id",
+    "name": "Program",
+    "kind": "text",
+    "required": false,
+    "multiple": false,
+    "ai": true,
+    "description": "Record ID of a programs record."
+   },
+   {
+    "key": "phase",
+    "name": "Phase",
+    "kind": "text",
+    "required": false,
+    "multiple": false,
+    "ai": true
+   },
+   {
+    "key": "registry_id",
+    "name": "Registry ID",
+    "kind": "text",
+    "required": false,
+    "multiple": false,
+    "ai": true,
+    "description": "EU CT or NCT number."
+   },
+   {
+    "key": "status",
+    "name": "Status",
+    "kind": "text",
+    "required": false,
+    "multiple": false,
+    "ai": true
+   },
+   {
+    "key": "archived",
+    "name": "Archived",
+    "kind": "boolean",
+    "required": false,
+    "multiple": false,
+    "ai": true
+   }
+  ],
+  "logicalFields": {
+   "name": "name",
+   "program_id": "program_id",
+   "phase": "phase",
+   "registry_id": "registry_id",
+   "status": "status",
+   "archived": "archived"
+  }
+ },
+ "programs.plan_items": {
+  "name": "Milestones",
+  "contract": "programs.v2",
+  "optional": true,
+  "integration": true,
+  "description": "Integration: Programs' plan items (read only) once the user links Programs inside Contracts; otherwise Contracts' own milestone entries (name, program, type, date, status, key).",
+  "fields": [
+   {
+    "key": "name",
+    "name": "Name",
+    "kind": "text",
+    "required": true,
+    "multiple": false,
+    "ai": true
+   },
+   {
+    "key": "program_id",
+    "name": "Program",
+    "kind": "text",
+    "required": true,
+    "multiple": false,
+    "ai": true,
+    "description": "Record ID of a programs record."
+   },
+   {
+    "key": "item_type",
+    "name": "Item type",
+    "kind": "select",
+    "required": true,
+    "multiple": false,
+    "ai": true,
+    "options": [
+     "milestone",
+     "activity"
+    ]
+   },
+   {
+    "key": "end_date",
+    "name": "End date",
+    "kind": "date",
+    "required": true,
+    "multiple": false,
+    "ai": true,
+    "description": "For milestones, the milestone date."
+   },
+   {
+    "key": "status",
+    "name": "Status",
+    "kind": "select",
+    "required": true,
+    "multiple": false,
+    "ai": true,
+    "options": [
+     "planned",
+     "in_progress",
+     "done",
+     "at_risk",
+     "cancelled"
+    ]
+   },
+   {
+    "key": "is_key",
+    "name": "Key milestone",
+    "kind": "boolean",
+    "required": false,
+    "multiple": false,
+    "ai": true
+   }
+  ],
+  "logicalFields": {
+   "name": "name",
+   "program_id": "program_id",
+   "item_type": "item_type",
+   "end_date": "end_date",
+   "status": "status",
+   "is_key": "is_key"
+  }
+ },
+ "contracts.settings": {
+  "name": "Contract settings",
+  "contract": "contracts.v1",
+  "fields": [
+   {
+    "key": "default_currency",
+    "name": "Default currency",
+    "kind": "select",
+    "required": false,
+    "multiple": false,
+    "ai": true,
+    "options": [
+     "USD",
+     "EUR",
+     "GBP",
+     "CHF",
+     "CAD",
+     "AUD",
+     "JPY",
+     "CNY",
+     "SEK",
+     "DKK",
+     "NOK",
+     "INR"
+    ]
+   },
+   {
+    "key": "reminder_days",
+    "name": "Reminder windows (days)",
+    "kind": "text",
+    "required": false,
+    "multiple": false,
+    "ai": true,
+    "description": "Comma list of day windows, default 30,60,90."
+   },
+   {
+    "key": "digest_day",
+    "name": "Digest day",
+    "kind": "number",
+    "required": false,
+    "multiple": false,
+    "ai": true,
+    "description": "Weekday of the weekly digest, 1 = Monday … 7 = Sunday."
+   },
+   {
+    "key": "agreement_types",
+    "name": "Agreement types",
+    "kind": "text",
+    "required": false,
+    "multiple": false,
+    "ai": true,
+    "description": "Comma list of enabled agreement_type values in display order."
+   },
+   {
+    "key": "obligation_kinds",
+    "name": "Obligation kinds",
+    "kind": "text",
+    "required": false,
+    "multiple": false,
+    "ai": true,
+    "description": "Comma list of enabled obligation kinds in display order."
+   }
+  ],
+  "logicalFields": {
+   "default_currency": "default_currency",
+   "reminder_days": "reminder_days",
+   "digest_day": "digest_day",
+   "agreement_types": "agreement_types",
+   "obligation_kinds": "obligation_kinds"
+  }
+ },
+ "contracts.terms": {
+  "name": "Key terms",
+  "contract": "contracts.v1",
+  "fields": [
+   {
+    "key": "agreement_id",
+    "name": "Agreement",
+    "kind": "text",
+    "required": true,
+    "multiple": false,
+    "ai": true,
+    "description": "Record ID of an agreements record. One terms record per agreement."
+   },
+   {
+    "key": "renewal",
+    "name": "Renewal",
+    "kind": "select",
+    "required": false,
+    "multiple": false,
+    "ai": true,
+    "options": [
+     "none",
+     "automatic",
+     "option"
+    ]
+   },
+   {
+    "key": "renewal_term_months",
+    "name": "Renewal term (months)",
+    "kind": "number",
+    "required": false,
+    "multiple": false,
+    "ai": true
+   },
+   {
+    "key": "notice_days",
+    "name": "Notice period (days)",
+    "kind": "number",
+    "required": false,
+    "multiple": false,
+    "ai": true
+   },
+   {
+    "key": "notice_deadline",
+    "name": "Notice deadline",
+    "kind": "date",
+    "required": false,
+    "multiple": false,
+    "ai": true,
+    "description": "Set on save: expiry_date − notice_days when renewal is automatic or option."
+   },
+   {
+    "key": "confidentiality_years",
+    "name": "Confidentiality (years)",
+    "kind": "number",
+    "required": false,
+    "multiple": false,
+    "ai": true
+   },
+   {
+    "key": "confidentiality_end",
+    "name": "Confidentiality end",
+    "kind": "date",
+    "required": false,
+    "multiple": false,
+    "ai": true,
+    "description": "Set on save: (expiry_date, or effective_date when there is no expiry) + confidentiality_years."
+   },
+   {
+    "key": "cda_direction",
+    "name": "CDA direction",
+    "kind": "select",
+    "required": false,
+    "multiple": false,
+    "ai": true,
+    "options": [
+     "mutual",
+     "incoming",
+     "outgoing"
+    ]
+   },
+   {
+    "key": "purpose",
+    "name": "Purpose",
+    "kind": "text",
+    "required": false,
+    "multiple": false,
+    "ai": true
+   },
+   {
+    "key": "governing_law",
+    "name": "Governing law",
+    "kind": "text",
+    "required": false,
+    "multiple": false,
+    "ai": true
+   },
+   {
+    "key": "document_id",
+    "name": "Signed original",
+    "kind": "text",
+    "required": false,
+    "multiple": false,
+    "ai": true,
+    "description": "TrialAgents document ID of the signed original."
+   },
+   {
+    "key": "document_version_id",
+    "name": "Signed original version",
+    "kind": "text",
+    "required": false,
+    "multiple": false,
+    "ai": true,
+    "description": "TrialAgents document version ID the terms were read from."
+   },
+   {
+    "key": "document_link",
+    "name": "External link",
+    "kind": "text",
+    "required": false,
+    "multiple": false,
+    "ai": true,
+    "description": "URL of the agreement kept outside TrialAgents."
+   },
+   {
+    "key": "extraction_status",
+    "name": "Extraction",
+    "kind": "select",
+    "required": false,
+    "multiple": false,
+    "ai": true,
+    "options": [
+     "none",
+     "proposed",
+     "verified"
+    ]
+   },
+   {
+    "key": "source_quotes",
+    "name": "Source quotes",
+    "kind": "text",
+    "required": false,
+    "multiple": false,
+    "ai": true,
+    "description": "JSON object {field:{quote,page}} with the exact sentences the proposed terms come from."
+   },
+   {
+    "key": "verified_by",
+    "name": "Verified by",
+    "kind": "text",
+    "required": false,
+    "multiple": false,
+    "ai": true
+   },
+   {
+    "key": "verified_on",
+    "name": "Verified on",
+    "kind": "date",
+    "required": false,
+    "multiple": false,
+    "ai": true
+   },
+   {
+    "key": "status_since",
+    "name": "Status since",
+    "kind": "date",
+    "required": false,
+    "multiple": false,
+    "ai": true,
+    "description": "Date the agreement entered its current pre-signature or signed status (set by Contracts when it changes the status)."
+   },
+   {
+    "key": "notes",
+    "name": "Notes",
+    "kind": "text",
+    "required": false,
+    "multiple": false,
+    "ai": true
+   }
+  ],
+  "logicalFields": {
+   "agreement_id": "agreement_id",
+   "renewal": "renewal",
+   "renewal_term_months": "renewal_term_months",
+   "notice_days": "notice_days",
+   "notice_deadline": "notice_deadline",
+   "confidentiality_years": "confidentiality_years",
+   "confidentiality_end": "confidentiality_end",
+   "cda_direction": "cda_direction",
+   "purpose": "purpose",
+   "governing_law": "governing_law",
+   "document_id": "document_id",
+   "document_version_id": "document_version_id",
+   "document_link": "document_link",
+   "extraction_status": "extraction_status",
+   "source_quotes": "source_quotes",
+   "verified_by": "verified_by",
+   "verified_on": "verified_on",
+   "status_since": "status_since",
+   "notes": "notes"
+  }
+ },
+ "contracts.obligations": {
+  "name": "Obligations",
+  "contract": "contracts.v1",
+  "fields": [
+   {
+    "key": "agreement_id",
+    "name": "Agreement",
+    "kind": "text",
+    "required": true,
+    "multiple": false,
+    "description": "Record ID of an agreements record (core role agreements).",
+    "ai": true
+   },
+   {
+    "key": "title",
+    "name": "Title",
+    "kind": "text",
+    "required": true,
+    "multiple": false,
+    "ai": true
+   },
+   {
+    "key": "kind",
+    "name": "Kind",
+    "kind": "select",
+    "required": true,
+    "multiple": false,
+    "options": [
+     "payment",
+     "report",
+     "diligence_milestone",
+     "notice",
+     "delivery",
+     "publication_review",
+     "audit",
+     "insurance",
+     "royalty",
+     "other"
+    ],
+    "ai": true
+   },
+   {
+    "key": "direction",
+    "name": "Direction",
+    "kind": "select",
+    "required": true,
+    "multiple": false,
+    "options": [
+     "we_owe",
+     "they_owe"
+    ],
+    "ai": true
+   },
+   {
+    "key": "due_date",
+    "name": "Due date",
+    "kind": "date",
+    "required": false,
+    "multiple": false,
+    "description": "First or only due date. A recurring obligation repeats from it.",
+    "ai": true
+   },
+   {
+    "key": "recurrence",
+    "name": "Recurrence",
+    "kind": "select",
+    "required": false,
+    "multiple": false,
+    "options": [
+     "none",
+     "monthly",
+     "quarterly",
+     "annual"
+    ],
+    "ai": true
+   },
+   {
+    "key": "trigger",
+    "name": "Trigger",
+    "kind": "text",
+    "required": false,
+    "multiple": false,
+    "description": "Event that triggers the obligation when it has no fixed date (e.g. first patient dosed).",
+    "ai": true
+   },
+   {
+    "key": "milestone_id",
+    "name": "Milestone",
+    "kind": "text",
+    "required": false,
+    "multiple": false,
+    "description": "Record ID of a programs.plan_items record (Programs, or Contracts' own milestone entries).",
+    "ai": true
+   },
+   {
+    "key": "amount",
+    "name": "Amount",
+    "kind": "money",
+    "required": false,
+    "multiple": false,
+    "ai": true
+   },
+   {
+    "key": "currency",
+    "name": "Currency",
+    "kind": "select",
+    "required": false,
+    "multiple": false,
+    "options": [
+     "USD",
+     "EUR",
+     "GBP",
+     "CHF",
+     "CAD",
+     "AUD",
+     "JPY",
+     "CNY",
+     "SEK",
+     "DKK",
+     "NOK",
+     "INR"
+    ],
+    "ai": true
+   },
+   {
+    "key": "owner",
+    "name": "Owner",
+    "kind": "text",
+    "required": false,
+    "multiple": false,
+    "ai": true
+   },
+   {
+    "key": "status",
+    "name": "Status",
+    "kind": "select",
+    "required": true,
+    "multiple": false,
+    "options": [
+     "open",
+     "done",
+     "waived",
+     "missed"
+    ],
+    "ai": true
+   },
+   {
+    "key": "verified",
+    "name": "Verified",
+    "kind": "boolean",
+    "required": false,
+    "multiple": false,
+    "description": "True only after a person verified it in Contracts. Assistant proposals are always false.",
+    "ai": true
+   },
+   {
+    "key": "source_quote",
+    "name": "Source quote",
+    "kind": "text",
+    "required": false,
+    "multiple": false,
+    "description": "Exact sentence from the signed original.",
+    "ai": true
+   },
+   {
+    "key": "source_page",
+    "name": "Source page",
+    "kind": "number",
+    "required": false,
+    "multiple": false,
+    "ai": true
+   },
+   {
+    "key": "source_document_version_id",
+    "name": "Source document version",
+    "kind": "text",
+    "required": false,
+    "multiple": false,
+    "description": "TrialAgents document version ID of the signed original the quote comes from.",
+    "ai": true
+   },
+   {
+    "key": "archived",
+    "name": "Archived",
+    "kind": "boolean",
+    "required": false,
+    "multiple": false,
+    "ai": true
+   }
+  ],
+  "logicalFields": {
+   "agreement_id": "agreement_id",
+   "title": "title",
+   "kind": "kind",
+   "direction": "direction",
+   "due_date": "due_date",
+   "recurrence": "recurrence",
+   "trigger": "trigger",
+   "milestone_id": "milestone_id",
+   "amount": "amount",
+   "currency": "currency",
+   "owner": "owner",
+   "status": "status",
+   "verified": "verified",
+   "source_quote": "source_quote",
+   "source_page": "source_page",
+   "source_document_version_id": "source_document_version_id",
+   "archived": "archived"
+  }
+ }
+}
