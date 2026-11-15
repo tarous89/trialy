@@ -59,8 +59,9 @@ async function setup(){
  await db.query('INSERT INTO users(id,subject,email,name) VALUES($1,$2,$3,$4)',[actor.userId,actor.userId,'owner@example.invalid','Owner']);
  const f=new WorkspaceFoundation(db),s=new Service(db);
  await syncTemplateCatalog(db);
- // Fundraise 2.0.0 is approved by the seed; the explicit update keeps this setup independent of the seed.
- await pg.query("UPDATE app_template_catalog SET status='approved' WHERE template_id='life.investor-crm' AND version='2.0.0'");
+ // Fundraise 2.0.0 is approved by the seed; Programs 2.1.0 (this suite's partner app) was withdrawn by migration 074, so both are
+ // approved only inside this disposable database, keeping the setup independent of the seed.
+ await pg.query("UPDATE app_template_catalog SET status='approved' WHERE (template_id='life.investor-crm' AND version='2.0.0') OR (template_id='life.project-oversight' AND version='2.1.0')");
  const catalog=new AppTemplates(undefined,db);
  const F=await catalog.read({templateId:'life.investor-crm',version:'2.0.0'}),P=await catalog.read({templateId:'life.project-oversight',version:'2.1.0'});
  const install=async(w:string,t:any,name:string,connections:Record<string,string>={})=>{
