@@ -1072,3 +1072,10 @@ PR #214 merged as `e50602db40385e5a3d54747759a793f1fb3747fc` after exact-head pr
 - Current 2.2 catalog blob `343f0753248cc977a59cac67b3ed9ac6594c98c0` checked for monthly Plan periods, one-off/spread behavior, cash calculations and explicit reviewed source links. BDC primary guidance checked. Genuine 2.1 Plan/Cash flow demo images labeled; no assistant host test or 24-month horizon selector claimed.
 - Fictional EUR 4.8m opening cash at 31 December 2026; overhead 100k/120k monthly in 2027/2028, clinical 50k/75k, 300k September 2028 CMC. Base December cash 360k, versus 900k with year-one rates incorrectly repeated; downside adds 600k September CMC and first becomes negative November 2028. All 72 monthly balances across three cases and displayed totals independently verified with Decimal. Chosen 300k reserve is a threshold. No receipts, FX or costs outside specified lines; no post-window/intramonth liquidity claim.
 - Not published. Full exact-head predeploy run **43678921020** in progress. Resume this PR, inspect desktop/mobile artifacts, merge and verify actual live article/discovery/analytics before another topic. Counts remain 40 published; 7 unfinished.
+
+
+### E2 merged — deployment pending/unverified
+
+- PR #221 merged at 2026-11-15 05:05:18 UTC, release `c6c1ed52d56914c656d17f3304b90bc93d7c96c9`.
+- Full predeploy **43678921020** passed validate and seo-container on exact head `603d0753d4a3e3b5f51d1588cdb498b176fa0fae`. Artifact **14147522341**, digest `sha256:977d0f3b88b77f37be550aa2571ab6f7ecb703dbcd1d3d49d32e29b69128aa7e`, inspected at desktop 1440px/mobile 390px. All sections, contained table scrolling, genuine images, shared shell and final CTA passed.
+- Initial changed URL returned HTTP 404; production check **132706956471** in progress. Automatic deployment pending; no authentication fault evidenced. Recheck https://trialagents.com/apps/24-month-biotech-cash-runway-forecast every 30–60 seconds within the 15-minute budget; verify served article, metadata/schema, discovery, images/links and unchanged analytics delivery. Resume this release before any other draft if interrupted.
