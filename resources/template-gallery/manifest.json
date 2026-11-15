@@ -127,6 +127,10 @@
     "catalogDigest": "97a232ae640935ff851665cb69d02b013725929beaf30028fc173cc882a34362",
     "previewSha256": "4e70760128dfe71df83a05981e48f63db40f5bac7395ff8a7fc0b275601da483"
   },
+  "life.partnership-tracker@2.2.0": {
+    "catalogDigest": "fa0c1a458d41408948b3ea3d8e128c7d74c0027e2f1baa0c3e56c6b568d16347",
+    "previewSha256": "c26b2d85e566bd55f0a14429b9d1a4989c751882cfed34fe7646778e4144ea30"
+  },
   "life.trial-radar@1.0.0": {
     "catalogDigest": "c849acef0fa8aa4bdad0d4c0adba4eeb83cb62dbf6eda59a0b1944fb3fbfcc0f",
     "previewSha256": "ad4ec2521d8f84a1870a6de63ece385dc9cb7f023d2f4f6ff1c6acf21d0f4b6d"
