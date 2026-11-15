@@ -1202,3 +1202,10 @@ PR #214 merged as `e50602db40385e5a3d54747759a793f1fb3747fc` after exact-head pr
 - **TrialAgents Runway alternatives: when to switch and what to carry over** — intended URL https://trialagents.com/apps/trialagents-runway-alternatives. [Source PR #225](https://github.com/tarous89/trialagents-public/pull/225), head `3ebb446f6378964baacf1b760d58132bfa83b29b`.
 - Distinct replacement/complement decision and handover angle; primary Float, Jirav and Fathom documentation checked. Runway 2.2 scope, monthly limits, export limits and two approved genuine browser images respected. No pricing, invented features or host tests; tracking unchanged.
 - Not Published. Resume full exact-head predeploy, desktop/mobile artifact inspection, merge and independent live verification before another topic. Counts remain **44 published; 3 unfinished**, including owner-deferred A9.
+
+
+### E7 merged; deployment pending — 15 November 2026
+
+- PR #225 merged at **2026-11-15T09:03:30Z**, release `37d2d207e7e06ce6e5c586bb69fefa3513888d9e`; source head `3ebb446f6378964baacf1b760d58132bfa83b29b`.
+- Full exact-head predeploy **43696729963** passed. Desktop/mobile artifact **14155022100**, digest `sha256:38d7cb86bbe969caeef501a77818d6b22bc632e22eb9054e0fe0f91bd6a54d36`, downloaded, hash-checked and fully visually reviewed. Typography, screenshots, contained mobile table, shell and final green CTA passed.
+- Initial post-merge HTTP check returned **404** for https://trialagents.com/apps/trialagents-runway-alternatives. Existing automatic GitHub-to-CDN build/propagation pending, not an authentication fault. Resume live checks before drafting another topic. Not yet Published; **44 published; 3 unfinished**.
