@@ -19,6 +19,10 @@ test('signup returns to OAuth; PKCE, replay, refresh and revocation are enforced
  const verifier='a'.repeat(43),challenge=createHash('sha256').update(verifier).digest('base64url');const redirect='https://chatgpt.com/connector/oauth/synthetic';
  const browser=request.agent(app);const start=await browser.get('/authorize').query({response_type:'code',client_id:client.body.client_id,redirect_uri:redirect,scope:'trialy',resource:'https://trialy.example/mcp',state:'original-chatgpt-state',code_challenge:challenge,code_challenge_method:'S256'});assert.equal(start.status,302,start.text);
  const login=await browser.get(new URL(start.headers.location).pathname+new URL(start.headers.location).search);assert.equal(login.status,200);
+ const signupPage=await browser.get('/auth/login?mode=signup');assert.equal(signupPage.status,200);
+ assert.match(signupPage.text,/TrialAgents is in beta testing/);assert.match(signupPage.text,/Contact us for free custom implementation/);
+ assert.match(signupPage.text,/action="\/auth\/signup"/);assert.equal((signupPage.text.match(/type="checkbox"/g)||[]).length,1,'Beta notice adds no extra consent gate');
+ assert.doesNotMatch(login.text,/<aside class="ty-beta-notice"/);
  const csrf=login.text.match(/name="csrf" value="([^"]+)"/)![1];
  assert.equal((await browser.post('/auth/signup').type('form').send({firstName:'Test',lastName:'User',email:'test@example.invalid',password:'shortpw',intendedUse:'accepted',csrf:'wrong'})).status,403);
  const signup=await browser.post('/auth/signup').type('form').send({firstName:'Test',lastName:'User',email:'test@example.invalid',password:'shortpw',intendedUse:'accepted',csrf});assert.equal(signup.headers.location,'/auth/consent');
