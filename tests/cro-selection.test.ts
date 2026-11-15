@@ -12,7 +12,7 @@ const contract=JSON.parse(await readFile('templates/core-contract/v1.json','utf8
 const registry=JSON.parse(await readFile('templates/contracts/outputs.json','utf8'));
 const strip=(fs:any[])=>fs.map(({owner,ai,...f}:any)=>f);
 
-test('catalog entry, scalar schema, roles as in scope §7, croselection.awards in the registry, eight layout screens, draft status and retirements',async()=>{
+test('catalog entry, scalar schema, roles as in scope §7, croselection.awards in the registry, eight layout screens, published status and retirements',async()=>{
  assert.equal(entry.version,'2.1.0');assert.equal(entry.name,'CRO Selection');assert.equal(entry.engine,'frontend-js');assert.ok(entry.source!.length<240000,String(entry.source!.length));
  for(const def of Object.values(schema) as any[])for(const f of def.fields){assert.ok(fieldSchema.safeParse(f).success,JSON.stringify(f));assert.equal(f.multiple,false);assert.match(f.key,/^[a-z][a-z0-9_]{0,63}$/);}
  const modes=Object.fromEntries(roles.map(r=>[r,[schema[r].contract,!!schema[r].optional,!!schema[r].readOnly]]));
@@ -26,9 +26,9 @@ test('catalog entry, scalar schema, roles as in scope §7, croselection.awards i
  const prepared=`const templateConfiguration=${JSON.stringify({...entry.defaults,heading:'CRO Selection'})};\nconst templateBindings=[];\n${entry.source}`;
  assert.deepEqual(readCustomLayout(prepared)!.schema.screens.map(s=>s.id),['overview','requests','vendors','messages','proposals','evaluation','decision','settings']);
  for(const k of ['quickStart','dataContract','interactionContract','lifecycle','limitations','examples','tasks'])assert.ok((entry.documentation as any)[k],k);
- // A draft until the owner approves it; 1.0.1 stays immutable and installable; both replaced versions are marked for archival.
+ // Published (owner approval, 15 November 2026); 1.0.1 stays immutable and installable; both replaced versions are withdrawn by migration 074.
  const seed=JSON.parse(await readFile('templates/catalog-seed.json','utf8')),installers=JSON.parse(await readFile('templates/catalog-installers.json','utf8')),ret=JSON.parse(await readFile('templates/catalog-retirements.json','utf8')).retirements;
- assert.equal(seed['life.cro-selection'].version,'1.0.1');assert.equal(installers['life.cro-selection@2.1.0'],'templates/source/cro-selection/schema.example.json');assert.equal(installers['life.cro-selection@2.0.0'],'templates/source/cro-selection/archive/2.0.0/schema.example.json');assert.equal(installers['life.cro-selection@1.0.1'],'templates/source/cro-selection/archive/1.0.1/schema.example.json');
+ assert.equal(seed['life.cro-selection'].version,'2.1.0');assert.equal(seed['life.sponsor-rfp-management'],undefined);assert.equal(installers['life.cro-selection@2.1.0'],'templates/source/cro-selection/schema.example.json');assert.equal(installers['life.cro-selection@2.0.0'],'templates/source/cro-selection/archive/2.0.0/schema.example.json');assert.equal(installers['life.cro-selection@1.0.1'],'templates/source/cro-selection/archive/1.0.1/schema.example.json');
  const old=await appTemplates.read({templateId:'life.cro-selection',version:'1.0.1'});assert.equal(old.version,'1.0.1');
  assert.deepEqual(ret.filter((r:any)=>r.replacedBy==='life.cro-selection@2.1.0').map((r:any)=>[r.templateId,r.version,r.replacedBy]),[['life.cro-selection','1.0.1','life.cro-selection@2.1.0'],['life.sponsor-rfp-management','1.0.1','life.cro-selection@2.1.0']]);
  // The 2.0.0 draft stays in the repository catalog byte for byte (imported drafts are immutable) and its package is archived.

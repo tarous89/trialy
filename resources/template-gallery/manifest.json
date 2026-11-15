@@ -126,5 +126,9 @@
   "life.investor-crm@2.0.0": {
     "catalogDigest": "97a232ae640935ff851665cb69d02b013725929beaf30028fc173cc882a34362",
     "previewSha256": "4e70760128dfe71df83a05981e48f63db40f5bac7395ff8a7fc0b275601da483"
+  },
+  "life.cro-selection@2.1.0": {
+    "catalogDigest": "4353003711d4d3ac999f79e1e18a5ed97217b65a8765a8b6ab49c1a92fcf45b0",
+    "previewSha256": "818a24abfd069b50f96ad9feb4b18b6233d66f125e4fc4b56bdc4b694ec13639"
   }
 }

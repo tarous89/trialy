@@ -2,7 +2,7 @@
 
 Validated against the repository host on 15 November 2026 with fictional data only, on top of the 2.0.0 validation below (which still applies unless this section changes it). Nothing ran on a deployed account.
 
-**Catalog status:** draft. The seed names 1.0.1; 2.0.0 (archived package) and 2.1.0 are drafts, approved only inside the test databases.
+**Catalog status:** published (owner approval, 15 November 2026): the seed names 2.1.0 and migration 074 withdraws both 1.0.1 versions; the deployment is rehearsed from the live catalog state in `tests/template-catalog.test.ts`. The 2.0.0 draft stays a draft.
 
 ## Owner decisions applied (15 November 2026)
 

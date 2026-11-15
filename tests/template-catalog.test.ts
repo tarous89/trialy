@@ -132,3 +132,30 @@ test('migration 073 publishes Contracts 1.1.0 in place of 1.0.0, from the live c
   assert.equal((await status())['life.contracts@1.0.0'],'approved');
  }finally{await pg.close();}
 });
+
+test('migration 074 publishes CRO Selection 2.1.0 in place of CRO Selection 1.0.1 and Sponsor RFP Management 1.0.1, from the live catalog state, once',async()=>{
+ const pg=new PGlite();
+ try{
+  const files=(await readdir('migrations')).filter(f=>f.endsWith('.sql')).sort(),last=files.find(f=>f.startsWith('074_approve_cro_selection'))!;
+  for(const file of files.filter(f=>f<last))await pg.exec(await readFile('migrations/'+file,'utf8'));
+  const db:Database={query:(q,v)=>pg.query(q,v) as any,transaction:fn=>pg.transaction(tx=>fn(tx as Connection)),close:()=>pg.close()};
+  await syncTemplateCatalog(db);
+  const status=async()=>Object.fromEntries((await pg.query<any>("SELECT template_id||'@'||version AS k,status FROM app_template_catalog ORDER BY 1")).rows.map(r=>[r.k,r.status]));
+  // Live state before this deployment: both 1.0.1 versions approved, the 2.0.0 draft imported, 2.1.0 not yet imported.
+  await pg.query("UPDATE app_template_catalog SET status='approved' WHERE version='1.0.1' AND template_id IN ('life.cro-selection','life.sponsor-rfp-management')");
+  await pg.query("UPDATE app_template_catalog SET status='draft' WHERE template_id='life.cro-selection' AND version='2.0.0'");
+  await pg.query("DELETE FROM app_template_catalog WHERE template_id='life.cro-selection' AND version='2.1.0'");
+  const before=await status();
+  await pg.exec(await readFile('migrations/'+last,'utf8'));await syncTemplateCatalog(db);
+  const after=await status();
+  assert.deepEqual(['life.cro-selection@1.0.1','life.sponsor-rfp-management@1.0.1','life.cro-selection@2.0.0','life.cro-selection@2.1.0'].map(k=>after[k]),['draft','draft','draft','approved']);
+  for(const [k,v] of Object.entries(before))if(!['life.cro-selection@1.0.1','life.sponsor-rfp-management@1.0.1'].includes(k))assert.equal(after[k],v,k);
+  const catalog=new AppTemplates(undefined,db);
+  assert.deepEqual((await catalog.list({query:'cro selection'})).templates.filter((t:any)=>t.id==='life.cro-selection').map((t:any)=>t.version),['2.1.0']);
+  assert.ok(!(await catalog.list({query:'sponsor rfp'})).templates.some((t:any)=>t.id==='life.sponsor-rfp-management'),'withdrawn from the gallery');
+  const seed=JSON.parse(await readFile('templates/catalog-seed.json','utf8'));assert.deepEqual(seed['life.cro-selection'],{schema:'templates/source/cro-selection/schema.example.json',version:'2.1.0'});assert.equal(seed['life.sponsor-rfp-management'],undefined);
+  // A later operator decision is not undone by later deployments.
+  await pg.query("UPDATE app_template_catalog SET status='approved' WHERE template_id='life.sponsor-rfp-management' AND version='1.0.1'");await syncTemplateCatalog(db);
+  assert.equal((await status())['life.sponsor-rfp-management@1.0.1'],'approved');
+ }finally{await pg.close();}
+});

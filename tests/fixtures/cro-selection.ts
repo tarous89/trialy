@@ -66,7 +66,7 @@ export async function croSelectionSuite(){
  await db.query('INSERT INTO users(id,subject,email,name) VALUES($1,$2,$3,$4)',[actor.userId,actor.userId,'owner@sponsor.invalid','Alex Owner (fictional)']);
  const f=new WorkspaceFoundation(db),s=new Service(db);
  await syncTemplateCatalog(db);
- // CRO Selection 2.1.0 is a draft in the repository catalog; it is approved only inside this disposable database.
+ // CRO Selection 2.1.0 is approved by the seed; the other versions used here are approved only inside this disposable database.
  await pg.query("UPDATE app_template_catalog SET status='approved' WHERE (template_id='life.cro-selection' AND version='2.1.0') OR (template_id='life.contracts' AND version='1.0.0') OR (template_id='life.cash-runway' AND version='2.1.0')");
  const catalog=new AppTemplates(undefined,db);
  const T={sel:await catalog.read({templateId:'life.cro-selection',version:'2.1.0'}),contracts:await catalog.read({templateId:'life.contracts',version:'1.0.0'}),programs:await catalog.read({templateId:'life.project-oversight',version:'2.1.0'}),runway:await catalog.read({templateId:'life.cash-runway',version:'2.1.0'})};

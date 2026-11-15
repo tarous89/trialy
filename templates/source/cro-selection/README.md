@@ -11,7 +11,7 @@ Choose CROs, CDMOs and labs: from the need to a signed award and a clean handove
 - **No automations** (see `AUTOMATION_RECIPES.md`). The award agreement's status is labelled as kept in Contracts.
 - Editing a request no longer rewrites its unchanged assumptions (a JSON formatting difference was reported as a change).
 
-**Catalog status:** draft. `templates/catalog-seed.json` still names 1.0.1; 2.0.0 and 2.1.0 are imported as drafts. Publishing 2.1.0 needs the owner's approval (seed entry plus a one-time migration that withdraws the two retired versions, as for Contracts 1.1.0).
+**Catalog status:** published (owner approval, 15 November 2026). `templates/catalog-seed.json` names 2.1.0; migration 074 withdraws CRO Selection 1.0.1 and Sponsor RFP Management 1.0.1. The 2.0.0 draft stays a draft.
 
 ## Files
 

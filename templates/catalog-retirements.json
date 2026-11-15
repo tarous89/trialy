@@ -5,14 +5,14 @@
       "templateId": "life.cro-selection",
       "version": "1.0.1",
       "replacedBy": "life.cro-selection@2.1.0",
-      "reason": "CRO Selection 2.1.0 (CRO_SELECTION.md, BT2-05 and §14) is the new major version of the same app; the 2.0.0 draft is archived unchanged.",
+      "reason": "CRO Selection 2.1.0 (CRO_SELECTION.md, BT2-05 and §14) is the new major version of the same app; the 2.0.0 draft is archived unchanged; withdrawn on approval by migration 074.",
       "decided": "2026-11-13"
     },
     {
       "templateId": "life.sponsor-rfp-management",
       "version": "1.0.1",
       "replacedBy": "life.cro-selection@2.1.0",
-      "reason": "Sponsor-side RFP management is covered by CRO Selection 2.1.0 (full selection mode); scope CRO_SELECTION.md.",
+      "reason": "Sponsor-side RFP management is covered by CRO Selection 2.1.0 (full selection mode); scope CRO_SELECTION.md; withdrawn on approval by migration 074 and removed from the seed.",
       "decided": "2026-11-13"
     },
     {

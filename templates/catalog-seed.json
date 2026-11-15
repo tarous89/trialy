@@ -27,10 +27,6 @@
     "schema": "templates/source/experiment-notebook/schema_mapping.example.json",
     "version": "1.2.2"
   },
-  "life.sponsor-rfp-management": {
-    "schema": "templates/source/sponsor-rfp-management/schema_mapping.example.json",
-    "version": "1.0.1"
-  },
   "life.partnership-tracker": {
     "schema": "templates/source/partnership-tracker/schema.example.json",
     "version": "2.1.0"
@@ -80,8 +76,8 @@
     "version": "1.0.1"
   },
   "life.cro-selection": {
-    "schema": "templates/source/cro-selection/archive/1.0.1/schema.example.json",
-    "version": "1.0.1"
+    "schema": "templates/source/cro-selection/schema.example.json",
+    "version": "2.1.0"
   },
   "life.cro-sponsor-updates": {
     "schema": "templates/source/cro-sponsor-updates/schema.example.json",
