@@ -1182,3 +1182,11 @@ PR #214 merged as `e50602db40385e5a3d54747759a793f1fb3747fc` after exact-head pr
 - /apps, sitemap.xml (one canonical entry), llms.txt and llm.xml return HTTP 200 and include E6. Homepage and article deliver the identical loader `/_snapshot/query-assets/114933b27c521a75f333.js` once; it references client `/_snapshot/query-assets/c251da7b4969f7c85048.js`; both return HTTP 200. Tracking configuration, scripts, events, consent, collectors and attribution unchanged; no synthetic production events.
 - Primary evidence and independently checked 500k/800k example are recorded in the source checkpoint. No completed host test, vendor score or performance benchmark claimed. Refresh when Runway capabilities, Float import scope or cited security guidance change. Search indexing, rankings and actual assistant citations remain unverified.
 - Supersedes all E6 source/pending checkpoints. **44 published; 3 unfinished**: owner-deferred A9, E7 and E8. **Next eligible: E7 — TrialAgents Cash Runway Alternatives: Which Tool Should You Choose Instead?**, subject to fresh evidence, duplicate/claim checks and release reconciliation. Only E6 newly published this run.
+
+
+### E7 source checkpoint — 15 November 2026
+
+- Reconciled E6 release `9802375e9761a1da8e0f782fea115f1f994cab78` with fresh HTTP 200 and exact served article fragment. No unfinished Runway release; five unrelated open PRs. Claimed E7 before drafting.
+- **TrialAgents Runway alternatives: when to switch and what to carry over** — intended URL https://trialagents.com/apps/trialagents-runway-alternatives. [Source PR #225](https://github.com/tarous89/trialagents-public/pull/225), head `3ebb446f6378964baacf1b760d58132bfa83b29b`.
+- Distinct replacement/complement decision and handover angle; primary Float, Jirav and Fathom documentation checked. Runway 2.2 scope, monthly limits, export limits and two approved genuine browser images respected. No pricing, invented features or host tests; tracking unchanged.
+- Not Published. Resume full exact-head predeploy, desktop/mobile artifact inspection, merge and independent live verification before another topic. Counts remain **44 published; 3 unfinished**, including owner-deferred A9.
