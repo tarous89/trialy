@@ -1,0 +1,300 @@
+{
+ "asOf": "2026-11-16",
+ "note": "Fictional demo data for Funding Radar. Every company, asset, identifier and URL is invented; .invalid domains resolve nowhere.",
+ "records": [
+  {
+   "role": "fundingradar.settings",
+   "id": "00000000-0000-4000-8000-000000000001",
+   "version": 0,
+   "data": {
+    "lookback_days": 90,
+    "research_template_version": 1
+   }
+  },
+  {
+   "role": "fundingradar.scopes",
+   "id": "00000000-0000-4000-8000-000000000002",
+   "version": 0,
+   "data": {
+    "name": "Fibrosis (fictional)",
+    "definition": "{\"modalities\": \"fibrosis\"}",
+    "sources": "[{\"name\": \"Press releases\", \"covers\": \"Company and newswire announcements.\", \"priority\": 1, \"notes\": \"Use the public site on the web.\"}, {\"name\": \"News\", \"covers\": \"Trade and business news.\", \"priority\": 2, \"notes\": \"Use the public site on the web.\"}, {\"name\": \"SEC filings\", \"covers\": \"Form D, S-1 and 424B filings (EDGAR).\", \"priority\": 3, \"notes\": \"Use the public site on the web.\"}, {\"name\": \"EU Funding & Tenders\", \"covers\": \"EU grants (Horizon Europe, EIC).\", \"priority\": 4, \"notes\": \"Use the public site on the web.\"}, {\"name\": \"NIH RePORTER\", \"covers\": \"US grants (SBIR/STTR and others).\", \"priority\": 5, \"notes\": \"Use the public site on the web.\"}]",
+    "watchlist": "[]",
+    "status": "active",
+    "archived": false
+   }
+  },
+  {
+   "role": "fundingradar.runs",
+   "id": "00000000-0000-4000-8000-000000000003",
+   "version": 0,
+   "data": {
+    "run_id": "00000000-0000-4000-9100-000000000001",
+    "scope_ids": "[\"00000000-0000-4000-8000-000000000002\"]",
+    "kind": "build",
+    "run_on": "2026-11-02",
+    "assistant": "claude",
+    "research_template_version": 1,
+    "sources_report": "[{\"scope_id\": \"00000000-0000-4000-8000-000000000002\", \"sources\": [{\"name\": \"Press releases\", \"status\": \"used\", \"note\": \"\"}, {\"name\": \"News\", \"status\": \"used\", \"note\": \"\"}, {\"name\": \"SEC filings\", \"status\": \"not_relevant\", \"note\": \"\"}, {\"name\": \"EU Funding & Tenders\", \"status\": \"not_relevant\", \"note\": \"\"}, {\"name\": \"NIH RePORTER\", \"status\": \"not_reachable\", \"note\": \"\"}]}]",
+    "items_added": 5,
+    "items_updated": 0,
+    "events_added": 4,
+    "summary": "Fictional run for the demo. Two changes this week.",
+    "status": "completed"
+   }
+  },
+  {
+   "role": "fundingradar.runs",
+   "id": "00000000-0000-4000-8000-000000000004",
+   "version": 0,
+   "data": {
+    "run_id": "00000000-0000-4000-9100-000000000002",
+    "scope_ids": "[\"00000000-0000-4000-8000-000000000002\"]",
+    "kind": "refresh",
+    "run_on": "2026-11-09",
+    "assistant": "claude",
+    "research_template_version": 1,
+    "sources_report": "[{\"scope_id\": \"00000000-0000-4000-8000-000000000002\", \"sources\": [{\"name\": \"Press releases\", \"status\": \"used\", \"note\": \"\"}, {\"name\": \"News\", \"status\": \"used\", \"note\": \"\"}, {\"name\": \"SEC filings\", \"status\": \"not_relevant\", \"note\": \"\"}, {\"name\": \"EU Funding & Tenders\", \"status\": \"not_relevant\", \"note\": \"\"}, {\"name\": \"NIH RePORTER\", \"status\": \"not_reachable\", \"note\": \"\"}]}]",
+    "items_added": 1,
+    "items_updated": 2,
+    "events_added": 4,
+    "summary": "Fictional run for the demo. Two changes this week.",
+    "status": "completed"
+   }
+  },
+  {
+   "role": "fundingradar.runs",
+   "id": "00000000-0000-4000-8000-000000000005",
+   "version": 0,
+   "data": {
+    "run_id": "00000000-0000-4000-9100-000000000003",
+    "scope_ids": "[\"00000000-0000-4000-8000-000000000002\"]",
+    "kind": "refresh",
+    "run_on": "2026-11-16",
+    "assistant": "claude",
+    "research_template_version": 1,
+    "sources_report": "[{\"scope_id\": \"00000000-0000-4000-8000-000000000002\", \"sources\": [{\"name\": \"Press releases\", \"status\": \"used\", \"note\": \"\"}, {\"name\": \"News\", \"status\": \"used\", \"note\": \"\"}, {\"name\": \"SEC filings\", \"status\": \"not_relevant\", \"note\": \"\"}, {\"name\": \"EU Funding & Tenders\", \"status\": \"not_relevant\", \"note\": \"\"}, {\"name\": \"NIH RePORTER\", \"status\": \"not_reachable\", \"note\": \"\"}]}]",
+    "items_added": 1,
+    "items_updated": 2,
+    "events_added": 4,
+    "summary": "Fictional run for the demo. Two changes this week.",
+    "status": "completed"
+   }
+  },
+  {
+   "role": "fundingradar.financings",
+   "id": "00000000-0000-4000-8000-000000000006",
+   "version": 0,
+   "data": {
+    "kind": "series",
+    "company_name": "Fernway Labs (fictional)",
+    "announced_on": "2026-11-10",
+    "amount": 85,
+    "currency": "USD",
+    "lead_investors": "Northstar Ventures (fictional)",
+    "investors": "Bluepeak Capital (fictional), Cedar Fund (fictional)",
+    "stage": "series B",
+    "modality": "small molecule",
+    "indication": "fibrosis",
+    "use_of_proceeds": "Phase 2 (fictional)",
+    "natural_key": "fernway labs (fictional)|series|2026-11-10",
+    "scope_id": "00000000-0000-4000-8000-000000000002",
+    "sources": "[{\"title\": \"Source (fictional)\", \"url\": \"https://news.example.invalid/fernway-labs-(fictional)-series-2026-11-10\", \"date\": \"2026-11-16\"}]",
+    "last_verified_on": "2026-11-16",
+    "last_changed_run_id": "00000000-0000-4000-9100-000000000003",
+    "changed_fields": "[\"company_name\"]",
+    "watched": true,
+    "dismissed": false
+   }
+  },
+  {
+   "role": "fundingradar.financings",
+   "id": "00000000-0000-4000-8000-000000000007",
+   "version": 0,
+   "data": {
+    "kind": "seed",
+    "company_name": "Lumen Fibrotics (fictional)",
+    "announced_on": "2026-11-03",
+    "amount": 12,
+    "currency": "EUR",
+    "lead_investors": "Bluepeak Capital (fictional)",
+    "investors": "Angel syndicate (fictional)",
+    "stage": "seed",
+    "modality": "small molecule",
+    "indication": "fibrosis",
+    "use_of_proceeds": "Phase 2 (fictional)",
+    "natural_key": "lumen fibrotics (fictional)|seed|2026-11-03",
+    "scope_id": "00000000-0000-4000-8000-000000000002",
+    "sources": "[{\"title\": \"Source (fictional)\", \"url\": \"https://news.example.invalid/lumen-fibrotics-(fictional)-seed-2026-11-03\", \"date\": \"2026-11-16\"}]",
+    "last_verified_on": "2026-11-16",
+    "last_changed_run_id": "00000000-0000-4000-9100-000000000001",
+    "changed_fields": "[]",
+    "watched": false,
+    "dismissed": false
+   }
+  },
+  {
+   "role": "fundingradar.financings",
+   "id": "00000000-0000-4000-8000-000000000008",
+   "version": 0,
+   "data": {
+    "kind": "grant",
+    "company_name": "Harborview Biosciences (fictional)",
+    "announced_on": "2026-10-30",
+    "amount": 2.5,
+    "currency": "EUR",
+    "lead_investors": "EIC Accelerator (fictional)",
+    "investors": "",
+    "stage": "preclinical",
+    "modality": "small molecule",
+    "indication": "fibrosis",
+    "use_of_proceeds": "Phase 2 (fictional)",
+    "natural_key": "harborview biosciences (fictional)|grant|2026-10-30",
+    "scope_id": "00000000-0000-4000-8000-000000000002",
+    "sources": "[{\"title\": \"Source (fictional)\", \"url\": \"https://news.example.invalid/harborview-biosciences-(fictional)-grant-2026-10-30\", \"date\": \"2026-11-16\"}]",
+    "last_verified_on": "2026-11-16",
+    "last_changed_run_id": "00000000-0000-4000-9100-000000000001",
+    "changed_fields": "[]",
+    "watched": false,
+    "dismissed": false
+   }
+  },
+  {
+   "role": "fundingradar.financings",
+   "id": "00000000-0000-4000-8000-000000000009",
+   "version": 0,
+   "data": {
+    "kind": "ipo",
+    "company_name": "Quillmont Bio (fictional)",
+    "announced_on": "2026-10-22",
+    "amount": 150,
+    "currency": "USD",
+    "lead_investors": "Northstar Ventures (fictional)",
+    "investors": "Public investors",
+    "stage": "phase 3",
+    "modality": "small molecule",
+    "indication": "fibrosis",
+    "use_of_proceeds": "Phase 2 (fictional)",
+    "natural_key": "quillmont bio (fictional)|ipo|2026-10-22",
+    "scope_id": "00000000-0000-4000-8000-000000000002",
+    "sources": "[{\"title\": \"Source (fictional)\", \"url\": \"https://news.example.invalid/quillmont-bio-(fictional)-ipo-2026-10-22\", \"date\": \"2026-11-16\"}]",
+    "last_verified_on": "2026-11-16",
+    "last_changed_run_id": "00000000-0000-4000-9100-000000000001",
+    "changed_fields": "[]",
+    "watched": false,
+    "dismissed": false
+   }
+  },
+  {
+   "role": "fundingradar.financings",
+   "id": "00000000-0000-4000-8000-000000000010",
+   "version": 0,
+   "data": {
+    "kind": "crossover",
+    "company_name": "Rivermint Therapeutics (fictional)",
+    "announced_on": "2026-11-15",
+    "amount": 110,
+    "currency": "USD",
+    "lead_investors": "Northstar Ventures (fictional), Orchard Partners (fictional)",
+    "investors": "Cedar Fund (fictional)",
+    "stage": "series C",
+    "modality": "small molecule",
+    "indication": "fibrosis",
+    "use_of_proceeds": "Phase 2 (fictional)",
+    "natural_key": "rivermint therapeutics (fictional)|crossover|2026-11-15",
+    "scope_id": "00000000-0000-4000-8000-000000000002",
+    "sources": "[{\"title\": \"Source (fictional)\", \"url\": \"https://news.example.invalid/rivermint-therapeutics-(fictional)-crossover-2026-11-15\", \"date\": \"2026-11-16\"}]",
+    "last_verified_on": "2026-11-16",
+    "last_changed_run_id": "00000000-0000-4000-9100-000000000003",
+    "changed_fields": "[\"new\"]",
+    "watched": false,
+    "dismissed": false
+   }
+  },
+  {
+   "role": "fundingradar.events",
+   "id": "00000000-0000-4000-8000-000000000011",
+   "version": 0,
+   "data": {
+    "scope_id": "00000000-0000-4000-8000-000000000002",
+    "item_id": "00000000-0000-4000-8000-000000000006",
+    "natural_key": "fernway labs (fictional)|series|2026-11-10|financing|2026-11-10",
+    "kind": "financing",
+    "title": "Fernway raises series B (fictional)",
+    "summary": "Fictional event for the demo.",
+    "occurred_on": "2026-11-10",
+    "occurred_month": "2026-11",
+    "expected": false,
+    "impact": "high",
+    "direction": "threat",
+    "so_what": "Could change the plan for NWB-101 (fictional).",
+    "sources": "[{\"title\": \"Source (fictional)\", \"url\": \"https://news.example.invalid/e0\", \"date\": \"2026-11-10\"}]",
+    "run_id": "00000000-0000-4000-9100-000000000003",
+    "status": "new"
+   }
+  },
+  {
+   "role": "fundingradar.events",
+   "id": "00000000-0000-4000-8000-000000000012",
+   "version": 0,
+   "data": {
+    "scope_id": "00000000-0000-4000-8000-000000000002",
+    "item_id": "00000000-0000-4000-8000-000000000010",
+    "natural_key": "rivermint therapeutics (fictional)|crossover|2026-11-15|financing|2026-11-15",
+    "kind": "financing",
+    "title": "Rivermint crossover round (fictional)",
+    "summary": "Fictional event for the demo.",
+    "occurred_on": "2026-11-15",
+    "occurred_month": "2026-11",
+    "expected": false,
+    "impact": "medium",
+    "direction": "neutral",
+    "sources": "[{\"title\": \"Source (fictional)\", \"url\": \"https://news.example.invalid/e1\", \"date\": \"2026-11-15\"}]",
+    "run_id": "00000000-0000-4000-9100-000000000003",
+    "status": "new"
+   }
+  },
+  {
+   "role": "fundingradar.events",
+   "id": "00000000-0000-4000-8000-000000000013",
+   "version": 0,
+   "data": {
+    "scope_id": "00000000-0000-4000-8000-000000000002",
+    "item_id": "00000000-0000-4000-8000-000000000008",
+    "natural_key": "harborview biosciences (fictional)|grant|2026-10-30|grant|2026-10-30",
+    "kind": "grant",
+    "title": "Harborview EIC grant (fictional)",
+    "summary": "Fictional event for the demo.",
+    "occurred_on": "2026-10-30",
+    "occurred_month": "2026-10",
+    "expected": false,
+    "impact": "low",
+    "direction": "neutral",
+    "sources": "[{\"title\": \"Source (fictional)\", \"url\": \"https://news.example.invalid/e2\", \"date\": \"2026-10-30\"}]",
+    "run_id": "00000000-0000-4000-9100-000000000001",
+    "status": "new"
+   }
+  },
+  {
+   "role": "fundingradar.events",
+   "id": "00000000-0000-4000-8000-000000000014",
+   "version": 0,
+   "data": {
+    "scope_id": "00000000-0000-4000-8000-000000000002",
+    "item_id": "00000000-0000-4000-8000-000000000009",
+    "natural_key": "quillmont bio (fictional)|ipo|2026-10-22|ipo|2026-10-22",
+    "kind": "ipo",
+    "title": "Quillmont IPO (fictional)",
+    "summary": "Fictional event for the demo.",
+    "occurred_on": "2026-10-22",
+    "occurred_month": "2026-10",
+    "expected": false,
+    "impact": "medium",
+    "direction": "neutral",
+    "sources": "[{\"title\": \"Source (fictional)\", \"url\": \"https://news.example.invalid/e3\", \"date\": \"2026-10-22\"}]",
+    "run_id": "00000000-0000-4000-9100-000000000001",
+    "status": "reviewed"
+   }
+  }
+ ]
+}

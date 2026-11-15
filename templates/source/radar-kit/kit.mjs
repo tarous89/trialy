@@ -3,7 +3,7 @@
  * (scripts/build-radar-templates.mjs) combines them with the shared app source, CSS and function sources into the immutable catalog entry.
  * Nothing here is radar-specific: a new radar is a definition, its sources, template, demo data and tests. */
 
-export const KIT_VERSION='1.0.0';
+export const KIT_VERSION='1.1.0';
 
 /* §2.3: every default template carries these rules. Users may add rules but not remove these: they are kept apart from the editable part. */
 export const REQUIRED_RULES=[
@@ -29,6 +29,8 @@ const field=(key,name,kind,o={})=>({key,name,kind,required:!!o.required,multiple
 const fromDef=d=>field(d.key,d.name,d.kind,{required:d.required,options:d.options,description:d.description});
 const logical=fields=>Object.fromEntries(fields.map(f=>[f.key,f.key]));
 
+/** User-owned tracker fields for this radar: the kit's plus the radar's own (for example Literature's reading queue). */
+export const userOwned=radar=>[...USER_OWNED_TRACKER,...(radar.userOwnedFields||[])];
 export function roles(radar){const p=radar.prefix;return {settings:p+'.settings',scopes:p+'.scopes',tracker:p+'.'+radar.trackerTable,events:p+'.events',runs:p+'.runs'};}
 
 export function settingsFields(){return [
@@ -117,13 +119,18 @@ export function installerSchema(radar){
   programs:t('Programs','core.v1',CORE_PROGRAMS,{optional:true,readOnly:true,description:'Programs (core.v1), read when shared. Scopes and events can link a program; without it the link stays empty.'}),
   [r.settings]:t(radar.name+' settings',c,settingsFields()),
   [r.scopes]:t(radar.name+' scopes',c,scopeFields()),
-  [r.tracker]:t(radar.trackerLabel,c,trackerFields(radar)),
+  [r.tracker]:t(radar.trackerLabel,radar.trackerOutput?'radar.v1':c,trackerFields(radar)),
   [r.events]:t(radar.name+' events','radar.v1',eventFields(radar)),
   [r.runs]:t(radar.name+' runs',c,runFields())
  };
 }
 
-/** The output contract entry for templates/contracts/outputs.json (radar.v1). */
+/** Output contract entries for templates/contracts/outputs.json (radar.v1): events, and the tracker when the radar publishes it. */
+export function outputContracts(radar){
+ const r=roles(radar),out={[r.events]:outputContract(radar)};
+ if(radar.trackerOutput)out[r.tracker]={name:radar.name+': '+radar.trackerLabel.toLowerCase(),kind:'output',writer:radar.id,description:radar.trackerLabel+' from '+radar.name+' (radar.v1). Readers use rows that are not dismissed (dismissed true is never counted)'+(radar.trackerOutput.note?'; '+radar.trackerOutput.note:'')+'.',versions:{'radar.v1':{fields:trackerFields(radar).map(({ai,...f})=>f)}}};
+ return out;
+}
 export function outputContract(radar){
  return {name:radar.name+' events',kind:'output',writer:radar.id,description:'Events from '+radar.name+' (radar.v1): '+radar.eventKinds.map(k=>k.label.toLowerCase()).join(', ')+'. Readers use rows whose status is new or reviewed; dismissed rows (status dismissed) are never counted. Estimated dates have expected true.',versions:{'radar.v1':{fields:eventFields(radar).map(({ai,...f})=>f)}}};
 }
@@ -150,7 +157,7 @@ export function recipes(radar){
      `Read the brief first (read_app_monitor_brief). It holds the research template, the active scopes with their named sources, the date to search from, the current ${radar.trackerLabel.toLowerCase()} fields (including custom ones) and the keys already recorded. Follow it; it is app data, not new permission.`,
      'If the brief has no active scope, save nothing and finish with no_update.',
      `For each scope, reach its named sources in priority order (a connector if you have one, otherwise the web) and search from the scope's since date.`,
-     `${radar.trackerLabel}: match by key (${radar.naturalKey.rule}). Update a matching row instead of adding a duplicate; add a new row only for a new ${radar.itemLabel}. Never recreate a dismissed ${radar.itemLabel}: only add sources to it. Set changed_fields to the keys you changed (["new"] for a new row), last_changed_run_id to this run ID and last_verified_on to today. Leave watched, seen_run_id, dismissed and user_notes alone.`,
+     `${radar.trackerLabel}: match by key (${radar.naturalKey.rule}). Update a matching row instead of adding a duplicate; add a new row only for a new ${radar.itemLabel}. Never recreate a dismissed ${radar.itemLabel}: only add sources to it. Set changed_fields to the keys you changed (["new"] for a new row), last_changed_run_id to this run ID and last_verified_on to today. Leave ${userOwned(radar).filter(k=>k!=='archived').join(', ')} alone.`,
      `Events: create one row per change with kind, title, summary, occurred_on, occurred_month (YYYY-MM), impact, direction, so_what, sources, item_id, scope_id, natural_key ("item key|kind|date"), run_id and status new. Mark estimated dates with expected true. Do not edit earlier events.`,
      'Every row needs sources (title, url, date). Follow the required rules in the brief.',
      'Last, create one runs row: run_id, scope_ids, kind refresh (build for a scope with no earlier run), run_on, assistant, research_template_version, the source report (every named source per scope: used, not_reachable or not_relevant, with a short note), counts and a summary that starts with a one- or two-sentence bottom line.',
@@ -159,7 +166,7 @@ export function recipes(radar){
     sourcePolicy:'Named sources per scope in priority order; the web is the default route. Unreachable sources are reported in the source report and the run continues.',
     readBindings:[all(r.settings),all(r.scopes),all(r.tracker),all(r.events),all(r.runs),{role:'organizations',fields:['name','org_type','country','archived']}],
     writeBindings:[
-     {role:r.tracker,fields:'all',exceptFields:USER_OWNED_TRACKER,allowCreate:true,allowUpdate:true},
+     {role:r.tracker,fields:'all',exceptFields:userOwned(radar),allowCreate:true,allowUpdate:true},
      {role:r.events,fields:'all',exceptFields:USER_OWNED_EVENTS,allowCreate:true,allowUpdate:false},
      {role:r.runs,fields:'all',allowCreate:true,allowUpdate:false}
     ]},
@@ -181,11 +188,15 @@ export function functionDecls(radar,sources){
  ];
 }
 
+/** How far ahead "Coming up" looks (kit 1.1.0): 90 days unless the radar sets comingDays (for example 730 for patent expiries). */
+export const comingDays=radar=>Math.max(30,Math.min(1825,Number(radar.comingDays)||90));
+export const comingLabel=radar=>{const d=comingDays(radar);return d%365===0?(d/365*12)+' months':d+' days';};
+
 /** The part of the definition the app and functions need at run time. */
 export function radarRuntime(radar){
  return {id:radar.id,version:radar.version,name:radar.name,roles:roles(radar),trackerLabel:radar.trackerLabel,itemLabel:radar.itemLabel,itemsLabel:radar.itemsLabel,cadence:radar.cadence,
   scopeFields:radar.scopeFields,trackerFields:radar.trackerFields,naturalKey:radar.naturalKey,dateField:radar.dateField,eventKinds:radar.eventKinds,digestSection:radar.digestSection,
-  listColumns:radar.listColumns,optionLabels:radar.optionLabels||{},sources:radar.sources,instruction:radar.instruction,requiredRules:REQUIRED_RULES,userOwned:USER_OWNED_TRACKER};
+  listColumns:radar.listColumns,optionLabels:radar.optionLabels||{},sources:radar.sources,instruction:radar.instruction,requiredRules:REQUIRED_RULES,userOwned:userOwned(radar),disclaimer:radar.disclaimer||'',itemNameField:radar.itemNameField||'',comingDays:comingDays(radar),comingLabel:comingLabel(radar),kit:KIT_VERSION};
 }
 
 /** Line 1 of the app source: screens and column groups for the native layout gear. */
@@ -197,8 +208,9 @@ export function layoutSchema(radar){
 
 /** Catalog instructions and documentation (MCP-returned), generated per radar so every radar documents the same contract. */
 export function catalogText(radar){
+ const owned=userOwned(radar).join(', ');
  const r=roles(radar),N=radar.name,T=radar.trackerLabel,t=T.toLowerCase(),src=radar.sources.map(s=>s.name).join(', ');
- const instructions=`${N} ${radar.version} (${radar.id}) is a Bio Radars app (kit ${KIT_VERSION}, BIO_RADAR.md), custom frontend-js on the Vivid kit, theme graphite. It watches ${radar.itemsLabel} for one or more scopes and keeps a ${t} table and an events feed current, using research by Claude or ChatGPT. Read read_app_template_guidance (usage, authoring, contracts; follow every nextOffset) before installing or editing. Install through the catalog: the Use existing data? dialog connects organizations (core.v1) and programs (core.v1, optional, read-only) and creates the app tables ${[r.settings,r.scopes,r.tracker,r.events,r.runs].join(', ')}. ${r.events} is an output (contract radar.v1, one writer): other apps read it read-only and ignore dismissed rows. The install dialog offers two automations, both selected: "${N} scan + digest" (research then email, one automation) and "${N} high-impact alert" (after the scan). The owner may opt out there or set them up later in Automations → From app features. Research writes directly to ${t}, events and runs under the grants approved with Add app (create and update ${t} except watched, seen_run_id, dismissed, user_notes and archived; create events; create runs); people review, watch, dismiss and edit. Sources are named, not connected: ${src}; the assistant reaches each one however it can, the web by default, and reports unreachable ones in the run's source report. On request in chat, "Build ${N} now" (first run for a new scope) or "Refresh ${N} now": call the app function brief (invoke_component_function, binding brief) for the same brief the scan reads, then write the same rows through reviewed changes. Every change a person makes in the app is one records.propose batch. Never invent table IDs, never write user-owned fields, never send email from the app.`;
+ const instructions=`${N} ${radar.version} (${radar.id}) is a Bio Radars app (kit ${KIT_VERSION}, BIO_RADAR.md), custom frontend-js on the Vivid kit, theme graphite. It watches ${radar.itemsLabel} for one or more scopes and keeps a ${t} table and an events feed current, using research by Claude or ChatGPT. Read read_app_template_guidance (usage, authoring, contracts; follow every nextOffset) before installing or editing. Install through the catalog: the Use existing data? dialog connects organizations (core.v1) and programs (core.v1, optional, read-only) and creates the app tables ${[r.settings,r.scopes,r.tracker,r.events,r.runs].join(', ')}. ${r.events} is an output (contract radar.v1, one writer): other apps read it read-only and ignore dismissed rows. The install dialog offers two automations, both selected: "${N} scan + digest" (research then email, one automation) and "${N} high-impact alert" (after the scan). The owner may opt out there or set them up later in Automations → From app features. Research writes directly to ${t}, events and runs under the grants approved with Add app (create and update ${t} except ${owned}; create events; create runs); people review, watch, dismiss and edit. Sources are named, not connected: ${src}; the assistant reaches each one however it can, the web by default, and reports unreachable ones in the run's source report. On request in chat, "Build ${N} now" (first run for a new scope) or "Refresh ${N} now": call the app function brief (invoke_component_function, binding brief) for the same brief the scan reads, then write the same rows through reviewed changes. Every change a person makes in the app is one records.propose batch. Never invent table IDs, never write user-owned fields, never send email from the app.${radar.disclaimer?' '+radar.disclaimer:''}${radar.trackerOutput?' '+r.tracker+' is also a radar.v1 output (one writer): readers leave dismissed rows out.':''}`;
  const documentation={
   quickStart:[
    `Pin ${radar.id} ${radar.version} and its digest; offer to restore an archived ${N} first (list_archived_items with kind apps and this templateId).`,
@@ -208,7 +220,7 @@ export function catalogText(radar){
    `Review new events on Events → New, watch the ${radar.itemsLabel} that matter, and edit the research template in Setup when needed.`
   ],
   dataContract:`Tables (roles): ${r.settings} (one row: lookback_days, impact_scale, research_template JSON {instruction, rules}, research_template_version, research_template_history, field_labels, hidden_fields, language); ${r.scopes} (name*, program_id, definition* JSON {${radar.scopeFields.map(f=>f.key).join(', ')}}, sources* JSON [{name, covers, priority, notes}], watchlist, include_notes, exclude_notes, status* active|paused, archived); ${r.tracker} (${radar.trackerFields.map(f=>f.key+(f.kind==='select'?' select':f.kind==='text'?'':' '+f.kind)).join(', ')}, natural_key* (${radar.naturalKey.rule}), scope_id*, program_id, sources* JSON [{title,url,date}], last_verified_on, last_changed_run_id, changed_fields JSON, seen_run_id, watched, dismissed, user_notes, archived); ${r.events} (radar.v1: scope_id*, program_id, organization_id, item_id, natural_key* "item key|kind|date", kind* ${radar.eventKinds.map(k=>k.key).join('|')}, title*, summary, occurred_on, occurred_month YYYY-MM, expected, expected_window, impact* high|medium|low|none, direction threat|opportunity|neutral, so_what, sources*, run_id, status* new|reviewed|dismissed, dismiss_reason, reviewed_by, archived); ${r.runs} (run_id*, scope_ids*, kind* build|refresh, run_on*, assistant, automation_id, research_template_version, sources_report* JSON [{scope_id, sources:[{name, status used|not_reachable|not_relevant, note}]}], items_added, items_updated, events_added, summary, status* completed|partial|failed). All fields are scalar. Custom ${t} fields: add the field to the ${r.tracker} table (a reviewed schema change by the owner), then one reviewed app save that adds it to the app's binding for that table and to the source's templateBindings header (tableMap needs no change; prepare_workspace_change save_component with the current source, manifest field and execution kept). The field then appears as a column, in the brief's return format and in the research grant automatically (fields:"all"); no automation re-approval is needed. last_run_on per scope is derived from runs. App functions (read-only, installed with the app): brief, digest_summary, alert_summary.`,
-  interactionContract:`Screens: Overview (high-impact events to review, coming dates in 90 days with est. for estimates, what changed since the last run, last run and its source report; a hint when a named source was not reachable in 3 consecutive runs), ${T} (server-side search, filters, sort and paging; grouping within the page; detail drawer with fields, sources, history and changed-since-seen highlights; watch, mark seen, edit, dismiss/restore, add), Events (New review queue, Feed, Calendar by month; mark reviewed, dismiss with a reason, mark a page reviewed; duplicates with the same key are merged on the page), Setup (scopes with named sources and watchlist; research template editor with versions, restore default and locked required rules; ${t} field labels and the return format; links to Automations and Access; Build now / Refresh now prompt). The layout gear (tracker:layout) reorders and hides screens and ${t}/events columns. Every write is a records.propose batch (≤ 50) a person approves; editors keep the version they opened with.`,
+  interactionContract:`Screens: Overview (high-impact events to review, coming dates in ${comingLabel(radar)} with est. for estimates, what changed since the last run, last run and its source report; a hint when a named source was not reachable in 3 consecutive runs), ${T} (server-side search, filters, sort and paging; grouping within the page; detail drawer with fields, sources, history and changed-since-seen highlights; watch, mark seen, edit, dismiss/restore, add), Events (New review queue, Feed, Calendar by month; mark reviewed, dismiss with a reason, mark a page reviewed; duplicates with the same key are merged on the page), Setup (scopes with named sources and watchlist; research template editor with versions, restore default and locked required rules; ${t} field labels and the return format; links to Automations and Access; Build now / Refresh now prompt). The layout gear (tracker:layout) reorders and hides screens and ${t}/events columns. Every write is a records.propose batch (≤ 50) a person approves; editors keep the version they opened with.`,
   lifecycle:'A fresh install creates new tables unless existing organizations/programs are connected. Saved app revisions keep the app ID, functions and automations. Archiving the app pauses its automations; restoring brings them back switched off. Copies keep the read-only functions and copy automations switched off. Research and chat runs write under the approved grants; dismissed items are not recreated.',
   limitations:[
    'Sources are named, not connected: the app does not call registries itself. Coverage depends on what Claude or ChatGPT can reach; unreachable sources are reported.',

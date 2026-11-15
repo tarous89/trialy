@@ -1,0 +1,951 @@
+{
+  "organizations": {
+    "name": "Organizations",
+    "contract": "core.v1",
+    "fields": [
+      {
+        "key": "name",
+        "name": "Name",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "org_type",
+        "name": "Type",
+        "kind": "select",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "options": [
+          "company",
+          "investor",
+          "cro",
+          "cdmo",
+          "site",
+          "funder",
+          "partner",
+          "agency",
+          "other"
+        ]
+      },
+      {
+        "key": "country",
+        "name": "Country",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "website",
+        "name": "Website",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "archived",
+        "name": "Archived",
+        "kind": "boolean",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      }
+    ],
+    "logicalFields": {
+      "name": "name",
+      "org_type": "org_type",
+      "country": "country",
+      "website": "website",
+      "archived": "archived"
+    }
+  },
+  "programs": {
+    "name": "Programs",
+    "contract": "core.v1",
+    "optional": true,
+    "readOnly": true,
+    "description": "Programs (core.v1), read when shared. Scopes and events can link a program; without it the link stays empty.",
+    "fields": [
+      {
+        "key": "name",
+        "name": "Name",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "code",
+        "name": "Code",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "indication",
+        "name": "Indication",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "stage",
+        "name": "Stage",
+        "kind": "select",
+        "required": true,
+        "multiple": false,
+        "ai": true,
+        "options": [
+          "discovery",
+          "preclinical",
+          "ind_enabling",
+          "phase_1",
+          "phase_2",
+          "phase_3",
+          "registration",
+          "approved"
+        ]
+      },
+      {
+        "key": "archived",
+        "name": "Archived",
+        "kind": "boolean",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      }
+    ],
+    "logicalFields": {
+      "name": "name",
+      "code": "code",
+      "indication": "indication",
+      "stage": "stage",
+      "archived": "archived"
+    }
+  },
+  "dealradar.settings": {
+    "name": "Deal Radar settings",
+    "contract": "dealradar.v1",
+    "fields": [
+      {
+        "key": "lookback_days",
+        "name": "Lookback (days)",
+        "kind": "number",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "description": "First-run lookback when a scope has no completed run yet. Default 90."
+      },
+      {
+        "key": "impact_scale",
+        "name": "Impact scale",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "description": "JSON object: {high, medium, low, none} → one line on what each level means for you. Blank uses the standard scale."
+      },
+      {
+        "key": "research_template",
+        "name": "Research template",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "description": "JSON {instruction, rules:[...]}: the editable part of the research template. The required rules are added by the app and cannot be removed."
+      },
+      {
+        "key": "research_template_version",
+        "name": "Research template version",
+        "kind": "number",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "research_template_history",
+        "name": "Research template history",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "description": "JSON array of earlier versions {version, saved_on, note, template}. The newest 20 are kept."
+      },
+      {
+        "key": "field_labels",
+        "name": "Field labels",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "description": "JSON object: tracker field key → label shown in the app (renaming a field for display)."
+      },
+      {
+        "key": "hidden_fields",
+        "name": "Hidden fields",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "description": "JSON array of tracker field keys hidden in the table. Hidden fields stay in the research and the brief."
+      },
+      {
+        "key": "language",
+        "name": "Language",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "description": "Language for summaries and emails. Default English."
+      }
+    ],
+    "logicalFields": {
+      "lookback_days": "lookback_days",
+      "impact_scale": "impact_scale",
+      "research_template": "research_template",
+      "research_template_version": "research_template_version",
+      "research_template_history": "research_template_history",
+      "field_labels": "field_labels",
+      "hidden_fields": "hidden_fields",
+      "language": "language"
+    }
+  },
+  "dealradar.scopes": {
+    "name": "Deal Radar scopes",
+    "contract": "dealradar.v1",
+    "fields": [
+      {
+        "key": "name",
+        "name": "Name",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "program_id",
+        "name": "Program",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "description": "Record ID of a programs record (optional)."
+      },
+      {
+        "key": "definition",
+        "name": "Definition",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true,
+        "description": "JSON object with this radar's scope fields."
+      },
+      {
+        "key": "sources",
+        "name": "Named sources",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true,
+        "description": "JSON array [{name, covers, priority, notes}], in priority order. The web is always the default route."
+      },
+      {
+        "key": "watchlist",
+        "name": "Watchlist",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "description": "JSON array of names or identifiers to watch closely."
+      },
+      {
+        "key": "include_notes",
+        "name": "Include",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "exclude_notes",
+        "name": "Exclude",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "status",
+        "name": "Status",
+        "kind": "select",
+        "required": true,
+        "multiple": false,
+        "ai": true,
+        "options": [
+          "active",
+          "paused"
+        ]
+      },
+      {
+        "key": "archived",
+        "name": "Archived",
+        "kind": "boolean",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      }
+    ],
+    "logicalFields": {
+      "name": "name",
+      "program_id": "program_id",
+      "definition": "definition",
+      "sources": "sources",
+      "watchlist": "watchlist",
+      "include_notes": "include_notes",
+      "exclude_notes": "exclude_notes",
+      "status": "status",
+      "archived": "archived"
+    }
+  },
+  "dealradar.deals": {
+    "name": "Deals",
+    "contract": "radar.v1",
+    "fields": [
+      {
+        "key": "kind",
+        "name": "Kind",
+        "kind": "select",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "options": [
+          "license",
+          "partnership",
+          "option",
+          "acquisition",
+          "collaboration"
+        ]
+      },
+      {
+        "key": "title",
+        "name": "Title",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "announced_on",
+        "name": "Announced",
+        "kind": "date",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "organization_ids",
+        "name": "Parties",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "description": "Comma-separated organizations record IDs."
+      },
+      {
+        "key": "parties",
+        "name": "Party names",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "asset",
+        "name": "Asset",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "modality",
+        "name": "Modality",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "indication",
+        "name": "Indication",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "stage",
+        "name": "Asset stage",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "upfront",
+        "name": "Upfront",
+        "kind": "number",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "milestones",
+        "name": "Milestones",
+        "kind": "number",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "total",
+        "name": "Total value",
+        "kind": "number",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "currency",
+        "name": "Currency",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "royalties_note",
+        "name": "Royalties",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "disclosed",
+        "name": "Terms disclosed",
+        "kind": "boolean",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "natural_key",
+        "name": "Key",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true,
+        "description": "Party names in alphabetical order, lower case, then the kind and the announcement date, joined by \"|\". The same deal reported within 7 days is the same deal: reuse its key."
+      },
+      {
+        "key": "scope_id",
+        "name": "Scope",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true,
+        "description": "Record ID of a scopes record."
+      },
+      {
+        "key": "program_id",
+        "name": "Program",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "description": "Record ID of a programs record."
+      },
+      {
+        "key": "sources",
+        "name": "Sources",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true,
+        "description": "JSON array [{title, url, date}]. A row without a source cannot be saved."
+      },
+      {
+        "key": "last_verified_on",
+        "name": "Last verified",
+        "kind": "date",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "last_changed_run_id",
+        "name": "Changed in run",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "description": "Run ID of the latest run that changed this row."
+      },
+      {
+        "key": "changed_fields",
+        "name": "Changed fields",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "description": "JSON array of field keys the latest run changed; [\"new\"] for a row the run added."
+      },
+      {
+        "key": "seen_run_id",
+        "name": "Seen run",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "description": "Set by a person: the run whose changes they have seen."
+      },
+      {
+        "key": "watched",
+        "name": "Watched",
+        "kind": "boolean",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "description": "Set by a person."
+      },
+      {
+        "key": "dismissed",
+        "name": "Dismissed",
+        "kind": "boolean",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "description": "Set by a person. A dismissed item is not recreated."
+      },
+      {
+        "key": "user_notes",
+        "name": "Notes",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "description": "Written by people only."
+      },
+      {
+        "key": "archived",
+        "name": "Archived",
+        "kind": "boolean",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      }
+    ],
+    "logicalFields": {
+      "kind": "kind",
+      "title": "title",
+      "announced_on": "announced_on",
+      "organization_ids": "organization_ids",
+      "parties": "parties",
+      "asset": "asset",
+      "modality": "modality",
+      "indication": "indication",
+      "stage": "stage",
+      "upfront": "upfront",
+      "milestones": "milestones",
+      "total": "total",
+      "currency": "currency",
+      "royalties_note": "royalties_note",
+      "disclosed": "disclosed",
+      "natural_key": "natural_key",
+      "scope_id": "scope_id",
+      "program_id": "program_id",
+      "sources": "sources",
+      "last_verified_on": "last_verified_on",
+      "last_changed_run_id": "last_changed_run_id",
+      "changed_fields": "changed_fields",
+      "seen_run_id": "seen_run_id",
+      "watched": "watched",
+      "dismissed": "dismissed",
+      "user_notes": "user_notes",
+      "archived": "archived"
+    }
+  },
+  "dealradar.events": {
+    "name": "Deal Radar events",
+    "contract": "radar.v1",
+    "fields": [
+      {
+        "key": "scope_id",
+        "name": "Scope",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true,
+        "description": "Record ID of a scopes record."
+      },
+      {
+        "key": "program_id",
+        "name": "Program",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "description": "Record ID of a programs record."
+      },
+      {
+        "key": "organization_id",
+        "name": "Organization",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "description": "Record ID of an organizations record."
+      },
+      {
+        "key": "item_id",
+        "name": "Item",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "description": "Record ID of the deal in the Deals table."
+      },
+      {
+        "key": "natural_key",
+        "name": "Key",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true,
+        "description": "The item key plus kind and date, so the same event is merged."
+      },
+      {
+        "key": "kind",
+        "name": "Kind",
+        "kind": "select",
+        "required": true,
+        "multiple": false,
+        "ai": true,
+        "options": [
+          "deal_announced",
+          "deal_terminated",
+          "option_exercised"
+        ]
+      },
+      {
+        "key": "title",
+        "name": "Title",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "summary",
+        "name": "Summary",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "occurred_on",
+        "name": "Date",
+        "kind": "date",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "occurred_month",
+        "name": "Month",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "description": "YYYY-MM of the date, for the calendar."
+      },
+      {
+        "key": "expected",
+        "name": "Expected (estimate)",
+        "kind": "boolean",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "expected_window",
+        "name": "Expected window",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "impact",
+        "name": "Impact",
+        "kind": "select",
+        "required": true,
+        "multiple": false,
+        "ai": true,
+        "options": [
+          "high",
+          "medium",
+          "low",
+          "none"
+        ]
+      },
+      {
+        "key": "direction",
+        "name": "Direction",
+        "kind": "select",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "options": [
+          "threat",
+          "opportunity",
+          "neutral"
+        ]
+      },
+      {
+        "key": "so_what",
+        "name": "So what",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "sources",
+        "name": "Sources",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true,
+        "description": "JSON array [{title, url, date}]."
+      },
+      {
+        "key": "run_id",
+        "name": "Run",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "status",
+        "name": "Status",
+        "kind": "select",
+        "required": true,
+        "multiple": false,
+        "ai": true,
+        "options": [
+          "new",
+          "reviewed",
+          "dismissed"
+        ],
+        "description": "Research writes new; people mark reviewed or dismissed."
+      },
+      {
+        "key": "dismiss_reason",
+        "name": "Dismiss reason",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "reviewed_by",
+        "name": "Reviewed by",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "archived",
+        "name": "Archived",
+        "kind": "boolean",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      }
+    ],
+    "logicalFields": {
+      "scope_id": "scope_id",
+      "program_id": "program_id",
+      "organization_id": "organization_id",
+      "item_id": "item_id",
+      "natural_key": "natural_key",
+      "kind": "kind",
+      "title": "title",
+      "summary": "summary",
+      "occurred_on": "occurred_on",
+      "occurred_month": "occurred_month",
+      "expected": "expected",
+      "expected_window": "expected_window",
+      "impact": "impact",
+      "direction": "direction",
+      "so_what": "so_what",
+      "sources": "sources",
+      "run_id": "run_id",
+      "status": "status",
+      "dismiss_reason": "dismiss_reason",
+      "reviewed_by": "reviewed_by",
+      "archived": "archived"
+    }
+  },
+  "dealradar.runs": {
+    "name": "Deal Radar runs",
+    "contract": "dealradar.v1",
+    "fields": [
+      {
+        "key": "run_id",
+        "name": "Run",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "scope_ids",
+        "name": "Scopes",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true,
+        "description": "JSON array of scope record IDs."
+      },
+      {
+        "key": "kind",
+        "name": "Kind",
+        "kind": "select",
+        "required": true,
+        "multiple": false,
+        "ai": true,
+        "options": [
+          "build",
+          "refresh"
+        ]
+      },
+      {
+        "key": "run_on",
+        "name": "Run on",
+        "kind": "date",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "assistant",
+        "name": "Assistant",
+        "kind": "select",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "options": [
+          "claude",
+          "chatgpt"
+        ]
+      },
+      {
+        "key": "automation_id",
+        "name": "Automation",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "research_template_version",
+        "name": "Template version",
+        "kind": "number",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "sources_report",
+        "name": "Source report",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true,
+        "description": "JSON array [{scope_id, sources:[{name, status: used|not_reachable|not_relevant, note}]}]."
+      },
+      {
+        "key": "items_added",
+        "name": "Items added",
+        "kind": "number",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "items_updated",
+        "name": "Items updated",
+        "kind": "number",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "events_added",
+        "name": "Events added",
+        "kind": "number",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "summary",
+        "name": "Summary",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "status",
+        "name": "Status",
+        "kind": "select",
+        "required": true,
+        "multiple": false,
+        "ai": true,
+        "options": [
+          "completed",
+          "partial",
+          "failed"
+        ]
+      }
+    ],
+    "logicalFields": {
+      "run_id": "run_id",
+      "scope_ids": "scope_ids",
+      "kind": "kind",
+      "run_on": "run_on",
+      "assistant": "assistant",
+      "automation_id": "automation_id",
+      "research_template_version": "research_template_version",
+      "sources_report": "sources_report",
+      "items_added": "items_added",
+      "items_updated": "items_updated",
+      "events_added": "events_added",
+      "summary": "summary",
+      "status": "status"
+    }
+  }
+}

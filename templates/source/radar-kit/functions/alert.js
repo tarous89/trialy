@@ -19,5 +19,6 @@ for(const h of hits.slice(0,3)){const x=D(h.e);
  if(x.so_what)L.push('Why it matters: '+String(x.so_what).slice(0,400));
  L.push('Check next: confirm the change in the source and decide whether your plans for this '+RADAR.itemLabel+' change.','');}
 if(hits.length>3)L.push(`${hits.length-3} more high-impact ${hits.length-3===1?'change':'changes'} on watched ${RADAR.itemsLabel}.`,'');
+if(RADAR.disclaimer)L.push(RADAR.disclaimer);
 L.push(`Open ${RADAR.name} in TrialAgents: ${PLATFORM_URL}`);
 return {nonEmpty:true,subject:subject.slice(0,200),text:clip(L,190).join('\n').trim()};

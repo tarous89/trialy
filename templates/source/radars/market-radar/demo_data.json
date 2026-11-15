@@ -1,0 +1,292 @@
+{
+ "asOf": "2026-11-16",
+ "note": "Fictional demo data for Market Radar. Every company, asset, identifier and URL is invented; .invalid domains resolve nowhere.",
+ "records": [
+  {
+   "role": "marketradar.settings",
+   "id": "00000000-0000-4000-8000-000000000001",
+   "version": 0,
+   "data": {
+    "lookback_days": 90,
+    "research_template_version": 1
+   }
+  },
+  {
+   "role": "marketradar.scopes",
+   "id": "00000000-0000-4000-8000-000000000002",
+   "version": 0,
+   "data": {
+    "name": "Fibrosis (fictional)",
+    "definition": "{\"indication\": \"fibrosis\"}",
+    "sources": "[{\"name\": \"FDA\", \"covers\": \"Approvals, labels and supplements (Drugs@FDA, Purple Book).\", \"priority\": 1, \"notes\": \"Use the public site on the web.\"}, {\"name\": \"EMA\", \"covers\": \"EPARs, CHMP opinions, label variations.\", \"priority\": 2, \"notes\": \"Use the public site on the web.\"}, {\"name\": \"HTA bodies (NICE, G-BA, HAS)\", \"covers\": \"Appraisals, benefit ratings and reimbursement decisions.\", \"priority\": 3, \"notes\": \"Add other national HTA bodies for your countries.\"}, {\"name\": \"Company reports\", \"covers\": \"Quarterly and annual reports with product sales.\", \"priority\": 4, \"notes\": \"Record sales as reported, with period and currency.\"}, {\"name\": \"Guideline societies\", \"covers\": \"Treatment guidelines and their updates.\", \"priority\": 5, \"notes\": \"Use the public site on the web.\"}]",
+    "watchlist": "[]",
+    "status": "active",
+    "archived": false
+   }
+  },
+  {
+   "role": "marketradar.runs",
+   "id": "00000000-0000-4000-8000-000000000003",
+   "version": 0,
+   "data": {
+    "run_id": "00000000-0000-4000-9100-000000000001",
+    "scope_ids": "[\"00000000-0000-4000-8000-000000000002\"]",
+    "kind": "build",
+    "run_on": "2026-11-02",
+    "assistant": "claude",
+    "research_template_version": 1,
+    "sources_report": "[{\"scope_id\": \"00000000-0000-4000-8000-000000000002\", \"sources\": [{\"name\": \"FDA\", \"status\": \"used\", \"note\": \"\"}, {\"name\": \"EMA\", \"status\": \"used\", \"note\": \"\"}, {\"name\": \"HTA bodies (NICE, G-BA, HAS)\", \"status\": \"not_relevant\", \"note\": \"\"}, {\"name\": \"Company reports\", \"status\": \"not_relevant\", \"note\": \"\"}, {\"name\": \"Guideline societies\", \"status\": \"not_reachable\", \"note\": \"\"}]}]",
+    "items_added": 4,
+    "items_updated": 0,
+    "events_added": 5,
+    "summary": "Fictional run for the demo. Two changes this week.",
+    "status": "completed"
+   }
+  },
+  {
+   "role": "marketradar.runs",
+   "id": "00000000-0000-4000-8000-000000000004",
+   "version": 0,
+   "data": {
+    "run_id": "00000000-0000-4000-9100-000000000002",
+    "scope_ids": "[\"00000000-0000-4000-8000-000000000002\"]",
+    "kind": "refresh",
+    "run_on": "2026-11-09",
+    "assistant": "claude",
+    "research_template_version": 1,
+    "sources_report": "[{\"scope_id\": \"00000000-0000-4000-8000-000000000002\", \"sources\": [{\"name\": \"FDA\", \"status\": \"used\", \"note\": \"\"}, {\"name\": \"EMA\", \"status\": \"used\", \"note\": \"\"}, {\"name\": \"HTA bodies (NICE, G-BA, HAS)\", \"status\": \"not_relevant\", \"note\": \"\"}, {\"name\": \"Company reports\", \"status\": \"not_relevant\", \"note\": \"\"}, {\"name\": \"Guideline societies\", \"status\": \"not_reachable\", \"note\": \"\"}]}]",
+    "items_added": 1,
+    "items_updated": 2,
+    "events_added": 5,
+    "summary": "Fictional run for the demo. Two changes this week.",
+    "status": "completed"
+   }
+  },
+  {
+   "role": "marketradar.runs",
+   "id": "00000000-0000-4000-8000-000000000005",
+   "version": 0,
+   "data": {
+    "run_id": "00000000-0000-4000-9100-000000000003",
+    "scope_ids": "[\"00000000-0000-4000-8000-000000000002\"]",
+    "kind": "refresh",
+    "run_on": "2026-11-16",
+    "assistant": "claude",
+    "research_template_version": 1,
+    "sources_report": "[{\"scope_id\": \"00000000-0000-4000-8000-000000000002\", \"sources\": [{\"name\": \"FDA\", \"status\": \"used\", \"note\": \"\"}, {\"name\": \"EMA\", \"status\": \"used\", \"note\": \"\"}, {\"name\": \"HTA bodies (NICE, G-BA, HAS)\", \"status\": \"not_relevant\", \"note\": \"\"}, {\"name\": \"Company reports\", \"status\": \"not_relevant\", \"note\": \"\"}, {\"name\": \"Guideline societies\", \"status\": \"not_reachable\", \"note\": \"\"}]}]",
+    "items_added": 1,
+    "items_updated": 2,
+    "events_added": 5,
+    "summary": "Fictional run for the demo. Two changes this week.",
+    "status": "completed"
+   }
+  },
+  {
+   "role": "marketradar.products",
+   "id": "00000000-0000-4000-8000-000000000006",
+   "version": 0,
+   "data": {
+    "name": "Fictorel",
+    "company_name": "Cedarline Pharma (fictional)",
+    "indication": "IPF",
+    "approvals": "US 2019-04-02: adults with IPF; EU 2019-09-10: adults with IPF",
+    "access": "DE: reimbursed, added benefit minor (2020-03-01); FR: ASMR IV; UK: recommended",
+    "guideline_position": "First line (fictional guideline 2025)",
+    "sales_reported": "Q3 2026: 410 million USD (company report, fictional)",
+    "next_decision": "EU label extension (progressive fibrosis)",
+    "next_decision_on": "2027-02-20",
+    "next_decision_estimated": true,
+    "natural_key": "cedarline pharma (fictional)|fictorel|ipf",
+    "scope_id": "00000000-0000-4000-8000-000000000002",
+    "sources": "[{\"title\": \"Source (fictional)\", \"url\": \"https://news.example.invalid/cedarline-pharma-(fictional)-fictorel-ipf\", \"date\": \"2026-11-16\"}]",
+    "last_verified_on": "2026-11-16",
+    "last_changed_run_id": "00000000-0000-4000-9100-000000000003",
+    "changed_fields": "[\"company_name\"]",
+    "watched": true,
+    "dismissed": false
+   }
+  },
+  {
+   "role": "marketradar.products",
+   "id": "00000000-0000-4000-8000-000000000007",
+   "version": 0,
+   "data": {
+    "name": "Pulmavex",
+    "company_name": "Quillmont Bio (fictional)",
+    "indication": "IPF",
+    "approvals": "US 2024-08-15: adults with IPF",
+    "access": "US: covered by major plans",
+    "guideline_position": "Alternative first line",
+    "sales_reported": "Q3 2026: 95 million USD (company report, fictional)",
+    "next_decision": "NICE appraisal",
+    "next_decision_on": "2027-01-14",
+    "next_decision_estimated": true,
+    "natural_key": "quillmont bio (fictional)|pulmavex|ipf",
+    "scope_id": "00000000-0000-4000-8000-000000000002",
+    "sources": "[{\"title\": \"Source (fictional)\", \"url\": \"https://news.example.invalid/quillmont-bio-(fictional)-pulmavex-ipf\", \"date\": \"2026-11-16\"}]",
+    "last_verified_on": "2026-11-16",
+    "last_changed_run_id": "00000000-0000-4000-9100-000000000001",
+    "changed_fields": "[]",
+    "watched": false,
+    "dismissed": false
+   }
+  },
+  {
+   "role": "marketradar.products",
+   "id": "00000000-0000-4000-8000-000000000008",
+   "version": 0,
+   "data": {
+    "name": "Brevaloxin",
+    "company_name": "Maplecrest Pharma (fictional)",
+    "indication": "IPF",
+    "approvals": "Filed with EMA 2026-03-01",
+    "access": "—",
+    "guideline_position": "Not yet in guidelines",
+    "sales_reported": "—",
+    "next_decision": "CHMP opinion",
+    "next_decision_on": "2026-12-12",
+    "next_decision_estimated": true,
+    "natural_key": "maplecrest pharma (fictional)|brevaloxin|ipf",
+    "scope_id": "00000000-0000-4000-8000-000000000002",
+    "sources": "[{\"title\": \"Source (fictional)\", \"url\": \"https://news.example.invalid/maplecrest-pharma-(fictional)-brevaloxin-ipf\", \"date\": \"2026-11-16\"}]",
+    "last_verified_on": "2026-11-16",
+    "last_changed_run_id": "00000000-0000-4000-9100-000000000001",
+    "changed_fields": "[]",
+    "watched": false,
+    "dismissed": false
+   }
+  },
+  {
+   "role": "marketradar.products",
+   "id": "00000000-0000-4000-8000-000000000009",
+   "version": 0,
+   "data": {
+    "name": "Inhalix",
+    "company_name": "Northwind Bio (fictional)",
+    "indication": "IPF",
+    "approvals": "Japan 2026-10-30: adults with IPF",
+    "access": "JP: price listing pending",
+    "guideline_position": "—",
+    "sales_reported": "—",
+    "next_decision": "Japan price listing",
+    "next_decision_on": "2026-12-01",
+    "next_decision_estimated": false,
+    "natural_key": "northwind bio (fictional)|inhalix|ipf",
+    "scope_id": "00000000-0000-4000-8000-000000000002",
+    "sources": "[{\"title\": \"Source (fictional)\", \"url\": \"https://news.example.invalid/northwind-bio-(fictional)-inhalix-ipf\", \"date\": \"2026-11-16\"}]",
+    "last_verified_on": "2026-11-16",
+    "last_changed_run_id": "00000000-0000-4000-9100-000000000003",
+    "changed_fields": "[\"new\"]",
+    "watched": false,
+    "dismissed": false
+   }
+  },
+  {
+   "role": "marketradar.events",
+   "id": "00000000-0000-4000-8000-000000000010",
+   "version": 0,
+   "data": {
+    "scope_id": "00000000-0000-4000-8000-000000000002",
+    "item_id": "00000000-0000-4000-8000-000000000009",
+    "natural_key": "northwind bio (fictional)|inhalix|ipf|approval|2026-10-30",
+    "kind": "approval",
+    "title": "Inhalix approved in Japan (fictional)",
+    "summary": "Fictional event for the demo.",
+    "occurred_on": "2026-10-30",
+    "occurred_month": "2026-10",
+    "expected": false,
+    "impact": "high",
+    "direction": "threat",
+    "so_what": "Could change the plan for NWB-101 (fictional).",
+    "sources": "[{\"title\": \"Source (fictional)\", \"url\": \"https://news.example.invalid/e0\", \"date\": \"2026-10-30\"}]",
+    "run_id": "00000000-0000-4000-9100-000000000003",
+    "status": "new"
+   }
+  },
+  {
+   "role": "marketradar.events",
+   "id": "00000000-0000-4000-8000-000000000011",
+   "version": 0,
+   "data": {
+    "scope_id": "00000000-0000-4000-8000-000000000002",
+    "item_id": "00000000-0000-4000-8000-000000000007",
+    "natural_key": "quillmont bio (fictional)|pulmavex|ipf|hta_decision|2026-11-09",
+    "kind": "hta_decision",
+    "title": "G-BA decision on Pulmavex (fictional)",
+    "summary": "Fictional event for the demo.",
+    "occurred_on": "2026-11-09",
+    "occurred_month": "2026-11",
+    "expected": false,
+    "impact": "medium",
+    "direction": "neutral",
+    "sources": "[{\"title\": \"Source (fictional)\", \"url\": \"https://news.example.invalid/e1\", \"date\": \"2026-11-09\"}]",
+    "run_id": "00000000-0000-4000-9100-000000000003",
+    "status": "new"
+   }
+  },
+  {
+   "role": "marketradar.events",
+   "id": "00000000-0000-4000-8000-000000000012",
+   "version": 0,
+   "data": {
+    "scope_id": "00000000-0000-4000-8000-000000000002",
+    "item_id": "00000000-0000-4000-8000-000000000006",
+    "natural_key": "cedarline pharma (fictional)|fictorel|ipf|sales_reported|2026-11-04",
+    "kind": "sales_reported",
+    "title": "Fictorel Q3 sales reported (fictional)",
+    "summary": "Fictional event for the demo.",
+    "occurred_on": "2026-11-04",
+    "occurred_month": "2026-11",
+    "expected": false,
+    "impact": "low",
+    "direction": "neutral",
+    "sources": "[{\"title\": \"Source (fictional)\", \"url\": \"https://news.example.invalid/e2\", \"date\": \"2026-11-04\"}]",
+    "run_id": "00000000-0000-4000-9100-000000000001",
+    "status": "new"
+   }
+  },
+  {
+   "role": "marketradar.events",
+   "id": "00000000-0000-4000-8000-000000000013",
+   "version": 0,
+   "data": {
+    "scope_id": "00000000-0000-4000-8000-000000000002",
+    "item_id": "00000000-0000-4000-8000-000000000008",
+    "natural_key": "maplecrest pharma (fictional)|brevaloxin|ipf|approval|2026-12-12",
+    "kind": "approval",
+    "title": "CHMP opinion on Brevaloxin expected (fictional)",
+    "summary": "Fictional event for the demo.",
+    "occurred_on": "2026-12-12",
+    "occurred_month": "2026-12",
+    "expected": true,
+    "impact": "high",
+    "direction": "threat",
+    "so_what": "Could change the plan for NWB-101 (fictional).",
+    "sources": "[{\"title\": \"Source (fictional)\", \"url\": \"https://news.example.invalid/e3\", \"date\": \"2026-12-12\"}]",
+    "run_id": "00000000-0000-4000-9100-000000000001",
+    "status": "reviewed"
+   }
+  },
+  {
+   "role": "marketradar.events",
+   "id": "00000000-0000-4000-8000-000000000014",
+   "version": 0,
+   "data": {
+    "scope_id": "00000000-0000-4000-8000-000000000002",
+    "item_id": "00000000-0000-4000-8000-000000000009",
+    "natural_key": "northwind bio (fictional)|inhalix|ipf|pricing|2026-12-01",
+    "kind": "pricing",
+    "title": "Inhalix price listing expected (fictional)",
+    "summary": "Fictional event for the demo.",
+    "occurred_on": "2026-12-01",
+    "occurred_month": "2026-12",
+    "expected": true,
+    "impact": "medium",
+    "direction": "neutral",
+    "sources": "[{\"title\": \"Source (fictional)\", \"url\": \"https://news.example.invalid/e4\", \"date\": \"2026-12-01\"}]",
+    "run_id": "00000000-0000-4000-9100-000000000001",
+    "status": "reviewed"
+   }
+  }
+ ]
+}
