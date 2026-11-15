@@ -1,4 +1,5 @@
 // Capture repository-owned, synthetic demos. No account or production data is read.
+// Usage: node scripts/build-template-screenshots.mjs [id@version ...] — with keys, only those are captured and the manifest keeps the rest.
 import {readFile,readdir,mkdir,writeFile} from 'node:fs/promises';
 import {dirname,resolve} from 'node:path';
 import {pathToFileURL} from 'node:url';
@@ -7,9 +8,11 @@ import {chromium} from 'playwright';
 const installers=JSON.parse(await readFile('templates/catalog-installers.json','utf8'));
 await mkdir('resources/template-gallery',{recursive:true});
 const catalog={};for(const file of await readdir('templates/apps')){if(!file.endsWith('.json'))continue;const raw=await readFile('templates/apps/'+file,'utf8'),t=JSON.parse(raw);catalog[t.id+'@'+t.version]=createHash('sha256').update(raw).digest('hex');}
-const manifest={};
+const only=process.argv.slice(2);
+const manifest=only.length?JSON.parse(await readFile('resources/template-gallery/manifest.json','utf8')):{};
 const browser=await chromium.launch({headless:true,args:['--no-sandbox']});
 try{for(const [key,schema] of Object.entries(installers)){
+ if(only.length&&!only.includes(key))continue;
  const [id,version]=key.split('@');
  const dir=dirname(schema),files=(await readdir(dir)).filter(n=>n.endsWith('.preview.html')||n==='preview.html');
  if(files.length!==1)throw Error('Expected one preview for '+id);
