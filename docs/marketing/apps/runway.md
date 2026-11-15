@@ -1109,3 +1109,10 @@ PR #214 merged as `e50602db40385e5a3d54747759a793f1fb3747fc` after exact-head pr
 - Usable external worksheet instructions and formulas; no download or standard weekly Runway feature promised. Current 2.2 catalog/source blob `343f0753248cc977a59cac67b3ed9ac6594c98c0` and BDC primary cash-planning guidance checked. Approved genuine Plan/Cash flow 2.1 demo images labeled; no assistant host test claimed.
 - Fictional opening EUR 400k at 3 January 2027; 40k each Friday 8 January–2 April plus 150k CRO on 22 January. Receipt 300k on 1 February versus 22 February. All 26 weekly closes, 4 month payment totals, 91-day window and 19 February 30k gap independently verified. Both February closes 230k; delayed case week 7 -30k; both week 13 30k. No other payments/receipts/FX/borrowing; negative balance is unmet funding need. Date-based monthly mapping explicitly includes April, not an assumed three-month quarter.
 - Not published. Resume exact-head full predeploy, desktop/mobile artifact review, merge and independent live checks before another topic. Counts remain 41 published; 6 unfinished.
+
+
+### E3 merged — deployment pending/unverified
+
+- PR #222 merged by 2026-11-15 06:00:54 UTC, release `445c2a2ad35a3dd2ccc8eed16bd7745b98d3412b`.
+- Full predeploy **43682856850** passed validate and seo-container on exact head `b26571d2897a1e1160b49cfe63c3c27584fe9dd3`. Artifact **14149656433**, digest `sha256:51693968b133b887b6f14097805ca11ad9a53ac6eb4636438d2f92a8f317673f`, inspected at desktop 1440px/mobile 390px. All sections, table scrolling, genuine images, shared shell and final CTA passed.
+- Initial changed URL HTTP 404; production check **132719024574** in progress. Existing automatic deployment pending, no authentication fault evidenced. Poll https://trialagents.com/apps/13-week-biotech-cash-flow-forecast within the 15-minute budget and verify live article, metadata/schema, discovery, images/links and unchanged analytics delivery. Resume this release before another draft if interrupted.
