@@ -1215,3 +1215,10 @@ PR #214 merged as `e50602db40385e5a3d54747759a793f1fb3747fc` after exact-head pr
 - **Cash runway software for small biotechs: scope, costs and implementation** — proposed https://trialagents.com/apps/cash-runway-software-costs-implementation. [PR #226](https://github.com/tarous89/trialagents-public/pull/226), exact head `a2e5839e59d2f6789ad6d19888503cc345f298f3`.
 - Distinct reusable approval brief with scope boundary, 12-month cash/effort worksheet and first-close acceptance gates. No vendor prices, estimated deployment time or completed host test. Cost formulas reviewed for double counting and billing-period limits; sample arithmetic checked separately, not marketed as benchmark. Current Runway 2.2 catalog blob `343f0753248cc977a59cac67b3ed9ac6594c98c0` and https://www.gov.uk/guidance/how-to-assess-a-hosting-business-case checked 15 November. Genuine approved Overview/Cash flow browser demos labeled. Tracking untouched.
 - Await full exact-head predeploy, desktop/mobile visual inspection, merge and independent live checks. Not Published. Counts **45 published; 2 unfinished**, E8 and owner-deferred A9.
+
+
+### E8 merged; deployment pending — 15 November 2026
+
+- PR #226 merged **2026-11-15T09:59:18Z**, release `0f093cbd50d3fa448799ba25550c9790c9a49a3c`; exact source `a2e5839e59d2f6789ad6d19888503cc345f298f3`.
+- Full predeploy **43701120204** passed both jobs and all source/snapshot/browser checks. Desktop/mobile artifact **14156717360**, digest `sha256:ba3749bc1af7e59a607b3176f9b2d6522c97267d546d2ac36e07a2895ebbef95`, hash-checked and fully visually reviewed. Responsive layout, contained tables, images, shared shell and final green CTA passed.
+- Initial post-merge HTTP check returned 404 at https://trialagents.com/apps/cash-runway-software-costs-implementation. Existing automatic GitHub-to-CDN build/propagation pending; no authentication fault evidenced. Resume live checks before another topic. Not Published; 45 published and 2 unfinished, including deferred A9.
