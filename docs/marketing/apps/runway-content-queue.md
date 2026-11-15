@@ -1042,3 +1042,10 @@ PR #214 merged as `e50602db40385e5a3d54747759a793f1fb3747fc` after exact-head pr
 - Actual .xlsx created using Artifact Tool, entire sheet rendered/inspected, 36 monthly balances independently checked across base and two receipt-timing cases, zero boundary and blank-input behavior tested. LibreOffice separately recalculated all 12 base closes without errors; Microsoft Excel native and assistant host acceptance not claimed. Download SHA256 `3166fdd54cc683f99e83303d157cb44873ec7ff78ae1e84e2c569e14e0eac1d3`. Builder and evidence in public PR docs/resources and scripts/resources; snapshot regression checks exact bytes and manifest MIME.
 - Current Runway 2.2 catalog blob `343f0753248cc977a59cac67b3ed9ac6594c98c0` reviewed for calculations, Plan/People, reviewed writes, linked sources and scenarios. Microsoft SUM/EDATE primary documentation checked. Approved genuine Cash flow/Plan 2.1 demo images are labeled; no workbook sync or one-click import promised.
 - Not published. Resume this PR through exact-head full predeploy, desktop/mobile artifact review, merge and live article/download verification before another topic. Counts remain 39 published; 8 unfinished.
+
+
+### E1 merged — deployment pending/unverified
+
+- PR #220 merged at 2026-11-15 04:05:49 UTC; release `9190de8ed0a118b2b1fa40a632627433e2f0bdb2`.
+- Exact-head predeploy **43674682893** passed validate and seo-container on `624c2c1b9be8979e4758294cd9e7fc8e31cbbe79`. Artifact **14146390514**, digest `sha256:f9fad9815a2b216ecd52507cdc5d7b08990de344a445d46c7019b439a0bfbe71`, inspected at desktop 1440px/mobile 390px: every section, standard table scrolling, download link, genuine media, shell and final CTA passed.
+- Initial article HTTP 404; Cloudflare check 132693848005 and production check 132693827839 in progress. Automatic deployment pending, no authentication fault evidenced. Poll article within the 15-minute budget and verify the .xlsx HTTP response/MIME/SHA256 as well as full article, discovery and analytics checks. Resume this release before another topic if interrupted.
