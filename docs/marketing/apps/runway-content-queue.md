@@ -46,7 +46,7 @@ Titles below are editorial candidates, not verified product claims. When a title
 | D9 | Cash runway across multiple R&D programs: separate shared costs from savings | Published — live verified 15 November 2026; PR #217, release `83872bb00cfbea1736874e2f0642506f3f8ea2ad` | https://trialagents.com/apps/multiple-rd-programs-biotech-cash-runway |
 | D10 | Biotech board reporting: explain what changed in cash runway | Published — live verified 15 November 2026; PR #218, release `75e16b6633534d28daac38917cc6b95ad2e67a02` | https://trialagents.com/apps/biotech-board-reporting-cash-runway |
 | D11 | How CRO Payment Timing Changes Biotech Cash Runway | Already covered / published | [Live article](https://trialagents.com/apps/cro-payment-timing-biotech-cash-runway) |
-| D12 | How to Forecast Cash to the Next Phase I Milestone | Queued — verify and publish | — |
+| D12 | How to Forecast Cash to the Next Phase I Milestone | In progress — claimed 15 November 2026 for evidence and publication QA | — |
 | E1 | Free Biotech Cash Runway Template: Excel vs Customizable App | Queued — verify and publish | — |
 | E2 | How to Build a 24-Month Cash Runway Forecast for a Biotech Startup | Queued — verify and publish | — |
 | E3 | How to Build a 13-Week Cash Flow Forecast for a Biotech Company | Queued — verify and publish | — |
