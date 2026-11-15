@@ -54,7 +54,7 @@ Titles below are editorial candidates, not verified product claims. When a title
 | E5 | Build a biotech cash runway dashboard without coding: set up, reconcile, then share | Published — live verified 15 November 2026; PR #223; release `caa2bf4b97c0a69bb958ae46d13de762ec0c38cf` | https://trialagents.com/apps/biotech-cash-runway-dashboard-without-coding |
 | E6 | Biotech cash runway software: 15 questions to take into the demo | Published — live verified 15 November 2026; PR #224; release `9802375e9761a1da8e0f782fea115f1f994cab78` | https://trialagents.com/apps/biotech-cash-runway-software-buying-guide |
 | E7 | TrialAgents Runway alternatives: when to switch and what to carry over | Published — live verified 15 November 2026; PR #225, release `37d2d207e7e06ce6e5c586bb69fefa3513888d9e` | https://trialagents.com/apps/trialagents-runway-alternatives |
-| E8 | Cash Runway Management Software: Features, Costs, and Implementation for Small Biotechs | Queued — verify and publish | — |
+| E8 | Cash Runway Management Software: Features, Costs, and Implementation for Small Biotechs | In progress — claimed 15 November 2026 for source and publication QA | — |
 
 ## Published-topic mapping and duplicate control
 
