@@ -43,7 +43,7 @@ Titles below are editorial candidates, not verified product claims. When a title
 | D6 | Biotech hiring vs outsourcing: compare cash through the handover | Published — live verified 14 November 2026; PR #214, release `e50602db40385e5a3d54747759a793f1fb3747fc` | https://trialagents.com/apps/biotech-hiring-vs-outsourcing-cash-runway |
 | D7 | Plan biotech runway around a funding round: find the gap before the cash arrives | Published — live verified 14 November 2026 UTC; PR #215, release `86345a49f823289757ef4990b06183ede4b2b487` | https://trialagents.com/apps/biotech-runway-next-funding-round |
 | D8 | Financial planning for grant-funded biotechs: separate award, claim and cash | Published — live verified 15 November 2026; PR #216, release `21fbe16da15aad15a6625e63762634b5f2598822` | https://trialagents.com/apps/grant-funded-biotech-financial-planning |
-| D9 | Cash runway across multiple R&D programs: separate shared costs from savings | In progress — PR #217; exact-head validation and visual review pending | — |
+| D9 | Cash runway across multiple R&D programs: separate shared costs from savings | Merged — deployment pending/unverified; PR #217 | — |
 | D10 | Biotech Board Reporting: How to Present Burn Rate, Runway, and Financial Risks | Queued — verify and publish | — |
 | D11 | How CRO Payment Timing Changes Biotech Cash Runway | Already covered / published | [Live article](https://trialagents.com/apps/cro-payment-timing-biotech-cash-runway) |
 | D12 | How to Forecast Cash to the Next Phase I Milestone | Queued — verify and publish | — |
@@ -957,3 +957,10 @@ PR #214 merged as `e50602db40385e5a3d54747759a793f1fb3747fc` after exact-head pr
 - [PR #217](https://github.com/tarous89/trialagents-public/pull/217), head `bf1043d6c17c7a69bbef659732c3a533e22d238f`; proposed URL https://trialagents.com/apps/multiple-rd-programs-biotech-cash-runway. Title: **Cash runway across multiple R&D programs: separate shared costs from savings**. Preserves D9's multi-program intent with a distinct allocation-versus-avoidable-payment decision.
 - Current life.cash-runway 2.2.0 documentation/source reviewed, blob `343f0753248cc977a59cac67b3ed9ac6594c98c0`; scale_program scales assigned spend lines only, not People positions or unassigned shared lines. Images remain approved genuine 2.1 browser demos and are labeled. No live host acceptance test claimed.
 - Not published. Resume this PR through exact-head full predeploy, desktop/mobile artifact review, merge and live verification before another topic.
+
+
+### D9 merged — deployment pending/unverified
+
+- PR #217 merged at 2026-11-15 01:02:53 UTC; release `83872bb00cfbea1736874e2f0642506f3f8ea2ad`.
+- Full predeploy run 43660383181 passed on exact head `bf1043d6c17c7a69bbef659732c3a533e22d238f` (validate and seo-container). Desktop 1440px and mobile 390px artifact 14139698724 visually reviewed; standard horizontally scrollable tables, images, shell and final CTA passed.
+- First changed-URL HTTP result: 404, deployment pending. Existing GitHub-connected asynchronous build is being monitored; no authentication fault inferred. Resume this release before drafting another topic until live checks pass.
