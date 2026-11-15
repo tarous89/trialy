@@ -325,6 +325,33 @@
         "ai": true
       },
       {
+        "key": "owner_member_id",
+        "name": "Owner member ID",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "description": "Workspace member ID (UUID) of the owner, copied by the app from the program team. Used only to route TrialAgents notifications to a registered team member."
+      },
+      {
+        "key": "assigned_on",
+        "name": "Assigned on",
+        "kind": "date",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "description": "Date the current owner was assigned. Set by the app when the owner's member ID changes; the assignment notice is sent on this date."
+      },
+      {
+        "key": "remind_on",
+        "name": "Reminder date",
+        "kind": "date",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "description": "Set by the app: end date minus the reminder lead time (Settings) while the item is planned, in progress or at risk and has an owner member ID; empty otherwise. The due-soon reminder is sent on this date."
+      },
+      {
         "key": "archived",
         "name": "Archived",
         "kind": "boolean",
@@ -347,6 +374,9 @@
       "predecessor_id": "predecessor_id",
       "is_key": "is_key",
       "notes": "notes",
+      "owner_member_id": "owner_member_id",
+      "assigned_on": "assigned_on",
+      "remind_on": "remind_on",
       "archived": "archived"
     }
   },
@@ -668,6 +698,33 @@
         "description": "Record ID of a plan_items record, or of the raid record this one was promoted from."
       },
       {
+        "key": "owner_member_id",
+        "name": "Owner member ID",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "description": "Workspace member ID (UUID) of the owner, copied by the app from the program team. Used only to route TrialAgents notifications to a registered team member."
+      },
+      {
+        "key": "assigned_on",
+        "name": "Assigned on",
+        "kind": "date",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "description": "Date the current owner was assigned. Set by the app when the owner's member ID changes; the assignment notice is sent on this date."
+      },
+      {
+        "key": "remind_on",
+        "name": "Reminder date",
+        "kind": "date",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "description": "Set by the app: the next review date while the entry is open or monitoring and has an owner member ID; empty otherwise. The review reminder is sent on this date."
+      },
+      {
         "key": "archived",
         "name": "Archived",
         "kind": "boolean",
@@ -687,6 +744,9 @@
       "next_review": "next_review",
       "status": "status",
       "linked_item_id": "linked_item_id",
+      "owner_member_id": "owner_member_id",
+      "assigned_on": "assigned_on",
+      "remind_on": "remind_on",
       "archived": "archived"
     }
   },
@@ -870,7 +930,16 @@
         "required": false,
         "multiple": false,
         "ai": true,
-        "description": "Day of the month monthly updates are due (1\u201328)."
+        "description": "Day of the month monthly updates are due (1–28)."
+      },
+      {
+        "key": "reminder_days",
+        "name": "Reminder lead time (days)",
+        "kind": "number",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "description": "Days before an item's end date that its owner is reminded (default 7, 1–60)."
       }
     ],
     "logicalFields": {
@@ -878,7 +947,143 @@
       "stages": "stages",
       "health_definitions": "health_definitions",
       "due_soon_days": "due_soon_days",
-      "update_day": "update_day"
+      "update_day": "update_day",
+      "reminder_days": "reminder_days"
+    }
+  },
+  "programs.team": {
+    "name": "Program team",
+    "contract": "programs.v2",
+    "fields": [
+      {
+        "key": "program_id",
+        "name": "Program",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true,
+        "description": "Record ID of a programs record."
+      },
+      {
+        "key": "name",
+        "name": "Name",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true,
+        "description": "Name as used for owners in Programs."
+      },
+      {
+        "key": "member_id",
+        "name": "Member ID",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "description": "Workspace member ID (UUID) of a registered team member. Needed for notifications; blank means names only."
+      },
+      {
+        "key": "role",
+        "name": "Role",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "description": "Role on the program, e.g. program lead, CMC lead."
+      },
+      {
+        "key": "added_on",
+        "name": "Added on",
+        "kind": "date",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "description": "Set by the app when the person is added to the program; the welcome notice is sent on this date."
+      },
+      {
+        "key": "archived",
+        "name": "Archived",
+        "kind": "boolean",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      }
+    ],
+    "logicalFields": {
+      "program_id": "program_id",
+      "name": "name",
+      "member_id": "member_id",
+      "role": "role",
+      "added_on": "added_on",
+      "archived": "archived"
+    }
+  },
+  "programs.digests": {
+    "name": "Weekly digests",
+    "contract": "programs.v2",
+    "fields": [
+      {
+        "key": "run_on",
+        "name": "Run on",
+        "kind": "date",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "period",
+        "name": "Period",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true,
+        "description": "For example 'week of 16 Nov'."
+      },
+      {
+        "key": "summary",
+        "name": "Summary",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true,
+        "description": "The digest text as emailed."
+      },
+      {
+        "key": "attention_count",
+        "name": "Items needing attention",
+        "kind": "number",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "run_id",
+        "name": "Run ID",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "written_by",
+        "name": "Written by",
+        "kind": "select",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "options": [
+          "claude",
+          "chatgpt"
+        ]
+      }
+    ],
+    "logicalFields": {
+      "run_on": "run_on",
+      "period": "period",
+      "summary": "summary",
+      "attention_count": "attention_count",
+      "run_id": "run_id",
+      "written_by": "written_by"
     }
   },
   "runway.month_closes": {

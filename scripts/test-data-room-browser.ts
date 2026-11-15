@@ -3,7 +3,7 @@ import {chromium} from 'playwright';
 import assert from 'node:assert/strict';
 import {dataRoomFixture} from '../tests/fixtures/data-room.js';
 import {frontendFrameDocument} from '../src/shared/frontend-frame.js';
-/* Data Room 1.0.0 in the production sanitized frame with a manifest attached (DATA_ROOM.md §13.8): seven screens at 1440 and 390 px
+/* Data Room 1.1.0 in the production sanitized frame with a manifest attached (DATA_ROOM.md §13.8): seven screens at 1440 and 390 px
  * (no page overflow, no error banner), the room picker, a party drawer on mobile, a reviewed edit with nothing written before approval,
  * and the layout gear event. The recipient room page at both widths is covered by tests/visual/external-exchange.spec.cjs. */
 const x=await dataRoomFixture();let queue:Promise<any>=Promise.resolve();/* one app run at a time per person, as the host does */let component=x.component;const frame=await frontendFrameDocument();const host:string[]=[];

@@ -26,7 +26,9 @@ export const roomOperations=[
  z.object({kind:z.literal('answer_exchange_question'),questionId:id,body:z.string().trim().min(1).max(10000),supersedes:id.optional(),notify:z.boolean().default(true),email:noticeEmailSchema.optional(),...withRecords}).strict(),
  z.object({kind:z.literal('publish_exchange_answer'),groupId:id,questionId:id.optional(),question:z.string().trim().max(5000).optional(),body:z.string().trim().min(1).max(10000),scope:z.enum(['room','level']),level:levelKey.optional(),supersedes:id.optional(),notify:z.boolean().default(true),email:noticeEmailSchema.optional(),...withRecords}).strict(),
  z.object({kind:z.literal('approve_exchange_digest'),groupId:id,expectedVersion,text:emailTextSchema.nullable(),nameKind:z.enum(['organization','person','custom']).optional(),customName:z.string().max(80).optional(),...withRecords}).strict(),
- z.object({kind:z.literal('archive_exchange_group'),groupId:id,archived:z.boolean()}).strict()
+ z.object({kind:z.literal('archive_exchange_group'),groupId:id,archived:z.boolean()}).strict(),
+ /** Room reminders for the workspace (Data Room 1.1.0): the access-ending notification 7 days ahead, on or off. Nothing is sent to parties. */
+ z.object({kind:z.literal('set_exchange_room_notices'),groupId:id,expectedVersion,notifyAccessEnding:z.boolean(),...withRecords}).strict()
 ] as const;
 export type RoomOperation=z.infer<typeof roomOperations[number]>;
 export const roomOperationKinds=roomOperations.map(s=>s.shape.kind.value) as string[];

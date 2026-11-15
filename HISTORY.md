@@ -10,6 +10,36 @@ Investor Updates 1.0.0 (`life.investor-updates`, BT2-06) is built from the revis
 - **Deviations** where the platform contracts differ from the scope are listed in `templates/source/investor-updates/QA.md` (standard records on first use, questions as an ask, one confirmation per version, reminders confirmed when needed, PDF attached by a person, fact re-check limited to bound tables, scheduled draft on `plans.next_period_end`).
 
 Tests: `tests/investor-updates.test.ts`, `tests/investor-updates-commands.test.ts`, `tests/investor-updates-integration.test.ts` and `scripts/test-investor-updates-browser.ts`. Gallery card, screenshot and manifest entry for `life.investor-updates@1.0.0`.
+## 15 November 2026 — Data Room 1.1.0 published; app code access rule
+
+Data Room 1.1.0 (`life.data-room`) is published at the owner's request (seed entry; 1.0.0 was never approved and stays byte-identical, source in `templates/source/data-room/archive/1.0.0/`). Scope and decisions D1–D6: [DATA_ROOM.md §14](docs/product/app-template-blueprints/apps/DATA_ROOM.md#14-data-room-110-platform-standards-assistant-control-and-notifications).
+
+What changes in the app:
+- **App commands.** 32 commands (12 read, 19 propose, 1 layout) through the same handler as clicks. Commands never share, send or change a live room.
+- **Customization without code.** Custom fields on rooms, index items, parties and questions (`settings.custom_fields`); form layouts for rooms, items and questions. Hidden columns from the layout gear now apply (1.0.0 read the wrong key separator).
+- **Notifications.** Notify parties (chosen documents to all or chosen parties, one confirmed send) replaces the automatic daily digest. Access-ending reminder is a switch per room. Instant emails for party questions and notes are the platform's existing workspace notifications, now documented.
+- **One automation.** Weekly room summary to the owner (Mondays 08:00), written by the read-only helper `room_summary`; on by default at install, optional.
+
+Platform:
+- **App code access (owner decision):** reads made by running an app are always checked against the caller's own permissions. The workspace owner and the owner's assistant can run and change any app; unchanged approved catalog code can be run by anyone allowed to use the app (and their assistant); changing code needs full access (`code_change_restricted` otherwise). `src/workspace/service.ts` `componentSourcePolicy`, new `src/workspace/catalog-source.ts`; template guidance 1.3.32.
+- **Rooms:** `set_exchange_room_notices` / `exchange.setRoomNotices` and `notifyAccessEnding` (migration 076); `prepare_exchange_email` accepts `versionIds` for `documents_updated`, and "since" counts the person's last documents email.
+
+Tests: `tests/data-room-commands.test.ts`, `tests/app-source-access.test.ts` (new); Data Room unit, integration and browser tests updated; `tests/workspace.test.ts` now expects the owner's assistant to read app source.
+## 15 November 2026 — Programs 2.2.0 published
+
+New immutable version `life.project-oversight` 2.2.0. It aligns Programs with the app commands, Edit in App and app automation standards, following owner decisions P1–P5 in [PROGRAMS.md §14](docs/product/app-template-blueprints/apps/PROGRAMS.md#14-programs-220-assistant-control-team-notifications-and-the-weekly-digest).
+
+What changes in the app:
+- **App commands.** 27 commands share one handler with the buttons: 13 read, 13 propose, 1 layout. They come with form groups and layout labels/defaults, extra fields, and Edit in Runway for the linked cash forecast.
+- **Program team.** New `programs.team` table. The app keeps `owner_member_id`, `assigned_on` and `remind_on` on items and RAID entries, with a reminder lead time in Settings.
+- **Automations.** Six install recommendations: an AI weekly digest (saves to the new `programs.digests` table, then emails the owner, only when something needs attention) and five member notices. The digest without AI is an app feature. Both digest helpers and the app share one digest core. The 2.1.0 monthly reminder, slip notice and status draft are removed.
+
+Packaging:
+- The build minifies the catalog source, including local names, to stay under 180,000 characters.
+- 2.1.0 is archived unchanged under `templates/source/project-oversight/archive/2.1.0/`, and its installer entry points there.
+- Published at the owner's request: `catalog-seed.json` names 2.2.0, so the sync after migrations imports it approved; migration 075 withdraws 2.1.0 once (`catalog-retirements.json`); the gallery adds `life.project-oversight@2.2.0`. Installed 2.1.0 apps keep their source and data.
+
+Tests: `tests/programs-commands.test.ts` and `tests/programs-automations.test.ts`. `tests/programs.test.ts` now reads the archived 2.1.0 schema and demo data.
 
 ## 15 November 2026 — Partnerships 2.2.0 published
 

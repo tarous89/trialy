@@ -11,9 +11,19 @@ Contracts (`life.contracts`) 1.0.0 was added on 12 November 2026 as a draft (#14
 
 Installed 1.0.0 apps keep working.
 
+On 15 November 2026 the owner approved Programs (`life.project-oversight`) 2.2.0 in place of 2.1.0 ([PROGRAMS.md §14](product/app-template-blueprints/apps/PROGRAMS.md#14-programs-220-assistant-control-team-notifications-and-the-weekly-digest)):
+- the seed names 2.2.0, so the sync after migrations imports it approved;
+- migration 075 withdraws 2.1.0 once (`templates/catalog-retirements.json`);
+- the 2.1.0 source is archived under `templates/source/project-oversight/archive/2.1.0/`, and its installer entry points there;
+- the gallery adds `life.project-oversight@2.2.0`.
+
+Installed 2.1.0 apps keep working.
+
 CRO Selection (`life.cro-selection`) 2.0.0 was added on 13 November 2026 as a draft. It replaces CRO Selection 1.0.1 and Sponsor RFP Management (`life.sponsor-rfp-management`) 1.0.1. Versions to withdraw on a replacement's approval are listed in `templates/catalog-retirements.json`; deployment does not act on that file.
 
 Data Room (`life.data-room`) 1.0.0 was added on 13 November 2026 as a draft, built on the exchange room extension (EXTERNAL_EXCHANGE.md §5). It is a new template, so nothing is retired. It writes the `dataroom.v1` outputs: in `templates/contracts/outputs.json` its writer is now `life.data-room`, and `room_purpose` gains `partnering` (an additive change). It is not in the seed until the owner approves it.
+
+Data Room 1.1.0 was approved by the owner on 15 November 2026: the seed names it, so the catalog sync imports it approved. 1.0.0 was never approved; it stays a draft and byte-identical, with its source archived under `templates/source/data-room/archive/1.0.0/` and its installer entry pointing there. Nothing is retired. Gallery card and screenshot added. Scope: [DATA_ROOM.md §14](product/app-template-blueprints/apps/DATA_ROOM.md#14-data-room-110-platform-standards-assistant-control-and-notifications).
 
 Partnerships (`life.partnership-tracker`) 2.1.0 was approved by the owner on 14 November 2026 in place of Partnership Tracker 1.1.1. The first build, 2.0.0 (#164), had already been imported as a draft, and a published row never changes, so the revision with the platform automation declarations and customization ships as 2.1.0. 2.0.0 stays a draft with its files under `templates/source/partnership-tracker/archive/2.0.0/`. The seed names 2.1.0, so the catalog sync that runs after migrations imports it approved. One-time migration 071 withdraws 1.1.1, and its gallery card and media were updated. Installed 1.1.1 apps keep their saved source and data.
 

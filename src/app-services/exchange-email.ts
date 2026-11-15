@@ -160,7 +160,9 @@ export async function queueNotices(tx:Connection,w:string,group:any,rendered:Awa
  for(const m of rendered.emails)queued.push(await queueEmail(tx,{workspaceId:w,groupId:group.id,exchangeId:m.exchangeId,emailType:rendered.emailType,to:m.to,fromName:rendered.displayName,replyTo:rendered.replyTo,subject:m.subject,text:m.text}));
  return queued;
 }
-export const prepareEmailSchema=z.object({groupId:z.string().uuid(),emailType:z.enum(EMAIL_TYPES),exchangeIds:z.array(z.string().uuid()).min(1).max(200).optional(),subject:z.string().trim().min(1).max(200).optional(),body:z.string().trim().min(1).max(10000).optional(),overrides:z.record(z.string().uuid(),z.object({subject:z.string().trim().min(1).max(200).optional(),body:z.string().trim().min(1).max(10000).optional()}).strict()).default({}),message:z.string().max(5000).default(''),nameKind:z.enum(['organization','person','custom']).optional(),customName:z.string().max(80).optional(),scheduleAt:z.iso.datetime().optional()}).strict();
+export const prepareEmailSchema=z.object({groupId:z.string().uuid(),emailType:z.enum(EMAIL_TYPES),exchangeIds:z.array(z.string().uuid()).min(1).max(200).optional(),subject:z.string().trim().min(1).max(200).optional(),body:z.string().trim().min(1).max(10000).optional(),overrides:z.record(z.string().uuid(),z.object({subject:z.string().trim().min(1).max(200).optional(),body:z.string().trim().min(1).max(10000).optional()}).strict()).default({}),message:z.string().max(5000).default(''),nameKind:z.enum(['organization','person','custom']).optional(),customName:z.string().max(80).optional(),scheduleAt:z.iso.datetime().optional(),
+ /** documents_updated only: limit each person's list to these document versions (still only those open to them). */
+ versionIds:z.array(z.string().uuid()).min(1).max(200).optional()}).strict();
 export type PrepareEmail=z.infer<typeof prepareEmailSchema>;
 /**
  * Build the batch exactly as it will be sent: one rendered email per recipient address of each selected

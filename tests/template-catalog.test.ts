@@ -17,7 +17,7 @@ test('catalog approval, complete suite installation, retry and tenant isolation'
   for(const file of (await readdir('migrations')).filter(f=>f.endsWith('.sql')).sort())await pg.exec(await readFile('migrations/'+file,'utf8'));
   const db:Database={query:(q,v)=>pg.query(q,v) as any,transaction:fn=>pg.transaction(tx=>fn(tx as Connection)),close:async()=>{}};
   await syncTemplateCatalog(db);const catalog=new AppTemplates(undefined,db);
-  const list=await catalog.list({limit:50});assert.equal(list.total,31);
+  const list=await catalog.list({limit:50});assert.equal(list.total,32);
   const actor={userId:randomUUID(),origin:'human' as const};await db.query('INSERT INTO users(id,subject,email,name) VALUES($1,$2,$3,$4)',[actor.userId,actor.userId,'catalog@example.invalid','Catalog tester']);
   const service=new Service(db),workspace=await service.createWorkspace(actor,'Catalog'),f=new WorkspaceFoundation(db);
   const tools=new Map<string,any>();addAppMcp({registerTool:(name:string,config:any,handler:any)=>tools.set(name,{config,handler})} as any,f,actor,(fn:any)=>fn,{});
@@ -49,7 +49,7 @@ test('catalog approval, complete suite installation, retry and tenant isolation'
   assert.equal((await db.query('SELECT count(*)::int n FROM entity_types')).rows[0].n,before);
   await db.query("UPDATE app_template_catalog SET install_schema=install_schema - 'zz_invalid' WHERE template_id=$1 AND version=$2",[candidate.id,candidate.version]);
   await pg.exec(await readFile('ops/runtime-role.sql','utf8'));await pg.exec('SET ROLE trialy_runtime');
-  assert.equal((await db.query('SELECT count(DISTINCT template_id)::int n FROM app_template_catalog')).rows[0].n,31);
+  assert.equal((await db.query('SELECT count(DISTINCT template_id)::int n FROM app_template_catalog')).rows[0].n,32);
   await assert.rejects(()=>db.query("UPDATE app_template_catalog SET status='approved'"));
   await pg.exec('RESET ROLE');
   const runtime:Database={query:(q,v)=>runtime.transaction(tx=>tx.query(q,v)),transaction:fn=>pg.transaction(async tx=>{await tx.exec('SET LOCAL ROLE trialy_runtime');await setDatabaseContext(tx as Connection);return fn(tx as Connection);}),close:async()=>{}};
@@ -62,7 +62,7 @@ test('catalog approval, complete suite installation, retry and tenant isolation'
   await assert.rejects(()=>templateMedia(catalog,'../../etc/passwd',t.version,'screenshot'));await assert.rejects(()=>installCatalogApp(f,actor,workspace.id,request));
   await assert.rejects(()=>installCatalogApp(f,{...actor,origin:'ai'},workspace.id,request));
   await assert.rejects(()=>installCatalogApp(f,{...actor,userId:randomUUID()},workspace.id,request));
-  assert.equal((await catalog.list({limit:50})).total,30);
+  assert.equal((await catalog.list({limit:50})).total,31);
  }finally{await pg.close();}
 });
 
@@ -106,6 +106,31 @@ test('migration 063 approves Contracts 1.0.0 once, if an earlier deployment impo
   // An operator withdrawal afterwards is not undone by later deployments.
   await pg.query("UPDATE app_template_catalog SET status='draft' WHERE template_id='life.contracts' AND version='1.0.0'");await syncTemplateCatalog(db);
   assert.equal((await status())['life.contracts@1.0.0'],'draft');
+ }finally{await pg.close();}
+});
+
+test('migration 075 publishes Programs 2.2.0 in place of 2.1.0, from the live catalog state, once',async()=>{
+ const pg=new PGlite();
+ try{
+  const files=(await readdir('migrations')).filter(f=>f.endsWith('.sql')).sort(),last=files.find(f=>f.startsWith('075_approve_programs'))!;
+  for(const file of files.filter(f=>f<last))await pg.exec(await readFile('migrations/'+file,'utf8'));
+  const db:Database={query:(q,v)=>pg.query(q,v) as any,transaction:fn=>pg.transaction(tx=>fn(tx as Connection)),close:()=>pg.close()};
+  await syncTemplateCatalog(db);
+  const status=async()=>Object.fromEntries((await pg.query<any>("SELECT template_id||'@'||version AS k,status FROM app_template_catalog ORDER BY 1")).rows.map(r=>[r.k,r.status]));
+  // Live state before this deployment: 2.1.0 approved (migration 062), 2.2.0 imported earlier as a draft or not at all.
+  await pg.query("UPDATE app_template_catalog SET status='approved' WHERE template_id='life.project-oversight' AND version='2.1.0'");
+  await pg.query("DELETE FROM app_template_catalog WHERE template_id='life.project-oversight' AND version='2.2.0'");
+  const before=await status();
+  await pg.exec(await readFile('migrations/'+last,'utf8'));await syncTemplateCatalog(db);
+  const after=await status();assert.equal(after['life.project-oversight@2.1.0'],'draft');assert.equal(after['life.project-oversight@2.2.0'],'approved');
+  for(const [k,v] of Object.entries(before))if(!k.startsWith('life.project-oversight@'))assert.equal(after[k],v,k);
+  const listed=(await new AppTemplates(undefined,db).list({query:'programs'})).templates.filter((t:any)=>t.id==='life.project-oversight');
+  assert.deepEqual(listed.map((t:any)=>t.version),['2.2.0']);
+  const seed=JSON.parse(await readFile('templates/catalog-seed.json','utf8'));assert.deepEqual(seed['life.project-oversight'],{schema:'templates/source/project-oversight/schema.example.json',version:'2.2.0'});
+  const gallery=JSON.parse(await readFile('resources/template-gallery/manifest.json','utf8'));assert.ok(gallery['life.project-oversight@2.2.0'],'gallery media for 2.2.0');
+  // A later operator decision is not undone.
+  await pg.query("UPDATE app_template_catalog SET status='approved' WHERE template_id='life.project-oversight' AND version='2.1.0'");await syncTemplateCatalog(db);
+  assert.equal((await status())['life.project-oversight@2.1.0'],'approved');
  }finally{await pg.close();}
 });
 

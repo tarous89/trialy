@@ -276,3 +276,53 @@ Data Room never writes another app's own tables; handoffs are proposals in the o
 8. **Layout:** desktop 1440 and mobile 390, for both the app and the recipient room page.
 
 **Open for design partners:** default required items per purpose and stage; whether view-only is wanted by default; quiet and hot thresholds.
+
+---
+
+## 14. Data Room 1.1.0: platform standards, assistant control and notifications
+
+**Status:** Built and published (owner approval, 15 November 2026). Immutable `templates/apps/life.data-room-1.1.0.json`, named by `templates/catalog-seed.json`; 1.0.0 (never approved) stays byte-identical, with its source package in `templates/source/data-room/archive/1.0.0/`. Where this section conflicts with §5, §6, §10 or §12, this section wins.
+
+### 14.1 Owner decisions (15 November 2026)
+
+| # | Decision |
+|---|---|
+| **D1** | **Telling parties about documents is not an automation.** The person chooses one or more new or updated documents and sends to everyone who can open them, or to chosen parties, in one confirmed send. The automatic daily digest to parties is removed. |
+| **D2** | **Room summary to the owner is weekly** (Mondays 08:00 Europe/Berlin): the only automation, offered at install, switched on by default, can be turned off. |
+| **D3** | **Access ending is an on/off switch per room**, not an automation: TrialAgents reminds the workspace 7 days before a party's access ends. Parties get an email only if the person schedules it in the send review. |
+| **D4** | **No answer-drafting automation.** Users ask Claude or ChatGPT in chat; the assistant saves drafts through the app's own commands for review. |
+| **D5** | **The owner gets an email at once** for every party question or note (and requested uploads and first opens). This is the platform's existing workspace notification; the app documents it. |
+| **D6** | **App access (platform):** access is enforced by the platform on every read. The workspace owner and the owner's own assistant can run and change any app; unchanged catalog code can be run by anyone allowed to use the app, including their assistant; changing code needs full access (no documents or fields hidden), so members without full access cannot customize code. See [template authoring 1.3.32](../../../../templates/TEMPLATE_AUTHORING.md). |
+
+### 14.2 Platform standards applied
+
+- **Integrations (modular apps §7):** unchanged; Data Room is the writer of `dataroom.v1` (read by Fundraise and Partnerships) and connects shared core roles at install. Text that still said "BD Pipeline" now says Partnerships.
+- **App commands (guidance 1.3.31):** 32 commands on line 2 of the source (`appCommands`), run through the same handler as clicks (`handle(event)`), with records buffered and proposed once. Read: `schema.describe`, `rooms.read`, `waiting.read`, `index.read`, `readiness.read`, `parties.read`, `activity.read`, `changes.read`, `brief.read`, `questions.read`, `notify.read`, `settings.read`. Propose: `room.create`, `room.setup_structure`, `room.setup_items`, `room.status`, `record.save` (any form: room, level, section, item, question, party details, organization, person), `record.archive`, `item.attach`, `item.use_version`, `party.add`, `party.levels` (before a link exists), `questions.log`, `question.save` (save, approve, decline), `settings.save`, `email_text.save`, `email_text.reset`, `template.copy`, `template.save`, `custom_field.save`, `custom_field.remove`. Layout: `layout.save`. Anything that shares, sends or changes a live room is refused by commands (it stays a person's click; assistants use `prepare_exchange_email` and `prepare_workspace_change`).
+- **App automations (RA1–RA5, #169):** one declared recommendation `weekly_room_summary` (email, `summaryBinding: room_summary`, an E7 read-only helper with `records.read` on Data Room's roles). No research automation, so no write grants.
+
+### 14.3 Customization without code
+
+- **Custom fields** on rooms, index items, parties (grants) and questions: `settings.custom_fields` `[{role,key,label,kind,options}]`. `custom_field.save` registers the field and returns the schema change still needed (field on the table, then an app revision that changes only the binding). The app shows bound custom fields in the form, the details and command results. They are never used in readiness or engagement.
+- **Form layout:** form groups `room_form`, `item_form` and `question_form` in `templateLayoutSchema`; the layout gear or `layout.save` sets order, hides optional fields, labels and defaults. Required fields cannot be hidden.
+- **Fix:** hidden columns from the layout gear (`group:field`) now apply; 1.0.0 read `group.field`.
+
+### 14.4 Platform additions
+
+- `set_exchange_room_notices` (room operation, `exchange.setRoomNotices`) and `notifyAccessEnding` on `exchange.createGroup` (migration 076, `exchange_groups.notify_access_ending`, default on). The access-ending sweep skips rooms with the switch off.
+- `exchange.prepareEmail` / `prepare_exchange_email` accept `versionIds` for `documents_updated`: each person is told only about the chosen versions they can open. Without it, "since" now also counts the person's last `documents_updated` email, not only an automatic digest.
+- Source access rule (D6) in `src/workspace/service.ts` (`componentSourcePolicy`) and `src/workspace/catalog-source.ts`.
+
+### 14.5 Data changes
+
+`dataroom.settings.notify_updates_default` and `dataroom.rooms.notify_updates` are removed (1.0.0 was never published); `dataroom.settings.custom_fields` and `dataroom.rooms.access_ending_reminder` (default on) are added. The `dataroom.v1` outputs are unchanged.
+
+### 14.6 Acceptance (in addition to §13)
+
+1. Every read command returns the screen's own figures (readiness, hot and quiet, call brief); every propose command gives the click path's exact records; exchange actions are refused by commands with no partial review.
+2. The owner's assistant runs the app and its commands in a workspace with documents that are not AI-readable; links and those documents stay out of every result.
+3. Notify parties: the person picks the updated deck; the three parties who can open it get one confirmed send, each listing only that document; nothing is sent automatically.
+4. The access-ending switch on a live room is one review that also updates the room record; going live carries the room's setting.
+5. A custom field registered by command appears in the form and details once bound, and is saved like any field; form labels, hidden fields and defaults apply without a code change.
+6. The weekly summary lists new viewers, active and quiet parties, open/overdue/new questions and items due, and sends nothing when no room is live.
+
+Tests: `tests/data-room-commands.test.ts` (new), `tests/data-room.test.ts`, `tests/data-room-integration.test.ts`, `tests/app-source-access.test.ts` (new), `scripts/test-data-room-browser.ts`.

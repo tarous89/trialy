@@ -8,6 +8,7 @@ import {monitoringReceiptRuns} from '../app-services/monitoring-guard.js';
 import {appSections,sectionGrant,projectAppSections,validateSectionRevision} from '../domain/app-sections.js';
 import {openRuntimeView,assertRuntimeReadAccess,assertRuntimeScope,assertRuntimeWriteSchema,incompatible} from './runtime-view.js';
 import {withReadMetadata} from '../db/read-metadata.js';
+import {isCatalogSource} from './catalog-source.js';
 import {FrontendQueue} from './frontend-queue.js';
 import {AppActions} from '../app-services/service.js';
 import {AppMonitoring} from '../app-services/monitoring.js';
@@ -84,7 +85,7 @@ export class WorkspaceFoundation {
   a={...a,accessToolId:id};
   const c=(await tx.query('SELECT * FROM workspace_components WHERE id=$1 AND workspace_id=$2',[id,w])).rows[0];
   if(!c||c.deleted_at)fail(404,'not_found','Component not found');
-  if(c.source_access!=='bindings')await this.componentSourcePolicy(tx,a,w);
+  if(c.source_access!=='bindings')await this.componentSourcePolicy(tx,a,w,c.source);
   const p=await access(tx,a,w);const chain=await this.nodeAccess(tx,a,w,c.project_id);
   if((p.role!=='owner'&&c.allowed_users!==null&&!c.allowed_users.includes(a.userId))||(a.origin==='ai'&&!c.ai_enabled))fail(404,'not_found','Component not found');
   await toolPolicy(tx,a,p,id);if(validateBindings&&!standardTracker(c.source))await this.componentBindings(tx,a,w,c.archived?await this.availableBindings(tx,w,c.bindings):c.bindings,c.archived);await this.componentAssets(tx,a,w,c.assets);return {...c,project_archived:chain.some(n=>n.archived)};
@@ -94,20 +95,30 @@ export class WorkspaceFoundation {
   if(latest.archived||latest.project_archived)fail(409,'component_archived','This app is archived');
   if(!viewId&&latest.format!=='frontend-js')incompatible();
   const view=await openRuntimeView(tx,a,w,latest,expectedVersion,viewId),c=view.component;
-  if(c.source_access!=='bindings')await this.componentSourcePolicy(tx,a,w);
+  if(c.source_access!=='bindings')await this.componentSourcePolicy(tx,a,w,c.source);
   await this.componentAssets(tx,a,w,c.assets);
   await assertRuntimeReadAccess(tx,a,w,latest,view);
   const p=await access(tx,a,w);return {view,c:projectAppSections(p,a,c,latest),latest:projectAppSections(p,a,latest)};
  }
- private async componentSourcePolicy(tx:Connection,a:Actor,w:string){
+ /** Who may open, run or save workspace-scoped app source.
+  * Reads made by running source are always checked per request against the caller's own
+  * permissions; this guards the source text itself, which could hold values copied in by an editor.
+  * - The workspace owner, and the owner's own Claude or ChatGPT, have full access (owner decision, 15 November 2026).
+  * - Unchanged approved catalog code holds no workspace data, so anyone allowed to use the app may open and run it,
+  *   and saving it (install, layout changes) does not count as changing code.
+  * - Anything else (custom or changed code) needs full access: no document, folder or field hidden from the caller.
+  *   So members without full access, and their assistants, cannot change an app's code. */
+ private async componentSourcePolicy(tx:Connection,a:Actor,w:string,source?:unknown,saving=false){
   const p=await this.policy(tx,a,w);
-  // Source can embed copied values outside declared bindings. Until provenance-aware
-  // component grants exist, never expose it to an actor with a partial data view.
+  if(p.role==='owner')return;
   const rules=(await tx.query('SELECT allowed_users,ai_enabled FROM document_access WHERE workspace_id=$1 UNION ALL SELECT allowed_users,ai_enabled FROM folder_access WHERE workspace_id=$1',[w])).rows;
   const privateFiles=a.origin==='ai'?(await tx.query('SELECT id FROM document_versions WHERE workspace_id=$1 AND ai_enabled=false LIMIT 1',[w])).rows.length:0;
-  if(privateFiles||rules.some(r=>(p.role!=='owner'&&r.allowed_users!==null&&!r.allowed_users.includes(a.userId))||(a.origin==='ai'&&!r.ai_enabled)))fail(403,'component_scope','Saved source currently requires unrestricted document access');
-  const types=(await tx.query('SELECT fields FROM entity_types WHERE workspace_id=$1',[w])).rows;
-  if(types.some(t=>visibleFields(t.fields,p,a).length!==t.fields.length))fail(403,'component_scope','Saved source currently requires access to every workspace field');
+  const documents=!!privateFiles||rules.some(r=>(r.allowed_users!==null&&!r.allowed_users.includes(a.userId))||(a.origin==='ai'&&!r.ai_enabled));
+  const fields=!documents&&(await tx.query('SELECT fields FROM entity_types WHERE workspace_id=$1',[w])).rows.some(t=>visibleFields(t.fields,p,a).length!==t.fields.length);
+  if(!documents&&!fields)return;
+  if(await isCatalogSource(tx,source))return;
+  if(saving)fail(403,'code_change_restricted','Changing an app\'s code needs full access: the workspace owner, or a member (and their assistant) with no documents or fields hidden. Layout, settings and record changes are still available.');
+  fail(403,'component_scope',documents?'Saved source currently requires unrestricted document access':'Saved source currently requires access to every workspace field');
  }
  private async componentAssets(tx:Connection,a:Actor,w:string,assets:any[]=[]){
   if(!assets.length)return [];
@@ -529,7 +540,7 @@ export class WorkspaceFoundation {
  async componentHistory(a:Actor,w:string,id:string){
   const current=await this.component(this.db,a,w,id),p=await access(this.db,a,w);
   const rows=(await this.db.query("SELECT * FROM revisions WHERE workspace_id=$1 AND object_id=$2 AND object_kind='workspace_component' ORDER BY version DESC",[w,id])).rows;
-  const result=[];for(const r of rows){try{const snapshot=projectAppSections(p,a,{...r.snapshot,id},current);if(snapshot.source_access!=='bindings')await this.componentSourcePolicy(this.db,a,w);await this.nodeAccess(this.db,a,w,snapshot.project_id);await this.componentBindings(this.db,{...a,accessToolId:id},w,snapshot.bindings);await this.componentAssets(this.db,a,w,snapshot.assets);result.push({...r,snapshot});}catch{}}return result;
+  const result=[];for(const r of rows){try{const snapshot=projectAppSections(p,a,{...r.snapshot,id},current);if(snapshot.source_access!=='bindings')await this.componentSourcePolicy(this.db,a,w,snapshot.source);await this.nodeAccess(this.db,a,w,snapshot.project_id);await this.componentBindings(this.db,{...a,accessToolId:id},w,snapshot.bindings);await this.componentAssets(this.db,a,w,snapshot.assets);result.push({...r,snapshot});}catch{}}return result;
  }
  private async componentRevision(tx:Connection,w:string,id:string,version:number){
   const r=(await tx.query("SELECT snapshot FROM revisions WHERE workspace_id=$1 AND object_id=$2 AND object_kind='workspace_component' AND version=$3",[w,id,version])).rows[0];
@@ -757,7 +768,7 @@ export class WorkspaceFoundation {
   }}
   if(op.kind==='move_node'||op.kind==='rename_node'){const n=(await this.activeNode(tx,a,w,op.nodeId))[0];if(n.version!==op.expectedVersion)fail(409,'stale_version','Project or folder changed');if(op.kind==='move_node'){await this.parent(tx,w,op.parentId,op.nodeId);if(op.parentId)await this.activeNode(tx,a,w,op.parentId);}}
   if(op.kind==='save_component'||op.kind==='move_component'||op.kind==='archive_component'||op.kind==='restore_component'){
-   if(op.kind!=='save_component'||op.content.sourceAccess!=='bindings')await this.componentSourcePolicy(tx,a,w);
+   if(op.kind!=='save_component'||op.content.sourceAccess!=='bindings')await this.componentSourcePolicy(tx,a,w,op.kind==='save_component'?op.content.source:undefined,op.kind==='save_component');
    else if((await access(tx,a,w,true)).role!=='owner')fail(403,'owner_required','Only an owner can approve source sharing with a restricted data audience');
    if((op.kind==='save_component'||op.kind==='move_component')&&op.projectId){const project=(await this.activeNode(tx,a,w,op.projectId))[0];if(project.kind!=='project')fail(400,'project_required','Choose a project');}
    if(op.componentId){const c=await this.component(tx,a,w,op.componentId);if(c.project_archived)fail(409,'project_archived','Restore the project before editing components');if(c.version!==op.expectedVersion)fail(409,'stale_version','Component changed');}

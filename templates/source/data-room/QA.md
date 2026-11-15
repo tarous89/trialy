@@ -1,4 +1,4 @@
-# Data Room 1.0.0: QA against DATA_ROOM.md §13
+# Data Room 1.1.0: QA against DATA_ROOM.md §13 and §14
 
 Run on 13 November 2026 with fictional data in disposable databases, under the runtime role with row security on party pages, on the exchange rooms of #152 plus this PR's additions (guidance 1.3.25). No deployed account was used.
 
@@ -52,3 +52,18 @@ Run on 13 November 2026 with fictional data in disposable databases, under the r
 - Set-up takes three reviews (room; levels and sections; checklist items), because records in one review cannot refer to each other's new IDs.
 - "In place elsewhere" CDAs: the Confidential level has no entry step, and the date is recorded when the person grants the level. A "Use Contracts" room can also reuse a signed CDA on file, recorded as the met entry step.
 - View-only hides downloads but cannot stop screenshots; the app says so. Not legal advice on what to disclose.
+
+## 1.1.0 (15 November 2026)
+
+Run with fictional data in disposable databases on this branch. No deployed account was used.
+
+| Test | Result |
+|---|---|
+| `tests/data-room-commands.test.ts` (8 tests: declarations, read commands equal the screens, propose parity and refusals, custom fields, form layout, Notify parties, access-ending switch, weekly summary helper) | pass |
+| `tests/data-room.test.ts` (8 tests, updated to 1.1.0) | pass |
+| `tests/data-room-integration.test.ts` (3 end-to-end tests; Acceptance 1 now covers Notify parties, the access-ending switch on a live room, and the owner's assistant running the app and its commands with non-AI documents in the workspace) | pass |
+| `tests/app-source-access.test.ts` (owner and catalog-code rules, code changes need full access) | pass |
+| `scripts/test-data-room-browser.ts` (1440 and 390 px) | pass |
+| `node scripts/build-data-room-template.mjs --check` | verified |
+
+Limits: custom fields appear in forms, details and command results, not as table columns or filters. Commands prepare records only.

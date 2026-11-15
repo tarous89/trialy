@@ -24,6 +24,7 @@ export const templateGallery:Record<string,{team:string;workflow:string;summary:
  'life.publication-management':{team:'Research',workflow:'Research',summary:'Coordinate manuscripts, author reviews, and submission milestones.'},
  'life.cro-resource-planning':{team:'CRO',workflow:'People',summary:'Schedule specialists and see capacity gaps across sponsor projects.'},
  'life.investor-updates':{team:'Biotech',workflow:'Relationships',summary:'Keep the board, investors and shareholders informed by email or in meetings: AI drafts, fact checks, approval, sending and read tracking.'},
+ 'life.data-room':{team:'Biotech',workflow:'Relationships',summary:'Share and track data rooms for financing, licensing, partnering and M&A, with levels, CDAs and diligence Q&A.'},
  'life.investor-crm':{team:'Biotech',workflow:'Relationships',summary:'Run a financing round: ranked investors, pipeline to signed commitments, terms, tranches and weekly investor research.'},
  'life.cro-rfp-management':{team:'CRO',workflow:'Procurement',summary:'Manage sponsor RFPs, reusable answers, and proposal reviews.'},
  'life.cro-site-feasibility':{team:'CRO',workflow:'Study delivery',summary:'Qualify sites and coordinate study-specific feasibility work.'},
