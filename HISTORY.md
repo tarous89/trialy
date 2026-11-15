@@ -1,3 +1,11 @@
+## 15 November 2026 — Bio Radars waves 2 and 3: Pipeline, Literature 2.0.0, Deal, Funding, Patent, Market and Regulatory Radar (published)
+
+The other seven Bio Radars are built as definitions on the radar kit, now 1.1.0: Pipeline Radar 1.0.0 (`life.pipeline-radar`), Literature Radar 2.0.0 (`life.literature-radar`), Deal Radar 1.0.0 (`life.deal-radar`) and Funding Radar 1.0.0 (`life.funding-radar`), weekly; Patent Radar 1.0.0 (`life.patent-radar`, "Not legal advice", expiries 24 months ahead), Market Radar 1.0.0 (`life.market-radar`) and Regulatory Radar 1.0.0 (`life.regulatory-radar`), monthly. The owner approved all seven the same day, each an independent app: the catalog seed names them, migration 074 withdraws Literature Radar 1.2.2 (existing installs unchanged), and each has a gallery card and screenshot. All eight radars are filed under the Research workflow in the gallery.
+
+- **Kit 1.1.0.** Released radars pin their kit version; kit 1.0.0 is frozen in `radar-kit/archive/1.0.0/`, so Trial Radar 1.0.0 is byte-identical. New optional definition keys: team-owned tracker fields, tracker outputs, item name field, disclaimer, multiline scope fields, past-only dates, item-based digest sections with per-currency totals and a Coming up window per radar.
+- **Outputs.** Deal and Funding Radar publish their trackers (`dealradar.deals`, `fundingradar.financings`, `radar.v1`, one writer) next to their events.
+- **Tests.** `tests/radars.test.ts` and `tests/radars-integration.test.ts`: install from the catalog, demo data, every screen and drawer, design gate at 1440 and 390 px, brief, digest and alert text, Needs setup without a runner, one writer.
+
 ## 14 November 2026 — Contracts 1.1.0 published
 
 Contracts 1.1.0 (`life.contracts`) is published at the owner's request in place of 1.0.0. It implements decisions C1–C8 in [CONTRACTS.md §12](docs/product/app-template-blueprints/apps/CONTRACTS.md), with no platform change.

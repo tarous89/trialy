@@ -1,0 +1,16 @@
+{
+  "description": "Guidances, designations, advisory committees, decisions, consultations and policy changes from FDA, EMA, MHRA and other agencies on your topics, with sources. One table of regulatory items, an events feed with a calendar of deadlines, and a monthly scan + digest and high-impact alert run by Claude or ChatGPT.",
+  "tags": [
+    "biotech",
+    "regulatory intelligence",
+    "guidance",
+    "designations",
+    "consultations",
+    "fda",
+    "ema",
+    "radar",
+    "bio radars"
+  ],
+  "whenToUse": "Follow regulators on your topics: new and draft guidances, designations, advisory committees, decisions, policy changes and open consultations with their deadlines, and which programs they affect, with a monthly digest.",
+  "whenNotToUse": "Preparing your own submissions (Trial Regulatory Submission), tracking authority questions on your filings, approvals and HTA for marketed products (Market Radar), regulatory or legal advice."
+}

@@ -1,0 +1,306 @@
+{
+ "asOf": "2026-11-16",
+ "note": "Fictional demo data for Deal Radar. Every company, asset, identifier and URL is invented; .invalid domains resolve nowhere.",
+ "records": [
+  {
+   "role": "dealradar.settings",
+   "id": "00000000-0000-4000-8000-000000000001",
+   "version": 0,
+   "data": {
+    "lookback_days": 90,
+    "research_template_version": 1
+   }
+  },
+  {
+   "role": "dealradar.scopes",
+   "id": "00000000-0000-4000-8000-000000000002",
+   "version": 0,
+   "data": {
+    "name": "Fibrosis (fictional)",
+    "definition": "{\"modalities\": \"fibrosis\"}",
+    "sources": "[{\"name\": \"Press releases\", \"covers\": \"Company and newswire announcements with terms.\", \"priority\": 1, \"notes\": \"Use the public site on the web.\"}, {\"name\": \"SEC filings\", \"covers\": \"8-K, 10-K/10-Q exhibits with deal terms (EDGAR).\", \"priority\": 2, \"notes\": \"Use the public site on the web.\"}, {\"name\": \"News\", \"covers\": \"Trade and business news.\", \"priority\": 3, \"notes\": \"Prefer primary sources for terms.\"}]",
+    "watchlist": "[]",
+    "status": "active",
+    "archived": false
+   }
+  },
+  {
+   "role": "dealradar.runs",
+   "id": "00000000-0000-4000-8000-000000000003",
+   "version": 0,
+   "data": {
+    "run_id": "00000000-0000-4000-9100-000000000001",
+    "scope_ids": "[\"00000000-0000-4000-8000-000000000002\"]",
+    "kind": "build",
+    "run_on": "2026-11-02",
+    "assistant": "claude",
+    "research_template_version": 1,
+    "sources_report": "[{\"scope_id\": \"00000000-0000-4000-8000-000000000002\", \"sources\": [{\"name\": \"Press releases\", \"status\": \"used\", \"note\": \"\"}, {\"name\": \"SEC filings\", \"status\": \"used\", \"note\": \"\"}, {\"name\": \"News\", \"status\": \"not_reachable\", \"note\": \"\"}]}]",
+    "items_added": 5,
+    "items_updated": 0,
+    "events_added": 4,
+    "summary": "Fictional run for the demo. Two changes this week.",
+    "status": "completed"
+   }
+  },
+  {
+   "role": "dealradar.runs",
+   "id": "00000000-0000-4000-8000-000000000004",
+   "version": 0,
+   "data": {
+    "run_id": "00000000-0000-4000-9100-000000000002",
+    "scope_ids": "[\"00000000-0000-4000-8000-000000000002\"]",
+    "kind": "refresh",
+    "run_on": "2026-11-09",
+    "assistant": "claude",
+    "research_template_version": 1,
+    "sources_report": "[{\"scope_id\": \"00000000-0000-4000-8000-000000000002\", \"sources\": [{\"name\": \"Press releases\", \"status\": \"used\", \"note\": \"\"}, {\"name\": \"SEC filings\", \"status\": \"used\", \"note\": \"\"}, {\"name\": \"News\", \"status\": \"not_reachable\", \"note\": \"\"}]}]",
+    "items_added": 1,
+    "items_updated": 2,
+    "events_added": 4,
+    "summary": "Fictional run for the demo. Two changes this week.",
+    "status": "completed"
+   }
+  },
+  {
+   "role": "dealradar.runs",
+   "id": "00000000-0000-4000-8000-000000000005",
+   "version": 0,
+   "data": {
+    "run_id": "00000000-0000-4000-9100-000000000003",
+    "scope_ids": "[\"00000000-0000-4000-8000-000000000002\"]",
+    "kind": "refresh",
+    "run_on": "2026-11-16",
+    "assistant": "claude",
+    "research_template_version": 1,
+    "sources_report": "[{\"scope_id\": \"00000000-0000-4000-8000-000000000002\", \"sources\": [{\"name\": \"Press releases\", \"status\": \"used\", \"note\": \"\"}, {\"name\": \"SEC filings\", \"status\": \"used\", \"note\": \"\"}, {\"name\": \"News\", \"status\": \"not_reachable\", \"note\": \"\"}]}]",
+    "items_added": 1,
+    "items_updated": 2,
+    "events_added": 4,
+    "summary": "Fictional run for the demo. Two changes this week.",
+    "status": "completed"
+   }
+  },
+  {
+   "role": "dealradar.deals",
+   "id": "00000000-0000-4000-8000-000000000006",
+   "version": 0,
+   "data": {
+    "kind": "license",
+    "title": "Maplecrest licenses FX-301 to Bigpharma (fictional)",
+    "announced_on": "2026-11-12",
+    "parties": "Bigpharma Inc (fictional), Maplecrest Pharma (fictional)",
+    "asset": "FX-301",
+    "modality": "small molecule",
+    "indication": "IPF",
+    "stage": "phase_2",
+    "upfront": 75,
+    "milestones": 1100,
+    "total": 1175,
+    "currency": "USD",
+    "disclosed": true,
+    "natural_key": "bigpharma inc (fictional), maplecrest pharma (fictional)|license|2026-11-12",
+    "scope_id": "00000000-0000-4000-8000-000000000002",
+    "sources": "[{\"title\": \"Source (fictional)\", \"url\": \"https://news.example.invalid/bigpharma-inc-(fictional),-maplecrest-pharma-(fictional)-license-2026-11-12\", \"date\": \"2026-11-16\"}]",
+    "last_verified_on": "2026-11-16",
+    "last_changed_run_id": "00000000-0000-4000-9100-000000000003",
+    "changed_fields": "[\"title\"]",
+    "watched": true,
+    "dismissed": false
+   }
+  },
+  {
+   "role": "dealradar.deals",
+   "id": "00000000-0000-4000-8000-000000000007",
+   "version": 0,
+   "data": {
+    "kind": "option",
+    "title": "Quillmont option deal (fictional)",
+    "announced_on": "2026-11-05",
+    "parties": "Quillmont Bio (fictional), Riverbank Pharma (fictional)",
+    "asset": "LT-12",
+    "modality": "small molecule",
+    "indication": "IPF",
+    "stage": "preclinical",
+    "upfront": 20,
+    "milestones": 400,
+    "total": 420,
+    "currency": "USD",
+    "disclosed": true,
+    "natural_key": "quillmont bio (fictional), riverbank pharma (fictional)|option|2026-11-05",
+    "scope_id": "00000000-0000-4000-8000-000000000002",
+    "sources": "[{\"title\": \"Source (fictional)\", \"url\": \"https://news.example.invalid/quillmont-bio-(fictional),-riverbank-pharma-(fictional)-option-2026-11-05\", \"date\": \"2026-11-16\"}]",
+    "last_verified_on": "2026-11-16",
+    "last_changed_run_id": "00000000-0000-4000-9100-000000000001",
+    "changed_fields": "[]",
+    "watched": false,
+    "dismissed": false
+   }
+  },
+  {
+   "role": "dealradar.deals",
+   "id": "00000000-0000-4000-8000-000000000008",
+   "version": 0,
+   "data": {
+    "kind": "acquisition",
+    "title": "Cedarline acquires Fernway (fictional)",
+    "announced_on": "2026-10-28",
+    "parties": "Cedarline Pharma (fictional), Fernway Labs (fictional)",
+    "asset": "FW-1",
+    "modality": "small molecule",
+    "indication": "IPF",
+    "stage": "phase_1",
+    "disclosed": false,
+    "natural_key": "cedarline pharma (fictional), fernway labs (fictional)|acquisition|2026-10-28",
+    "scope_id": "00000000-0000-4000-8000-000000000002",
+    "sources": "[{\"title\": \"Source (fictional)\", \"url\": \"https://news.example.invalid/cedarline-pharma-(fictional),-fernway-labs-(fictional)-acquisition-2026-10-28\", \"date\": \"2026-11-16\"}]",
+    "last_verified_on": "2026-11-16",
+    "last_changed_run_id": "00000000-0000-4000-9100-000000000001",
+    "changed_fields": "[]",
+    "watched": false,
+    "dismissed": false
+   }
+  },
+  {
+   "role": "dealradar.deals",
+   "id": "00000000-0000-4000-8000-000000000009",
+   "version": 0,
+   "data": {
+    "kind": "collaboration",
+    "title": "Harborview platform collaboration (fictional)",
+    "announced_on": "2026-10-20",
+    "parties": "Harborview Biosciences (fictional), Larkspur Medicines (fictional)",
+    "asset": "Platform",
+    "modality": "small molecule",
+    "indication": "IPF",
+    "stage": "discovery",
+    "upfront": 15,
+    "milestones": 250,
+    "total": 265,
+    "currency": "EUR",
+    "disclosed": true,
+    "natural_key": "harborview biosciences (fictional), larkspur medicines (fictional)|collaboration|2026-10-20",
+    "scope_id": "00000000-0000-4000-8000-000000000002",
+    "sources": "[{\"title\": \"Source (fictional)\", \"url\": \"https://news.example.invalid/harborview-biosciences-(fictional),-larkspur-medicines-(fictional)-collaboration-2026-10-20\", \"date\": \"2026-11-16\"}]",
+    "last_verified_on": "2026-11-16",
+    "last_changed_run_id": "00000000-0000-4000-9100-000000000001",
+    "changed_fields": "[]",
+    "watched": false,
+    "dismissed": false
+   }
+  },
+  {
+   "role": "dealradar.deals",
+   "id": "00000000-0000-4000-8000-000000000010",
+   "version": 0,
+   "data": {
+    "kind": "license",
+    "title": "Northwind China rights (fictional)",
+    "announced_on": "2026-11-15",
+    "parties": "Northwind Bio (fictional), Lotus Pharma (fictional)",
+    "asset": "NB-5",
+    "modality": "small molecule",
+    "indication": "IPF",
+    "stage": "phase_2",
+    "upfront": 30,
+    "milestones": 180,
+    "total": 210,
+    "currency": "USD",
+    "disclosed": true,
+    "natural_key": "northwind bio (fictional), lotus pharma (fictional)|license|2026-11-15",
+    "scope_id": "00000000-0000-4000-8000-000000000002",
+    "sources": "[{\"title\": \"Source (fictional)\", \"url\": \"https://news.example.invalid/northwind-bio-(fictional),-lotus-pharma-(fictional)-license-2026-11-15\", \"date\": \"2026-11-16\"}]",
+    "last_verified_on": "2026-11-16",
+    "last_changed_run_id": "00000000-0000-4000-9100-000000000003",
+    "changed_fields": "[\"new\"]",
+    "watched": false,
+    "dismissed": false
+   }
+  },
+  {
+   "role": "dealradar.events",
+   "id": "00000000-0000-4000-8000-000000000011",
+   "version": 0,
+   "data": {
+    "scope_id": "00000000-0000-4000-8000-000000000002",
+    "item_id": "00000000-0000-4000-8000-000000000006",
+    "natural_key": "bigpharma inc (fictional), maplecrest pharma (fictional)|license|2026-11-12|deal_announced|2026-11-12",
+    "kind": "deal_announced",
+    "title": "Maplecrest–Bigpharma license (fictional)",
+    "summary": "Fictional event for the demo.",
+    "occurred_on": "2026-11-12",
+    "occurred_month": "2026-11",
+    "expected": false,
+    "impact": "high",
+    "direction": "threat",
+    "so_what": "Could change the plan for NWB-101 (fictional).",
+    "sources": "[{\"title\": \"Source (fictional)\", \"url\": \"https://news.example.invalid/e0\", \"date\": \"2026-11-12\"}]",
+    "run_id": "00000000-0000-4000-9100-000000000003",
+    "status": "new"
+   }
+  },
+  {
+   "role": "dealradar.events",
+   "id": "00000000-0000-4000-8000-000000000012",
+   "version": 0,
+   "data": {
+    "scope_id": "00000000-0000-4000-8000-000000000002",
+    "item_id": "00000000-0000-4000-8000-000000000010",
+    "natural_key": "northwind bio (fictional), lotus pharma (fictional)|license|2026-11-15|deal_announced|2026-11-15",
+    "kind": "deal_announced",
+    "title": "Northwind–Lotus China license (fictional)",
+    "summary": "Fictional event for the demo.",
+    "occurred_on": "2026-11-15",
+    "occurred_month": "2026-11",
+    "expected": false,
+    "impact": "medium",
+    "direction": "neutral",
+    "sources": "[{\"title\": \"Source (fictional)\", \"url\": \"https://news.example.invalid/e1\", \"date\": \"2026-11-15\"}]",
+    "run_id": "00000000-0000-4000-9100-000000000003",
+    "status": "new"
+   }
+  },
+  {
+   "role": "dealradar.events",
+   "id": "00000000-0000-4000-8000-000000000013",
+   "version": 0,
+   "data": {
+    "scope_id": "00000000-0000-4000-8000-000000000002",
+    "item_id": "00000000-0000-4000-8000-000000000007",
+    "natural_key": "quillmont bio (fictional), riverbank pharma (fictional)|option|2026-11-05|option_exercised|2027-02-01",
+    "kind": "option_exercised",
+    "title": "Option exercise expected (fictional)",
+    "summary": "Fictional event for the demo.",
+    "occurred_on": "2027-02-01",
+    "occurred_month": "2027-02",
+    "expected": true,
+    "impact": "medium",
+    "direction": "neutral",
+    "sources": "[{\"title\": \"Source (fictional)\", \"url\": \"https://news.example.invalid/e2\", \"date\": \"2027-02-01\"}]",
+    "run_id": "00000000-0000-4000-9100-000000000001",
+    "status": "new"
+   }
+  },
+  {
+   "role": "dealradar.events",
+   "id": "00000000-0000-4000-8000-000000000014",
+   "version": 0,
+   "data": {
+    "scope_id": "00000000-0000-4000-8000-000000000002",
+    "item_id": "00000000-0000-4000-8000-000000000009",
+    "natural_key": "harborview biosciences (fictional), larkspur medicines (fictional)|collaboration|2026-10-20|deal_terminated|2026-10-25",
+    "kind": "deal_terminated",
+    "title": "Earlier deal terminated (fictional)",
+    "summary": "Fictional event for the demo.",
+    "occurred_on": "2026-10-25",
+    "occurred_month": "2026-10",
+    "expected": false,
+    "impact": "low",
+    "direction": "neutral",
+    "sources": "[{\"title\": \"Source (fictional)\", \"url\": \"https://news.example.invalid/e3\", \"date\": \"2026-10-25\"}]",
+    "run_id": "00000000-0000-4000-9100-000000000001",
+    "status": "reviewed"
+   }
+  }
+ ]
+}
