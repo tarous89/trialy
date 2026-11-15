@@ -52,7 +52,7 @@ Titles below are editorial candidates, not verified product claims. When a title
 | E3 | Build a 13-week biotech cash forecast: find the gap inside the month | Published — live verified 15 November 2026; PR #222, release `445c2a2ad35a3dd2ccc8eed16bd7745b98d3412b` | https://trialagents.com/apps/13-week-biotech-cash-flow-forecast |
 | E4 | How to Move Your Biotech Cash Forecast from Excel to TrialAgents Runway | Already covered / published | [Live article](https://trialagents.com/apps/excel-to-trialagents-runway) |
 | E5 | Build a biotech cash runway dashboard without coding: set up, reconcile, then share | Published — live verified 15 November 2026; PR #223; release `caa2bf4b97c0a69bb958ae46d13de762ec0c38cf` | https://trialagents.com/apps/biotech-cash-runway-dashboard-without-coding |
-| E6 | Biotech Cash Runway Software Buying Guide: 15 Questions to Ask Vendors | Queued — verify and publish | — |
+| E6 | Biotech Cash Runway Software Buying Guide: 15 Questions to Ask Vendors | In progress — claimed 15 November 2026 for source and publication QA | — |
 | E7 | TrialAgents Cash Runway Alternatives: Which Tool Should You Choose Instead? | Queued — verify and publish | — |
 | E8 | Cash Runway Management Software: Features, Costs, and Implementation for Small Biotechs | Queued — verify and publish | — |
 
