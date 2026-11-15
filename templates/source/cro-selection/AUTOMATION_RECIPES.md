@@ -1,9 +1,13 @@
-# CRO Selection 2.0.0: optional automations
+# CRO Selection 2.1.0: no automations
 
-The app works fully without automations, never reads automation status, and never waits for one. Manage automations in TrialAgents → Automations.
+**Owner decision (15 November 2026):** CRO Selection declares no automations. There are no install recommendations, no app features in Automations → From app features, and nothing runs in the background. The app works fully on its own.
 
-1. **Deadline reminders.** In Vendors → Email, choose *Reminder* and a send date. The send review pre-approves the batch, and the platform sends it at 08:00 UTC on that date with exactly that text. Only suppliers whose link is still open receive it. Without a pre-approval, prepare the reminder in the same form when needed and confirm the send.
-2. **Request digest (email to the owner).** A TrialAgents email action with a daily calendar schedule at 08:00 in the owner's timezone, linked to CRO Selection. It goes to the owner, plus only explicitly approved registered members with app access. Fixed text: "CRO Selection: check Overview → Waiting on us and Decisions due". Disable it when no request is open. Limits: one app email per recipient per hour, and 15 recipient deliveries per account per day.
-3. **Proposal mapping (research on the user's Claude or ChatGPT runner).** Trigger: a database change on croselection.proposals where `document_ids` becomes non-empty. It reads only accepted, AI-readable proposal documents, and proposes croselection.proposal_lines for review. Lines use the request's cost categories, in the proposal currency, with deviation text. Dedup key: proposal_id + category + description. With nothing new it produces no update. It never accepts, sends, publishes or decides. Files that are not AI-readable are reported, not read.
+The 2.0.0 draft described three optional automations. In 2.1.0:
 
-**No automation:** ask your assistant in chat to map an accepted file, or enter the lines in Proposals → Lines. Send reminders from Vendors → Email.
+| 2.0.0 optional automation | 2.1.0 |
+| --- | --- |
+| Deadline reminders to suppliers | Not an automation. Reminders are a platform exchange feature: in Vendors → Email, choose *Reminder* and a send date, and the owner pre-approves the batch in the send review. The platform sends exactly that text at 08:00 UTC on that date to suppliers whose link is still open. External sends stay in the exchange ([app automations §1.5](../../../docs/product/RECOMMENDED_AUTOMATIONS.md)). |
+| Request digest (daily email to the owner) | Dropped. Overview shows what is waiting on us and what is due; assistants read it with `overview.read`. |
+| Proposal mapping (research on the user's runner) | Dropped. It only proposed lines for review, and research automations must now save their output in the app ([PR #169](../../../docs/product/RECOMMENDED_AUTOMATIONS.md)). Since the bid grid drives the award decision, mapping stays a person's request: ask your assistant in chat (it runs `lines.save` and you approve the review) or enter the lines in Proposals → Lines. |
+
+Users may still create their own automations for this app in TrialAgents → Automations, or ask Claude or ChatGPT to set one up. Such an automation follows the platform rules and is the user's own, not part of the template.

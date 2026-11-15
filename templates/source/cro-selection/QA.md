@@ -1,3 +1,37 @@
+# CRO Selection 2.1.0 validation
+
+Validated against the repository host on 15 November 2026 with fictional data only, on top of the 2.0.0 validation below (which still applies unless this section changes it). Nothing ran on a deployed account.
+
+**Catalog status:** draft. The seed names 1.0.1; 2.0.0 (archived package) and 2.1.0 are drafts, approved only inside the test databases.
+
+## Owner decisions applied (15 November 2026)
+
+| Decision | How it shows |
+| --- | --- |
+| S1 Platform changes | 27 app commands; Runway lines removed from the handoff (Runway 2.2.0 reads the award); award agreement labelled as kept in Contracts; guidance 1.3.31. |
+| S2 AI-native | Every record action is a command with click parity; additional fields; form layout; vendor columns; stage names; opening screen. |
+| S3, S4 Drop mapping and digest | No automations are declared; `documentation.tasks.mode` is `none`; reminders remain the exchange's pre-approved reminders. |
+| S5 Award by the user, manually or through the assistant | `decision.record` proposes the same records as the form; a person approves; notices stay a person's Notify all. |
+
+## Commands and results
+
+| Check | Command | Result |
+| --- | --- | --- |
+| Commands: declarations, parity, reads, award, exchange boundary, customization, real platform with Runway 2.2.0 | `node --no-wasm-code-gc --import tsx --test tests/cro-selection-commands.test.ts` | 7 of 7 pass |
+| Unit (screens, calculations, blind scoring, exchange rules, catalog entry) | `node --no-wasm-code-gc --import tsx --test tests/cro-selection.test.ts` | 9 of 9 pass (the design inspector needs the browser note below) |
+| Integration (quick quote, full selection, CDA, handoff, archive and restore) | `node --no-wasm-code-gc --import tsx --test tests/cro-selection-integration.test.ts` | 3 of 3 pass |
+| Catalog and Runway commands regression | `tests/template-catalog.test.ts`, `tests/cash-runway-commands-integration.test.ts` | 6 of 6 pass |
+| Browser: eight screens at 1440 and 390 px in the sanitized frame | `node --no-wasm-code-gc --import tsx scripts/test-cro-selection-browser.ts` | pass |
+| Build checks, typecheck, Vite build | `npm run build` | pass |
+
+**Browser note:** in this container the repository's Playwright expects Chromium revision 1161 and only revision 1243 is installed, so the design inspector and the browser test fail to launch ("The design check could not finish"). They pass with `PLAYWRIGHT_BROWSERS_PATH` pointed at a directory that maps `chromium-1161` and `chromium_headless_shell-1161` (`chrome-linux/…`) to the installed 1243 build. This is an environment workaround, not a code change.
+
+**Hand checks reused from 2.0.0:** `grid.read` returns Helix 1,650,000 (+50,000, +3.1%), Meridian 1,580,000 (−20,000, −1.2%), Northlake 1,240,000 (−360,000, −22.5%; USD 40,000 listed, not converted); Monitoring 560,000 vs 520,000 (+40,000, +7.7%); pass-through 12.7%. `evaluation.read` returns Helix 3.90; with blind scoring on and one score missing, prices are hidden in the command result too.
+
+**Not verified:** a real Claude or ChatGPT session calling `list_app_commands` and `run_app_command` on a deployed workspace (the tests call the same server functions as the MCP tools); the layout gear's own UI with the new form groups (the profile it saves is validated with the platform's `updateCustomLayout`).
+
+---
+
 # CRO Selection 2.0.0 validation
 
 This package was validated against the repository host on 13 November 2026, using fictional data only. The checks used disposable PGlite databases, the real catalog sync, the installer and Add app step, `runFrontend` (production QuickJS), the workspace review, the platform exchange domain, the supplier page API (`/external-exchange`, under the runtime role and row security), exchange email rendering and delivery (a capturing transport, not a real provider), and the production design inspector and sanitized frame. None of this ran on a deployed account.

@@ -2,7 +2,7 @@
 
 *Choose CROs, CDMOs and labs: from the need to a signed award and a clean handover.*
 
-**Status:** Final scope for build, 13 November 2026 (supersedes the 12 Nov "CRO Bids" draft). Part of [Biotech apps v2](../BIOTECH_v2.md) (rank 5). New major version `life.cro-selection` 2.0.0, display name **CRO Selection**, replacing v1 `cro-selection` 1.0.1 and `sponsor-rfp-management` 1.0.1 (the latter is archived from the catalog when 2.0.0 is approved). No existing users.
+**Status:** Final scope for build, 13 November 2026 (supersedes the 12 Nov "CRO Bids" draft). Part of [Biotech apps v2](../BIOTECH_v2.md) (rank 5). New major version `life.cro-selection` 2.0.0, display name **CRO Selection**, replacing v1 `cro-selection` 1.0.1 and `sponsor-rfp-management` 1.0.1 (the latter is archived from the catalog when 2.0.0 is approved). No existing users. **2.1.0 (15 November 2026):** built as a new immutable draft that aligns the app with the platform changes of 14 November and makes it AI-native; see [§14](#14-cro-selection-210--platform-changes-and-ai-native-control), which wins where it conflicts with §9–§13.
 
 **Depends on:** the platform [external exchange](../../EXTERNAL_EXCHANGE.md) as implemented in PR #147 (template guidance 1.3.22: `tools.call('exchange.*')`). Merge #147 before building.
 
@@ -225,3 +225,75 @@ CRO Selection never writes another app's own tables; handoffs are proposals in t
 9. Desktop 1440 / mobile 390.
 
 **Open for design partners:** default question sets and checklists per service type; whether the RFI round is used; debrief practice.
+
+---
+
+## 14. CRO Selection 2.1.0 — platform changes and AI-native control
+
+**Status:** Built as catalog version 2.1.0 (draft), 15 November 2026. The 2.0.0 draft had already been imported into the catalog (imported versions are immutable), so the revision is 2.1.0; the 2.0.0 package is archived unchanged under `templates/source/cro-selection/archive/2.0.0/` and its catalog JSON is kept byte for byte. Publishing 2.1.0 (seed entry and a one-time migration withdrawing CRO Selection 1.0.1 and Sponsor RFP Management 1.0.1) needs the owner's separate approval. Package: `templates/source/cro-selection/`; tests: `tests/cro-selection.test.ts`, `tests/cro-selection-integration.test.ts`, `tests/cro-selection-commands.test.ts`.
+
+### 14.1 Owner decisions (15 November 2026)
+
+| # | Decision |
+| --- | --- |
+| **S1** | Align with the platform changes of 14 November: app commands, the integration model (Runway 2.2.0 reads `croselection.awards`), and the app automation standard. |
+| **S2** | Make the app AI-native: the connected Claude or ChatGPT can do everything a person can click, and change screens, forms, fields and labels, within the access the user has given it. |
+| **S3** | Drop the proposal-mapping automation. Mapping a bid into the grid stays a request to the assistant in chat, or manual entry. |
+| **S4** | Drop the request digest. |
+| **S5** | Awarding a CRO is initiated by the user, either manually in the app or through their AI assistant. |
+
+### 14.2 Platform changes (S1, S3, S4)
+
+- **No automations.** No `recommendedAutomations` or `automationFeatures`; `documentation.tasks.mode` is `none`. Supplier reminders are not automations: the owner pre-approves them in the send review and the platform exchange sends them (external sends stay in the exchange, [app automations §1.5](../../RECOMMENDED_AUTOMATIONS.md)). Settings says so.
+- **Runway.** The handoff no longer prepares Runway spend lines, and the instructions tell assistants never to propose them from an award. Runway 2.2.0 reads `croselection.awards` itself (Plan → From other sources → Add to plan, with `source_role`, `source_record_id` and `source_version`); a line written from CRO Selection would bypass that and could be counted twice. `handoff_status.runway` is `{state: "read_by_runway", role: "croselection.awards"}`. Installed after CRO Selection, Runway's Use existing data? step connects the awards by default (verified in the commands test).
+- **Contracts.** The award agreement's status is labelled "shared agreements register; change its status in Contracts". Agreements is a shared core role that CRO Selection may write (core fields only), not a read-only integration, so the platform's "Edit in *App*" link (`data-trialy-open`) does not apply to it.
+- **Guidance** 1.3.31; the catalog instructions name the "App commands" section.
+
+### 14.3 App commands (S2)
+
+27 commands (6 read, 20 propose, 1 layout), declared on line 2 of the source. Each propose command replays the same click and submit events through one handler, so a command and a click give the same proposal (the tests compare them for the request edit, stage move, status change, bid lines, scores, checklist status, handoff, settings and the decision). Read commands return the app's own figures (grid totals and deviations, weighted scores, blind state, qualification, overview).
+
+| Screen | Click | Command |
+| --- | --- | --- |
+| Any form | Add / Edit / Save | `record.save` (with `context` for where a new record goes) |
+| Any list | Archive | `record.archive` |
+| Requests | Move to, Back to, Close request | `request.stage` |
+| Vendors | Add a vendor to the list; Shortlist, Finalist, Declined, Not selected | `longlist.add`; `invitation.status` |
+| Vendors | CDA in place elsewhere; File the signed CDA as an agreement | `cda.record_elsewhere`; `cda.file_agreement` |
+| Proposals | Lines of a proposal | `lines.save` |
+| Evaluation | Apply the criteria set; Apply the checklist; status buttons; Save scores | `criteria.apply_defaults`; `checklist.apply_defaults`; `checklist.set_status`; `scores.save` |
+| Decision & onboarding | Save the decision; Edit award details; onboarding; Prepare the handoff; Link it to the award | `decision.record`; `award.save`; `onboarding.update`; `handoff.prepare`; `award.link_agreement` |
+| Settings | Save settings, Save display; invitation text | `settings.save`; `invitation_text.save`, `invitation_text.reset` |
+| Layout gear | Screens, columns, forms | `layout.save` |
+| (read) | Overview, request summary, bid grid, scorecards, decision | `overview.read`, `request.read`, `grid.read`, `evaluation.read`, `decision.read`, plus `schema.describe` |
+
+**Not commands, by design:** everything that reaches suppliers or comes from them (rounds, links, documents, invitation and reminder emails, replies, clarifications, acceptances of submissions and files, extend, stop, Notify all), the per-session price reveal, and uploads. The app refuses them in a command run and the platform refuses exchange writes outside a person's click. Assistants still draft those texts (`prepare_exchange_email`, `prepare_workspace_change`) for a person to confirm.
+
+### 14.4 The award (S5)
+
+The award is the user's decision. The user records it in Decision & onboarding, or asks their assistant, which runs `decision.record` with the supplier, rationale, approver, date (and an override reason when qualification has an open issue) that the user gives. Both paths propose the same records: the `croselection.awards` record, selected and not selected, and the stage. A person approves the review. Assistants never award on their own initiative or choose the winner; they may summarise evidence and draft the rationale. Notices go out only when a person uses Notify all (or keeps "Notify all" ticked when recording the decision in the app). An owner who wants assistants kept out entirely sets the Database rule on `croselection.awards` (assistants read, no write).
+
+### 14.5 Customization (S2)
+
+| What | How |
+| --- | --- |
+| Screens | Order and visibility, heading (`layout.save` or the layout gear). Screens keep their names. |
+| Columns | Requests and vendors tables (column groups `requests`, `vendors`). |
+| Forms | Eight form groups (`request_form`, `vendor_form`, `contact_form`, `invitation_form`, `proposal_form`, `line_form`, `criterion_form`, `checklist_form`): order, hidden fields, labels and defaults. Required fields cannot be hidden; defaults are validated like typed input. |
+| Stage names, opening screen | `settings.preferences` JSON `{stage_labels, opening_screen}` (Settings → Display, `settings.save`). Stage keys never change. |
+| New fields | Reviewed schema change on the table, then one reviewed app revision declaring the field in the table map (`extraFields` with key, label, kind, options; `writableExtra`) plus bindings and manifest. The field then shows in that form and in details, and `record.save` accepts it. Bound fields that are not declared show read-only. Additional fields are never used in calculations. |
+| Settings and texts | Currency, blind scoring, question-deadline default, confidentiality and decision texts, invitation texts per request kind. |
+| Code | Reviewed app revisions that keep the revision contract (README): role keys, `croselection.v1`, calculation rules, exchange rules, `data-ui-state`/`data-action`, command ids with click parity, bounded reads. |
+
+**Fixed with this version:** the layout gear stores column visibility as `group:field`, but 2.0.0 read `group.field`, so hiding a column had no effect. 2.1.0 reads both. Editing a request no longer rewrites its unchanged assumptions.
+
+### 14.6 Acceptance (in addition to §13)
+
+1. 27 commands are declared and validated; every one answers; read commands never propose and never return a recipient link.
+2. For each propose command tested, the proposal equals the click path's proposal.
+3. `decision.record` follows the same rules as the form (open qualification issue needs an override reason; one award per request) and sends no notice.
+4. No command reaches suppliers; viewers can run read commands only.
+5. An additional field shows in the form and details and is saved by `record.save`; an undeclared bound field is read-only; a layout proposed by `layout.save` is accepted by the platform and applied (hidden column, hidden form field, label, default, order); stage names and the opening screen apply.
+6. The handoff prepares no Runway lines; with Runway 2.2.0 installed after CRO Selection, Runway's `sources.read` offers the award.
+7. No automation is declared or offered at install.
+

@@ -435,6 +435,15 @@
         "multiple": false,
         "ai": true,
         "description": "JSON object {rfi|rfp|quick_quote:{subject,body}}: the invitation email per request kind. Other email types use the platform defaults."
+      },
+      {
+        "key": "preferences",
+        "name": "Preferences",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "description": "JSON object {stage_labels:{<stage>:<name>}, opening_screen}: display preferences. Stage keys never change."
       }
     ],
     "logicalFields": {
@@ -443,7 +452,8 @@
       "question_deadline_days": "question_deadline_days",
       "confidentiality_text": "confidentiality_text",
       "decision_texts": "decision_texts",
-      "invitation_texts": "invitation_texts"
+      "invitation_texts": "invitation_texts",
+      "preferences": "preferences"
     }
   },
   "croselection.requests": {

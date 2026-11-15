@@ -1,3 +1,15 @@
+## 15 November 2026 — CRO Selection 2.1.0 (draft): platform changes and AI-native control
+
+Aligns the unreleased CRO Selection draft with the platform changes of 14 November and makes it AI-native, following the owner's decisions S1–S5 ([CRO_SELECTION.md §14](docs/product/app-template-blueprints/apps/CRO_SELECTION.md#14-cro-selection-210--platform-changes-and-ai-native-control)). 2.0.0 had been imported as a draft and imported rows are immutable, so the revision is **2.1.0**; the 2.0.0 package is archived unchanged under `templates/source/cro-selection/archive/2.0.0/` and `templates/apps/life.cro-selection-2.0.0.json` is unchanged. Still a draft: the seed names 1.0.1, and publishing needs the owner's approval.
+
+- **App commands:** 27 (6 read, 20 propose, 1 layout). Every record action a person can click replays through one handler, so a command and a click give the same proposal (tested per command). Read commands return the app's own grid, scores, blind state, qualification and overview. Supplier communication is never a command.
+- **Award:** initiated by the user in the app or through their assistant (`decision.record`); a person approves the review; notices stay a person's Notify all.
+- **Customization:** additional fields (`extraFields`, `writableExtra` in the table map) in forms and details; form layout for eight forms; vendor columns; stage names and opening screen (`croselection.settings.preferences`, new field).
+- **Platform changes:** no automations (the reminders are the exchange's pre-approved reminders; the digest and proposal-mapping automations are dropped); the handoff no longer prepares Runway lines, because Runway 2.2.0 reads `croselection.awards` with source tracking; the award agreement's status is labelled as kept in Contracts; guidance 1.3.31.
+- **Fixes:** column hiding through the layout gear now works (the gear stores `group:field`, 2.0.0 read `group.field`); editing a request no longer rewrites its unchanged assumptions. The same `group.field` reading exists in Partnerships 2.1.0 (`partnerships.source.js`) and is not changed here.
+
+Tests: `tests/cro-selection-commands.test.ts` (new, including a real-platform run where the assistant's commands are confirmed by a person and Runway 2.2.0 offers the award), `tests/cro-selection.test.ts`, `tests/cro-selection-integration.test.ts`, the browser test at 1440 and 390 px and the production design inspector. In this container the browser checks need `PLAYWRIGHT_BROWSERS_PATH` pointed at a Chromium matching the repository's Playwright; see `templates/source/cro-selection/QA.md`.
+
 ## 14 November 2026 — Contracts 1.1.0 published
 
 Contracts 1.1.0 (`life.contracts`) is published at the owner's request in place of 1.0.0. It implements decisions C1–C8 in [CONTRACTS.md §12](docs/product/app-template-blueprints/apps/CONTRACTS.md), with no platform change.
