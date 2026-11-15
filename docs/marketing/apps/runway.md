@@ -1139,3 +1139,10 @@ PR #214 merged as `e50602db40385e5a3d54747759a793f1fb3747fc` after exact-head pr
 - Current 2.2 catalog/source blob `343f0753248cc977a59cac67b3ed9ac6594c98c0` checked for install/restore, settings, Plan/People, monthly deterministic outputs, access, reviewed customization and explicit source connections. Microsoft primary dashboard design guidance checked. Two approved genuine 2.1 Overview/Cash flow browser demos labeled, with separate data; no host acceptance test claimed.
 - Fictional isolated acceptance case: EUR 1.2m opening at 31 December 2026, 100k monthly January–December 2027, 200k March one-off, no positions/receipts/FX or other costs. All 12 monthly closes independently checked; January 1.1m, March 700k, October zero, November -100k; 10 full nonnegative months and first negative November. The article explicitly instructs readers to test their app; does not claim this case was executed in a host.
 - Not published. Resume exact-head full predeploy, desktop/mobile artifact review, merge and independent live verification before another topic. Counts remain 42 published; 5 unfinished.
+
+
+### E5 deployment pending — 15 November 2026
+
+- PR #223 merged at **2026-11-15T07:04:24Z**, release `caa2bf4b97c0a69bb958ae46d13de762ec0c38cf`; exact source head `f1dbe735d4919ac554f4c2e4401bbd82856fc479`.
+- Full predeploy run `43687540418` passed validate and seo-container. Desktop/mobile screenshots from artifact `14150874783` inspected; digest `sha256:91da08c4f0090e1dec3b9d535459757932544775f2acb8b206858ad2fbaa9ee5`. Responsive tables scroll within their containers; headings, media, final CTA and shell reviewed.
+- Initial post-merge HTTP check returned 404 for https://trialagents.com/apps/biotech-cash-runway-dashboard-without-coding. Existing automatic GitHub-to-CDN deployment pending; no authentication fault evidenced. Await propagation and independently verify before Published. Resume this release before drafting another article. Counts remain 42 published; 5 unfinished.
