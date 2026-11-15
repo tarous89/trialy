@@ -1106,6 +1106,199 @@
           ]
         }
       }
+    },
+    "trialradar.events": {
+      "name": "Trial Radar events",
+      "kind": "output",
+      "writer": "life.trial-radar",
+      "description": "Events from Trial Radar (radar.v1): trial registered, status change, date change, enrollment change, endpoint change, results posted, readout, trial stopped. Readers use rows whose status is new or reviewed; dismissed rows (status dismissed) are never counted. Estimated dates have expected true.",
+      "versions": {
+        "radar.v1": {
+          "fields": [
+            {
+              "key": "scope_id",
+              "name": "Scope",
+              "kind": "text",
+              "required": true,
+              "multiple": false,
+              "description": "Record ID of a scopes record."
+            },
+            {
+              "key": "program_id",
+              "name": "Program",
+              "kind": "text",
+              "required": false,
+              "multiple": false,
+              "description": "Record ID of a programs record."
+            },
+            {
+              "key": "organization_id",
+              "name": "Organization",
+              "kind": "text",
+              "required": false,
+              "multiple": false,
+              "description": "Record ID of an organizations record."
+            },
+            {
+              "key": "item_id",
+              "name": "Item",
+              "kind": "text",
+              "required": false,
+              "multiple": false,
+              "description": "Record ID of the trial in the Trials table."
+            },
+            {
+              "key": "natural_key",
+              "name": "Key",
+              "kind": "text",
+              "required": true,
+              "multiple": false,
+              "description": "The item key plus kind and date, so the same event is merged."
+            },
+            {
+              "key": "kind",
+              "name": "Kind",
+              "kind": "select",
+              "required": true,
+              "multiple": false,
+              "options": [
+                "trial_registered",
+                "status_change",
+                "date_change",
+                "enrollment_change",
+                "endpoint_change",
+                "results_posted",
+                "readout",
+                "trial_stopped"
+              ]
+            },
+            {
+              "key": "title",
+              "name": "Title",
+              "kind": "text",
+              "required": true,
+              "multiple": false
+            },
+            {
+              "key": "summary",
+              "name": "Summary",
+              "kind": "text",
+              "required": false,
+              "multiple": false
+            },
+            {
+              "key": "occurred_on",
+              "name": "Date",
+              "kind": "date",
+              "required": false,
+              "multiple": false
+            },
+            {
+              "key": "occurred_month",
+              "name": "Month",
+              "kind": "text",
+              "required": false,
+              "multiple": false,
+              "description": "YYYY-MM of the date, for the calendar."
+            },
+            {
+              "key": "expected",
+              "name": "Expected (estimate)",
+              "kind": "boolean",
+              "required": false,
+              "multiple": false
+            },
+            {
+              "key": "expected_window",
+              "name": "Expected window",
+              "kind": "text",
+              "required": false,
+              "multiple": false
+            },
+            {
+              "key": "impact",
+              "name": "Impact",
+              "kind": "select",
+              "required": true,
+              "multiple": false,
+              "options": [
+                "high",
+                "medium",
+                "low",
+                "none"
+              ]
+            },
+            {
+              "key": "direction",
+              "name": "Direction",
+              "kind": "select",
+              "required": false,
+              "multiple": false,
+              "options": [
+                "threat",
+                "opportunity",
+                "neutral"
+              ]
+            },
+            {
+              "key": "so_what",
+              "name": "So what",
+              "kind": "text",
+              "required": false,
+              "multiple": false
+            },
+            {
+              "key": "sources",
+              "name": "Sources",
+              "kind": "text",
+              "required": true,
+              "multiple": false,
+              "description": "JSON array [{title, url, date}]."
+            },
+            {
+              "key": "run_id",
+              "name": "Run",
+              "kind": "text",
+              "required": false,
+              "multiple": false
+            },
+            {
+              "key": "status",
+              "name": "Status",
+              "kind": "select",
+              "required": true,
+              "multiple": false,
+              "options": [
+                "new",
+                "reviewed",
+                "dismissed"
+              ],
+              "description": "Research writes new; people mark reviewed or dismissed."
+            },
+            {
+              "key": "dismiss_reason",
+              "name": "Dismiss reason",
+              "kind": "text",
+              "required": false,
+              "multiple": false
+            },
+            {
+              "key": "reviewed_by",
+              "name": "Reviewed by",
+              "kind": "text",
+              "required": false,
+              "multiple": false
+            },
+            {
+              "key": "archived",
+              "name": "Archived",
+              "kind": "boolean",
+              "required": false,
+              "multiple": false
+            }
+          ]
+        }
+      }
     }
   }
 }
