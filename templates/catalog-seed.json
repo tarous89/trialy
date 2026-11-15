@@ -33,7 +33,7 @@
   },
   "life.partnership-tracker": {
     "schema": "templates/source/partnership-tracker/schema.example.json",
-    "version": "2.1.0"
+    "version": "2.2.0"
   },
   "life.client-signals-crm": {
     "schema": "templates/source/client-signals-crm/schema_mapping.example.json",

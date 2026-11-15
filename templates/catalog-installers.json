@@ -33,5 +33,6 @@
   "life.cro-selection@2.0.0": "templates/source/cro-selection/schema.example.json",
   "life.data-room@1.0.0": "templates/source/data-room/schema.example.json",
   "life.partnership-tracker@2.0.0": "templates/source/partnership-tracker/archive/2.0.0/schema.example.json",
-  "life.partnership-tracker@2.1.0": "templates/source/partnership-tracker/schema.example.json"
+  "life.partnership-tracker@2.1.0": "templates/source/partnership-tracker/archive/2.1.0/schema.example.json",
+  "life.partnership-tracker@2.2.0": "templates/source/partnership-tracker/schema.example.json"
 }

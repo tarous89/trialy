@@ -3,9 +3,9 @@ import {randomUUID} from 'node:crypto';
 import {execute} from '../../src/foundation/runtime.js';
 import {appTemplates} from '../../src/workspace/app-templates.js';
 
-/* Partnerships 2.1.0 unit harness: the catalog entry prepared exactly as AppTemplates.operation prepends configuration, executed in
+/* Partnerships 2.2.0 unit harness: the catalog entry prepared exactly as AppTemplates.operation prepends configuration, executed in
  * production QuickJS. Records are the fictional demo set (as of 14 Nov 2026); documents and integrations use the platform response shapes. */
-export const entry=await appTemplates.read({templateId:'life.partnership-tracker',version:'2.1.0'});
+export const entry=await appTemplates.read({templateId:'life.partnership-tracker',version:'2.2.0'});
 export const root='templates/source/partnership-tracker/';
 export const schema=JSON.parse(await readFile(root+'schema.example.json','utf8'));
 export const demo=JSON.parse(await readFile(root+'demo_data.json','utf8'));
@@ -19,17 +19,19 @@ export const fresh=():Row[]=>structuredClone(demo.records);
 /** Map without the given roles (an app installed without Contracts or Data Room). */
 export const without=(...drop:string[])=>Object.fromEntries(Object.entries(fullMap).filter(([r])=>!drop.includes(r)));
 export async function render(rows:Row[],state:any={},event:any={kind:'open',action:''},opts:any={}){
- const changes:any[]=[],calls:string[]=[];
+ const changes:any[]=[],calls:string[]=[],layouts:any[]=[];
  const output:any=await execute(source(opts.config,opts.bindings),{saved:opts.saved??true,writable:opts.writable??true,state,event:{value:null,form:{},...event}},async(name,v:any)=>{
   calls.push(name);
   if(name==='records.propose'){if(opts.failPropose)throw Error('denied');changes.push(...v);return {status:'proposed'};}
   if(name==='documents.list')return opts.documents===false?{unavailable:true}:{documents:demo.documents,total:demo.documents.length,complete:true};
   if(name==='integrations.list')return {integrations:opts.integrations??[]};
+  if(name==='roles.list')return {roles:opts.roles??[]};
+  if(name==='layout.propose'){layouts.push(v);return {status:'proposed'};}
   if(name!=='records.read')throw Error('Unexpected capability '+name);
   if(opts.read)return opts.read(v,rows);
   const all=rows.filter(r=>r.role===v.typeId).map(r=>({id:r.id,version:r.version,data:r.data}));
   return {rows:all.slice(v.offset,v.offset+v.limit),total:all.length};
- });return {output,changes,calls,html:output.html as string,state:output.state};
+ });return {output,changes,calls,layouts,html:output.html as string,state:output.state};
 }
 export function approve(rows:Row[],changes:any[]){for(const c of changes){if(c.kind==='create_record')rows.push({id:randomUUID(),version:0,role:c.typeId,data:c.data});else{const r=rows.find(x=>x.id===c.recordId)!;if(r.version!==c.expectedVersion)throw Error('stale version');r.data={...r.data,...c.data};r.version++;}}}
 export const text=(html:string)=>html.replace(/<[^>]+>/g,' ').replace(/&amp;/g,'&').replace(/&#39;/g,"'").replace(/&quot;/g,'"').replace(/&lt;/g,'<').replace(/&gt;/g,'>').replace(/\s+/g,' ');
@@ -39,6 +41,8 @@ export function session(rows:Row[],opts:any={}){let state:any={};const s:any={ht
  open:(st:any={})=>{state={...state,...st};return s.ev({kind:'open',action:''});},
  click:(action:string)=>s.ev({kind:'click',action}),change:(action:string,value:any)=>s.ev({kind:'change',action,value}),submit:(action:string,form:any={})=>s.ev({kind:'submit',action,form}),
  async approve(){if(!s.changes.length)throw Error('No proposal: '+(state.notice??''));approve(rows,s.changes);s.changes=[];return s.ev({kind:'open',action:''});}};return s;}
+/** Runs one app command the way run_app_command does: no state, {kind:'command', action:id, value:JSON input}. */
+export const command=async(rows:Row[],cid:string,input:any={},opts:any={})=>{const r=await render(rows,null,{kind:'command',action:cid,value:JSON.stringify(input),form:{}},opts);return {...r.state.command,changes:r.changes,layouts:r.layouts,html:r.html};};
 export const id=(role:string,pred:(d:any)=>boolean)=>(demo.records as Row[]).find(r=>r.role===role&&pred(r.data))!.id;
 
 /** The documented schema created through reviewed writes, the fictional demo records saved with real receipt IDs substituted into every
