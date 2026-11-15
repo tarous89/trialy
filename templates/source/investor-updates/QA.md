@@ -8,7 +8,7 @@ Scope: [INVESTOR_UPDATES.md](../../../docs/product/app-template-blueprints/apps/
 |---|---|---|
 | Unit (production QuickJS, demo data) | `node --no-wasm-code-gc --import tsx --test tests/investor-updates.test.ts` | 19 tests pass |
 | App commands | `node --no-wasm-code-gc --import tsx --test tests/investor-updates-commands.test.ts` | 7 tests pass |
-| Integration (disposable PGlite, every migration, runtime role) | `node --no-wasm-code-gc --import tsx --test tests/investor-updates-integration.test.ts` | 3 tests pass |
+| Integration (disposable PGlite, every migration, runtime role) | `node --no-wasm-code-gc --import tsx --test tests/investor-updates-integration.test.ts` | 3 tests pass (≈5.6 min) |
 | Browser (production sanitized frame, 1440 and 390 px) | `node --import tsx scripts/test-investor-updates-browser.ts` | passes |
 | Build | `node scripts/build-investor-updates-template.mjs --check` (in `npm run build`) | verified (≈211,000 source characters, ≈275 KB file) |
 | Full suite and build | `npm run build`, `npm test` | see the PR (run on this branch) |
@@ -33,7 +33,7 @@ Local note: the sandbox ships a newer Chromium build than Playwright 1.51.1 expe
 | 12 | Assistants draft and propose only; parity; no approve/send command | Commands test (39 commands, parity per family, buffering, refusals); integration test 3 (`runAppCommand` proposals confirmed only by a person; no link in an assistant's run). |
 | 13 | Modularity (rule 9) and archive first | Integration test 1 (Fundraise first: shared people/organizations connected; no Fundraise table bound; works alone; opted-out install works; archive pauses actions; restore returns them paused); integration test 2 (research monitors archived with the app; restored switched off); integration test 3 (archiving stops online links; restoring brings them back). |
 | 14 | No automations: the app works fully | Integration test 1 (opted out; all screens). |
-| 15 | Layout 1440/390 for app and recipient page; email in Gmail, Outlook, Apple Mail | Browser test (5 screens + review drawer, no page overflow; the platform-sanitised content as the page column and the platform-rendered update email at both widths); `clientChecks` empty for every prepared email (integration test 3) and for the platform-rendered email (browser test). Design gate (`inspectAppDesign`) passes in unit and integration tests. **Not verified:** real inboxes. |
+| 15 | Layout 1440/390 for app and recipient page; email in Gmail, Outlook, Apple Mail | Browser test (5 screens + review drawer, no page overflow; the platform-sanitised content as the page column and the platform-rendered update email at both widths); `clientChecks` empty for every prepared email (integration test 3) and for the platform-rendered email (browser test). Design gate (`inspectAppDesign`) passes in the unit test; the browser test checks the production frame. **Not verified:** real inboxes. |
 
 ## Deviations from the scope (the contract wins)
 
@@ -53,3 +53,7 @@ Local note: the sandbox ships a newer Chromium build than Playwright 1.51.1 expe
 ## Not verified here
 
 Live Claude or ChatGPT sessions (commands through the hosts), a deployed install, real automation runs on a runner and their email delivery, real inboxes (Gmail, Outlook, Apple Mail rendering beyond the platform's client checks), and the React recipient page itself (its HTML segments are checked; the page component is covered by the platform's exchange tests).
+
+## CI time budget
+
+The `core` job on main already took about 40 minutes (run 1075: 39m41s; run 1073 was cancelled at its 40-minute limit), and this PR's suites add about 6 minutes, so the first CI run was cancelled at 40 minutes with no failing test. This PR raises the `core` job's `timeout-minutes` to 60 in `.github/workflows/check.yml`. It also seeds the integration fixtures through reviewed writes instead of UI clicks (those click paths are covered by the unit and command tests). No test is skipped.
