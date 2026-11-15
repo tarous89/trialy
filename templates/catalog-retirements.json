@@ -42,6 +42,13 @@
       "replacedBy": "life.literature-radar@2.0.0",
       "reason": "Literature Radar 2.0.0 (BIO_RADAR.md) rebuilds the same app on the Bio Radars kit; withdrawn on approval by migration 074.",
       "decided": "2026-11-15"
+    },
+    {
+      "templateId": "life.project-oversight",
+      "version": "2.1.0",
+      "replacedBy": "life.project-oversight@2.2.0",
+      "reason": "Programs 2.2.0 (PROGRAMS.md §14) replaces 2.1.0: app commands, program team notifications and the weekly digest; withdrawn on approval by migration 075.",
+      "decided": "2026-11-15"
     }
   ]
 }

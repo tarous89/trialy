@@ -68,8 +68,8 @@ export async function dataRoomSuite(){
  await db.query('INSERT INTO users(id,subject,email,name) VALUES($1,$2,$3,$4)',[actor.userId,actor.userId,'owner@northwind.invalid','Robin Owner (fictional)']);
  const f=new WorkspaceFoundation(db),s=new Service(db);
  await syncTemplateCatalog(db);
- // Data Room 1.1.0 is approved by the seed (owner approval, 15 November 2026); Contracts 1.0.0 is approved here for these tests.
- await pg.query("UPDATE app_template_catalog SET status='approved' WHERE (template_id='life.data-room' AND version='1.1.0') OR (template_id='life.contracts' AND version='1.0.0')");
+ // Data Room 1.1.0 is approved by the seed (owner approval, 15 November 2026); Contracts 1.0.0 and Programs 2.1.0 are approved here for these tests.
+ await pg.query("UPDATE app_template_catalog SET status='approved' WHERE (template_id='life.data-room' AND version='1.1.0') OR (template_id='life.contracts' AND version='1.0.0') OR (template_id='life.project-oversight' AND version='2.1.0')");
  const catalog=new AppTemplates(undefined,db);
  const T={room:await catalog.read({templateId:'life.data-room',version:'1.1.0'}),contracts:await catalog.read({templateId:'life.contracts',version:'1.0.0'}),programs:await catalog.read({templateId:'life.project-oversight',version:'2.1.0'})};
  const install=async(w:string,t:any,name:string,connections:Record<string,string>={})=>{const target={install:{templateId:t.id,version:t.version,digest:t.digest,name,requestKey:randomUUID()}};const step=await dataAccessStep(f,actor,w,target);

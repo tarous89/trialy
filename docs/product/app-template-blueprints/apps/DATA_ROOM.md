@@ -308,7 +308,7 @@ Data Room never writes another app's own tables; handoffs are proposals in the o
 
 ### 14.4 Platform additions
 
-- `set_exchange_room_notices` (room operation, `exchange.setRoomNotices`) and `notifyAccessEnding` on `exchange.createGroup` (migration 075, `exchange_groups.notify_access_ending`, default on). The access-ending sweep skips rooms with the switch off.
+- `set_exchange_room_notices` (room operation, `exchange.setRoomNotices`) and `notifyAccessEnding` on `exchange.createGroup` (migration 076, `exchange_groups.notify_access_ending`, default on). The access-ending sweep skips rooms with the switch off.
 - `exchange.prepareEmail` / `prepare_exchange_email` accept `versionIds` for `documents_updated`: each person is told only about the chosen versions they can open. Without it, "since" now also counts the person's last `documents_updated` email, not only an automatic digest.
 - Source access rule (D6) in `src/workspace/service.ts` (`componentSourcePolicy`) and `src/workspace/catalog-source.ts`.
 

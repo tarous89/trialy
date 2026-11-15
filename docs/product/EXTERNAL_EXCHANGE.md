@@ -134,7 +134,7 @@ Recipient accounts or portals; e-signature (signed PDFs are uploaded back); wate
 
 ### 5.1 Room additions for Data Room 1.1.0 (15 November 2026)
 
-- **Access-ending reminder switch.** `notifyAccessEnding` on `exchange.createGroup` (rooms; default on) and the reviewed room operation `set_exchange_room_notices` (`exchange.setRoomNotices`, `{groupId, expectedVersion, notifyAccessEnding}`), migration 075. With the switch off, the 7-day access-ending event and its workspace notification are skipped; access still ends on its date and emails already approved for parties are unchanged.
+- **Access-ending reminder switch.** `notifyAccessEnding` on `exchange.createGroup` (rooms; default on) and the reviewed room operation `set_exchange_room_notices` (`exchange.setRoomNotices`, `{groupId, expectedVersion, notifyAccessEnding}`), migration 076. With the switch off, the 7-day access-ending event and its workspace notification are skipped; access still ends on its date and emails already approved for parties are unchanged.
 - **Chosen documents in a documents-updated email.** `prepare_exchange_email` / `exchange.prepareEmail` accept `versionIds` for `documents_updated`: each person's `{documents}` lists only those versions they can open now. Without `versionIds`, "since" is the person's last digest or `documents_updated` email, else the digest approval, else the invitation.
 - Party questions and notes already reach the workspace at once (§2.4): the group owner and members with the external-send right get an in-app and an email notification.
 

@@ -66,7 +66,7 @@ export async function croSelectionSuite(){
  const f=new WorkspaceFoundation(db),s=new Service(db);
  await syncTemplateCatalog(db);
  // CRO Selection 2.0.0 is a draft in the repository catalog; it is approved only inside this disposable database.
- await pg.query("UPDATE app_template_catalog SET status='approved' WHERE (template_id='life.cro-selection' AND version='2.0.0') OR (template_id='life.contracts' AND version='1.0.0') OR (template_id='life.cash-runway' AND version='2.1.0')");
+ await pg.query("UPDATE app_template_catalog SET status='approved' WHERE (template_id='life.cro-selection' AND version='2.0.0') OR (template_id='life.contracts' AND version='1.0.0') OR (template_id='life.cash-runway' AND version='2.1.0') OR (template_id='life.project-oversight' AND version='2.1.0')");
  const catalog=new AppTemplates(undefined,db);
  const T={sel:await catalog.read({templateId:'life.cro-selection',version:'2.0.0'}),contracts:await catalog.read({templateId:'life.contracts',version:'1.0.0'}),programs:await catalog.read({templateId:'life.project-oversight',version:'2.1.0'}),runway:await catalog.read({templateId:'life.cash-runway',version:'2.1.0'})};
  const install=async(w:string,t:any,name:string,connections:Record<string,string>={})=>{const target={install:{templateId:t.id,version:t.version,digest:t.digest,name,requestKey:randomUUID()}};const step=await dataAccessStep(f,actor,w,target);

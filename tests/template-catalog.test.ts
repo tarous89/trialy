@@ -109,6 +109,31 @@ test('migration 063 approves Contracts 1.0.0 once, if an earlier deployment impo
  }finally{await pg.close();}
 });
 
+test('migration 075 publishes Programs 2.2.0 in place of 2.1.0, from the live catalog state, once',async()=>{
+ const pg=new PGlite();
+ try{
+  const files=(await readdir('migrations')).filter(f=>f.endsWith('.sql')).sort(),last=files.find(f=>f.startsWith('075_approve_programs'))!;
+  for(const file of files.filter(f=>f<last))await pg.exec(await readFile('migrations/'+file,'utf8'));
+  const db:Database={query:(q,v)=>pg.query(q,v) as any,transaction:fn=>pg.transaction(tx=>fn(tx as Connection)),close:()=>pg.close()};
+  await syncTemplateCatalog(db);
+  const status=async()=>Object.fromEntries((await pg.query<any>("SELECT template_id||'@'||version AS k,status FROM app_template_catalog ORDER BY 1")).rows.map(r=>[r.k,r.status]));
+  // Live state before this deployment: 2.1.0 approved (migration 062), 2.2.0 imported earlier as a draft or not at all.
+  await pg.query("UPDATE app_template_catalog SET status='approved' WHERE template_id='life.project-oversight' AND version='2.1.0'");
+  await pg.query("DELETE FROM app_template_catalog WHERE template_id='life.project-oversight' AND version='2.2.0'");
+  const before=await status();
+  await pg.exec(await readFile('migrations/'+last,'utf8'));await syncTemplateCatalog(db);
+  const after=await status();assert.equal(after['life.project-oversight@2.1.0'],'draft');assert.equal(after['life.project-oversight@2.2.0'],'approved');
+  for(const [k,v] of Object.entries(before))if(!k.startsWith('life.project-oversight@'))assert.equal(after[k],v,k);
+  const listed=(await new AppTemplates(undefined,db).list({query:'programs'})).templates.filter((t:any)=>t.id==='life.project-oversight');
+  assert.deepEqual(listed.map((t:any)=>t.version),['2.2.0']);
+  const seed=JSON.parse(await readFile('templates/catalog-seed.json','utf8'));assert.deepEqual(seed['life.project-oversight'],{schema:'templates/source/project-oversight/schema.example.json',version:'2.2.0'});
+  const gallery=JSON.parse(await readFile('resources/template-gallery/manifest.json','utf8'));assert.ok(gallery['life.project-oversight@2.2.0'],'gallery media for 2.2.0');
+  // A later operator decision is not undone.
+  await pg.query("UPDATE app_template_catalog SET status='approved' WHERE template_id='life.project-oversight' AND version='2.1.0'");await syncTemplateCatalog(db);
+  assert.equal((await status())['life.project-oversight@2.1.0'],'approved');
+ }finally{await pg.close();}
+});
+
 test('migration 073 publishes Contracts 1.1.0 in place of 1.0.0, from the live catalog state, once',async()=>{
  const pg=new PGlite();
  try{

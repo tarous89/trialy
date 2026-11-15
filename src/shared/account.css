@@ -39,3 +39,8 @@
 .ty-account-entry .ty-auth-secondary:hover{background:#f8f8f7}
 @media(max-width:760px){.ty-account-entry .ty-entry-header{padding-inline:15px}.ty-entry-brand span{font-size:17px}.ty-entry-panel{padding:24px 22px}}
 .ty-auth-names{display:grid;grid-template-columns:1fr 1fr;gap:18px}.ty-auth-names input{min-width:0;width:100%}@media(max-width:500px){.ty-auth-names{grid-template-columns:1fr;gap:16px}}
+
+.ty-beta-notice{margin:0 0 22px;padding:16px 18px;border:1px solid #cce2d4;border-radius:12px;background:#f0f8f3;color:#224b34;font-size:13px;line-height:1.6}
+.ty-beta-notice strong{display:block;font-size:14px;margin-bottom:5px}
+.ty-beta-notice p{margin:4px 0}
+.ty-beta-notice a{color:#256b45;text-decoration:underline;text-underline-offset:3px;font-weight:600}
