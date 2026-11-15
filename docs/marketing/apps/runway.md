@@ -1019,3 +1019,10 @@ PR #214 merged as `e50602db40385e5a3d54747759a793f1fb3747fc` after exact-head pr
 - Current life.cash-runway 2.2.0 source/doc blob `343f0753248cc977a59cac67b3ed9ac6594c98c0` checked for monthly Plan spend, milestone cash, reserve, command setup and explicit linked-source ownership/review. ClinicalTrials.gov FAQ distinguishes final participant data collection from subsequent assessment/analysis. Approved genuine 2.1 Plan/Overview demo images are explicitly labeled, with separate figures. No host acceptance test claimed.
 - Fictional EUR 2.4m opening cash; 120k monthly company overhead, 80k monthly clinical operations Jan–June, 120k July analysis and 60k August report. August milestone cash 780k versus chosen reserve 300k. Later case extends operations through September and moves analysis/report to October/November; November cash 180k, 120k below reserve. All 24 monthly balances and displayed figures independently checked. Monthly model only; exclusions stated.
 - Not published. Resume exact-head full predeploy, desktop/mobile artifact review, merge and independent live checks before another topic.
+
+
+### D12 merged — deployment pending/unverified
+
+- PR #219 merged at 2026-11-15 03:02:35 UTC, release `189a49fa291e46221c814be70d1fe670026c5b5d`.
+- Full predeploy **43669876854** passed validate and seo-container on exact head `ae857e200852f5e815855583b27bbb0795b9b77b`. Artifact **14144002103**, digest `sha256:820be8c924021d3224568dd479c0131307f25d92fe288fb91c73c9ddd4b8c3af`, reviewed at desktop 1440px/mobile 390px: all sections, contained horizontal table scrolling, genuine images, shared shell and final CTA passed.
+- Initial changed-URL response HTTP 404; Cloudflare check 132679332804 and production check 132679317970 are in progress. Existing automatic build pending; no authentication fault evidenced. Poll https://trialagents.com/apps/phase-one-milestone-cash-forecast every 30–60 seconds within the 15-minute budget, then independently verify live content, metadata, discovery, links/images and analytics delivery. Resume this release before another draft if interrupted.
