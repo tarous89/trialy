@@ -1,4 +1,35 @@
-# Programs 2.0.0 validation
+# Programs 2.2.0 validation
+
+Validated against the repository host on 15 November 2026 with disposable PGlite databases and fictional data, not a deployed account. **Catalog status:** draft. `templates/catalog-seed.json` still names 2.1.0, so deployments import 2.2.0 as a draft and new installs keep getting 2.1.0 until the owner approves 2.2.0.
+
+## Commands and outcomes (2.2.0)
+
+| Command | Result |
+| --- | --- |
+| `node scripts/build-project-template.mjs --check` | Passed (catalog source 172,9xx characters, under the 180,000 limit) |
+| `npm run build` (drift checks, app function and recipe validation, `tsc --noEmit`, `vite build`) | Passed |
+| `node --import tsx --test tests/programs-commands.test.ts` | 9/9 passed (QuickJS; the design inspector on settings, digests, the team form and the slip dialog at 1440 and 390 px) |
+| `node --import tsx --test tests/programs-automations.test.ts` | 2/2 passed (real installer, setup reconciliation, write scopes, record-date dispatch and the assignment email in the outbox) |
+| `node --import tsx --test tests/programs.test.ts` | 14/14 passed (the archived 2.1.0, unchanged) |
+| Related suites (catalog, installers, Runway, Contracts, Fundraise, Partnerships, Data Room, CRO Selection, integrations, app commands, recipes) | See the commit message for the run |
+
+Browser checks used this container's Chromium through a `PLAYWRIGHT_BROWSERS_PATH` that maps the pinned Playwright 1.51.1 browser names to the installed build. Test code was not changed for this.
+
+## Fixed in 2.2.0
+
+- **Drawer at 390 px:** with the slip section open, the editor drawer's fixed footer overlapped the last field. This was also present in 2.1.0, which was never inspected in that state. On phones the drawer now scrolls as one page.
+- **Layout defaults:** form defaults from the layout profile now replace the app's own presets for new records.
+
+## Not verified here
+
+- Add app on the real web, ChatGPT and Claude hosts.
+- An unattended weekly digest on a live runner.
+- Live email delivery and quota behaviour.
+- `layout.save` through the native host layout review.
+
+---
+
+# Programs 2.0.0 validation (history)
 
 Validated against the repository host on 11 November 2026 with disposable PGlite databases and fictional data, not a deployed account.
 

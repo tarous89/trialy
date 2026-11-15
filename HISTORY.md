@@ -1,3 +1,19 @@
+## 15 November 2026 — Programs 2.2.0 built as a draft
+
+New immutable version `life.project-oversight` 2.2.0. It aligns Programs with the app commands, Edit in App and app automation standards, following owner decisions P1–P5 in [PROGRAMS.md §14](docs/product/app-template-blueprints/apps/PROGRAMS.md#14-programs-220-assistant-control-team-notifications-and-the-weekly-digest).
+
+What changes in the app:
+- **App commands.** 27 commands share one handler with the buttons: 13 read, 13 propose, 1 layout. They come with form groups and layout labels/defaults, extra fields, and Edit in Runway for the linked cash forecast.
+- **Program team.** New `programs.team` table. The app keeps `owner_member_id`, `assigned_on` and `remind_on` on items and RAID entries, with a reminder lead time in Settings.
+- **Automations.** Six install recommendations: an AI weekly digest (saves to the new `programs.digests` table, then emails the owner, only when something needs attention) and five member notices. The digest without AI is an app feature. Both digest helpers and the app share one digest core. The 2.1.0 monthly reminder, slip notice and status draft are removed.
+
+Packaging:
+- The build minifies the catalog source, including local names, to stay under 180,000 characters.
+- 2.1.0 is archived unchanged under `templates/source/project-oversight/archive/2.1.0/`, and its installer entry points there.
+- `catalog-seed.json` still names 2.1.0, so 2.2.0 imports as a draft.
+
+Tests: `tests/programs-commands.test.ts` and `tests/programs-automations.test.ts`. `tests/programs.test.ts` now reads the archived 2.1.0 schema and demo data.
+
 ## 14 November 2026 — Contracts 1.1.0 published
 
 Contracts 1.1.0 (`life.contracts`) is published at the owner's request in place of 1.0.0. It implements decisions C1–C8 in [CONTRACTS.md §12](docs/product/app-template-blueprints/apps/CONTRACTS.md), with no platform change.
