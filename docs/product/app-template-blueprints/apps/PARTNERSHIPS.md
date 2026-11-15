@@ -2,9 +2,11 @@
 
 *Track out-licensing, in-licensing and collaboration deals by asset, from first contact to signature: conferences, follow-ups and partner news, with the assistant doing the research and the admin.*
 
-**Status:** Published 14 November 2026 as **2.1.0** (owner approval). Part of [Biotech apps v2](../BIOTECH_v2.md) (rank 7, formerly "BD Pipeline"). It **replaces** `life.partnership-tracker` 1.1.1 (withdrawn by migration 071), display name **Partnerships**. No existing users, so no data migration.
+**Status:** Published 15 November 2026 as **2.2.0** (owner approval), in place of 2.1.0 for new installs (2.1.0 published 14 November 2026 stays approved; installed copies keep their source). Part of [Biotech apps v2](../BIOTECH_v2.md) (rank 7, formerly "BD Pipeline"). It **replaces** `life.partnership-tracker` 1.1.1 (withdrawn by migration 071), display name **Partnerships**. No existing users, so no data migration.
 
 **Build (14 Nov 2026):** `templates/source/partnership-tracker/` → `templates/apps/life.partnership-tracker-2.1.0.json` (approved: the seed names it); results in its [QA.md](../../../../templates/source/partnership-tracker/QA.md). The first build, 2.0.0 (#164), was imported as a draft and is kept unchanged under `archive/2.0.0/`, because catalog versions are immutable.
+
+**Revision (2.2.0, 15 Nov 2026):** aligned with the platform standards that shipped after 2.1.0: app commands (`list_app_commands` / `run_app_command`, on by default since #178), the in-app integration standard (values from another app labelled "From *App*" with Edit in *App*, `role_read_only`), research followed by email as one automation (E5) and run-time fields (E6). Details in §12b. 2.1.0 is archived unchanged under `archive/2.1.0/`.
 
 **Revision (2.1.0):** aligned with the platform's app automation standard ([PR #168](https://github.com/tarous89/trialy/pull/168) default-on install recommendations; [PR #169](https://github.com/tarous89/trialy/pull/169) research must save to the app database) and made customizable by Claude and ChatGPT within the app's scope (§12a). Add app offers the install recommendations, selected by default.
 
@@ -141,7 +143,7 @@ Custom `frontend-js` app on the Vivid kit, theme **forest** (deal pack), declare
 - **Saves a report every run**, also when nothing was found: one `partnerships.research_reports` row with the digest summary, counts and sources. The digest is sent from that completed run.
 - **Never** contacts anyone, and never changes stages or opportunities by itself.
 
-**Digest email** (`partner_digest`: to the workspace members chosen on the automation, after each completed research run; optional intro line from Settings):
+**Digest email** (since 2.2.0 the email step of `partner_research`, one automation with one switch (E5); 2.1.0 had a separate `partner_digest`. To the workspace members chosen on the automation, after each completed research run, also when nothing was found; optional intro line from Settings):
 
 > **Subject:** Partnerships · week of 16 Nov: 3 moved · 5 due · 4 new signals
 >
@@ -238,13 +240,14 @@ There are no existing users, so this needs no migration code.
 
 ## 10. Automations
 
-Declared in `catalog.metadata.json` per the [app automations scope](../../RECOMMENDED_AUTOMATIONS.md). The three install recommendations are selected by default in the Add app dialog; the owner can opt out. Add app approves them once, with their write permission, and they are enabled after the app is saved; a missing runner or write access leaves them at Needs setup without affecting the app. Later changes happen in Automations (From app features) or through Claude or ChatGPT with the exact review.
+Declared in `catalog.metadata.json` per the [app automations scope](../../RECOMMENDED_AUTOMATIONS.md). The two install recommendations are selected by default in the Add app dialog; the owner can opt out. Add app approves them once, with their write permission, and they are enabled after the app is saved; a missing runner or write access leaves them at Needs setup without affecting the app. Later changes happen in Automations (From app features) or through Claude or ChatGPT with the exact review.
 
 | Key | What | Trigger | Saves |
 |---|---|---|---|
-| `partner_research` | Partner research | Calendar, weekly Monday 07:00 Europe/Berlin | New `partnerships.signals` (create only) and one `partnerships.research_reports` row per run (create only) |
-| `partner_digest` | Digest email (§6) | After each completed `partner_research` run (also with no findings) | Email `{{run.summary}}` to workspace members |
+| `partner_research` | Partner research and the digest email (§6) | Calendar, weekly Monday 07:00 Europe/Berlin; the email after each completed run (also with no findings) | New `partnerships.signals` (create only) and one `partnerships.research_reports` row per run (create only); then email `{{run.summary}}` to workspace members |
 | `meeting_briefs` | Meeting briefs | `partnerships.activities.occurred_on`, one day before, 08:00 | One draft `partnerships.briefs` row per linked meeting without a brief (create only) |
+
+**Reads (2.2.0, E6):** every read binding is `fields:"all"` with `exceptFields` for confidential fields (fit rationale, tags and agreement links on opportunities; meeting summaries, outcomes and materials on activities; team member IDs in settings; and similar), so adding, renaming or hiding a custom field keeps both automations running without re-approval. Writes stay explicit and create-only (those tables take no custom fields).
 
 **Follow-up reminders** (on the due date and +1 day for overdue) are not an install recommendation: they need the condition `status = open`, which install recipes cannot express yet (recipe emails carry no conditions, and catalog apps cannot ship a summary function). The assistant sets them up on request as email actions with that condition and `memberField: owner_member_id` (examples in `automation.examples.json`). If the platform adds conditions to recipes, they become a fourth recommendation.
 
@@ -291,10 +294,32 @@ The user can ask either assistant to change how the app looks and works. Each ch
 
 ---
 
+## 12b. App commands and integrations (2.2.0)
+
+**App commands.** `appCommands` (line 2 of the source, single-line JSON, kept verbatim by the build) declares 50 commands; the host lists them with `list_app_commands` and runs them with `run_app_command` as the caller, with the caller's permissions and column restrictions. Viewers see read commands only.
+
+| Mode | Commands |
+|---|---|
+| read (18) | `schema.describe`, `overview.read`, `opportunities.list`, `opportunity.read`, `partners.list`, `partner.read`, `contacts.list`, `activities.list`, `follow_ups.list`, `conferences.list`, `conference.read`, `signals.list`, `research_reports.list`, `briefs.list`, `digest.read`, `views.list`, `settings.read`, `integrations.read` |
+| propose (31) | `record.create`, `record.update`, `record.archive`, `opportunity.move_stage`, `opportunity.set_links`, `opportunity.set_tags`, `opportunity.set_contacts`, `activity.log`, `follow_up.create`, `follow_up.complete`, `follow_up.cancel`, `meeting.create`, `meeting.record_outcome`, `signal.mark_reviewed`, `signal.dismiss`, `signal.accept`, `signal.add_partner`, `brief.mark_reviewed`, `view.save`, `view.update`, `view.archive`, `settings.save`, `stages.save`, `lists.save`, `preferences.save`, `lost_reasons.save`, `category.add`, `category.update`, `categories.add_standard`, `custom_field.register`, `data_room_access.add` |
+| layout (1) | `layout.save` (screens, column order and visibility, heading; the same presentation-only review as the gear) |
+
+- **Parity.** Propose commands replay the same click and submit events through the screens' handler (`handle`), so the review is identical to the click path for the same input (tested per command family). Proposals are buffered and sent once at the end: a failing step leaves no partial review; at most 50 record changes.
+- **Beyond the screens, only for customization.** Custom stages (`stages.save` with `custom`), new activity kinds (`lists.save`) and custom fields (`custom_field.register`) save the settings change and return `schema_change` naming the table change still needed (a reviewed `update_type` by the workspace owner, or adding the field to the app's binding). Read commands return the app's own calculations; assistants never recompute funnels, stalled deals or due dates.
+- **Never.** Commands cannot send email, contact partners, choose an integration source, confirm reviews or write another app's tables.
+
+**Integration standard.** `roles.list` (agreements) and `integrations.list` (Data Room) name the app that writes a read-only role. Its values are labelled **From Contracts** / **From Data Room**, with **Edit in *App*** (`data-trialy-open="<role> <recordId>"`) opening the writing app at the record. Hand-entered data room access is refused in the form and in `data_room_access.add` while Data Room is linked; the host refuses any other write with `role_read_only`.
+
+**Additional fields.** Fields bound to a table that this version does not know (added after install and not registered as custom fields) are shown read only as "Additional fields" in the drawers and returned as `additional_fields` by the read commands; `custom_field.register` turns one into a custom field.
+
+**Layout keys.** The native layout gear stores column visibility as `group:column`; 2.1.0 read only `group.column`, so columns hidden with the gear were not hidden. 2.2.0 reads both and `layout.save` writes `group:column`.
+
+---
+
 ## 13. Package checklist and acceptance criteria
 
 **Package:**
-- template source under `templates/source/partnership-tracker/` at 2.1.0, and immutable `templates/apps/life.partnership-tracker-2.1.0.json` (approved), display name **Partnerships**; 2.0.0 archived unchanged as a draft
+- template source under `templates/source/partnership-tracker/` at 2.2.0, and immutable `templates/apps/life.partnership-tracker-2.2.0.json` (approved), display name **Partnerships**; 2.1.0 (approved) and 2.0.0 (draft) archived unchanged
 - roles as in §7
 - standard tag categories (Conference, Channel, Asset group)
 - standard stages and lost reasons
@@ -302,14 +327,15 @@ The user can ask either assistant to change how the app looks and works. Each ch
 - full `catalog.metadata.json`
 - fictional `demo_data.json`: 3 assets, 12 partners, 20 contacts, 18 opportunities in all directions, 1 conference with briefs, signals
 - `templateLayoutSchema` with seven screen ids and six column groups
-- `recommendedAutomations` (partner research, digest, meeting briefs) valid against the platform recipe schema
+- `recommendedAutomations` (partner research with its digest email, meeting briefs) valid against the platform recipe schema
+- `appCommands` valid against the host's declaration check
 - build `--check` and browser test
 
 **Acceptance (beyond the shared contract):**
 1. **Conference through chat:** the user pastes 10 partneringONE requests; the assistant proposes contacts, opportunities and meetings tagged "BIO-Europe 2026", and warns about one partner that declined last year. The saved view for that tag shows prep before the event and next steps after it.
 2. **After-meeting log:** one message creates an activity with materials and versions, a stage change (written to stage history) and two follow-ups with owners, all reviewed.
 3. **Gates:** a CDA link from Contracts and a Data Room room show status and engagement on the opportunity. Without Contracts or Data Room installed, the fields stay manual and nothing breaks.
-4. **Research:** Add app enables research, digest and briefs; the weekly worker saves signals, two target suggestions and its report (it cannot create opportunities or change signals); one suggestion is accepted (creating an opportunity); the digest email arrives in the §6 format within the word limit. Changing the automation to daily or monthly changes the schedule; the app stores none.
+4. **Research:** Add app enables research (with its digest email) and briefs; the weekly worker saves signals, two target suggestions and its report (it cannot create opportunities or change signals); one suggestion is accepted (creating an opportunity); the digest email arrives in the §6 format within the word limit. Changing the automation to daily or monthly changes the schedule; the app stores none.
 5. **Saved views:** custom category "Region" with values; a shared view filters by Region + stage and is visible to the team; a private view is not.
 6. **Funnel and win/loss** match the stage history.
 7. **Outreach:** no screen or automation sends email to partners.
@@ -317,5 +343,6 @@ The user can ask either assistant to change how the app looks and works. Each ch
 9. **Modularity and archiving:** the modularity test (rule 9) and archive-first checks pass. Archiving the app pauses research, briefs and the digest. Without a ready runner they stay at Needs setup and the app works.
 10. **Layout:** desktop 1440 and mobile 390.
 11. **Customization:** a custom field appears as a column, filter, drawer row and editor input; a saved view keeps its own columns and sort; stage labels, hidden and custom stages, lists and preferences apply after review.
+12. **App commands (2.2.0):** every control has a command with the same review; read commands return the app's results; an assistant's proposal is confirmed only by a person; values from Contracts and Data Room are labelled and open there; unknown bound fields show as Additional fields.
 
 **Open for design partners:** default stages per direction; digest sections and order; the research sources most valued.
