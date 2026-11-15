@@ -5,7 +5,7 @@ import assert from 'node:assert/strict';
 import {contractsFixture,pdf} from '../tests/fixtures/contracts.js';
 import {frontendFrameDocument} from '../src/shared/frontend-frame.js';
 import {prepareToolLayout} from '../src/workspace/tool-layout.js';
-/* Contracts 1.0.0 in the production sanitized frame with a manifest attached: seven screens at 1440 and 390, reviewed pipeline move and
+/* Contracts 1.1.0 in the production sanitized frame with a manifest attached: seven screens at 1440 and 390, reviewed pipeline move and
  * signature, the data-trialy-document upload hook (the harness plays the host's upload review), human verification, native layout. */
 const x=await contractsFixture();let component=x.component;
 const bundle=await build({stdin:{contents:`import React from 'react';import {createRoot} from 'react-dom/client';import {CustomToolLayout} from './src/shared/CustomToolLayout';
