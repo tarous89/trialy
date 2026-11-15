@@ -38,5 +38,8 @@
   "life.deal-radar@1.0.0": "templates/source/radars/deal-radar/schema.example.json",
   "life.funding-radar@1.0.0": "templates/source/radars/funding-radar/schema.example.json",
   "life.literature-radar@2.0.0": "templates/source/radars/literature-radar/schema.example.json",
-  "life.pipeline-radar@1.0.0": "templates/source/radars/pipeline-radar/schema.example.json"
+  "life.pipeline-radar@1.0.0": "templates/source/radars/pipeline-radar/schema.example.json",
+  "life.market-radar@1.0.0": "templates/source/radars/market-radar/schema.example.json",
+  "life.patent-radar@1.0.0": "templates/source/radars/patent-radar/schema.example.json",
+  "life.regulatory-radar@1.0.0": "templates/source/radars/regulatory-radar/schema.example.json"
 }

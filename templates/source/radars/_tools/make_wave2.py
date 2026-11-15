@@ -1,13 +1,8 @@
 """Writes radar.json, catalog.metadata.json and fictional demo_data.json for Pipeline, Literature 2.0.0, Deal and Funding Radar (BIO_RADAR.md §3).
 Re-running overwrites them. Every company, asset, identifier and URL is invented; .invalid domains resolve nowhere."""
-import json,os
-ROOT=os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-def W(slug,name,data):
-    os.makedirs(os.path.join(ROOT,slug),exist_ok=True)
-    open(os.path.join(ROOT,slug,name),'w').write(json.dumps(data,indent=2 if name!='demo_data.json' else 1,ensure_ascii=False)+'\n')
-def F(key,name,kind='text',**o):
-    d={'key':key,'name':name,'kind':kind};d.update(o);return d
-WEB='Use the public site on the web.'
+import sys,os
+sys.path.insert(0,os.path.dirname(os.path.abspath(__file__)))
+from radar_lib import W,F,WEB,demo,today
 radars={}
 radars['pipeline-radar']=dict(slug='pipeline-radar',id='life.pipeline-radar',version='1.0.0',name='Pipeline Radar',prefix='pipelineradar',trackerTable='assets',trackerLabel='Assets',itemLabel='asset',itemsLabel='assets',cadence='weekly',itemNameField='name',
  scopeFields=[F('indication','Indication',required=True,placeholder='e.g. idiopathic pulmonary fibrosis'),F('mechanism','Mechanism or target',placeholder='e.g. LPA1, autotaxin'),F('modality','Modality',placeholder='e.g. small molecule, antibody'),F('line','Line of therapy',placeholder='e.g. first line, add-on'),F('geographies','Geographies',placeholder='e.g. US, EU, China')],
@@ -63,28 +58,6 @@ radars['funding-radar']=dict(slug='funding-radar',id='life.funding-radar',versio
  examplePrompts=[{'prompt':'Set up Funding Radar for fibrosis biotechs and build it now.','expectedBehavior':'Install Funding Radar, add a scope (indications, stages), then Build now in chat: financings with investors, events and a run with its source report.'},{'prompt':'Which investors led fibrosis rounds this year?','expectedBehavior':'Read Funding Radar financings for the scope and count lead investors. Nothing is written.'}],
  meta=dict(description='Financings, IPOs and grants in your space and the investors behind them. One table of financings (shared with Fundraise and Deal Comps as fundingradar.financings), an events feed, and a weekly scan + digest of rounds and the most active investors run by Claude or ChatGPT.',tags=['biotech','fundraising','financings','investors','venture capital','grants','radar','bio radars'],whenToUse='Track financings, IPOs and grants in your modalities, indications and stages, with the investors who led them, as comparables and a target list for your own fundraising, with a weekly digest.',whenNotToUse='Your own fundraising process and investor CRM (Fundraise), investor updates (Investor Updates), deal terms between companies (Deal Radar), valuation or investment advice.'))
 
-today='2026-11-16'
-def demo(r,items,events):
-    recs=[];n=[0]
-    def add(role,data):
-        n[0]+=1;i='00000000-0000-4000-8000-%012d'%n[0];recs.append({'role':role,'id':i,'version':0,'data':data});return i
-    P=r['prefix']
-    add(P+'.settings',{'lookback_days':90,'research_template_version':1})
-    srcs=json.dumps(r['sources'])
-    s1=add(P+'.scopes',{'name':'Fibrosis (fictional)','definition':json.dumps({r['scopeFields'][0]['key']:'fibrosis'}),'sources':srcs,'watchlist':'[]','status':'active','archived':False})
-    runs=[]
-    for i,d in enumerate(['2026-11-02','2026-11-09','2026-11-16']):
-        rid='00000000-0000-4000-9100-%012d'%(i+1);runs.append(rid)
-        rep=[{'scope_id':s1,'sources':[{'name':s['name'],'status':'used' if j<2 else ('not_reachable' if j==len(r['sources'])-1 else 'not_relevant'),'note':''} for j,s in enumerate(r['sources'])]}]
-        add(P+'.runs',{'run_id':rid,'scope_ids':json.dumps([s1]),'kind':'build' if i==0 else 'refresh','run_on':d,'assistant':'claude','research_template_version':1,'sources_report':json.dumps(rep),'items_added':len(items) if i==0 else 1,'items_updated':0 if i==0 else 2,'events_added':len(events),'summary':'Fictional run for the demo. Two changes this week.','status':'completed'})
-    ids=[]
-    for k,(data,key) in enumerate(items):
-        changed='["new"]' if k==len(items)-1 else ('["%s"]'%list(data)[1] if k==0 else '[]')
-        ids.append((add(P+'.'+r['trackerTable'],{**data,'natural_key':key,'scope_id':s1,'sources':json.dumps([{'title':'Source (fictional)','url':'https://news.example.invalid/'+key.replace('|','-').replace(' ','-'),'date':today}]),'last_verified_on':today,'last_changed_run_id':runs[2] if k in (0,len(items)-1) else runs[0],'changed_fields':changed,'watched':k==0,'dismissed':False}),key))
-    for j,(kind,title,ii,d,imp,exp) in enumerate(events):
-        iid,key=ids[ii]
-        add(P+'.events',{'scope_id':s1,'item_id':iid,'natural_key':key+'|'+kind+'|'+d,'kind':kind,'title':title,'summary':'Fictional event for the demo.','occurred_on':d,'occurred_month':d[:7],'expected':exp,'impact':imp,'direction':'threat' if imp=='high' else 'neutral','so_what':'Could change the plan for NWB-101 (fictional).' if imp=='high' else None,'sources':json.dumps([{'title':'Source (fictional)','url':'https://news.example.invalid/e%d'%j,'date':d}]),'run_id':runs[2] if j<2 else runs[0],'status':'new' if j<3 else 'reviewed'})
-    return {'asOf':today,'note':'Fictional demo data for '+r['name']+'. Every company, asset, identifier and URL is invented; .invalid domains resolve nowhere.','records':[{**x,'data':{k:v for k,v in x['data'].items() if v is not None}} for x in recs]}
 D={}
 D['pipeline-radar']=([({'name':'FX-%d'%(201+i),'company_name':c,'mechanism':m,'modality':mo,'phase':p,'indications':'IPF','status':'active','next_milestone':ms,'next_milestone_on':d,'next_milestone_estimated':e,'own':i==5},('%s|fx-%d'%(c.lower(),201+i))) for i,(c,m,mo,p,ms,d,e) in enumerate([('Maplecrest Pharma (fictional)','LPA1 antagonist','small_molecule','phase_2','Phase 2 readout','2027-01-20',True),('Quillmont Bio (fictional)','Autotaxin inhibitor','small_molecule','phase_3','Phase 3 topline','2027-03-15',True),('Rivermint Therapeutics (fictional)','anti-αvβ6','antibody','phase_1','Phase 2 start','2026-12-10',True),('Cedarline Pharma (fictional)','PDE4B inhibitor','small_molecule','approved','Label expansion','2027-06-01',True),('Larkspur Medicines (fictional)','Galectin-3','biologic','discontinued','—','2026-10-02',False),('Northwind Bio (fictional)','LPA1 antagonist (inhaled)','small_molecule','phase_2','Phase 2 interim','2027-02-05',True),('Harborview Biosciences (fictional)','CTGF','antibody','preclinical','IND','2027-04-01',True)])],
  [('phase_change','FX-201 moved to phase 2 (fictional)',0,'2026-11-12','high',False),('new_entrant','FX-207 entered IPF (fictional)',6,'2026-11-14','medium',False),('readout','FX-202 phase 3 topline expected (fictional)',1,'2027-03-15','high',True),('discontinuation','FX-205 discontinued (fictional)',4,'2026-10-02','medium',False),('partnership','FX-203 partnered (fictional)',2,'2026-10-20','low',False)])

@@ -1,0 +1,210 @@
+{
+  "kit": "1.1.0",
+  "slug": "regulatory-radar",
+  "id": "life.regulatory-radar",
+  "version": "1.0.0",
+  "name": "Regulatory Radar",
+  "prefix": "regulatoryradar",
+  "trackerTable": "items",
+  "trackerLabel": "Regulatory items",
+  "itemLabel": "regulatory item",
+  "itemsLabel": "regulatory items",
+  "cadence": "monthly",
+  "comingDays": 180,
+  "scopeFields": [
+    {
+      "key": "agencies",
+      "name": "Agencies",
+      "kind": "text",
+      "required": true,
+      "placeholder": "e.g. FDA, EMA, MHRA, PMDA"
+    },
+    {
+      "key": "topics",
+      "name": "Topics",
+      "kind": "text",
+      "placeholder": "e.g. rare disease, inhaled products, decentralised trials"
+    },
+    {
+      "key": "indications",
+      "name": "Indications",
+      "kind": "text",
+      "placeholder": "e.g. IPF"
+    },
+    {
+      "key": "designation_types",
+      "name": "Designation types",
+      "kind": "text",
+      "placeholder": "e.g. orphan, breakthrough, PRIME"
+    }
+  ],
+  "trackerFields": [
+    {
+      "key": "agency",
+      "name": "Agency",
+      "kind": "text"
+    },
+    {
+      "key": "kind",
+      "name": "Kind",
+      "kind": "select",
+      "options": [
+        "guidance",
+        "designation",
+        "adcom",
+        "decision",
+        "policy",
+        "consultation"
+      ]
+    },
+    {
+      "key": "title",
+      "name": "Title",
+      "kind": "text",
+      "required": true
+    },
+    {
+      "key": "date",
+      "name": "Date",
+      "kind": "date",
+      "description": "Publication, meeting or decision date."
+    },
+    {
+      "key": "status",
+      "name": "Status",
+      "kind": "select",
+      "options": [
+        "draft",
+        "final",
+        "open",
+        "closed",
+        "scheduled",
+        "granted",
+        "issued",
+        "withdrawn"
+      ]
+    },
+    {
+      "key": "deadline",
+      "name": "Deadline",
+      "kind": "date",
+      "description": "Comment deadline of a consultation, or the date of an upcoming meeting or decision."
+    },
+    {
+      "key": "deadline_estimated",
+      "name": "Deadline is an estimate",
+      "kind": "boolean"
+    },
+    {
+      "key": "programs_affected",
+      "name": "Programs affected",
+      "kind": "text",
+      "description": "Which of your programs this touches, and how, in one line."
+    },
+    {
+      "key": "summary",
+      "name": "Summary",
+      "kind": "text"
+    }
+  ],
+  "naturalKey": {
+    "label": "agency, title and date",
+    "rule": "Agency, the document or decision title in lower case and its date, joined by \"|\", e.g. \"ema|guideline on inhaled products|2026-11-02\". A later version of the same document keeps its key."
+  },
+  "dateField": {
+    "key": "deadline",
+    "estimated": "deadline_estimated",
+    "label": "Deadline"
+  },
+  "eventKinds": [
+    {
+      "key": "guidance",
+      "label": "Guidance"
+    },
+    {
+      "key": "designation",
+      "label": "Designation"
+    },
+    {
+      "key": "adcom",
+      "label": "Advisory committee"
+    },
+    {
+      "key": "regulatory_decision",
+      "label": "Decision"
+    },
+    {
+      "key": "policy",
+      "label": "Policy"
+    },
+    {
+      "key": "consultation_open",
+      "label": "Consultation open"
+    }
+  ],
+  "digestSection": {
+    "title": "New guidances and designations",
+    "kinds": [
+      "guidance",
+      "designation",
+      "policy",
+      "consultation_open"
+    ],
+    "hint": "guidances, designations, consultations"
+  },
+  "listColumns": [
+    "title",
+    "agency",
+    "kind",
+    "status",
+    "date",
+    "deadline",
+    "programs_affected"
+  ],
+  "optionLabels": {
+    "adcom": "Advisory committee"
+  },
+  "sources": [
+    {
+      "name": "FDA",
+      "covers": "Guidances, Federal Register notices, designations, advisory committee calendars.",
+      "priority": 1,
+      "notes": "Use the public site on the web."
+    },
+    {
+      "name": "EMA",
+      "covers": "Scientific guidelines, consultations, CHMP and COMP highlights, PRIME.",
+      "priority": 2,
+      "notes": "Use the public site on the web."
+    },
+    {
+      "name": "MHRA",
+      "covers": "UK guidance, consultations and decisions.",
+      "priority": 3,
+      "notes": "Use the public site on the web."
+    },
+    {
+      "name": "National agencies",
+      "covers": "PMDA, Health Canada, Swissmedic and others for your scope.",
+      "priority": 4,
+      "notes": "Use the public site on the web."
+    },
+    {
+      "name": "Official journals",
+      "covers": "Federal Register, Official Journal of the EU.",
+      "priority": 5,
+      "notes": "Use the public site on the web."
+    }
+  ],
+  "instruction": "You watch regulators for the scopes below. For each active scope, find guidances (draft and final), designations, advisory committee meetings, decisions, policy changes and open consultations from its agencies on its topics, indications and designation types since the last run. Keep one row per agency, title and date with status, deadline, the programs it affects and a short summary; record each change as an event. Date a consultation_open event on its comment deadline and an adcom event on the meeting date, marked expected while in the future. Quote agency wording for requirements; this is not regulatory advice.",
+  "examplePrompts": [
+    {
+      "prompt": "Set up Regulatory Radar for FDA and EMA guidance on inhaled products and rare lung disease, and build it now.",
+      "expectedBehavior": "Install Regulatory Radar, add a scope (agencies, topics, designation types), then Build now in chat: regulatory items with status and deadlines, events and a run with its source report."
+    },
+    {
+      "prompt": "Which consultations close in the next three months?",
+      "expectedBehavior": "Read Regulatory Radar items and consultation_open events for the scope and list them by deadline. Nothing is written."
+    }
+  ]
+}

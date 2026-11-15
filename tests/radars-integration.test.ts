@@ -6,13 +6,13 @@ import {reconcileRecipeSetups} from '../src/automations/recipes.js';
 import {inspectAppDesign} from '../src/workspace/design-quality.js';
 import {text,suite,seedDemo,installRadar} from './fixtures/trial-radar-db.js';
 
-/* Bio Radars wave 2 (kit 1.1.0) on a disposable database: each radar installs from the catalog with its three read-only functions and two
+/* Bio Radars waves 2 and 3 (kit 1.1.0) on a disposable database: each radar installs from the catalog with its three read-only functions and two
  * recommended automations, takes its fictional demo data, renders every screen and drawer without errors, passes the design gate at 1440 and
  * 390 px, and (Deal, Funding) publishes its tracker as a radar.v1 output with one writer. The end-to-end run, digest and alert pipeline is
  * covered once for the kit by tests/trial-radar-integration.test.ts. */
-const RADARS=[['pipeline-radar','life.pipeline-radar','1.0.0'],['literature-radar','life.literature-radar','2.0.0'],['deal-radar','life.deal-radar','1.0.0'],['funding-radar','life.funding-radar','1.0.0']] as const;
+const RADARS=[['pipeline-radar','life.pipeline-radar','1.0.0'],['literature-radar','life.literature-radar','2.0.0'],['deal-radar','life.deal-radar','1.0.0'],['funding-radar','life.funding-radar','1.0.0'],['patent-radar','life.patent-radar','1.0.0'],['market-radar','life.market-radar','1.0.0'],['regulatory-radar','life.regulatory-radar','1.0.0']] as const;
 
-test('Wave 2 radars install, take their demo data, render every screen and pass the design gate',async()=>{
+test('Kit 1.1.0 radars install, take their demo data, render every screen and pass the design gate',async()=>{
  const x=await suite();
  try{await withActor(x.human,async()=>{
   for(const [slug,id,version] of RADARS){
@@ -32,7 +32,7 @@ test('Wave 2 radars install, take their demo data, render every screen and pass 
  });}finally{await x.pg.close();}
 });
 
-test('Wave 2 radars: automations are created on install and wait for a runner; Deal and Funding trackers keep one writer',async()=>{
+test('Kit 1.1.0 radars: automations are created on install and wait for a runner; Deal and Funding trackers keep one writer',async()=>{
  process.env.APP_AUTOMATION_RECIPES_ENABLED='true';const x=await suite();
  try{await withActor(x.human,async()=>{
   const w=await x.workspace('Outputs');

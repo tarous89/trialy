@@ -10,7 +10,7 @@ import {radarHarness} from './fixtures/radar.js';
 /* Bio Radars wave 2 on kit 1.1.0 (BIO_RADAR.md §3, §5): Pipeline, Literature 2.0.0, Deal and Funding Radar, each in production QuickJS
  * with platform-shaped reads and its fictional demo set (tests/fixtures/radar.ts). Trial Radar (kit 1.0.0) has its own tests. */
 const words=(t:string)=>t.split(/\s+/).filter(w=>/[A-Za-z0-9]/.test(w)).length;
-const SLUGS=['pipeline-radar','literature-radar','deal-radar','funding-radar'];
+const SLUGS=['pipeline-radar','literature-radar','deal-radar','funding-radar','patent-radar','market-radar','regulatory-radar'];
 const seed=JSON.parse(await readFile('templates/catalog-seed.json','utf8')),outputs=JSON.parse(await readFile('templates/contracts/outputs.json','utf8')).roles,installers=JSON.parse(await readFile('templates/catalog-installers.json','utf8'));
 
 for(const slug of SLUGS){
@@ -25,7 +25,8 @@ for(const slug of SLUGS){
   assert.notEqual(seed[radar.id]?.version,radar.version,'draft until the owner approves it');
   const [scan,alert]=readRecipes(raw).recommended as any[];assert.deepEqual([scan.key,alert.key],['scan','alert']);assert.ok(scan.research&&scan.email);
   const g=scan.research.writeBindings.find((b:any)=>b.role===T('tracker'));assert.deepEqual(g.exceptFields,kit.userOwned(radar));
-  assert.deepEqual(scan.trigger.weekdays,[1]);assert.equal(scan.trigger.time,'07:00');
+  assert.equal(scan.trigger.time,'07:00');assert.equal(scan.trigger.frequency,radar.cadence);
+  if(radar.cadence==='monthly')assert.deepEqual(scan.trigger.monthRule,{kind:'weekday',nth:1,weekday:1},'first Monday');else assert.deepEqual(scan.trigger.weekdays,[1]);
   for(const k of ['whenToUse','whenNotToUse','description'])assert.ok(raw[k].length>40,k);
   for(const f of radar.trackerFields)assert.ok(schema[T('tracker')].fields.some((x:any)=>x.key===f.key),f.key);
  });
@@ -75,4 +76,27 @@ test('Deal and Funding Radar: trackers are radar.v1 outputs; digests show the la
  }
  // Undisclosed deal terms are never counted.
  const h=await radarHarness('deal-radar');assert.ok(h.fresh().some(r=>r.role==='dealradar.deals'&&r.data.disclosed===false));
+});
+
+test('Patent Radar: monthly, "Not legal advice" on every screen and email, expiries in the next 24 months',async()=>{
+ const h=await radarHarness('patent-radar'),rows=h.fresh(),s=h.session(rows);assert.equal(h.radar.cadence,'monthly');
+ for(const section of ['overview','tracker','events','setup']){const o=await s.open({section});assert.match(h.text(o.html),/Not legal advice/,section);}
+ await s.open({section:'overview'});const t=h.text(s.html);assert.match(t,/Coming up \(24 months\)/);
+ assert.match(t,/US19000005 expires \(fictional\)/,'an expiry 7 months out is listed');assert.match(t,/EP9000001 expires \(fictional\)/,'an expiry 16 months out is listed');
+ const run=rows.find(r=>r.role==='patentradar.runs'&&r.data.run_on==='2026-11-16')!;
+ for(const e of rows.filter(r=>r.role==='patentradar.events'))e.data.run_id=run.data.run_id;for(const r of rows.filter(r=>r.role==='patentradar.families'))r.data.watched=true;
+ const d=(await h.runFunction('digest_summary',rows,{records:[],run:{id:run.data.run_id,summary:run.data.summary}})).out;
+ assert.match(d.subject,/dates in 24 months/);assert.match(d.text,/Not legal advice/);assert.match(d.text,/Coming up \(24 months\)\n- 30 Jun 2027 \(est\.\): US19000005 expires/);
+ const a=(await h.runFunction('alert_summary',rows,{records:[],run:{id:run.data.run_id}})).out;assert.equal(a.nonEmpty,true);assert.match(a.text,/Not legal advice/);
+ assert.match(JSON.stringify((await h.runFunction('brief',rows)).out.context),/not legal advice/i);
+});
+
+test('Market and Regulatory Radar: monthly, decisions and deadlines in the next 180 days, digest sections from their event kinds',async()=>{
+ for(const [slug,title,coming] of [['market-radar','Approvals, HTA and pricing decisions',/CHMP opinion on Brevaloxin expected \(fictional\)/],['regulatory-radar','New guidances and designations',/EMA consultation on inhaled products closes \(fictional\)/]] as const){
+  const h=await radarHarness(slug),rows=h.fresh(),s=h.session(rows);assert.equal(h.radar.cadence,'monthly');
+  await s.open({section:'overview'});const t=h.text(s.html);assert.match(t,/Coming up \(180 days\)/,slug);assert.match(t,coming,slug);
+  const run=rows.find(r=>r.role===h.T('runs')&&r.data.run_on==='2026-11-16')!;for(const e of rows.filter(r=>r.role===h.T('events')))e.data.run_id=run.data.run_id;
+  const d=(await h.runFunction('digest_summary',rows,{records:[],run:{id:run.data.run_id,summary:run.data.summary}})).out;
+  assert.match(d.text,new RegExp(title+'\\n- '),d.text);assert.match(d.text,/Coming up \(180 days\)/);assert.doesNotMatch(d.text,/undefined|NaN/);
+ }
 });

@@ -18,7 +18,7 @@ Shared source for every Bio Radar app (scope: [BIO_RADAR.md](../../../docs/produ
 | Version | Used by | Changes |
 |---|---|---|
 | 1.0.0 (`archive/1.0.0/`) | Trial Radar 1.0.0 | First release. |
-| 1.1.0 (current) | Pipeline Radar 1.0.0, Literature Radar 2.0.0, Deal Radar 1.0.0, Funding Radar 1.0.0 | New definition keys (below); multiline scope fields; disclaimer in the footer, digest and alert; item-based digest section with disclosed amounts per currency; thousands separators in the digest; drawers scroll as a whole so the footer never covers a field. |
+| 1.1.0 (current) | Pipeline Radar 1.0.0, Literature Radar 2.0.0, Deal Radar 1.0.0, Funding Radar 1.0.0, Patent Radar 1.0.0, Market Radar 1.0.0, Regulatory Radar 1.0.0 | New definition keys (below); multiline scope fields; disclaimer in the footer, digest and alert; item-based digest section with disclosed amounts per currency; thousands separators in the digest; a Coming up window per radar; drawers scroll as a whole so the footer never covers a field. |
 
 Definition keys added in 1.1.0 (all optional):
 
@@ -30,6 +30,7 @@ Definition keys added in 1.1.0 (all optional):
 | `itemNameField` | Field that names an item when it isn't `title` (for example `company_name`). |
 | `disclaimer` | One line shown in the footer and every email (for example "Not legal advice."). |
 | `scopeFields[].multiline` | Textarea, up to 6,000 characters (for example a synthesis prompt). |
+| `comingDays` | How far Coming up looks, on the Overview and in the digest: 90 by default (Patent 730, shown as 24 months; Market and Regulatory 180). |
 | `dateField.upcoming: false` | The date is in the past (publication, announcement): no "Coming up" panel or digest section. |
 | `digestSection.source: "items"` | Build the digest section from tracker rows changed in the run instead of events: `filter`, `lineField`, `amountField` + `currencyField` + `disclosedField` (per-currency totals), `countField` + `countLabel`. |
 
