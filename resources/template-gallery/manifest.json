@@ -130,5 +130,9 @@
   "life.trial-radar@1.0.0": {
     "catalogDigest": "c849acef0fa8aa4bdad0d4c0adba4eeb83cb62dbf6eda59a0b1944fb3fbfcc0f",
     "previewSha256": "ad4ec2521d8f84a1870a6de63ece385dc9cb7f023d2f4f6ff1c6acf21d0f4b6d"
+  },
+  "life.project-oversight@2.2.0": {
+    "catalogDigest": "ac617bcb1314912bf6f40ede4adff47f94b763798d01259170125039e2b7b65a",
+    "previewSha256": "6a538ee4cb4f3e858c6798bb91e3879c317f42f576d74d9ee1a39be56bc1a4a8"
   }
 }

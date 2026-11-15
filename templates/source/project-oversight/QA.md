@@ -1,6 +1,6 @@
 # Programs 2.2.0 validation
 
-Validated against the repository host on 15 November 2026 with disposable PGlite databases and fictional data, not a deployed account. **Catalog status:** draft. `templates/catalog-seed.json` still names 2.1.0, so deployments import 2.2.0 as a draft and new installs keep getting 2.1.0 until the owner approves 2.2.0.
+Validated against the repository host on 15 November 2026 with disposable PGlite databases and fictional data, not a deployed account. **Catalog status:** published (owner approval, 15 November 2026). `templates/catalog-seed.json` names 2.2.0; migration 074 withdraws 2.1.0 once (`tests/template-catalog.test.ts` rehearses it from the live catalog state).
 
 ## Commands and outcomes (2.2.0)
 

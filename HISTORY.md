@@ -1,4 +1,4 @@
-## 15 November 2026 — Programs 2.2.0 built as a draft
+## 15 November 2026 — Programs 2.2.0 published
 
 New immutable version `life.project-oversight` 2.2.0. It aligns Programs with the app commands, Edit in App and app automation standards, following owner decisions P1–P5 in [PROGRAMS.md §14](docs/product/app-template-blueprints/apps/PROGRAMS.md#14-programs-220-assistant-control-team-notifications-and-the-weekly-digest).
 
@@ -10,7 +10,7 @@ What changes in the app:
 Packaging:
 - The build minifies the catalog source, including local names, to stay under 180,000 characters.
 - 2.1.0 is archived unchanged under `templates/source/project-oversight/archive/2.1.0/`, and its installer entry points there.
-- `catalog-seed.json` still names 2.1.0, so 2.2.0 imports as a draft.
+- Published at the owner's request: `catalog-seed.json` names 2.2.0, so the sync after migrations imports it approved; migration 074 withdraws 2.1.0 once (`catalog-retirements.json`); the gallery adds `life.project-oversight@2.2.0`. Installed 2.1.0 apps keep their source and data.
 
 Tests: `tests/programs-commands.test.ts` and `tests/programs-automations.test.ts`. `tests/programs.test.ts` now reads the archived 2.1.0 schema and demo data.
 

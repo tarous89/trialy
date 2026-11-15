@@ -1,6 +1,6 @@
 # Programs 2.2.0 (`life.project-oversight`)
 
-Milestones, dependencies, risks and decisions across all programs. Scope: [PROGRAMS.md](../../../docs/product/app-template-blueprints/apps/PROGRAMS.md). It follows [modular apps and shared data](../../../docs/product/MODULAR_APPS_AND_SHARED_DATA.md). It replaced Project Oversight 1.0.1 as a new major version. Released packages are archived byte-for-byte under `archive/<version>/` (1.0.1, 2.0.0, 2.1.0); their catalog JSON is unchanged. Saved apps are not migrated. **2.2.0 is a draft until the owner approves it** (scope: [PROGRAMS.md §14](../../../docs/product/app-template-blueprints/apps/PROGRAMS.md#14-programs-220-assistant-control-team-notifications-and-the-weekly-digest)).
+Milestones, dependencies, risks and decisions across all programs. Scope: [PROGRAMS.md](../../../docs/product/app-template-blueprints/apps/PROGRAMS.md). It follows [modular apps and shared data](../../../docs/product/MODULAR_APPS_AND_SHARED_DATA.md). It replaced Project Oversight 1.0.1 as a new major version. Released packages are archived byte-for-byte under `archive/<version>/` (1.0.1, 2.0.0, 2.1.0); their catalog JSON is unchanged. Saved apps are not migrated. **2.2.0 is published** (owner approval, 15 November 2026; seed entry and migration 074 withdrawing 2.1.0) (scope: [PROGRAMS.md §14](../../../docs/product/app-template-blueprints/apps/PROGRAMS.md#14-programs-220-assistant-control-team-notifications-and-the-weekly-digest)).
 
 ## Files
 
@@ -62,7 +62,7 @@ Cash at key milestones no longer requires Runway. Settings has a **Cash forecast
 
 ## 2.2.0: assistant control, team notifications and the weekly digest
 
-Draft, 15 November 2026 ([PROGRAMS.md §14](../../../docs/product/app-template-blueprints/apps/PROGRAMS.md#14-programs-220-assistant-control-team-notifications-and-the-weekly-digest)). Summary:
+Published 15 November 2026 ([PROGRAMS.md §14](../../../docs/product/app-template-blueprints/apps/PROGRAMS.md#14-programs-220-assistant-control-team-notifications-and-the-weekly-digest)). Summary:
 
 - **App commands.** 27 commands with click parity (13 read, 13 propose, 1 layout); form groups and layout labels/defaults; extra fields through `extraFields`/`writableExtra`.
 - **Edit in Runway.** The linked cash forecast is labelled with the writing app and offers Edit in Runway when the user may open it; commands cannot write it while it is linked.
@@ -70,8 +70,4 @@ Draft, 15 November 2026 ([PROGRAMS.md §14](../../../docs/product/app-template-b
 - **Automations.** Six install recommendations, on by default: the AI weekly digest (saves a `programs.digests` row, then emails the owner, only when something needs attention) and five member notices. The digest without AI is a later feature. The 2.1.0 monthly reminder, slip notice and status draft are removed.
 - **Mobile.** The drawer scrolls as one page at 390 px (fixes an overlap 2.1.0 had with the slip section open).
 
-**To publish (owner approval):**
-1. Set `templates/catalog-seed.json` to 2.2.0.
-2. Add a migration and a `catalog-retirements.json` entry withdrawing 2.1.0.
-3. Add the gallery media (`node scripts/build-template-screenshots.mjs`).
-4. Update `scripts/profile-app-performance.ts`.
+**Publication:** `templates/catalog-seed.json` names 2.2.0; migration 074 and `catalog-retirements.json` withdraw 2.1.0; gallery media `life.project-oversight@2.2.0`; `scripts/profile-app-performance.ts` profiles 2.2.0.
