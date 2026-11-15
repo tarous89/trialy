@@ -1163,3 +1163,11 @@ PR #214 merged as `e50602db40385e5a3d54747759a793f1fb3747fc` after exact-head pr
 
 - Initial predeploy `43691796636` passed 290 tests, snapshot build and metadata/discovery but rejected the CTA markup: the final card was outside the final article section. Source fixed without weakening the check.
 - PR #224 now has head `170d8fd19ee5df93120a5c4e31c81624418326bd`; full predeploy `43692062839` is running. Tests, candidate snapshot, Runway desktop/mobile and showcase passed so far. Full gate, visual artifact review, merge and live verification remain. E6 is not Published.
+
+
+### E6 merged; deployment pending — 15 November 2026
+
+- Visual review found the final link needed the shared green button classes. Corrected without changing shared CSS or tracking; final source head `b6ca003964118e49afee7d9f69ef699207885fe1`.
+- Full exact-head predeploy **43692681234** passed both jobs, including source tests, snapshot, metadata/discovery, Runway desktop/mobile, showcase, country panels, CRO and report layout checks. Final artifact **14153675435**, digest `sha256:a3d3fd06467b623c242233c4557abd84b5b2a8708fe3acfa003da985808fd837`, reviewed: content above final section pixel-identical to reviewed prior artifact; final CTA/footer inspected at desktop/mobile. No layout blocker.
+- [PR #224](https://github.com/tarous89/trialagents-public/pull/224) merged **2026-11-15T08:10:26Z**, release `9802375e9761a1da8e0f782fea115f1f994cab78`. Initial HTTP check of https://trialagents.com/apps/biotech-cash-runway-software-buying-guide returned 404. Existing automatic build pending, no authentication fault evidenced.
+- Resume live checks before another topic. Not yet Published; 43 published and 4 unfinished.
