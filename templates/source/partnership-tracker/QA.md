@@ -10,7 +10,7 @@
 | `scripts/test-partnerships-browser.ts` (production frame, 1440 and 390 px) | pass |
 | Deploy rehearsal: a PGlite database migrated and synced from `main` (1.1.1 draft, 2.0.0 draft, 2.1.0 approved), then this branch's migrate and sync: no immutability error; 2.2.0 approved, 2.1.0 still approved; a second run changes nothing | pass |
 | `npm run check`, `npm run build` (includes `build-partnerships-template.mjs --check`) | pass |
-| `npm test` | FULLSUITE |
+| `npm test` (692 tests) | 691 pass. The one failure is `monitoring-pv-integration.test.ts` (CO06 design gate), the same failure recorded on unmodified `main` in this container (see the 2.1.0 run below); this change does not touch Monitoring & PV. |
 | Catalog source 224,682 of 240,000 characters; catalog file 280,108 of 380,000 bytes | unit "package" |
 
 ---
