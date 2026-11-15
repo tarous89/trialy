@@ -12,6 +12,7 @@ export const templateGallery:Record<string,{team:string;workflow:string;summary:
  'life.partnership-tracker':{team:'Biotech',workflow:'Relationships',summary:'Track licensing and collaboration deals by asset, with conferences, follow-ups and partner research.'},
  'life.client-signals-crm':{team:'CRO',workflow:'Relationships',summary:'Track biotech prospects, activity signals, and sales opportunities.'},
  'life.trial-regulatory-submission':{team:'Clinical operations',workflow:'Study delivery',summary:'Coordinate submission documents, reviews, and authority questions.'},
+ 'life.trial-radar':{team:'Biotech',workflow:'Research',summary:'Watch competing clinical trials and get a weekly digest of status, date and readout changes.'},
  'life.literature-radar':{team:'Research',workflow:'Research',summary:'Monitor publications and turn reading into reviewed evidence.'},
  'life.cro-oversight':{team:'Clinical operations',workflow:'Study delivery',summary:'Track CRO deliverables, performance, and follow-up actions.'},
  'life.publication-management':{team:'Research',workflow:'Research',summary:'Coordinate manuscripts, author reviews, and submission milestones.'},

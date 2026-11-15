@@ -52,8 +52,8 @@ Titles below are editorial candidates, not verified product claims. When a title
 | E3 | Build a 13-week biotech cash forecast: find the gap inside the month | Published — live verified 15 November 2026; PR #222, release `445c2a2ad35a3dd2ccc8eed16bd7745b98d3412b` | https://trialagents.com/apps/13-week-biotech-cash-flow-forecast |
 | E4 | How to Move Your Biotech Cash Forecast from Excel to TrialAgents Runway | Already covered / published | [Live article](https://trialagents.com/apps/excel-to-trialagents-runway) |
 | E5 | Build a biotech cash runway dashboard without coding: set up, reconcile, then share | Published — live verified 15 November 2026; PR #223; release `caa2bf4b97c0a69bb958ae46d13de762ec0c38cf` | https://trialagents.com/apps/biotech-cash-runway-dashboard-without-coding |
-| E6 | Biotech Cash Runway Software Buying Guide: 15 Questions to Ask Vendors | In progress — claimed 15 November 2026 for source and publication QA | — |
-| E7 | TrialAgents Cash Runway Alternatives: Which Tool Should You Choose Instead? | Queued — verify and publish | — |
+| E6 | Biotech cash runway software: 15 questions to take into the demo | Published — live verified 15 November 2026; PR #224; release `9802375e9761a1da8e0f782fea115f1f994cab78` | https://trialagents.com/apps/biotech-cash-runway-software-buying-guide |
+| E7 | TrialAgents Runway alternatives: when to switch and what to carry over | Published — live verified 15 November 2026; PR #225, release `37d2d207e7e06ce6e5c586bb69fefa3513888d9e` | https://trialagents.com/apps/trialagents-runway-alternatives |
 | E8 | Cash Runway Management Software: Features, Costs, and Implementation for Small Biotechs | Queued — verify and publish | — |
 
 ## Published-topic mapping and duplicate control
@@ -68,7 +68,7 @@ All listed published pages were recorded as live in [Runway's app plan](runway.m
 
 ## Publication sequence and hourly worker contract
 
-1. On each invocation, take **at most one** uncompleted, unclaimed item, scanning A2–A12, then B2–B8, C1/C2/C4–C7, D1–D10/D12, and E1–E3/E5–E8. Skip the five already covered subjects and any newly published matching canonical pages. A2–A8 are published. **Next eligible: E6, Biotech Cash Runway Software Buying Guide: 15 Questions to Ask Vendors, subject to fresh evidence, duplicate and claim checks. E5 is published and live verified. E3 is published as an external weekly worksheet guide. A9 remains deferred by owner decision; E4 and D11 are already covered.** See the latest release checkpoint below.
+1. On each invocation, take **at most one** uncompleted, unclaimed item, scanning A2–A12, then B2–B8, C1/C2/C4–C7, D1–D10/D12, and E1–E3/E5–E8. Skip the five already covered subjects and any newly published matching canonical pages. A2–A8 are published. **Next eligible: E8, Cash Runway Management Software: Features, Costs, and Implementation for Small Biotechs, subject to fresh evidence, duplicate and claim checks. E7 is published and live verified. A9 remains deferred by owner decision; E4 and D11 are already covered.** See the latest release checkpoint below.
 2. Re-read the **current** shared playbook and [Runway plan](runway.md). Use the approved genuine screenshots, wide dark editorial shell, numbered green headings, platform advantage order, honest competitor treatment, one final "Start with Runway" CTA and standard shared header/footer.
 3. Research and verify vendor identities, capabilities, URL destinations, AI/Claude/ChatGPT host experiences separately, formulas and substantive claims. Keep the no-pricing-in-A/B rule; in other series, only discuss verified prices if explicitly appropriate and editorially approved. Real screenshots only, no invented interfaces or citations. Treat claims in tentative titles as hypotheses.
 4. Make the article genuinely distinct from existing Runway pages. Do not create weak "year-only", vendor-name-swapped or keyword-cannibalizing pages. If the subject is already answered on a live URL, mark it as covered, link it and advance to the next eligible item **within the same run**, without publishing duplicate content.
@@ -1157,3 +1157,53 @@ PR #214 merged as `e50602db40385e5a3d54747759a793f1fb3747fc` after exact-head pr
 - Primary evidence checked 15 November 2026: https://floatapp.com/xero-cash-flow-forecast (one-way read-only Xero, daily/on-demand imports, excluded purchase orders/tracking categories); https://www.ncsc.gov.uk/collection/cloud/the-cloud-security-principles/principle-13-audit-information-and-alerting-for-customers (audit scope, availability, format/retention; guidance reviewed 7 June 2023). No unsupported compliance claim or pricing estimate.
 - Fictional test independently verified with decimal arithmetic: EUR 1m opening 31 December, 100k monthly January–March, extra 200k February payment, no other inputs: closes 900k, 600k, 500k; adding contingent 300k March gives 800k. The guide asks the buyer to run this test, not claiming it was run in a host. Fifteen questions, one reusable evidence row, two images, local anchors and JavaScript syntax checked.
 - Not published. Resume full exact-head predeploy, artifact inspection, merge and independent live verification. Counts remain 43 published; 4 unfinished including deferred A9.
+
+
+### E6 validation correction — 15 November 2026
+
+- Initial predeploy `43691796636` passed 290 tests, snapshot build and metadata/discovery but rejected the CTA markup: the final card was outside the final article section. Source fixed without weakening the check.
+- PR #224 now has head `170d8fd19ee5df93120a5c4e31c81624418326bd`; full predeploy `43692062839` is running. Tests, candidate snapshot, Runway desktop/mobile and showcase passed so far. Full gate, visual artifact review, merge and live verification remain. E6 is not Published.
+
+
+### E6 merged; deployment pending — 15 November 2026
+
+- Visual review found the final link needed the shared green button classes. Corrected without changing shared CSS or tracking; final source head `b6ca003964118e49afee7d9f69ef699207885fe1`.
+- Full exact-head predeploy **43692681234** passed both jobs, including source tests, snapshot, metadata/discovery, Runway desktop/mobile, showcase, country panels, CRO and report layout checks. Final artifact **14153675435**, digest `sha256:a3d3fd06467b623c242233c4557abd84b5b2a8708fe3acfa003da985808fd837`, reviewed: content above final section pixel-identical to reviewed prior artifact; final CTA/footer inspected at desktop/mobile. No layout blocker.
+- [PR #224](https://github.com/tarous89/trialagents-public/pull/224) merged **2026-11-15T08:10:26Z**, release `9802375e9761a1da8e0f782fea115f1f994cab78`. Initial HTTP check of https://trialagents.com/apps/biotech-cash-runway-software-buying-guide returned 404. Existing automatic build pending, no authentication fault evidenced.
+- Resume live checks before another topic. Not yet Published; 43 published and 4 unfinished.
+
+
+### E6 published and independently verified — 15 November 2026
+
+- **Biotech cash runway software: 15 questions to take into the demo** — https://trialagents.com/apps/biotech-cash-runway-software-buying-guide. [PR #224](https://github.com/tarous89/trialagents-public/pull/224); release `9802375e9761a1da8e0f782fea115f1f994cab78`, merged 2026-11-15T08:10:26Z. Title refined to the concrete demo-checklist intent; all 15 buying questions retained.
+- Full exact-head predeploy **43692681234** passed on `b6ca003964118e49afee7d9f69ef699207885fe1`: tests, snapshot, metadata/discovery, desktop/mobile, app showcase, country panels, CRO and SEO layouts. Final artifact **14153675435**, digest `sha256:a3d3fd06467b623c242233c4557abd84b5b2a8708fe3acfa003da985808fd837`, reviewed. Content above final section was pixel-identical to reviewed prior screenshots; revised standard green CTA and footer visually inspected at both sizes. Tables scroll inside their containers; no page overflow.
+- Automatic deployment completed after initial 404. Workers build check **132748546071** and production check **132748155154** succeeded; independent article verification, not generic check success alone, establishes publication.
+- Live QA completed **2026-11-15T08:13:36.862088+00:00**: HTTP 200 HTML; exact source fragment and reviewed shared CSS; expected title/description/H1/canonical/date; Article/BreadcrumbList schema; no noindex/robots block; shared header/footer; two genuine images; all article URLs and anchors; one final Start with Runway CTA.
+- /apps, sitemap.xml (one canonical entry), llms.txt and llm.xml return HTTP 200 and include E6. Homepage and article deliver the identical loader `/_snapshot/query-assets/114933b27c521a75f333.js` once; it references client `/_snapshot/query-assets/c251da7b4969f7c85048.js`; both return HTTP 200. Tracking configuration, scripts, events, consent, collectors and attribution unchanged; no synthetic production events.
+- Primary evidence and independently checked 500k/800k example are recorded in the source checkpoint. No completed host test, vendor score or performance benchmark claimed. Refresh when Runway capabilities, Float import scope or cited security guidance change. Search indexing, rankings and actual assistant citations remain unverified.
+- Supersedes all E6 source/pending checkpoints. **44 published; 3 unfinished**: owner-deferred A9, E7 and E8. **Next eligible: E7 — TrialAgents Cash Runway Alternatives: Which Tool Should You Choose Instead?**, subject to fresh evidence, duplicate/claim checks and release reconciliation. Only E6 newly published this run.
+
+
+### E7 source checkpoint — 15 November 2026
+
+- Reconciled E6 release `9802375e9761a1da8e0f782fea115f1f994cab78` with fresh HTTP 200 and exact served article fragment. No unfinished Runway release; five unrelated open PRs. Claimed E7 before drafting.
+- **TrialAgents Runway alternatives: when to switch and what to carry over** — intended URL https://trialagents.com/apps/trialagents-runway-alternatives. [Source PR #225](https://github.com/tarous89/trialagents-public/pull/225), head `3ebb446f6378964baacf1b760d58132bfa83b29b`.
+- Distinct replacement/complement decision and handover angle; primary Float, Jirav and Fathom documentation checked. Runway 2.2 scope, monthly limits, export limits and two approved genuine browser images respected. No pricing, invented features or host tests; tracking unchanged.
+- Not Published. Resume full exact-head predeploy, desktop/mobile artifact inspection, merge and independent live verification before another topic. Counts remain **44 published; 3 unfinished**, including owner-deferred A9.
+
+
+### E7 merged; deployment pending — 15 November 2026
+
+- PR #225 merged at **2026-11-15T09:03:30Z**, release `37d2d207e7e06ce6e5c586bb69fefa3513888d9e`; source head `3ebb446f6378964baacf1b760d58132bfa83b29b`.
+- Full exact-head predeploy **43696729963** passed. Desktop/mobile artifact **14155022100**, digest `sha256:38d7cb86bbe969caeef501a77818d6b22bc632e22eb9054e0fe0f91bd6a54d36`, downloaded, hash-checked and fully visually reviewed. Typography, screenshots, contained mobile table, shell and final green CTA passed.
+- Initial post-merge HTTP check returned **404** for https://trialagents.com/apps/trialagents-runway-alternatives. Existing automatic GitHub-to-CDN build/propagation pending, not an authentication fault. Resume live checks before drafting another topic. Not yet Published; **44 published; 3 unfinished**.
+
+
+### E7 published and live verified — 15 November 2026
+
+- **TrialAgents Runway alternatives: when to switch and what to carry over** — https://trialagents.com/apps/trialagents-runway-alternatives. [PR #225](https://github.com/tarous89/trialagents-public/pull/225); release `37d2d207e7e06ce6e5c586bb69fefa3513888d9e`, merged **2026-11-15T09:03:30Z**.
+- Candidate retitled from “TrialAgents Cash Runway Alternatives: Which Tool Should You Choose Instead?” to emphasize replacement/complement decisions and forecast handover, distinct from B1’s general shortlist. Primary sources: https://floatapp.com/xero-cash-flow-forecast ; https://help.jirav.com/introduction-to-3-way-financials-in-jirav ; https://support.fathomhq.com/en/articles/999174-create-a-consolidated-group . Checked 15 November; refresh on relevant vendor model/import changes or Runway capability changes.
+- Exact-head `3ebb446f6378964baacf1b760d58132bfa83b29b` full predeploy **43696729963** passed. Artifact **14155022100**, digest `sha256:38d7cb86bbe969caeef501a77818d6b22bc632e22eb9054e0fe0f91bd6a54d36`, hash-checked and visually inspected across the entire desktop/mobile article. Responsive typography, contained table scrolling, images, shell and final green CTA passed.
+- Existing connected Cloudflare build and production checks succeeded. Initial 404 resolved through automatic build/propagation without dashboard access. Independent live verification at **2026-11-15T09:07:07.478842+00:00** passed: HTTP 200, exact served article and shared CSS, title/description/H1/canonical/date, Article/BreadcrumbList schema, images, all article links and anchors, final CTA, identical homepage header/footer, /apps listing, unique sitemap entry, llms.txt and llm.xml, robots/indexability and HTML delivery.
+- Homepage analytics loader `/_snapshot/query-assets/114933b27c521a75f333.js` and referenced client `/_snapshot/query-assets/c251da7b4969f7c85048.js` both served HTTP 200; loader identical to homepage and included once. Tracking configuration, scripts, consent, events, collectors and attribution unchanged. No synthetic production events sent. Actual search indexing, rankings and assistant citations are not established by publication QA.
+- Supersedes E7 source/pending checkpoints. **45 published; 2 unfinished**: owner-deferred A9 and E8. **Next eligible: E8 — Cash Runway Management Software: Features, Costs, and Implementation for Small Biotechs**, subject to fresh evidence, duplicate/claim checks and release reconciliation. Only E7 newly published this run.
