@@ -1,3 +1,16 @@
+## 15 November 2026 — Investor Updates 1.0.0 built (draft until approved)
+
+Investor Updates 1.0.0 (`life.investor-updates`, BT2-06) is built from the revised scope ([INVESTOR_UPDATES.md](docs/product/app-template-blueprints/apps/INVESTOR_UPDATES.md)) as a draft: it is not in `templates/catalog-seed.json` and needs the owner's approval. No platform change.
+
+- **Model.** Investors are people (shared `people`, optionally linked to `organizations`) in categories (Board, Investors, Shareholders and custom ones, optionally by share class). Updates are email updates or meetings with a before part (agenda and pre-read) and an after part (recap). Blocks carry a level (board, investors, everyone); each category gets its version from the same draft and a person in several categories gets the highest version once.
+- **Screens.** Overview, Updates (review per version with fact panel, promise tracker, approval, send, engagement), Investors (people, categories, share classes), Plans & templates, Settings.
+- **Sending** uses the external exchange update rooms (§5, §6 U1–U4): delivery records, links on a person's click, one confirmed send per version shown exactly as `exchange.prepareEmail` returns it; the first send locks the update. Reads and responses arrive as tracked records; questions use a reserved ask; answers go privately or to everyone invited.
+- **Automations.** Four install recommendations (agenda and pre-read draft, ready for review, new response, weekly digest) and a `scheduled_draft` app feature per email plan; three read-only helpers (`plan_brief`, `meeting_brief`, `updates_digest`). The app stores no schedules.
+- **App commands.** 39 (16 read, 22 propose, `layout.save`); none approves, sends, answers, unsubscribes or shows links.
+- **Deviations** where the platform contracts differ from the scope are listed in `templates/source/investor-updates/QA.md` (standard records on first use, questions as an ask, one confirmation per version, reminders confirmed when needed, PDF attached by a person, fact re-check limited to bound tables, scheduled draft on `plans.next_period_end`).
+
+Tests: `tests/investor-updates.test.ts`, `tests/investor-updates-commands.test.ts`, `tests/investor-updates-integration.test.ts` and `scripts/test-investor-updates-browser.ts`. Gallery card, screenshot and manifest entry for `life.investor-updates@1.0.0`.
+
 ## 15 November 2026 — Partnerships 2.2.0 published
 
 Partnerships 2.2.0 (`life.partnership-tracker`) is published at the owner's request. It aligns the app with the platform standards that shipped after 2.1.0 ([PARTNERSHIPS.md §12b](docs/product/app-template-blueprints/apps/PARTNERSHIPS.md)), with no platform change.

@@ -42,5 +42,6 @@
   "life.pipeline-radar@1.0.0": "templates/source/radars/pipeline-radar/schema.example.json",
   "life.market-radar@1.0.0": "templates/source/radars/market-radar/schema.example.json",
   "life.patent-radar@1.0.0": "templates/source/radars/patent-radar/schema.example.json",
-  "life.regulatory-radar@1.0.0": "templates/source/radars/regulatory-radar/schema.example.json"
+  "life.regulatory-radar@1.0.0": "templates/source/radars/regulatory-radar/schema.example.json",
+  "life.investor-updates@1.0.0": "templates/source/investor-updates/schema.example.json"
 }

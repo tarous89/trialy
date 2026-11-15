@@ -1,0 +1,1465 @@
+{
+ "asOf": "2026-11-15",
+ "companyName": "Northwind Bio (fictional)",
+ "note": "Fictional demo data. Every name, firm, email and figure is invented; emails use .invalid domains. Never save these as real records.",
+ "documents": [],
+ "records": [
+  {
+   "id": "00000000-0000-4000-8000-000000000001",
+   "version": 0,
+   "role": "organizations",
+   "data": {
+    "name": "Alder Ventures (fictional)",
+    "org_type": "investor",
+    "country": "Germany",
+    "website": "https://alder.example.invalid",
+    "archived": false
+   }
+  },
+  {
+   "id": "00000000-0000-4000-8000-000000000002",
+   "version": 0,
+   "role": "organizations",
+   "data": {
+    "name": "Birch Capital (fictional)",
+    "org_type": "investor",
+    "country": "Netherlands",
+    "website": "https://birch.example.invalid",
+    "archived": false
+   }
+  },
+  {
+   "id": "00000000-0000-4000-8000-000000000003",
+   "version": 0,
+   "role": "organizations",
+   "data": {
+    "name": "Cedar Pharma Ventures (fictional)",
+    "org_type": "investor",
+    "country": "Switzerland",
+    "website": "https://cedar.example.invalid",
+    "archived": false
+   }
+  },
+  {
+   "id": "00000000-0000-4000-8000-000000000004",
+   "version": 0,
+   "role": "organizations",
+   "data": {
+    "name": "Dune Family Office (fictional)",
+    "org_type": "investor",
+    "country": "Denmark",
+    "website": "https://dune.example.invalid",
+    "archived": false
+   }
+  },
+  {
+   "id": "00000000-0000-4000-8000-000000000005",
+   "version": 0,
+   "role": "people",
+   "data": {
+    "name": "Mara Okafor",
+    "organization_id": "00000000-0000-4000-8000-000000000001",
+    "title": "Partner",
+    "email": "mara@alder.example.invalid",
+    "archived": false
+   }
+  },
+  {
+   "id": "00000000-0000-4000-8000-000000000006",
+   "version": 0,
+   "role": "people",
+   "data": {
+    "name": "Jonas Weber",
+    "organization_id": "00000000-0000-4000-8000-000000000002",
+    "title": "Partner",
+    "email": "jonas@birch.example.invalid",
+    "archived": false
+   }
+  },
+  {
+   "id": "00000000-0000-4000-8000-000000000007",
+   "version": 0,
+   "role": "people",
+   "data": {
+    "name": "Priya Natarajan",
+    "organization_id": null,
+    "title": "Independent director",
+    "email": "priya@natarajan.example.invalid",
+    "archived": false
+   }
+  },
+  {
+   "id": "00000000-0000-4000-8000-000000000008",
+   "version": 0,
+   "role": "people",
+   "data": {
+    "name": "Tomás Ruiz",
+    "organization_id": "00000000-0000-4000-8000-000000000003",
+    "title": "Managing director",
+    "email": "tomas@cedar.example.invalid",
+    "archived": false
+   }
+  },
+  {
+   "id": "00000000-0000-4000-8000-000000000009",
+   "version": 0,
+   "role": "people",
+   "data": {
+    "name": "Elena Rossi",
+    "organization_id": "00000000-0000-4000-8000-000000000001",
+    "title": "Chair",
+    "email": "elena@alder.example.invalid",
+    "archived": false
+   }
+  },
+  {
+   "id": "00000000-0000-4000-8000-000000000010",
+   "version": 0,
+   "role": "people",
+   "data": {
+    "name": "Lena Hoffmann",
+    "organization_id": "00000000-0000-4000-8000-000000000002",
+    "title": "Associate",
+    "email": "lena@birch.example.invalid",
+    "archived": false
+   }
+  },
+  {
+   "id": "00000000-0000-4000-8000-000000000011",
+   "version": 0,
+   "role": "people",
+   "data": {
+    "name": "Omar Haddad",
+    "organization_id": "00000000-0000-4000-8000-000000000004",
+    "title": "Investment director",
+    "email": "omar@dune.example.invalid",
+    "archived": false
+   }
+  },
+  {
+   "id": "00000000-0000-4000-8000-000000000012",
+   "version": 0,
+   "role": "people",
+   "data": {
+    "name": "Sofia Brandt",
+    "organization_id": null,
+    "title": "Angel investor",
+    "email": "sofia@brandt.example.invalid",
+    "archived": false
+   }
+  },
+  {
+   "id": "00000000-0000-4000-8000-000000000013",
+   "version": 0,
+   "role": "people",
+   "data": {
+    "name": "Kenji Mori",
+    "organization_id": "00000000-0000-4000-8000-000000000003",
+    "title": "Principal",
+    "email": "kenji@cedar.example.invalid",
+    "archived": false
+   }
+  },
+  {
+   "id": "00000000-0000-4000-8000-000000000014",
+   "version": 0,
+   "role": "people",
+   "data": {
+    "name": "Dr. Ines Carvalho",
+    "organization_id": null,
+    "title": "Scientific advisor",
+    "email": "ines@carvalho.example.invalid",
+    "archived": false
+   }
+  },
+  {
+   "id": "00000000-0000-4000-8000-000000000015",
+   "version": 0,
+   "role": "programs",
+   "data": {
+    "name": "NWB-101 (fictional)",
+    "code": "NWB-101",
+    "stage": "phase_1",
+    "status": "active",
+    "archived": false
+   }
+  },
+  {
+   "id": "00000000-0000-4000-8000-000000000016",
+   "version": 0,
+   "role": "programs",
+   "data": {
+    "name": "NWB-202 (fictional)",
+    "code": "NWB-202",
+    "stage": "preclinical",
+    "status": "active",
+    "archived": false
+   }
+  },
+  {
+   "id": "00000000-0000-4000-8000-000000000017",
+   "version": 0,
+   "role": "investorupdates.settings",
+   "data": {
+    "sender_display": "organization",
+    "approval_steps": "two",
+    "help_enabled": true,
+    "questions_enabled": true,
+    "meeting_lead_days": 7,
+    "confidentiality_footer": "Confidential — prepared for {recipient_name}. Please do not forward.",
+    "email_texts": "{}",
+    "custom_fields": "[]",
+    "labels": "{}",
+    "preferences": "{}"
+   }
+  },
+  {
+   "id": "00000000-0000-4000-8000-000000000018",
+   "version": 0,
+   "role": "investorupdates.share_classes",
+   "data": {
+    "name": "Common",
+    "kind": "common",
+    "notes": "Founders, employees and angels.",
+    "sort_order": 1,
+    "archived": false
+   }
+  },
+  {
+   "id": "00000000-0000-4000-8000-000000000019",
+   "version": 0,
+   "role": "investorupdates.share_classes",
+   "data": {
+    "name": "Seed preferred",
+    "kind": "preferred",
+    "notes": "Quarterly financial information rights.",
+    "sort_order": 2,
+    "archived": false
+   }
+  },
+  {
+   "id": "00000000-0000-4000-8000-000000000020",
+   "version": 0,
+   "role": "investorupdates.share_classes",
+   "data": {
+    "name": "Series A preferred",
+    "kind": "preferred",
+    "notes": "Major-investor information rights: quarterly financials and the annual budget.",
+    "sort_order": 3,
+    "archived": false
+   }
+  },
+  {
+   "id": "00000000-0000-4000-8000-000000000021",
+   "version": 0,
+   "role": "investorupdates.categories",
+   "data": {
+    "name": "Board",
+    "kind": "board",
+    "level": "board",
+    "description": "Directors, including our independent director. They see everything: cash bridge, negotiations, disputes and people matters.",
+    "share_class_ids": "[]",
+    "default_template_id": null,
+    "help_on": true,
+    "questions_on": true,
+    "archived": false
+   }
+  },
+  {
+   "id": "00000000-0000-4000-8000-000000000022",
+   "version": 0,
+   "role": "investorupdates.categories",
+   "data": {
+    "name": "Investors",
+    "kind": "investors",
+    "level": "investors",
+    "description": "Investors with information rights. Financials and program progress, but no board-only matters.",
+    "share_class_ids": "[]",
+    "default_template_id": null,
+    "help_on": true,
+    "questions_on": true,
+    "archived": false
+   }
+  },
+  {
+   "id": "00000000-0000-4000-8000-000000000023",
+   "version": 0,
+   "role": "investorupdates.categories",
+   "data": {
+    "name": "Shareholders",
+    "kind": "shareholders",
+    "level": "everyone",
+    "description": "All shareholders. Highlights and milestones only.",
+    "share_class_ids": "[]",
+    "default_template_id": null,
+    "help_on": true,
+    "questions_on": true,
+    "archived": false
+   }
+  },
+  {
+   "id": "00000000-0000-4000-8000-000000000024",
+   "version": 0,
+   "role": "investorupdates.categories",
+   "data": {
+    "name": "Series A holders",
+    "kind": "custom",
+    "level": "investors",
+    "description": "Everyone holding Series A preferred: quarterly financials as their information rights require.",
+    "share_class_ids": "[\"00000000-0000-4000-8000-000000000020\"]",
+    "default_template_id": null,
+    "help_on": true,
+    "questions_on": true,
+    "archived": false
+   }
+  },
+  {
+   "id": "00000000-0000-4000-8000-000000000025",
+   "version": 0,
+   "role": "investorupdates.categories",
+   "data": {
+    "name": "Scientific advisory board",
+    "kind": "custom",
+    "level": "everyone",
+    "description": "Our scientific advisors; they care about data and study design, not financials.",
+    "share_class_ids": "[]",
+    "default_template_id": null,
+    "help_on": true,
+    "questions_on": true,
+    "archived": false
+   }
+  },
+  {
+   "id": "00000000-0000-4000-8000-000000000026",
+   "version": 0,
+   "role": "investorupdates.templates",
+   "data": {
+    "name": "Monthly board update",
+    "kind": "board_monthly",
+    "format": "email",
+    "sections": "[{\"name\":\"TL;DR\",\"level\":\"everyone\",\"purpose\":\"Three lines.\"},{\"name\":\"Cash and runway\",\"level\":\"investors\",\"purpose\":\"Cash, burn and runway to the next milestone.\"},{\"name\":\"Programs\",\"level\":\"everyone\",\"purpose\":\"Milestones done, next and slipped.\"},{\"name\":\"Cash bridge and board matters\",\"level\":\"board\",\"purpose\":\"Variance, negotiations, disputes, people.\"},{\"name\":\"Lowlights\",\"level\":\"investors\",\"purpose\":\"Honest lowlights.\"},{\"name\":\"Asks\",\"level\":\"everyone\",\"purpose\":\"Specific asks.\"}]",
+    "brief": "Monthly, about 400 words, plain and factual. Lead with cash and runway to the next milestone.",
+    "design": "{\"accent\":\"#1F6F50\",\"heading_color\":\"#16302B\"}",
+    "source": "standard",
+    "archived": false
+   }
+  },
+  {
+   "id": "00000000-0000-4000-8000-000000000027",
+   "version": 0,
+   "role": "investorupdates.templates",
+   "data": {
+    "name": "Quarterly investor update",
+    "kind": "investor_quarterly",
+    "format": "email",
+    "sections": "[{\"name\":\"Highlights\",\"level\":\"everyone\",\"purpose\":\"The quarter in five lines.\"},{\"name\":\"Financials\",\"level\":\"investors\",\"purpose\":\"Cash, burn, runway, use of funds.\"},{\"name\":\"Programs\",\"level\":\"everyone\",\"purpose\":\"Milestones.\"},{\"name\":\"Outlook\",\"level\":\"everyone\",\"purpose\":\"Next quarter.\"},{\"name\":\"Asks\",\"level\":\"everyone\",\"purpose\":\"Specific asks.\"}]",
+    "brief": "Quarterly, about 600 words, investor tone.",
+    "design": "{\"accent\":\"#1F6F50\",\"heading_color\":\"#16302B\"}",
+    "source": "standard",
+    "archived": false
+   }
+  },
+  {
+   "id": "00000000-0000-4000-8000-000000000028",
+   "version": 0,
+   "role": "investorupdates.templates",
+   "data": {
+    "name": "Milestone flash",
+    "kind": "milestone_flash",
+    "format": "email",
+    "sections": "[{\"name\":\"The news\",\"level\":\"everyone\",\"purpose\":\"Two lines.\"},{\"name\":\"Why it matters\",\"level\":\"everyone\",\"purpose\":\"What it means.\"},{\"name\":\"Next\",\"level\":\"everyone\",\"purpose\":\"What comes next.\"}]",
+    "brief": "Under 200 words.",
+    "design": "{\"accent\":\"#1F6F50\",\"heading_color\":\"#16302B\"}",
+    "source": "standard",
+    "archived": false
+   }
+  },
+  {
+   "id": "00000000-0000-4000-8000-000000000029",
+   "version": 0,
+   "role": "investorupdates.templates",
+   "data": {
+    "name": "Meeting agenda and pre-read",
+    "kind": "meeting_before",
+    "format": "meeting_before",
+    "sections": "[{\"name\":\"Meeting\",\"level\":\"everyone\",\"purpose\":\"Date, time, place.\"},{\"name\":\"Agenda\",\"level\":\"everyone\",\"purpose\":\"Items.\"},{\"name\":\"Pre-read\",\"level\":\"investors\",\"purpose\":\"What to read.\"},{\"name\":\"Decisions needed\",\"level\":\"board\",\"purpose\":\"Open decisions.\"}]",
+    "brief": "Agenda from open decisions and the previous next steps.",
+    "design": "{\"accent\":\"#1F6F50\",\"heading_color\":\"#16302B\"}",
+    "source": "standard",
+    "archived": false
+   }
+  },
+  {
+   "id": "00000000-0000-4000-8000-000000000030",
+   "version": 0,
+   "role": "investorupdates.templates",
+   "data": {
+    "name": "Meeting recap",
+    "kind": "meeting_after",
+    "format": "meeting_after",
+    "sections": "[{\"name\":\"Recap\",\"level\":\"everyone\",\"purpose\":\"What was discussed.\"},{\"name\":\"Decided\",\"level\":\"investors\",\"purpose\":\"As the user reports it.\"},{\"name\":\"Next steps\",\"level\":\"everyone\",\"purpose\":\"Owner and due date.\"}]",
+    "brief": "A recap, never minutes.",
+    "design": "{\"accent\":\"#1F6F50\",\"heading_color\":\"#16302B\"}",
+    "source": "standard",
+    "archived": false
+   }
+  },
+  {
+   "id": "00000000-0000-4000-8000-000000000031",
+   "version": 0,
+   "role": "investorupdates.recipients",
+   "data": {
+    "person_id": "00000000-0000-4000-8000-000000000005",
+    "organization_id": "00000000-0000-4000-8000-000000000001",
+    "category_ids": "[\"00000000-0000-4000-8000-000000000021\",\"00000000-0000-4000-8000-000000000022\"]",
+    "share_class_ids": "[\"00000000-0000-4000-8000-000000000020\"]",
+    "status": "receives",
+    "notes": null,
+    "source": "manual",
+    "archived": false
+   }
+  },
+  {
+   "id": "00000000-0000-4000-8000-000000000032",
+   "version": 0,
+   "role": "investorupdates.recipients",
+   "data": {
+    "person_id": "00000000-0000-4000-8000-000000000006",
+    "organization_id": "00000000-0000-4000-8000-000000000002",
+    "category_ids": "[\"00000000-0000-4000-8000-000000000021\"]",
+    "share_class_ids": "[\"00000000-0000-4000-8000-000000000020\"]",
+    "status": "receives",
+    "notes": null,
+    "source": "manual",
+    "archived": false
+   }
+  },
+  {
+   "id": "00000000-0000-4000-8000-000000000033",
+   "version": 0,
+   "role": "investorupdates.recipients",
+   "data": {
+    "person_id": "00000000-0000-4000-8000-000000000007",
+    "organization_id": null,
+    "category_ids": "[\"00000000-0000-4000-8000-000000000021\"]",
+    "share_class_ids": "[]",
+    "status": "receives",
+    "notes": null,
+    "source": "manual",
+    "archived": false
+   }
+  },
+  {
+   "id": "00000000-0000-4000-8000-000000000034",
+   "version": 0,
+   "role": "investorupdates.recipients",
+   "data": {
+    "person_id": "00000000-0000-4000-8000-000000000008",
+    "organization_id": "00000000-0000-4000-8000-000000000003",
+    "category_ids": "[\"00000000-0000-4000-8000-000000000021\"]",
+    "share_class_ids": "[\"00000000-0000-4000-8000-000000000020\"]",
+    "status": "receives",
+    "notes": null,
+    "source": "manual",
+    "archived": false
+   }
+  },
+  {
+   "id": "00000000-0000-4000-8000-000000000035",
+   "version": 0,
+   "role": "investorupdates.recipients",
+   "data": {
+    "person_id": "00000000-0000-4000-8000-000000000009",
+    "organization_id": "00000000-0000-4000-8000-000000000001",
+    "category_ids": "[\"00000000-0000-4000-8000-000000000021\"]",
+    "share_class_ids": "[\"00000000-0000-4000-8000-000000000019\"]",
+    "status": "receives",
+    "notes": null,
+    "source": "manual",
+    "archived": false
+   }
+  },
+  {
+   "id": "00000000-0000-4000-8000-000000000036",
+   "version": 0,
+   "role": "investorupdates.recipients",
+   "data": {
+    "person_id": "00000000-0000-4000-8000-000000000010",
+    "organization_id": "00000000-0000-4000-8000-000000000002",
+    "category_ids": "[\"00000000-0000-4000-8000-000000000022\"]",
+    "share_class_ids": "[\"00000000-0000-4000-8000-000000000020\"]",
+    "status": "receives",
+    "notes": null,
+    "source": "manual",
+    "archived": false
+   }
+  },
+  {
+   "id": "00000000-0000-4000-8000-000000000037",
+   "version": 0,
+   "role": "investorupdates.recipients",
+   "data": {
+    "person_id": "00000000-0000-4000-8000-000000000011",
+    "organization_id": "00000000-0000-4000-8000-000000000004",
+    "category_ids": "[\"00000000-0000-4000-8000-000000000023\"]",
+    "share_class_ids": "[\"00000000-0000-4000-8000-000000000019\"]",
+    "status": "receives",
+    "notes": null,
+    "source": "manual",
+    "archived": false
+   }
+  },
+  {
+   "id": "00000000-0000-4000-8000-000000000038",
+   "version": 0,
+   "role": "investorupdates.recipients",
+   "data": {
+    "person_id": "00000000-0000-4000-8000-000000000012",
+    "organization_id": null,
+    "category_ids": "[\"00000000-0000-4000-8000-000000000023\"]",
+    "share_class_ids": "[\"00000000-0000-4000-8000-000000000018\"]",
+    "status": "receives",
+    "notes": null,
+    "source": "manual",
+    "archived": false
+   }
+  },
+  {
+   "id": "00000000-0000-4000-8000-000000000039",
+   "version": 0,
+   "role": "investorupdates.recipients",
+   "data": {
+    "person_id": "00000000-0000-4000-8000-000000000013",
+    "organization_id": "00000000-0000-4000-8000-000000000003",
+    "category_ids": "[]",
+    "share_class_ids": "[\"00000000-0000-4000-8000-000000000020\"]",
+    "status": "receives",
+    "notes": null,
+    "source": "fundraise",
+    "archived": false
+   }
+  },
+  {
+   "id": "00000000-0000-4000-8000-000000000040",
+   "version": 0,
+   "role": "investorupdates.recipients",
+   "data": {
+    "person_id": "00000000-0000-4000-8000-000000000014",
+    "organization_id": null,
+    "category_ids": "[\"00000000-0000-4000-8000-000000000025\"]",
+    "share_class_ids": "[]",
+    "status": "receives",
+    "notes": null,
+    "source": "manual",
+    "archived": false
+   }
+  },
+  {
+   "id": "00000000-0000-4000-8000-000000000041",
+   "version": 0,
+   "role": "investorupdates.plans",
+   "data": {
+    "name": "Board – monthly update",
+    "format": "email",
+    "template_id": "00000000-0000-4000-8000-000000000026",
+    "after_template_id": null,
+    "category_ids": "[\"00000000-0000-4000-8000-000000000021\"]",
+    "sources": "{\"apps\":[\"runway\",\"programs\",\"fundraise\"],\"document_ids\":[],\"notes\":\"Lead with runway to the NWB-101 Phase 1 readout.\",\"exclusions\":\"The Cedar licensing talks outside board-level blocks.\"}",
+    "cadence": "monthly",
+    "send_by_day": 7,
+    "timezone": "Europe/Berlin",
+    "approver_1": "Felix (CFO)",
+    "approver_2": "Anna (CEO)",
+    "status": "active",
+    "archived": false,
+    "next_period_end": "2026-10-31"
+   }
+  },
+  {
+   "id": "00000000-0000-4000-8000-000000000042",
+   "version": 0,
+   "role": "investorupdates.plans",
+   "data": {
+    "name": "Investors and shareholders – quarterly update",
+    "format": "email",
+    "template_id": "00000000-0000-4000-8000-000000000027",
+    "after_template_id": null,
+    "category_ids": "[\"00000000-0000-4000-8000-000000000022\",\"00000000-0000-4000-8000-000000000023\",\"00000000-0000-4000-8000-000000000024\"]",
+    "sources": "{\"apps\":[\"runway\",\"programs\",\"fundraise\"],\"document_ids\":[],\"notes\":\"Lead with runway to the NWB-101 Phase 1 readout.\",\"exclusions\":\"The Cedar licensing talks outside board-level blocks.\"}",
+    "cadence": "quarterly",
+    "send_by_day": 7,
+    "timezone": "Europe/Berlin",
+    "approver_1": "Felix (CFO)",
+    "approver_2": "Anna (CEO)",
+    "status": "active",
+    "archived": false,
+    "next_period_end": "2026-12-31"
+   }
+  },
+  {
+   "id": "00000000-0000-4000-8000-000000000043",
+   "version": 0,
+   "role": "investorupdates.plans",
+   "data": {
+    "name": "Board – quarterly meeting",
+    "format": "meeting",
+    "template_id": "00000000-0000-4000-8000-000000000029",
+    "after_template_id": "00000000-0000-4000-8000-000000000030",
+    "category_ids": "[\"00000000-0000-4000-8000-000000000021\"]",
+    "sources": "{\"apps\":[\"runway\",\"programs\",\"fundraise\"],\"document_ids\":[],\"notes\":\"Lead with runway to the NWB-101 Phase 1 readout.\",\"exclusions\":\"The Cedar licensing talks outside board-level blocks.\"}",
+    "cadence": "quarterly",
+    "send_by_day": null,
+    "timezone": "Europe/Berlin",
+    "approver_1": "Felix (CFO)",
+    "approver_2": "Anna (CEO)",
+    "status": "active",
+    "archived": false
+   }
+  },
+  {
+   "id": "00000000-0000-4000-8000-000000000044",
+   "version": 0,
+   "role": "investorupdates.updates",
+   "data": {
+    "asks": "[{\"key\":\"cmo_intro\",\"text\":\"Introductions to an experienced oncology CMO\"}]",
+    "document_ids": "[]",
+    "drafted_by": "claude",
+    "approved_1_by": "Felix (CFO)",
+    "approved_2_by": "Anna (CEO)",
+    "approved_on": "2026-09-05",
+    "sent_on": "2026-09-06",
+    "exchange_group_id": null,
+    "pdf_document_id": null,
+    "correction_of": null,
+    "sent_settings": null,
+    "meeting_id": null,
+    "format": "email",
+    "plan_id": "00000000-0000-4000-8000-000000000041",
+    "kind": "scheduled",
+    "period": "2026-08",
+    "title": "Board – monthly update · August 2026",
+    "category_ids": "[\"00000000-0000-4000-8000-000000000021\"]",
+    "status": "sent",
+    "blocks": "[{\"id\":\"b1\",\"type\":\"heading\",\"level\":\"everyone\",\"text\":\"TL;DR\"},{\"id\":\"b2\",\"type\":\"text\",\"level\":\"everyone\",\"text\":\"Cash runway is 15.6 months to the NWB-101 Phase 1 readout. Enrolment is on plan.\\n\\n- First patients dosed in cohort 2\\n- CMO search ongoing\"},{\"id\":\"b3\",\"type\":\"metrics\",\"level\":\"investors\",\"title\":\"Cash and runway\",\"items\":[{\"label\":\"Cash\",\"value\":\"19.6\",\"unit\":\"EUR m\",\"change\":\"−1.2 m in the month\",\"fact\":\"f1\"},{\"label\":\"Runway\",\"value\":\"15.6\",\"unit\":\"months\",\"change\":\"to the readout\",\"fact\":\"f2\"},{\"label\":\"NWB-101 stage\",\"value\":\"Phase 1\",\"fact\":\"f3\"}]},{\"id\":\"b4\",\"type\":\"milestones\",\"level\":\"everyone\",\"title\":\"Programs\",\"items\":[{\"title\":\"NWB-101 cohort 2 dosing\",\"status\":\"done\",\"date\":\"2026-09\"},{\"title\":\"IND filing for NWB-202\",\"status\":\"next\",\"date\":\"2027-Q1\"}]},{\"id\":\"b5\",\"type\":\"callout\",\"level\":\"board\",\"tone\":\"lowlight\",\"title\":\"Board only\",\"text\":\"Cedar licensing talks: term sheet comments expected this month.\"},{\"id\":\"b6\",\"type\":\"asks\",\"level\":\"everyone\",\"title\":\"Asks\",\"items\":[{\"key\":\"cmo_intro\",\"text\":\"Introductions to an experienced oncology CMO\"}]}]",
+    "facts": "[{\"id\":\"f1\",\"claim\":\"Cash at month end\",\"value\":19.6,\"unit\":\"EUR m\",\"source\":{\"kind\":\"record\",\"app\":\"Runway\",\"role\":\"runway.month_closes\",\"record_id\":\"00000000-0000-4000-8000-999999999902\",\"field\":\"closing_balance\",\"label\":\"2026-08 close\"},\"as_of\":\"2026-09-30\"},{\"id\":\"f2\",\"claim\":\"Runway to the readout\",\"value\":15.6,\"unit\":\"months\",\"source\":{\"kind\":\"record\",\"app\":\"Runway\",\"role\":\"runway.month_closes\",\"record_id\":\"00000000-0000-4000-8000-999999999901\",\"field\":\"runway_months\",\"label\":\"month close\"},\"as_of\":\"2026-09-30\"},{\"id\":\"f3\",\"claim\":\"NWB-101 development stage\",\"value\":\"phase_1\",\"unit\":null,\"source\":{\"kind\":\"record\",\"app\":\"Programs\",\"role\":\"programs\",\"record_id\":\"00000000-0000-4000-8000-000000000015\",\"field\":\"stage\"},\"as_of\":\"2026-09-30\"}]",
+    "drafted_on": "2026-09-03"
+   }
+  },
+  {
+   "id": "00000000-0000-4000-8000-000000000045",
+   "version": 0,
+   "role": "investorupdates.updates",
+   "data": {
+    "asks": "[{\"key\":\"cmo_intro\",\"text\":\"Introductions to an experienced oncology CMO\"}]",
+    "document_ids": "[]",
+    "drafted_by": "claude",
+    "approved_1_by": "Felix (CFO)",
+    "approved_2_by": "Anna (CEO)",
+    "approved_on": "2026-10-06",
+    "sent_on": "2026-10-07",
+    "exchange_group_id": null,
+    "pdf_document_id": null,
+    "correction_of": null,
+    "sent_settings": null,
+    "meeting_id": null,
+    "format": "email",
+    "plan_id": "00000000-0000-4000-8000-000000000041",
+    "kind": "scheduled",
+    "period": "2026-09",
+    "title": "Board – monthly update · September 2026",
+    "category_ids": "[\"00000000-0000-4000-8000-000000000021\"]",
+    "status": "sent",
+    "blocks": "[{\"id\":\"b1\",\"type\":\"heading\",\"level\":\"everyone\",\"text\":\"TL;DR\"},{\"id\":\"b2\",\"type\":\"text\",\"level\":\"everyone\",\"text\":\"Cash runway is 15 months to the NWB-101 Phase 1 readout. Enrolment is on plan.\\n\\n- First patients dosed in cohort 2\\n- CMO search ongoing\"},{\"id\":\"b3\",\"type\":\"metrics\",\"level\":\"investors\",\"title\":\"Cash and runway\",\"items\":[{\"label\":\"Cash\",\"value\":\"19.6\",\"unit\":\"EUR m\",\"change\":\"−1.2 m in the month\",\"fact\":\"f1\"},{\"label\":\"Runway\",\"value\":\"15\",\"unit\":\"months\",\"change\":\"to the readout\",\"fact\":\"f2\"},{\"label\":\"NWB-101 stage\",\"value\":\"Phase 1\",\"fact\":\"f3\"}]},{\"id\":\"b4\",\"type\":\"milestones\",\"level\":\"everyone\",\"title\":\"Programs\",\"items\":[{\"title\":\"NWB-101 cohort 2 dosing\",\"status\":\"done\",\"date\":\"2026-09\"},{\"title\":\"IND filing for NWB-202\",\"status\":\"next\",\"date\":\"2027-Q1\"}]},{\"id\":\"b5\",\"type\":\"callout\",\"level\":\"board\",\"tone\":\"lowlight\",\"title\":\"Board only\",\"text\":\"Cedar licensing talks: term sheet comments expected this month.\"},{\"id\":\"b6\",\"type\":\"asks\",\"level\":\"everyone\",\"title\":\"Asks\",\"items\":[{\"key\":\"cmo_intro\",\"text\":\"Introductions to an experienced oncology CMO\"}]}]",
+    "facts": "[{\"id\":\"f1\",\"claim\":\"Cash at month end\",\"value\":19.6,\"unit\":\"EUR m\",\"source\":{\"kind\":\"record\",\"app\":\"Runway\",\"role\":\"runway.month_closes\",\"record_id\":\"00000000-0000-4000-8000-999999999902\",\"field\":\"closing_balance\",\"label\":\"2026-09 close\"},\"as_of\":\"2026-09-30\"},{\"id\":\"f2\",\"claim\":\"Runway to the readout\",\"value\":15,\"unit\":\"months\",\"source\":{\"kind\":\"record\",\"app\":\"Runway\",\"role\":\"runway.month_closes\",\"record_id\":\"00000000-0000-4000-8000-999999999901\",\"field\":\"runway_months\",\"label\":\"month close\"},\"as_of\":\"2026-09-30\"},{\"id\":\"f3\",\"claim\":\"NWB-101 development stage\",\"value\":\"phase_1\",\"unit\":null,\"source\":{\"kind\":\"record\",\"app\":\"Programs\",\"role\":\"programs\",\"record_id\":\"00000000-0000-4000-8000-000000000015\",\"field\":\"stage\"},\"as_of\":\"2026-09-30\"}]",
+    "drafted_on": "2026-10-05"
+   }
+  },
+  {
+   "id": "00000000-0000-4000-8000-000000000046",
+   "version": 0,
+   "role": "investorupdates.updates",
+   "data": {
+    "asks": "[{\"key\":\"bd_partner\",\"text\":\"Introductions to oncology BD leads at mid-size pharma\"}]",
+    "document_ids": "[]",
+    "drafted_by": "claude",
+    "approved_1_by": "Felix (CFO)",
+    "approved_2_by": "Anna (CEO)",
+    "approved_on": "2026-10-08",
+    "sent_on": "2026-10-09",
+    "exchange_group_id": null,
+    "pdf_document_id": null,
+    "correction_of": null,
+    "sent_settings": null,
+    "meeting_id": null,
+    "format": "email",
+    "plan_id": "00000000-0000-4000-8000-000000000042",
+    "kind": "scheduled",
+    "period": "2026-Q3",
+    "title": "Quarterly investor update · Q3 2026",
+    "category_ids": "[\"00000000-0000-4000-8000-000000000022\",\"00000000-0000-4000-8000-000000000023\",\"00000000-0000-4000-8000-000000000024\"]",
+    "status": "sent",
+    "blocks": "[{\"id\":\"b1\",\"type\":\"heading\",\"level\":\"everyone\",\"text\":\"Highlights\"},{\"id\":\"b2\",\"type\":\"text\",\"level\":\"everyone\",\"text\":\"NWB-101 completed cohort 2 dosing. NWB-202 moves towards its IND filing.\"},{\"id\":\"b3\",\"type\":\"metrics\",\"level\":\"investors\",\"title\":\"Financials\",\"items\":[{\"label\":\"Cash\",\"value\":\"19.6\",\"unit\":\"EUR m\",\"fact\":\"f1\"},{\"label\":\"Runway\",\"value\":\"15.0\",\"unit\":\"months\",\"fact\":\"f2\"}]},{\"id\":\"b4\",\"type\":\"chart\",\"level\":\"investors\",\"title\":\"Cash balance\",\"kind\":\"bar\",\"unit\":\"EUR m\",\"fact\":\"f1\",\"series\":[{\"label\":\"Jul\",\"value\":22.1},{\"label\":\"Aug\",\"value\":20.8},{\"label\":\"Sep\",\"value\":19.6}]},{\"id\":\"b5\",\"type\":\"asks\",\"level\":\"everyone\",\"title\":\"Asks\",\"items\":[{\"key\":\"bd_partner\",\"text\":\"Introductions to oncology BD leads at mid-size pharma\"}]}]",
+    "facts": "[{\"id\":\"f1\",\"claim\":\"Cash at month end\",\"value\":19.6,\"unit\":\"EUR m\",\"source\":{\"kind\":\"record\",\"app\":\"Runway\",\"role\":\"runway.month_closes\",\"record_id\":\"00000000-0000-4000-8000-999999999902\",\"field\":\"closing_balance\",\"label\":\"2026-09 close\"},\"as_of\":\"2026-09-30\"},{\"id\":\"f2\",\"claim\":\"Runway to the readout\",\"value\":15,\"unit\":\"months\",\"source\":{\"kind\":\"record\",\"app\":\"Runway\",\"role\":\"runway.month_closes\",\"record_id\":\"00000000-0000-4000-8000-999999999901\",\"field\":\"runway_months\",\"label\":\"month close\"},\"as_of\":\"2026-09-30\"}]",
+    "drafted_on": "2026-10-03"
+   }
+  },
+  {
+   "id": "00000000-0000-4000-8000-000000000047",
+   "version": 0,
+   "role": "investorupdates.updates",
+   "data": {
+    "asks": "[{\"key\":\"cmo_intro\",\"text\":\"Introductions to an experienced oncology CMO\"}]",
+    "document_ids": "[]",
+    "drafted_by": "claude",
+    "approved_1_by": "Felix (CFO)",
+    "approved_2_by": null,
+    "approved_on": null,
+    "sent_on": null,
+    "exchange_group_id": null,
+    "pdf_document_id": null,
+    "correction_of": null,
+    "sent_settings": null,
+    "meeting_id": null,
+    "format": "email",
+    "plan_id": "00000000-0000-4000-8000-000000000041",
+    "kind": "scheduled",
+    "period": "2026-10",
+    "title": "Board – monthly update · October 2026",
+    "category_ids": "[\"00000000-0000-4000-8000-000000000021\"]",
+    "status": "in_review",
+    "blocks": "[{\"id\":\"b1\",\"type\":\"heading\",\"level\":\"everyone\",\"text\":\"TL;DR\"},{\"id\":\"b2\",\"type\":\"text\",\"level\":\"everyone\",\"text\":\"Cash runway is 14.2 months to the NWB-101 Phase 1 readout. Enrolment is on plan.\\n\\n- First patients dosed in cohort 2\\n- CMO search ongoing\"},{\"id\":\"b3\",\"type\":\"metrics\",\"level\":\"investors\",\"title\":\"Cash and runway\",\"items\":[{\"label\":\"Cash\",\"value\":\"18.4\",\"unit\":\"EUR m\",\"change\":\"−1.2 m in the month\",\"fact\":\"f1\"},{\"label\":\"Runway\",\"value\":\"14.2\",\"unit\":\"months\",\"change\":\"to the readout\",\"fact\":\"f2\"},{\"label\":\"NWB-101 stage\",\"value\":\"Phase 1\",\"fact\":\"f3\"}]},{\"id\":\"b4\",\"type\":\"milestones\",\"level\":\"everyone\",\"title\":\"Programs\",\"items\":[{\"title\":\"NWB-101 cohort 2 dosing\",\"status\":\"done\",\"date\":\"2026-10\"},{\"title\":\"IND filing for NWB-202\",\"status\":\"slipped\",\"date\":\"2027-Q2\",\"previous_date\":\"2027-Q1\"}]},{\"id\":\"b5\",\"type\":\"callout\",\"level\":\"board\",\"tone\":\"lowlight\",\"title\":\"Board only\",\"text\":\"Cedar licensing talks: term sheet comments expected this month.\"},{\"id\":\"b6\",\"type\":\"asks\",\"level\":\"everyone\",\"title\":\"Asks\",\"items\":[{\"key\":\"cmo_intro\",\"text\":\"Introductions to an experienced oncology CMO\"}]}]",
+    "facts": "[{\"id\":\"f1\",\"claim\":\"Cash at month end\",\"value\":18.4,\"unit\":\"EUR m\",\"source\":{\"kind\":\"record\",\"app\":\"Runway\",\"role\":\"runway.month_closes\",\"record_id\":\"00000000-0000-4000-8000-999999999902\",\"field\":\"closing_balance\",\"label\":\"2026-10 close\"},\"as_of\":\"2026-10-31\"},{\"id\":\"f2\",\"claim\":\"Runway to the readout\",\"value\":14.2,\"unit\":\"months\",\"source\":{\"kind\":\"record\",\"app\":\"Runway\",\"role\":\"runway.month_closes\",\"record_id\":\"00000000-0000-4000-8000-999999999901\",\"field\":\"runway_months\",\"label\":\"month close\"},\"as_of\":\"2026-10-31\"},{\"id\":\"f3\",\"claim\":\"NWB-101 development stage\",\"value\":\"preclinical\",\"unit\":null,\"source\":{\"kind\":\"record\",\"app\":\"Programs\",\"role\":\"programs\",\"record_id\":\"00000000-0000-4000-8000-000000000015\",\"field\":\"stage\"},\"as_of\":\"2026-10-31\"},{\"id\":\"f4\",\"claim\":\"Cedar term sheet comments expected\",\"value\":\"November\",\"unit\":null,\"source\":{\"kind\":\"chat\",\"date\":\"2026-11-02\"},\"as_of\":\"2026-11-02\"}]",
+    "drafted_on": "2026-11-04"
+   }
+  },
+  {
+   "id": "00000000-0000-4000-8000-000000000048",
+   "version": 0,
+   "role": "investorupdates.meetings",
+   "data": {
+    "title": "Q4 board meeting",
+    "kind": "board",
+    "meeting_date": "2026-11-06",
+    "start_time": "14:00",
+    "timezone": "Europe/Berlin",
+    "location": "Northwind Bio office, Berlin, and video call",
+    "plan_id": "00000000-0000-4000-8000-000000000043",
+    "category_ids": "[\"00000000-0000-4000-8000-000000000021\"]",
+    "status": "held",
+    "notes": "Decided: start the CMO search with an agency; approve the NWB-202 IND budget. Next: Anna to brief the agency by 20 Nov.",
+    "archived": false
+   }
+  },
+  {
+   "id": "00000000-0000-4000-8000-000000000049",
+   "version": 0,
+   "role": "investorupdates.meetings",
+   "data": {
+    "title": "Q4 investor call",
+    "kind": "investor_call",
+    "meeting_date": "2026-11-26",
+    "start_time": "16:00",
+    "timezone": "Europe/Berlin",
+    "location": "Video call (link in your calendar invite)",
+    "plan_id": null,
+    "category_ids": "[\"00000000-0000-4000-8000-000000000022\",\"00000000-0000-4000-8000-000000000024\"]",
+    "status": "planned",
+    "archived": false
+   }
+  },
+  {
+   "id": "00000000-0000-4000-8000-000000000050",
+   "version": 0,
+   "role": "investorupdates.updates",
+   "data": {
+    "asks": "[]",
+    "document_ids": "[]",
+    "drafted_by": "claude",
+    "approved_1_by": null,
+    "approved_2_by": "Anna (CEO)",
+    "approved_on": "2026-10-30",
+    "sent_on": "2026-10-30",
+    "exchange_group_id": null,
+    "pdf_document_id": null,
+    "correction_of": null,
+    "sent_settings": null,
+    "meeting_id": "00000000-0000-4000-8000-000000000048",
+    "format": "meeting_before",
+    "plan_id": "00000000-0000-4000-8000-000000000043",
+    "kind": "one_off",
+    "period": "2026-11",
+    "title": "Agenda and pre-read: Q4 board meeting",
+    "category_ids": "[\"00000000-0000-4000-8000-000000000021\"]",
+    "status": "sent",
+    "blocks": "[{\"id\":\"b1\",\"type\":\"meeting\",\"level\":\"everyone\"},{\"id\":\"b2\",\"type\":\"agenda\",\"level\":\"everyone\",\"items\":[{\"title\":\"CEO update\",\"presenter\":\"Anna\",\"minutes\":20},{\"title\":\"NWB-202 IND budget\",\"presenter\":\"Felix\",\"minutes\":30},{\"title\":\"CMO search\",\"presenter\":\"Anna\",\"minutes\":20}]},{\"id\":\"b3\",\"type\":\"text\",\"level\":\"investors\",\"title\":\"Pre-read\",\"text\":\"Please read the IND budget and the CMO search brief before the meeting.\"},{\"id\":\"b4\",\"type\":\"text\",\"level\":\"board\",\"title\":\"Decisions needed\",\"text\":\"- Approve the NWB-202 IND budget\\n- Agree the CMO search approach\"}]",
+    "facts": "[]",
+    "drafted_on": "2026-10-30"
+   }
+  },
+  {
+   "id": "00000000-0000-4000-8000-000000000051",
+   "version": 0,
+   "role": "investorupdates.updates",
+   "data": {
+    "asks": "[]",
+    "document_ids": "[]",
+    "drafted_by": "claude",
+    "approved_1_by": null,
+    "approved_2_by": "Anna (CEO)",
+    "approved_on": "2026-11-08",
+    "sent_on": "2026-11-08",
+    "exchange_group_id": null,
+    "pdf_document_id": null,
+    "correction_of": null,
+    "sent_settings": null,
+    "meeting_id": "00000000-0000-4000-8000-000000000048",
+    "format": "meeting_after",
+    "plan_id": "00000000-0000-4000-8000-000000000043",
+    "kind": "one_off",
+    "period": "2026-11",
+    "title": "Recap: Q4 board meeting",
+    "category_ids": "[\"00000000-0000-4000-8000-000000000021\"]",
+    "status": "sent",
+    "blocks": "[{\"id\":\"b1\",\"type\":\"text\",\"level\":\"everyone\",\"title\":\"Recap\",\"text\":\"We reviewed the quarter, the NWB-202 IND budget and the CMO search.\"},{\"id\":\"b2\",\"type\":\"text\",\"level\":\"investors\",\"title\":\"Decided (as reported)\",\"text\":\"- Start the CMO search with an agency\\n- Approve the NWB-202 IND budget\"},{\"id\":\"b3\",\"type\":\"next_steps\",\"level\":\"everyone\",\"items\":[{\"step\":\"Brief the search agency\",\"owner\":\"Anna\",\"due\":\"2026-11-20\"}]}]",
+    "facts": "[]",
+    "drafted_on": "2026-11-07"
+   }
+  },
+  {
+   "id": "00000000-0000-4000-8000-000000000053",
+   "version": 0,
+   "role": "investorupdates.deliveries",
+   "data": {
+    "update_id": "00000000-0000-4000-8000-000000000044",
+    "recipient_id": "00000000-0000-4000-8000-000000000031",
+    "category_id": "00000000-0000-4000-8000-000000000021",
+    "level": "board",
+    "email": "mara@alder.example.invalid",
+    "person_id": "00000000-0000-4000-8000-000000000005",
+    "organization_id": "00000000-0000-4000-8000-000000000001",
+    "exchange_id": "00000000-0000-4000-8000-999999990052",
+    "sent_on": "2026-09-06",
+    "status": "read",
+    "first_read_on": "2026-09-06",
+    "last_read_on": "2026-09-06",
+    "read_count": 1
+   }
+  },
+  {
+   "id": "00000000-0000-4000-8000-000000000055",
+   "version": 0,
+   "role": "investorupdates.deliveries",
+   "data": {
+    "update_id": "00000000-0000-4000-8000-000000000044",
+    "recipient_id": "00000000-0000-4000-8000-000000000032",
+    "category_id": "00000000-0000-4000-8000-000000000021",
+    "level": "board",
+    "email": "jonas@birch.example.invalid",
+    "person_id": "00000000-0000-4000-8000-000000000006",
+    "organization_id": "00000000-0000-4000-8000-000000000002",
+    "exchange_id": "00000000-0000-4000-8000-999999990054",
+    "sent_on": "2026-09-06",
+    "status": "read",
+    "first_read_on": "2026-09-06",
+    "last_read_on": "2026-09-06",
+    "read_count": 1
+   }
+  },
+  {
+   "id": "00000000-0000-4000-8000-000000000057",
+   "version": 0,
+   "role": "investorupdates.deliveries",
+   "data": {
+    "update_id": "00000000-0000-4000-8000-000000000044",
+    "recipient_id": "00000000-0000-4000-8000-000000000033",
+    "category_id": "00000000-0000-4000-8000-000000000021",
+    "level": "board",
+    "email": "priya@natarajan.example.invalid",
+    "person_id": "00000000-0000-4000-8000-000000000007",
+    "organization_id": null,
+    "exchange_id": "00000000-0000-4000-8000-999999990056",
+    "sent_on": "2026-09-06",
+    "status": "read",
+    "first_read_on": "2026-09-06",
+    "last_read_on": "2026-09-06",
+    "read_count": 1
+   }
+  },
+  {
+   "id": "00000000-0000-4000-8000-000000000059",
+   "version": 0,
+   "role": "investorupdates.deliveries",
+   "data": {
+    "update_id": "00000000-0000-4000-8000-000000000044",
+    "recipient_id": "00000000-0000-4000-8000-000000000034",
+    "category_id": "00000000-0000-4000-8000-000000000021",
+    "level": "board",
+    "email": "tomas@cedar.example.invalid",
+    "person_id": "00000000-0000-4000-8000-000000000008",
+    "organization_id": "00000000-0000-4000-8000-000000000003",
+    "exchange_id": "00000000-0000-4000-8000-999999990058",
+    "sent_on": "2026-09-06",
+    "status": "read",
+    "first_read_on": "2026-09-06",
+    "last_read_on": "2026-09-06",
+    "read_count": 1
+   }
+  },
+  {
+   "id": "00000000-0000-4000-8000-000000000061",
+   "version": 0,
+   "role": "investorupdates.deliveries",
+   "data": {
+    "update_id": "00000000-0000-4000-8000-000000000044",
+    "recipient_id": "00000000-0000-4000-8000-000000000035",
+    "category_id": "00000000-0000-4000-8000-000000000021",
+    "level": "board",
+    "email": "elena@alder.example.invalid",
+    "person_id": "00000000-0000-4000-8000-000000000009",
+    "organization_id": "00000000-0000-4000-8000-000000000001",
+    "exchange_id": "00000000-0000-4000-8000-999999990060",
+    "sent_on": "2026-09-06",
+    "status": "read",
+    "first_read_on": "2026-09-06",
+    "last_read_on": "2026-09-06",
+    "read_count": 1
+   }
+  },
+  {
+   "id": "00000000-0000-4000-8000-000000000063",
+   "version": 0,
+   "role": "investorupdates.deliveries",
+   "data": {
+    "update_id": "00000000-0000-4000-8000-000000000045",
+    "recipient_id": "00000000-0000-4000-8000-000000000031",
+    "category_id": "00000000-0000-4000-8000-000000000021",
+    "level": "board",
+    "email": "mara@alder.example.invalid",
+    "person_id": "00000000-0000-4000-8000-000000000005",
+    "organization_id": "00000000-0000-4000-8000-000000000001",
+    "exchange_id": "00000000-0000-4000-8000-999999990062",
+    "sent_on": "2026-10-07",
+    "status": "read",
+    "first_read_on": "2026-10-07",
+    "last_read_on": "2026-10-07",
+    "read_count": 1
+   }
+  },
+  {
+   "id": "00000000-0000-4000-8000-000000000065",
+   "version": 0,
+   "role": "investorupdates.deliveries",
+   "data": {
+    "update_id": "00000000-0000-4000-8000-000000000045",
+    "recipient_id": "00000000-0000-4000-8000-000000000032",
+    "category_id": "00000000-0000-4000-8000-000000000021",
+    "level": "board",
+    "email": "jonas@birch.example.invalid",
+    "person_id": "00000000-0000-4000-8000-000000000006",
+    "organization_id": "00000000-0000-4000-8000-000000000002",
+    "exchange_id": "00000000-0000-4000-8000-999999990064",
+    "sent_on": "2026-10-07",
+    "status": "sent",
+    "first_read_on": null,
+    "last_read_on": null,
+    "read_count": 0
+   }
+  },
+  {
+   "id": "00000000-0000-4000-8000-000000000067",
+   "version": 0,
+   "role": "investorupdates.deliveries",
+   "data": {
+    "update_id": "00000000-0000-4000-8000-000000000045",
+    "recipient_id": "00000000-0000-4000-8000-000000000033",
+    "category_id": "00000000-0000-4000-8000-000000000021",
+    "level": "board",
+    "email": "priya@natarajan.example.invalid",
+    "person_id": "00000000-0000-4000-8000-000000000007",
+    "organization_id": null,
+    "exchange_id": "00000000-0000-4000-8000-999999990066",
+    "sent_on": "2026-10-07",
+    "status": "read",
+    "first_read_on": "2026-10-07",
+    "last_read_on": "2026-10-07",
+    "read_count": 1
+   }
+  },
+  {
+   "id": "00000000-0000-4000-8000-000000000069",
+   "version": 0,
+   "role": "investorupdates.deliveries",
+   "data": {
+    "update_id": "00000000-0000-4000-8000-000000000045",
+    "recipient_id": "00000000-0000-4000-8000-000000000034",
+    "category_id": "00000000-0000-4000-8000-000000000021",
+    "level": "board",
+    "email": "tomas@cedar.example.invalid",
+    "person_id": "00000000-0000-4000-8000-000000000008",
+    "organization_id": "00000000-0000-4000-8000-000000000003",
+    "exchange_id": "00000000-0000-4000-8000-999999990068",
+    "sent_on": "2026-10-07",
+    "status": "sent",
+    "first_read_on": null,
+    "last_read_on": null,
+    "read_count": 0
+   }
+  },
+  {
+   "id": "00000000-0000-4000-8000-000000000071",
+   "version": 0,
+   "role": "investorupdates.deliveries",
+   "data": {
+    "update_id": "00000000-0000-4000-8000-000000000045",
+    "recipient_id": "00000000-0000-4000-8000-000000000035",
+    "category_id": "00000000-0000-4000-8000-000000000021",
+    "level": "board",
+    "email": "elena@alder.example.invalid",
+    "person_id": "00000000-0000-4000-8000-000000000009",
+    "organization_id": "00000000-0000-4000-8000-000000000001",
+    "exchange_id": "00000000-0000-4000-8000-999999990070",
+    "sent_on": "2026-10-07",
+    "status": "read",
+    "first_read_on": "2026-10-07",
+    "last_read_on": "2026-10-07",
+    "read_count": 1
+   }
+  },
+  {
+   "id": "00000000-0000-4000-8000-000000000073",
+   "version": 0,
+   "role": "investorupdates.deliveries",
+   "data": {
+    "update_id": "00000000-0000-4000-8000-000000000050",
+    "recipient_id": "00000000-0000-4000-8000-000000000031",
+    "category_id": "00000000-0000-4000-8000-000000000021",
+    "level": "board",
+    "email": "mara@alder.example.invalid",
+    "person_id": "00000000-0000-4000-8000-000000000005",
+    "organization_id": "00000000-0000-4000-8000-000000000001",
+    "exchange_id": "00000000-0000-4000-8000-999999990072",
+    "sent_on": "2026-10-30",
+    "status": "read",
+    "first_read_on": "2026-10-30",
+    "last_read_on": "2026-10-30",
+    "read_count": 1
+   }
+  },
+  {
+   "id": "00000000-0000-4000-8000-000000000075",
+   "version": 0,
+   "role": "investorupdates.deliveries",
+   "data": {
+    "update_id": "00000000-0000-4000-8000-000000000050",
+    "recipient_id": "00000000-0000-4000-8000-000000000032",
+    "category_id": "00000000-0000-4000-8000-000000000021",
+    "level": "board",
+    "email": "jonas@birch.example.invalid",
+    "person_id": "00000000-0000-4000-8000-000000000006",
+    "organization_id": "00000000-0000-4000-8000-000000000002",
+    "exchange_id": "00000000-0000-4000-8000-999999990074",
+    "sent_on": "2026-10-30",
+    "status": "read",
+    "first_read_on": "2026-10-30",
+    "last_read_on": "2026-10-30",
+    "read_count": 1
+   }
+  },
+  {
+   "id": "00000000-0000-4000-8000-000000000077",
+   "version": 0,
+   "role": "investorupdates.deliveries",
+   "data": {
+    "update_id": "00000000-0000-4000-8000-000000000050",
+    "recipient_id": "00000000-0000-4000-8000-000000000033",
+    "category_id": "00000000-0000-4000-8000-000000000021",
+    "level": "board",
+    "email": "priya@natarajan.example.invalid",
+    "person_id": "00000000-0000-4000-8000-000000000007",
+    "organization_id": null,
+    "exchange_id": "00000000-0000-4000-8000-999999990076",
+    "sent_on": "2026-10-30",
+    "status": "read",
+    "first_read_on": "2026-10-30",
+    "last_read_on": "2026-10-30",
+    "read_count": 1
+   }
+  },
+  {
+   "id": "00000000-0000-4000-8000-000000000079",
+   "version": 0,
+   "role": "investorupdates.deliveries",
+   "data": {
+    "update_id": "00000000-0000-4000-8000-000000000050",
+    "recipient_id": "00000000-0000-4000-8000-000000000034",
+    "category_id": "00000000-0000-4000-8000-000000000021",
+    "level": "board",
+    "email": "tomas@cedar.example.invalid",
+    "person_id": "00000000-0000-4000-8000-000000000008",
+    "organization_id": "00000000-0000-4000-8000-000000000003",
+    "exchange_id": "00000000-0000-4000-8000-999999990078",
+    "sent_on": "2026-10-30",
+    "status": "sent",
+    "first_read_on": null,
+    "last_read_on": null,
+    "read_count": 0
+   }
+  },
+  {
+   "id": "00000000-0000-4000-8000-000000000081",
+   "version": 0,
+   "role": "investorupdates.deliveries",
+   "data": {
+    "update_id": "00000000-0000-4000-8000-000000000050",
+    "recipient_id": "00000000-0000-4000-8000-000000000035",
+    "category_id": "00000000-0000-4000-8000-000000000021",
+    "level": "board",
+    "email": "elena@alder.example.invalid",
+    "person_id": "00000000-0000-4000-8000-000000000009",
+    "organization_id": "00000000-0000-4000-8000-000000000001",
+    "exchange_id": "00000000-0000-4000-8000-999999990080",
+    "sent_on": "2026-10-30",
+    "status": "sent",
+    "first_read_on": null,
+    "last_read_on": null,
+    "read_count": 0
+   }
+  },
+  {
+   "id": "00000000-0000-4000-8000-000000000083",
+   "version": 0,
+   "role": "investorupdates.deliveries",
+   "data": {
+    "update_id": "00000000-0000-4000-8000-000000000051",
+    "recipient_id": "00000000-0000-4000-8000-000000000031",
+    "category_id": "00000000-0000-4000-8000-000000000021",
+    "level": "board",
+    "email": "mara@alder.example.invalid",
+    "person_id": "00000000-0000-4000-8000-000000000005",
+    "organization_id": "00000000-0000-4000-8000-000000000001",
+    "exchange_id": "00000000-0000-4000-8000-999999990082",
+    "sent_on": "2026-11-08",
+    "status": "read",
+    "first_read_on": "2026-11-08",
+    "last_read_on": "2026-11-08",
+    "read_count": 1
+   }
+  },
+  {
+   "id": "00000000-0000-4000-8000-000000000085",
+   "version": 0,
+   "role": "investorupdates.deliveries",
+   "data": {
+    "update_id": "00000000-0000-4000-8000-000000000051",
+    "recipient_id": "00000000-0000-4000-8000-000000000032",
+    "category_id": "00000000-0000-4000-8000-000000000021",
+    "level": "board",
+    "email": "jonas@birch.example.invalid",
+    "person_id": "00000000-0000-4000-8000-000000000006",
+    "organization_id": "00000000-0000-4000-8000-000000000002",
+    "exchange_id": "00000000-0000-4000-8000-999999990084",
+    "sent_on": "2026-11-08",
+    "status": "read",
+    "first_read_on": "2026-11-08",
+    "last_read_on": "2026-11-08",
+    "read_count": 1
+   }
+  },
+  {
+   "id": "00000000-0000-4000-8000-000000000087",
+   "version": 0,
+   "role": "investorupdates.deliveries",
+   "data": {
+    "update_id": "00000000-0000-4000-8000-000000000051",
+    "recipient_id": "00000000-0000-4000-8000-000000000033",
+    "category_id": "00000000-0000-4000-8000-000000000021",
+    "level": "board",
+    "email": "priya@natarajan.example.invalid",
+    "person_id": "00000000-0000-4000-8000-000000000007",
+    "organization_id": null,
+    "exchange_id": "00000000-0000-4000-8000-999999990086",
+    "sent_on": "2026-11-08",
+    "status": "read",
+    "first_read_on": "2026-11-08",
+    "last_read_on": "2026-11-08",
+    "read_count": 1
+   }
+  },
+  {
+   "id": "00000000-0000-4000-8000-000000000089",
+   "version": 0,
+   "role": "investorupdates.deliveries",
+   "data": {
+    "update_id": "00000000-0000-4000-8000-000000000051",
+    "recipient_id": "00000000-0000-4000-8000-000000000034",
+    "category_id": "00000000-0000-4000-8000-000000000021",
+    "level": "board",
+    "email": "tomas@cedar.example.invalid",
+    "person_id": "00000000-0000-4000-8000-000000000008",
+    "organization_id": "00000000-0000-4000-8000-000000000003",
+    "exchange_id": "00000000-0000-4000-8000-999999990088",
+    "sent_on": "2026-11-08",
+    "status": "read",
+    "first_read_on": "2026-11-08",
+    "last_read_on": "2026-11-08",
+    "read_count": 1
+   }
+  },
+  {
+   "id": "00000000-0000-4000-8000-000000000091",
+   "version": 0,
+   "role": "investorupdates.deliveries",
+   "data": {
+    "update_id": "00000000-0000-4000-8000-000000000051",
+    "recipient_id": "00000000-0000-4000-8000-000000000035",
+    "category_id": "00000000-0000-4000-8000-000000000021",
+    "level": "board",
+    "email": "elena@alder.example.invalid",
+    "person_id": "00000000-0000-4000-8000-000000000009",
+    "organization_id": "00000000-0000-4000-8000-000000000001",
+    "exchange_id": "00000000-0000-4000-8000-999999990090",
+    "sent_on": "2026-11-08",
+    "status": "read",
+    "first_read_on": "2026-11-08",
+    "last_read_on": "2026-11-08",
+    "read_count": 1
+   }
+  },
+  {
+   "id": "00000000-0000-4000-8000-000000000093",
+   "version": 0,
+   "role": "investorupdates.deliveries",
+   "data": {
+    "update_id": "00000000-0000-4000-8000-000000000046",
+    "recipient_id": "00000000-0000-4000-8000-000000000031",
+    "category_id": "00000000-0000-4000-8000-000000000022",
+    "level": "investors",
+    "email": "mara@alder.example.invalid",
+    "person_id": "00000000-0000-4000-8000-000000000005",
+    "organization_id": "00000000-0000-4000-8000-000000000001",
+    "exchange_id": "00000000-0000-4000-8000-999999990092",
+    "sent_on": "2026-10-09",
+    "status": "read",
+    "first_read_on": "2026-10-09",
+    "last_read_on": "2026-10-11",
+    "read_count": 3
+   }
+  },
+  {
+   "id": "00000000-0000-4000-8000-000000000095",
+   "version": 0,
+   "role": "investorupdates.deliveries",
+   "data": {
+    "update_id": "00000000-0000-4000-8000-000000000046",
+    "recipient_id": "00000000-0000-4000-8000-000000000036",
+    "category_id": "00000000-0000-4000-8000-000000000022",
+    "level": "investors",
+    "email": "lena@birch.example.invalid",
+    "person_id": "00000000-0000-4000-8000-000000000010",
+    "organization_id": "00000000-0000-4000-8000-000000000002",
+    "exchange_id": "00000000-0000-4000-8000-999999990094",
+    "sent_on": "2026-10-09",
+    "status": "read",
+    "first_read_on": "2026-10-09",
+    "last_read_on": "2026-10-11",
+    "read_count": 1
+   }
+  },
+  {
+   "id": "00000000-0000-4000-8000-000000000097",
+   "version": 0,
+   "role": "investorupdates.deliveries",
+   "data": {
+    "update_id": "00000000-0000-4000-8000-000000000046",
+    "recipient_id": "00000000-0000-4000-8000-000000000039",
+    "category_id": "00000000-0000-4000-8000-000000000024",
+    "level": "investors",
+    "email": "kenji@cedar.example.invalid",
+    "person_id": "00000000-0000-4000-8000-000000000013",
+    "organization_id": "00000000-0000-4000-8000-000000000003",
+    "exchange_id": "00000000-0000-4000-8000-999999990096",
+    "sent_on": "2026-10-09",
+    "status": "read",
+    "first_read_on": "2026-10-09",
+    "last_read_on": "2026-10-11",
+    "read_count": 1
+   }
+  },
+  {
+   "id": "00000000-0000-4000-8000-000000000099",
+   "version": 0,
+   "role": "investorupdates.deliveries",
+   "data": {
+    "update_id": "00000000-0000-4000-8000-000000000046",
+    "recipient_id": "00000000-0000-4000-8000-000000000032",
+    "category_id": "00000000-0000-4000-8000-000000000024",
+    "level": "investors",
+    "email": "jonas@birch.example.invalid",
+    "person_id": "00000000-0000-4000-8000-000000000006",
+    "organization_id": "00000000-0000-4000-8000-000000000002",
+    "exchange_id": "00000000-0000-4000-8000-999999990098",
+    "sent_on": "2026-10-09",
+    "status": "sent",
+    "first_read_on": null,
+    "last_read_on": null,
+    "read_count": 0
+   }
+  },
+  {
+   "id": "00000000-0000-4000-8000-000000000101",
+   "version": 0,
+   "role": "investorupdates.deliveries",
+   "data": {
+    "update_id": "00000000-0000-4000-8000-000000000046",
+    "recipient_id": "00000000-0000-4000-8000-000000000034",
+    "category_id": "00000000-0000-4000-8000-000000000024",
+    "level": "investors",
+    "email": "tomas@cedar.example.invalid",
+    "person_id": "00000000-0000-4000-8000-000000000008",
+    "organization_id": "00000000-0000-4000-8000-000000000003",
+    "exchange_id": "00000000-0000-4000-8000-999999990100",
+    "sent_on": "2026-10-09",
+    "status": "sent",
+    "first_read_on": null,
+    "last_read_on": null,
+    "read_count": 0
+   }
+  },
+  {
+   "id": "00000000-0000-4000-8000-000000000103",
+   "version": 0,
+   "role": "investorupdates.deliveries",
+   "data": {
+    "update_id": "00000000-0000-4000-8000-000000000046",
+    "recipient_id": "00000000-0000-4000-8000-000000000037",
+    "category_id": "00000000-0000-4000-8000-000000000023",
+    "level": "everyone",
+    "email": "omar@dune.example.invalid",
+    "person_id": "00000000-0000-4000-8000-000000000011",
+    "organization_id": "00000000-0000-4000-8000-000000000004",
+    "exchange_id": "00000000-0000-4000-8000-999999990102",
+    "sent_on": "2026-10-09",
+    "status": "read",
+    "first_read_on": "2026-10-09",
+    "last_read_on": "2026-10-11",
+    "read_count": 1
+   }
+  },
+  {
+   "id": "00000000-0000-4000-8000-000000000105",
+   "version": 0,
+   "role": "investorupdates.deliveries",
+   "data": {
+    "update_id": "00000000-0000-4000-8000-000000000046",
+    "recipient_id": "00000000-0000-4000-8000-000000000038",
+    "category_id": "00000000-0000-4000-8000-000000000023",
+    "level": "everyone",
+    "email": "sofia@brandt.example.invalid",
+    "person_id": "00000000-0000-4000-8000-000000000012",
+    "organization_id": null,
+    "exchange_id": "00000000-0000-4000-8000-999999990104",
+    "sent_on": "2026-10-09",
+    "status": "sent",
+    "first_read_on": null,
+    "last_read_on": null,
+    "read_count": 0
+   }
+  },
+  {
+   "id": "00000000-0000-4000-8000-000000000106",
+   "version": 0,
+   "role": "investorupdates.responses",
+   "data": {
+    "update_id": "00000000-0000-4000-8000-000000000045",
+    "recipient_id": null,
+    "kind": null,
+    "ask_key": "cmo_intro",
+    "ask_text": "Introductions to an experienced oncology CMO",
+    "message": "I know two CMOs who ran oncology Phase 2s; happy to introduce.",
+    "responded_on": "2026-10-08",
+    "delivery_id": "00000000-0000-4000-8000-000000000063",
+    "exchange_id": "00000000-0000-4000-8000-999999990062",
+    "person_id": "00000000-0000-4000-8000-000000000005",
+    "organization_id": "00000000-0000-4000-8000-000000000001",
+    "answer": null,
+    "answered_on": null,
+    "answer_scope": null,
+    "status": "following_up",
+    "owner": "Anna",
+    "follow_up_due": "2026-11-18"
+   }
+  },
+  {
+   "id": "00000000-0000-4000-8000-000000000107",
+   "version": 0,
+   "role": "investorupdates.responses",
+   "data": {
+    "update_id": "00000000-0000-4000-8000-000000000045",
+    "recipient_id": null,
+    "kind": null,
+    "ask_key": "cmo_intro",
+    "ask_text": "Introductions to an experienced oncology CMO",
+    "message": "One former colleague may be interested.",
+    "responded_on": "2026-10-09",
+    "delivery_id": "00000000-0000-4000-8000-000000000067",
+    "exchange_id": "00000000-0000-4000-8000-999999990066",
+    "person_id": "00000000-0000-4000-8000-000000000007",
+    "organization_id": null,
+    "answer": null,
+    "answered_on": null,
+    "answer_scope": null,
+    "status": "new",
+    "owner": null,
+    "follow_up_due": null
+   }
+  },
+  {
+   "id": "00000000-0000-4000-8000-000000000108",
+   "version": 0,
+   "role": "investorupdates.responses",
+   "data": {
+    "update_id": "00000000-0000-4000-8000-000000000050",
+    "recipient_id": null,
+    "kind": null,
+    "ask_key": "question",
+    "ask_text": "Questions before the meeting",
+    "message": "Does the IND budget include the GLP tox extension?",
+    "responded_on": "2026-11-02",
+    "delivery_id": "00000000-0000-4000-8000-000000000075",
+    "exchange_id": "00000000-0000-4000-8000-999999990074",
+    "person_id": "00000000-0000-4000-8000-000000000006",
+    "organization_id": "00000000-0000-4000-8000-000000000002",
+    "answer": "Yes: the budget includes the 4-week GLP tox extension (EUR 0.4 m).",
+    "answered_on": "2026-11-03",
+    "answer_scope": "private",
+    "status": "answered",
+    "owner": null,
+    "follow_up_due": null
+   }
+  },
+  {
+   "id": "00000000-0000-4000-8000-000000000109",
+   "version": 0,
+   "role": "investorupdates.responses",
+   "data": {
+    "update_id": "00000000-0000-4000-8000-000000000050",
+    "recipient_id": null,
+    "kind": null,
+    "ask_key": "question",
+    "ask_text": "Questions before the meeting",
+    "message": "Could we see the agency shortlist for the CMO search?",
+    "responded_on": "2026-11-04",
+    "delivery_id": "00000000-0000-4000-8000-000000000073",
+    "exchange_id": "00000000-0000-4000-8000-999999990072",
+    "person_id": "00000000-0000-4000-8000-000000000005",
+    "organization_id": "00000000-0000-4000-8000-000000000001",
+    "answer": null,
+    "answered_on": null,
+    "answer_scope": null,
+    "status": "new",
+    "owner": null,
+    "follow_up_due": null
+   }
+  }
+ ]
+}
