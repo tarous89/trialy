@@ -49,7 +49,7 @@ Titles below are editorial candidates, not verified product claims. When a title
 | D12 | Forecast cash to a Phase I milestone: fund the review, not just the last visit | Published — live verified 15 November 2026; PR #219, release `189a49fa291e46221c814be70d1fe670026c5b5d` | https://trialagents.com/apps/phase-one-milestone-cash-forecast |
 | E1 | Free biotech cash runway template: start in Excel, grow into an app | Published — live verified 15 November 2026; PR #220, release `9190de8ed0a118b2b1fa40a632627433e2f0bdb2` | https://trialagents.com/apps/biotech-cash-runway-template |
 | E2 | Build a 24-month biotech cash forecast: make year two explicit | Published — live verified 15 November 2026; PR #221, release `c6c1ed52d56914c656d17f3304b90bc93d7c96c9` | https://trialagents.com/apps/24-month-biotech-cash-runway-forecast |
-| E3 | How to Build a 13-Week Cash Flow Forecast for a Biotech Company | Queued — verify and publish | — |
+| E3 | How to Build a 13-Week Cash Flow Forecast for a Biotech Company | In progress — claimed 15 November 2026 for source and publication QA | — |
 | E4 | How to Move Your Biotech Cash Forecast from Excel to TrialAgents Runway | Already covered / published | [Live article](https://trialagents.com/apps/excel-to-trialagents-runway) |
 | E5 | How to Build a Biotech Cash Runway Dashboard Without Coding | Queued — verify and publish | — |
 | E6 | Biotech Cash Runway Software Buying Guide: 15 Questions to Ask Vendors | Queued — verify and publish | — |
