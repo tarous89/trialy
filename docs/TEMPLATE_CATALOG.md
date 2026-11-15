@@ -11,6 +11,14 @@ Contracts (`life.contracts`) 1.0.0 was added on 12 November 2026 as a draft (#14
 
 Installed 1.0.0 apps keep working.
 
+On 15 November 2026 the owner approved Programs (`life.project-oversight`) 2.2.0 in place of 2.1.0 ([PROGRAMS.md §14](product/app-template-blueprints/apps/PROGRAMS.md#14-programs-220-assistant-control-team-notifications-and-the-weekly-digest)):
+- the seed names 2.2.0, so the sync after migrations imports it approved;
+- migration 075 withdraws 2.1.0 once (`templates/catalog-retirements.json`);
+- the 2.1.0 source is archived under `templates/source/project-oversight/archive/2.1.0/`, and its installer entry points there;
+- the gallery adds `life.project-oversight@2.2.0`.
+
+Installed 2.1.0 apps keep working.
+
 CRO Selection (`life.cro-selection`) 2.0.0 was added on 13 November 2026 as a draft. It replaces CRO Selection 1.0.1 and Sponsor RFP Management (`life.sponsor-rfp-management`) 1.0.1. Versions to withdraw on a replacement's approval are listed in `templates/catalog-retirements.json`; deployment does not act on that file.
 
 Data Room (`life.data-room`) 1.0.0 was added on 13 November 2026 as a draft, built on the exchange room extension (EXTERNAL_EXCHANGE.md §5). It is a new template, so nothing is retired. It writes the `dataroom.v1` outputs: in `templates/contracts/outputs.json` its writer is now `life.data-room`, and `room_purpose` gains `partnering` (an additive change). It is not in the seed until the owner approves it.

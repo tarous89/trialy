@@ -1,10 +1,25 @@
+import {transformSync} from 'esbuild';
 import {readFile,writeFile} from 'node:fs/promises';
-// Programs (life.project-oversight) 2.x. The released 1.0.1 files are archived unchanged under templates/source/project-oversight/archive/1.0.1/.
+// Programs (life.project-oversight) 2.x. Released packages are archived unchanged under templates/source/project-oversight/archive/<version>/.
 const root=new URL('../templates/source/project-oversight/',import.meta.url),read=n=>readFile(new URL(n,root),'utf8');
 const [metadata,source,css,demo,schema]=await Promise.all(['catalog.metadata.json','programs.source.js','programs.css','demo_data.json','schema.example.json'].map(read));
-const entry=JSON.parse(metadata);entry.source='const PROGRAMS_CSS='+JSON.stringify(css)+';\n'+source;
+// 2.2.0: the digest core (functions/digest-core.js) is inlined into the app (attention.read) and into both digest helpers, so they always agree.
+const core=(await read('functions/digest-core.js')).trim();
+if(!source.includes('/*@digest-core*/'))throw Error('programs.source.js must contain the /*@digest-core*/ marker');
+// The readable source is canonical; the catalog carries it minified so it stays under the 180,000-character catalog limit. Local names are
+// shortened; the host-provided names (input, tools, templateConfiguration, templateBindings, PROGRAMS_CSS) and the two declarations are free
+// variables of the wrapper, so they are never renamed. Lines 1 (templateLayoutSchema) and 2 (appCommands) are read as data and kept verbatim.
+const lines=source.replace('/*@digest-core*/',core).split('\n'),decl=lines.slice(0,2);
+if(!decl[0].startsWith('const templateLayoutSchema=')||!decl[1].startsWith('const appCommands='))throw Error('Lines 1 and 2 must declare templateLayoutSchema and appCommands');
+const pre='globalThis.__app=function(){';
+const wrapped=transformSync(pre+lines.slice(2).join('\n')+'\n};',{minify:true,legalComments:'none'}).code.trim();
+if(!wrapped.startsWith(pre)||!wrapped.endsWith('};'))throw Error('Unexpected minifier output');
+const entry=JSON.parse(metadata);entry.source='const PROGRAMS_CSS='+JSON.stringify(css)+';\n'+decl.join('\n')+'\n'+wrapped.slice(pre.length,-2)+'\n';
+// E7 read-only helpers: each function's source is the listed files joined (the shared core plus its wrapper).
+entry.functions=await Promise.all((entry.functions??[]).map(async({sourceFiles,...f})=>({...f,source:(await Promise.all(sourceFiles.map(read))).map(x=>x.trim()).join('\n')})));
+if(!entry.functions.length)delete entry.functions;
 const serialized=JSON.stringify(entry,null,2)+'\n';
-if(Buffer.byteLength(serialized)>300000||entry.source.length>180000||css.length>50000)throw Error('Programs template exceeds catalog limits');
+if(Buffer.byteLength(serialized)>300000||entry.source.length>180000||css.length>50000)throw Error('Programs template exceeds catalog limits ('+entry.source.length+' source characters, '+Buffer.byteLength(serialized)+' bytes)');
 const catalog=new URL('../../apps/'+entry.id+'-'+entry.version+'.json',root);
 const preview=`<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Programs fictional preview</title><style>${css}</style><body><div style="padding:10px 16px;background:#fff;border-bottom:1px solid #E1DDE8;font:13px Inter,Arial,sans-serif;color:#3D3550">Fictional local demo, fixed as of 11 Nov 2026. Database review, permissions and persistent layout use the TrialAgents host.</div><div id="surface"></div><script>
 const source=${JSON.stringify(entry.source).replaceAll('</','<\/')};
@@ -16,7 +31,7 @@ const config={...metadata.defaults,demoLabel:true,asOfOverride:'2026-11-11',tabl
 const render=new Function('input','tools','templateConfiguration','templateBindings',source);
 let state={},rows=demo.records.map(r=>({...r})),proposal=null,next=1;
 function dispatch(event){if(event.action==='tracker:layout'){alert('Layout is managed in native TrialAgents app settings. This file demonstrates the program screens only.');return;}
- const out=render({saved:true,writable:true,state,event},{call:(name,v)=>{if(name==='records.read'){const all=rows.filter(r=>r.role===v.typeId);return {rows:all.slice(v.offset,v.offset+v.limit),total:all.length};}if(name==='records.propose'){proposal=v;return {status:'proposed'};}throw Error('Unsupported preview capability');}},config,bindings);
+ const out=render({saved:true,writable:true,state,event},{call:(name,v)=>{if(name==='records.read'){const all=rows.filter(r=>r.role===v.typeId);return {rows:all.slice(v.offset,v.offset+v.limit),total:all.length};}if(name==='records.propose'){proposal=v;return {status:'proposed'};}if(name==='integrations.list')return {integrations:[]};throw Error('Unsupported preview capability');}},config,bindings);
  state=out.state;document.getElementById('surface').innerHTML=out.html;
  if(proposal){const changes=proposal;proposal=null;if(confirm('FICTIONAL LOCAL REVIEW ONLY\\n'+JSON.stringify(changes,null,2).slice(0,3000))){if(changes.some(c=>c.kind==='update_record'&&!rows.some(r=>r.id===c.recordId&&r.version===c.expectedVersion))){alert('Stale review: a record changed since the form opened.');return;}for(const c of changes){if(c.kind==='create_record')rows.push({role:c.typeId,id:'00000000-0000-4000-9000-'+String(next++).padStart(12,'0'),version:0,data:c.data});else{const r=rows.find(r=>r.id===c.recordId);r.data={...r.data,...c.data};r.version++;}}dispatch({kind:'open',action:''});}}
 }

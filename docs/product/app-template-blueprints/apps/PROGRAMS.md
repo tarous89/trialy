@@ -218,3 +218,92 @@ All links optional; Programs works alone.
 10. Desktop 1440 / mobile 390: Gantt usable (horizontal scroll inside its card), no page overflow.
 
 **Open for design partners:** single predecessor enough? Monthly update cadence right? Is "key activity" level detail enough, or do teams expect task-level tracking here?
+
+---
+
+## 14. Programs 2.2.0: assistant control, team notifications and the weekly digest
+
+**Status:** Built and **published** 15 November 2026 (owner approval) as `life.project-oversight` 2.2.0 in place of 2.1.0: the seed names 2.2.0 and migration 075 withdraws 2.1.0 once. Package `templates/source/project-oversight/`; 2.1.0 is archived unchanged under `archive/2.1.0/` and its installer entry points there. Saved apps are not migrated. Where this section conflicts with §3–§11, this section wins.
+
+**Why.** Programs 2.1.0 (12 November) came before the platform's app standards of 13–14 November: app commands and "Edit in App" (template guidance 1.3.31), and the app automation rules ([app automations](../../RECOMMENDED_AUTOMATIONS.md); research must save to the app, PR #169; declared, default-on install recommendations; E5–E7). Runway 2.2.0, Contracts 1.1.0, Partnerships 2.1.0 and Fundraise 2.0.0 already follow them.
+
+### 14.1 Owner decisions (15 November 2026)
+
+| # | Decision |
+|---|---|
+| **P1** | Work that needs a person's review is an app feature or a chat request, not an automation. The monthly status draft becomes a chat request: the user asks Claude or ChatGPT, which uses app commands and the normal review. The monthly update reminder and the slip notice are dropped; the weekly digest covers them. |
+| **P2** | One main automation: a **weekly digest** of every program's status and anything that needs attention. Written by AI when Claude or ChatGPT is connected. **Dropped when nothing important**: no digest is saved and no email is sent. |
+| **P3** | The digest goes to the owner only, unless the owner changes recipients (Automations tab, or through an assistant with the reviewed setup). |
+| **P4** | Programs is a project-management app, so it also notifies **team members**: when they are added to a program team, when they are assigned something, and when something they own is due. Team members are registered workspace members. |
+| **P5** | The monthly update day stays (Settings). The app uses it for "missing monthly update", and the digest uses the same rule. |
+
+### 14.2 Assistants can do everything a person can (app commands)
+
+Twenty-seven commands are declared as data (`appCommands`, line 2 of the source) and run the same handler as the buttons, so a command and a click propose byte-identical changes (tested). The limits are the user's access and the assistant's own access on the Access page; every write is reviewed.
+
+- **Read (13):** `schema.describe`, `overview.read`, `attention.read`, `timeline.read`, `item.drivers`, `item.impact`, `gates.read`, `raid.read`, `updates.read`, `report.preview`, `reports.read`, `digests.read`, `team.read`. Assistants ask the app for the critical path, slips, readiness, due-soon, overdue and cash markers; they never compute them.
+- **Propose (13):** `record.save` (any form: programs, items, decisions, raid, updates, team, closes, settings), `record.duplicate`, `record.archive`, `program.save`, `item.save` (with `slip_reason`, `slip_detail`, `accept_downstream`), `team.save`, `settings.save`, `baseline.set`, `baseline.reset`, `gate.record`, `raid.promote`, `report.save`, `reminders.refresh`.
+- **Layout (1):** `layout.save`: screens, columns and forms (order, hide optional fields, labels, defaults). New form groups: `item_form`, `decision_form`, `raid_form`, `program_form`, `update_form`, `team_form`. Required fields cannot be hidden.
+- **New fields on request:** the assistant adds the field to the table and lists it in the tableMap entry's `extraFields`/`writableExtra` in the same reviewed app revision. It then appears in forms, details, proposals and `schema.describe`; calculations ignore it.
+- **Code changes** use the reviewed app revision. The template documentation lists what a revision must keep: role keys, the `programs.v2` fields other apps read, the slip rule, the calculations, the notification fields, the "From App" labels, and the commands with click parity.
+- **Unchanged rules:** health and gate outcomes are human judgements; archive, never delete; an unsaved preview never writes.
+
+### 14.3 Values from other apps
+
+When the cash forecast is linked to Runway it is read-only. It is labelled "From *Runway*" (the writing app's name from `integrations.list`) with "change it in Runway", and shows **Edit in Runway** (`data-trialy-open`) when the user may open it. `record.save` on the cash forecast is refused while it is linked.
+
+### 14.4 Program team and notifications
+
+- **New table `programs.team`:** `program_id*`, `name*`, `member_id` (a workspace member UUID), `role`, `added_on`, `archived`. It is managed in Settings → Program team, or with `team.save`. Owners of items and RAID entries are picked from the program team (then People).
+- **Notification fields kept by the app**, never typed, on every save and command:
+  - `owner_member_id`: the team member ID matching the owner's name (this program first).
+  - `assigned_on`: the day that member changed.
+  - `remind_on`: for items, the end date minus the reminder lead time (`programs.settings.reminder_days`, default 7, 1–60) while planned, in progress or at risk. If the lead time has already passed, it is today and stays stable. For RAID entries, the next review date while not closed. It is empty for done, cancelled, closed or archived work, so finished work never reminds anyone.
+  - `added_on` on team rows: the day a member ID was added.
+- **Update owners and reminders** (Settings; `reminders.refresh`) brings these fields up to date in one review, at most 50 records, after a team or lead-time change. Settings shows how many records are waiting.
+- **Why app-kept dates:** recipe emails carry no conditions. Firing record-date notices on these dates is what keeps done or closed work quiet. Apps cannot list workspace members, so the member ID is entered by hand; an assistant can look it up.
+
+### 14.5 Automations (declared, on by default at Add app, each can be turned off)
+
+| Key | What | Trigger | Saves / sends |
+|---|---|---|---|
+| `weekly_digest` | AI weekly digest (research then email, E5) | Monday 08:00 Europe/Berlin | Research on the user's Claude or ChatGPT runner reads the `digest_brief` helper (E7). If anything needs attention it creates one `programs.digests` row (create only) and the email step sends `{{run.summary}}` to the owner (`when: meaningful`). Otherwise it saves nothing and completes as `no_update`, and no email is sent. Without a ready runner: Needs setup. |
+| `team_added` | Added to a program team | record date `programs.team.added_on` 08:00 | Email to `member_id` |
+| `item_assigned` | Assigned a milestone or activity | `programs.plan_items.assigned_on` | Email to `owner_member_id` |
+| `item_due` | Milestone or activity due soon | `programs.plan_items.remind_on` | Email to `owner_member_id` |
+| `raid_assigned` | Assigned a risk or issue | `programs.raid.assigned_on` | Email to `owner_member_id` |
+| `raid_review` | Review due | `programs.raid.remind_on` | Email to `owner_member_id` |
+
+- **Without AI:** the feature `weekly_digest_plain` (Automations → From app features) sends the same digest without AI, using the `digest_email` helper (`nonEmpty:false` on quiet weeks). It is not an install recommendation, so a user with AI connected never gets two digests.
+- **One rule for "needs attention":** `functions/digest-core.js` is inlined by the build into the app (`attention.read`) and into both helpers, so all three give the same answer (tested). Overdue items; items and pending gates or decisions due in the next 14 days; slips recorded this week; pending gates in the next 30 days without criteria or not all met; open RAID entries past review; health not assessed, undated or older than 45 days; active programs without the month's update after the update day.
+- **The app never waits for an automation** and stores no schedule, recipient or on/off. Those live in Automations.
+
+### 14.6 Other changes
+
+- **Weekly digests tab** under Updates (read-only).
+- **Phones (390 px):** the editor drawer scrolls as one page with its footer at the end. This fixes an overlap with the footer that 2.1.0 had when the slip section was open.
+- **Build:** the catalog source is minified, including local names, to stay under 180,000 characters. Host-provided names and the two declaration lines are kept.
+
+### 14.7 Acceptance (tests)
+
+- **`tests/programs-commands.test.ts` (QuickJS):**
+  - every read command runs and writes nothing;
+  - click parity for a date move with a slip and successors, and for a gate outcome;
+  - notification fields for owners, reassignment, done or cancelled work, archive, closed RAID entries and team links, plus `reminders.refresh`;
+  - human-judgement rules;
+  - reads match the screens;
+  - `attention.read` equals both helpers, and a quiet week sends nothing;
+  - the recipes;
+  - form layout, labels and defaults, extra fields;
+  - Edit in Runway;
+  - the design inspector on the new screens.
+- **`tests/programs-automations.test.ts` (disposable database, real installer):**
+  - Add app enables all six recommendations;
+  - research may only create digests;
+  - notices compile to record-date email actions routed by member field;
+  - an assignment saved through the app queues one email to that member;
+  - archive pauses everything;
+  - with no runner, the notices work and the digest waits.
+- **`tests/programs.test.ts`** keeps covering the archived 2.1.0.
+
+**Open (not verified here):** real-host Add app in web, ChatGPT and Claude; an unattended digest run on a live runner; live email delivery.
