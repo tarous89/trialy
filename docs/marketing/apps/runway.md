@@ -48,6 +48,8 @@
 | Canonical queue E1 — Free biotech cash runway template: start in Excel, grow into an app | https://trialagents.com/apps/biotech-cash-runway-template | Published with tested XLSX; live verified 15 November 2026; PR #220, release `9190de8ed0a118b2b1fa40a632627433e2f0bdb2` |
 | Canonical queue E2 — Build a 24-month biotech cash forecast: make year two explicit | https://trialagents.com/apps/24-month-biotech-cash-runway-forecast | Published; live verified 15 November 2026; PR #221; release `c6c1ed52d56914c656d17f3304b90bc93d7c96c9` |
 | Canonical queue E3 — Build a 13-week biotech cash forecast: find the gap inside the month | https://trialagents.com/apps/13-week-biotech-cash-flow-forecast | Published; live verified 15 November 2026; PR #222; release `445c2a2ad35a3dd2ccc8eed16bd7745b98d3412b` |
+| Canonical queue E5 — Build a biotech cash runway dashboard without coding: set up, reconcile, then share | https://trialagents.com/apps/biotech-cash-runway-dashboard-without-coding | Published; live verified 15 November 2026; PR #223; release `caa2bf4b97c0a69bb958ae46d13de762ec0c38cf` |
+| Canonical queue E6 — Biotech cash runway software: 15 questions to take into the demo | https://trialagents.com/apps/biotech-cash-runway-software-buying-guide | Published; live verified 15 November 2026; PR #224; release `9802375e9761a1da8e0f782fea115f1f994cab78` |
 | App pages index | https://trialagents.com/apps | Published; production URL checked 12 November 2026 |
 
 These are intended canonical URLs. Do not assert that a URL is live until checked on the production CDN.
@@ -1130,3 +1132,65 @@ PR #214 merged as `e50602db40385e5a3d54747759a793f1fb3747fc` after exact-head pr
 - Fictional example independently verified with Decimal/date calculations: EUR 400k opening cash at 3 January 2027, 40k every Friday 8 January–2 April, 150k CRO instalment 22 January, 300k financing receipt 1 February versus delayed 22 February. All **26 weekly closing balances**, 13 Friday dates, four calendar-month payment totals and 91-day window checked. Payments January 310k, February 160k, March 160k, April 40k; total 670k. Both cases end February 230k and week 13 at 30k. Delayed case has 10k before 19 February payment, then -30k at week 7. Negative cash means unmet funding need, not automatic overdraft. No receipts/payments/FX/borrowing outside specified inputs. Weekly closing cash is not proof of daily sufficiency; uncertain financing requires a separate exclusion case. No trial cost benchmark or post-window runway claim.
 - Title refined to the distinct short-term timing gap that monthly balances hide. Refresh if product date granularity, integrations or primary guidance change. Search indexing, rankings and actual assistant citations are not established by these checks. Earlier E3 pending checkpoints are superseded.
 - **42 published; 5 unfinished**, including owner-deferred A9. **Next eligible: E5 — How to Build a Biotech Cash Runway Dashboard Without Coding**; E4 already covered. Recheck evidence, duplicate and claim state next run. Only E3 newly published this run.
+
+
+### E5 source checkpoint — 15 November 2026
+
+- E3 release `445c2a2ad35a3dd2ccc8eed16bd7745b98d3412b` reconciled with HTTP 200 and exact live fragment. Five unrelated open PRs; no unfinished Runway release. E5 claimed before drafting.
+- [PR #223](https://github.com/tarous89/trialagents-public/pull/223), exact head `f1dbe735d4919ac554f4c2e4401bbd82856fc479`, prepares **Build a biotech cash runway dashboard without coding: set up, reconcile, then share** at https://trialagents.com/apps/biotech-cash-runway-dashboard-without-coding.
+- Current 2.2 catalog/source blob `343f0753248cc977a59cac67b3ed9ac6594c98c0` checked for install/restore, settings, Plan/People, monthly deterministic outputs, access, reviewed customization and explicit source connections. Microsoft primary dashboard design guidance checked. Two approved genuine 2.1 Overview/Cash flow browser demos labeled, with separate data; no host acceptance test claimed.
+- Fictional isolated acceptance case: EUR 1.2m opening at 31 December 2026, 100k monthly January–December 2027, 200k March one-off, no positions/receipts/FX or other costs. All 12 monthly closes independently checked; January 1.1m, March 700k, October zero, November -100k; 10 full nonnegative months and first negative November. The article explicitly instructs readers to test their app; does not claim this case was executed in a host.
+- Not published. Resume exact-head full predeploy, desktop/mobile artifact review, merge and independent live verification before another topic. Counts remain 42 published; 5 unfinished.
+
+
+### E5 deployment pending — 15 November 2026
+
+- PR #223 merged at **2026-11-15T07:04:24Z**, release `caa2bf4b97c0a69bb958ae46d13de762ec0c38cf`; exact source head `f1dbe735d4919ac554f4c2e4401bbd82856fc479`.
+- Full predeploy run `43687540418` passed validate and seo-container. Desktop/mobile screenshots from artifact `14150874783` inspected; digest `sha256:91da08c4f0090e1dec3b9d535459757932544775f2acb8b206858ad2fbaa9ee5`. Responsive tables scroll within their containers; headings, media, final CTA and shell reviewed.
+- Initial post-merge HTTP check returned 404 for https://trialagents.com/apps/biotech-cash-runway-dashboard-without-coding. Existing automatic GitHub-to-CDN deployment pending; no authentication fault evidenced. Await propagation and independently verify before Published. Resume this release before drafting another article. Counts remain 42 published; 5 unfinished.
+
+
+### E5 published and independently verified — 15 November 2026
+
+- **Build a biotech cash runway dashboard without coding: set up, reconcile, then share** — https://trialagents.com/apps/biotech-cash-runway-dashboard-without-coding. [PR #223](https://github.com/tarous89/trialagents-public/pull/223); release `caa2bf4b97c0a69bb958ae46d13de762ec0c38cf`, merged 2026-11-15T07:04:24Z.
+- Exact-head `f1dbe735d4919ac554f4c2e4401bbd82856fc479` full predeploy **43687540418** passed validate and seo-container. Desktop/mobile artifact **14150874783**, digest `sha256:91da08c4f0090e1dec3b9d535459757932544775f2acb8b206858ad2fbaa9ee5`, visually inspected. Desktop and mobile typography, images, contained scrollable tables, shell and final CTA passed.
+- Existing automatic build propagated after initial 404. Workers build check **132733903170** and production check **132733267397** succeeded. The latter was not used as article-publication proof.
+- Independent live verification completed **2026-11-15T07:08:14.566889+00:00**: HTTP 200 HTML; exact reviewed article fragment and shared CSS; expected headline/title/description/canonical/date; Article/BreadcrumbList schema; no noindex/robots block; two genuine images; all article links and local anchors; one final Start with Runway CTA; identical shared header/footer.
+- /apps, sitemap.xml (one canonical entry), llms.txt and llm.xml all returned HTTP 200 and included the article. Identical homepage analytics loader `/_snapshot/query-assets/114933b27c521a75f333.js` present exactly once, references client `/_snapshot/query-assets/c251da7b4969f7c85048.js`; both delivered HTTP 200. Tracking scripts, configuration, events, consent, collectors and attribution unchanged; no synthetic production events sent.
+- Independent numerical acceptance case and source evidence are recorded above. No completed host/app acceptance test claimed. Refresh the article if install/access/model behavior changes. Publication QA does not establish search indexing, rankings or actual assistant citations.
+- Supersedes E5 source/pending checkpoints. **43 published; 4 unfinished**, including owner-deferred A9. **Next eligible: E6 — Biotech Cash Runway Software Buying Guide: 15 Questions to Ask Vendors**, subject to fresh evidence, release reconciliation, duplicate and claim checks. Only E5 newly published this run.
+
+
+### E6 source checkpoint — 15 November 2026
+
+- Reconciled E5 merged release `caa2bf4b97c0a69bb958ae46d13de762ec0c38cf` with fresh HTTP 200 and exact live article fragment. Five unrelated open PRs; no unfinished Runway source release. E6 claimed before drafting.
+- [PR #224](https://github.com/tarous89/trialagents-public/pull/224), exact head `88ed830d5661a320525e610804acc9c59ef2c2ef`, prepares **Biotech cash runway software: 15 questions to take into the demo** at https://trialagents.com/apps/biotech-cash-runway-software-buying-guide. Distinct intent: reusable buyer demo/evidence checklist, not vendor ranking or another setup tutorial.
+- Current Runway 2.2 catalog/source blob `343f0753248cc977a59cac67b3ed9ac6594c98c0` reviewed: assistant commands/setup fallback, customization, explicit linked-source reviews, app/column access, monthly calculations, snapshots/scenarios, missing FX and export limits. Two approved genuine 2.1 Overview/Cash flow browser images labeled; no host acceptance test claimed.
+- Primary evidence checked 15 November 2026: https://floatapp.com/xero-cash-flow-forecast (one-way read-only Xero, daily/on-demand imports, excluded purchase orders/tracking categories); https://www.ncsc.gov.uk/collection/cloud/the-cloud-security-principles/principle-13-audit-information-and-alerting-for-customers (audit scope, availability, format/retention; guidance reviewed 7 June 2023). No unsupported compliance claim or pricing estimate.
+- Fictional test independently verified with decimal arithmetic: EUR 1m opening 31 December, 100k monthly January–March, extra 200k February payment, no other inputs: closes 900k, 600k, 500k; adding contingent 300k March gives 800k. The guide asks the buyer to run this test, not claiming it was run in a host. Fifteen questions, one reusable evidence row, two images, local anchors and JavaScript syntax checked.
+- Not published. Resume full exact-head predeploy, artifact inspection, merge and independent live verification. Counts remain 43 published; 4 unfinished including deferred A9.
+
+
+### E6 validation correction — 15 November 2026
+
+- Initial predeploy `43691796636` passed 290 tests, snapshot build and metadata/discovery but rejected the CTA markup: the final card was outside the final article section. Source fixed without weakening the check.
+- PR #224 now has head `170d8fd19ee5df93120a5c4e31c81624418326bd`; full predeploy `43692062839` is running. Tests, candidate snapshot, Runway desktop/mobile and showcase passed so far. Full gate, visual artifact review, merge and live verification remain. E6 is not Published.
+
+
+### E6 merged; deployment pending — 15 November 2026
+
+- Visual review found the final link needed the shared green button classes. Corrected without changing shared CSS or tracking; final source head `b6ca003964118e49afee7d9f69ef699207885fe1`.
+- Full exact-head predeploy **43692681234** passed both jobs, including source tests, snapshot, metadata/discovery, Runway desktop/mobile, showcase, country panels, CRO and report layout checks. Final artifact **14153675435**, digest `sha256:a3d3fd06467b623c242233c4557abd84b5b2a8708fe3acfa003da985808fd837`, reviewed: content above final section pixel-identical to reviewed prior artifact; final CTA/footer inspected at desktop/mobile. No layout blocker.
+- [PR #224](https://github.com/tarous89/trialagents-public/pull/224) merged **2026-11-15T08:10:26Z**, release `9802375e9761a1da8e0f782fea115f1f994cab78`. Initial HTTP check of https://trialagents.com/apps/biotech-cash-runway-software-buying-guide returned 404. Existing automatic build pending, no authentication fault evidenced.
+- Resume live checks before another topic. Not yet Published; 43 published and 4 unfinished.
+
+
+### E6 published and independently verified — 15 November 2026
+
+- **Biotech cash runway software: 15 questions to take into the demo** — https://trialagents.com/apps/biotech-cash-runway-software-buying-guide. [PR #224](https://github.com/tarous89/trialagents-public/pull/224); release `9802375e9761a1da8e0f782fea115f1f994cab78`, merged 2026-11-15T08:10:26Z. Title refined to the concrete demo-checklist intent; all 15 buying questions retained.
+- Full exact-head predeploy **43692681234** passed on `b6ca003964118e49afee7d9f69ef699207885fe1`: tests, snapshot, metadata/discovery, desktop/mobile, app showcase, country panels, CRO and SEO layouts. Final artifact **14153675435**, digest `sha256:a3d3fd06467b623c242233c4557abd84b5b2a8708fe3acfa003da985808fd837`, reviewed. Content above final section was pixel-identical to reviewed prior screenshots; revised standard green CTA and footer visually inspected at both sizes. Tables scroll inside their containers; no page overflow.
+- Automatic deployment completed after initial 404. Workers build check **132748546071** and production check **132748155154** succeeded; independent article verification, not generic check success alone, establishes publication.
+- Live QA completed **2026-11-15T08:13:36.862088+00:00**: HTTP 200 HTML; exact source fragment and reviewed shared CSS; expected title/description/H1/canonical/date; Article/BreadcrumbList schema; no noindex/robots block; shared header/footer; two genuine images; all article URLs and anchors; one final Start with Runway CTA.
+- /apps, sitemap.xml (one canonical entry), llms.txt and llm.xml return HTTP 200 and include E6. Homepage and article deliver the identical loader `/_snapshot/query-assets/114933b27c521a75f333.js` once; it references client `/_snapshot/query-assets/c251da7b4969f7c85048.js`; both return HTTP 200. Tracking configuration, scripts, events, consent, collectors and attribution unchanged; no synthetic production events.
+- Primary evidence and independently checked 500k/800k example are recorded in the source checkpoint. No completed host test, vendor score or performance benchmark claimed. Refresh when Runway capabilities, Float import scope or cited security guidance change. Search indexing, rankings and actual assistant citations remain unverified.
+- Supersedes all E6 source/pending checkpoints. **44 published; 3 unfinished**: owner-deferred A9, E7 and E8. **Next eligible: E7 — TrialAgents Cash Runway Alternatives: Which Tool Should You Choose Instead?**, subject to fresh evidence, duplicate/claim checks and release reconciliation. Only E6 newly published this run.

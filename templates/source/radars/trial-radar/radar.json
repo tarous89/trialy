@@ -1,0 +1,255 @@
+{
+  "slug": "trial-radar",
+  "id": "life.trial-radar",
+  "version": "1.0.0",
+  "name": "Trial Radar",
+  "prefix": "trialradar",
+  "trackerTable": "trials",
+  "trackerLabel": "Trials",
+  "itemLabel": "trial",
+  "itemsLabel": "trials",
+  "cadence": "weekly",
+  "scopeFields": [
+    {
+      "key": "indication",
+      "name": "Indication",
+      "kind": "text",
+      "required": true,
+      "placeholder": "e.g. idiopathic pulmonary fibrosis"
+    },
+    {
+      "key": "interventions",
+      "name": "Mechanism or interventions",
+      "kind": "text",
+      "placeholder": "e.g. LPA1 antagonists; inhaled treprostinil"
+    },
+    {
+      "key": "sponsors",
+      "name": "Sponsors to watch",
+      "kind": "text",
+      "placeholder": "Comma-separated"
+    },
+    {
+      "key": "phases",
+      "name": "Phases",
+      "kind": "text",
+      "placeholder": "e.g. phase_2, phase_3"
+    },
+    {
+      "key": "countries",
+      "name": "Countries or regions",
+      "kind": "text",
+      "placeholder": "e.g. EU, US, Japan"
+    }
+  ],
+  "trackerFields": [
+    {
+      "key": "registry_ids",
+      "name": "Registry IDs",
+      "kind": "text",
+      "description": "All registry identifiers, comma-separated: EU CT number (e.g. 2024-512345-12-00), NCT ID, ISRCTN, other WHO ICTRP IDs."
+    },
+    {
+      "key": "title",
+      "name": "Title",
+      "kind": "text",
+      "required": true
+    },
+    {
+      "key": "sponsor_id",
+      "name": "Sponsor",
+      "kind": "text",
+      "description": "Record ID of an organizations record."
+    },
+    {
+      "key": "sponsor_name",
+      "name": "Sponsor name",
+      "kind": "text",
+      "description": "Sponsor as registered, shown when no organization is linked."
+    },
+    {
+      "key": "asset",
+      "name": "Asset",
+      "kind": "text"
+    },
+    {
+      "key": "phase",
+      "name": "Phase",
+      "kind": "select",
+      "options": [
+        "phase_1",
+        "phase_1_2",
+        "phase_2",
+        "phase_2_3",
+        "phase_3",
+        "phase_4",
+        "other"
+      ]
+    },
+    {
+      "key": "status",
+      "name": "Status",
+      "kind": "select",
+      "options": [
+        "not_yet_recruiting",
+        "recruiting",
+        "active_not_recruiting",
+        "enrolling_by_invitation",
+        "suspended",
+        "terminated",
+        "withdrawn",
+        "completed",
+        "unknown"
+      ]
+    },
+    {
+      "key": "enrollment",
+      "name": "Enrollment",
+      "kind": "number"
+    },
+    {
+      "key": "primary_endpoint",
+      "name": "Primary endpoint",
+      "kind": "text"
+    },
+    {
+      "key": "primary_completion",
+      "name": "Primary completion",
+      "kind": "date"
+    },
+    {
+      "key": "completion_estimated",
+      "name": "Completion is an estimate",
+      "kind": "boolean"
+    },
+    {
+      "key": "countries",
+      "name": "Countries",
+      "kind": "text"
+    },
+    {
+      "key": "sites_count",
+      "name": "Sites",
+      "kind": "number"
+    },
+    {
+      "key": "last_change",
+      "name": "Last change",
+      "kind": "text",
+      "description": "One line on the latest registry change."
+    }
+  ],
+  "naturalKey": {
+    "label": "registry ID",
+    "rule": "The EU CT number when the trial has one, otherwise the NCT ID, otherwise another primary registry ID. Normalise to upper case without spaces."
+  },
+  "dateField": {
+    "key": "primary_completion",
+    "estimated": "completion_estimated",
+    "label": "Primary completion"
+  },
+  "eventKinds": [
+    {
+      "key": "trial_registered",
+      "label": "Trial registered"
+    },
+    {
+      "key": "status_change",
+      "label": "Status change"
+    },
+    {
+      "key": "date_change",
+      "label": "Date change"
+    },
+    {
+      "key": "enrollment_change",
+      "label": "Enrollment change"
+    },
+    {
+      "key": "endpoint_change",
+      "label": "Endpoint change"
+    },
+    {
+      "key": "results_posted",
+      "label": "Results posted"
+    },
+    {
+      "key": "readout",
+      "label": "Readout"
+    },
+    {
+      "key": "trial_stopped",
+      "label": "Trial stopped"
+    }
+  ],
+  "digestSection": {
+    "title": "Trial changes",
+    "kinds": [
+      "status_change",
+      "date_change",
+      "enrollment_change",
+      "endpoint_change",
+      "trial_stopped"
+    ],
+    "hint": "status, dates, enrollment, endpoints"
+  },
+  "listColumns": [
+    "natural_key",
+    "title",
+    "sponsor",
+    "phase",
+    "status",
+    "enrollment",
+    "primary_completion",
+    "countries"
+  ],
+  "sources": [
+    {
+      "name": "TrialAgents Intel (EU CTIS)",
+      "covers": "EU clinical trials registered in CTIS: EU CT numbers, sponsors, phases, statuses, countries, sites and documents.",
+      "priority": 1,
+      "notes": "Use the TrialAgents Intel connector when it is available (search_research_trials, read_trial_profiles). Record each EU CT number. If it isn't reachable, say so in the source report and continue with ClinicalTrials.gov and the web."
+    },
+    {
+      "name": "ClinicalTrials.gov",
+      "covers": "US and global registrations: NCT IDs, status, dates, enrollment, endpoints, results postings.",
+      "priority": 2,
+      "notes": "Use the public site or API on the web."
+    },
+    {
+      "name": "WHO ICTRP",
+      "covers": "Primary registries worldwide (ISRCTN, ChiCTR, jRCT, ANZCTR and others).",
+      "priority": 3,
+      "notes": "Use it for trials outside the EU and the US."
+    },
+    {
+      "name": "Company releases",
+      "covers": "Sponsor press releases, investor presentations and congress readouts.",
+      "priority": 4,
+      "notes": "Use for readouts and stopped trials; registry entries come first for dates and status."
+    }
+  ],
+  "instruction": "You watch clinical trials for the scopes below. For each active scope, find trials that match its indication, mechanism or interventions, sponsors, phases and countries, and changes since the last run: new registrations, status changes, date changes (primary completion), enrollment changes, endpoint changes, results postings, readouts and stopped trials. Keep each trial current in the Trials table and record each change as an event. Mark registry completion dates that are anticipated as estimates. Explain in one or two sentences why each high-impact change matters for the scope's program (so_what).",
+  "demoProgram": "NWB-101 (fictional)",
+  "examplePrompts": [
+    {
+      "prompt": "Set up Trial Radar for our IPF program and build it now.",
+      "expectedBehavior": "Install Trial Radar (both automations selected), create a scope for IPF with the standard sources, then run Build now in chat: the assistant reads the brief, fills the Trials table and events with sources, and saves a run with its source report."
+    },
+    {
+      "prompt": "What changed in competing IPF trials this week?",
+      "expectedBehavior": "Read Trial Radar's latest run, its new events and the Overview; summarise status, date and enrollment changes with sources. Nothing is written."
+    }
+  ],
+  "optionLabels": {
+    "phase_1": "Phase 1",
+    "phase_1_2": "Phase 1/2",
+    "phase_2": "Phase 2",
+    "phase_2_3": "Phase 2/3",
+    "phase_3": "Phase 3",
+    "phase_4": "Phase 4",
+    "not_yet_recruiting": "Not yet recruiting",
+    "active_not_recruiting": "Active, not recruiting",
+    "enrolling_by_invitation": "Enrolling by invitation"
+  }
+}
