@@ -1,6 +1,6 @@
 import {readFile,writeFile,readdir} from 'node:fs/promises';
 import {transformSync} from 'esbuild';
-import * as kit from '../templates/source/radar-kit/kit.mjs';
+/* Kits are versioned: a released radar pins the kit it was built with (radar.json "kit"); frozen kits live in radar-kit/archive/<version>/. */
 /* Bio Radars generator (BIO_RADAR.md §5). For every radar definition under templates/source/radars/<slug>/ it builds, from the shared kit:
  *  - the immutable catalog entry templates/apps/<id>-<version>.json (app source, CSS, read-only functions, recommended automations, docs),
  *  - the installer schema templates/source/radars/<slug>/schema.example.json (pointed to by templates/catalog-installers.json),
@@ -8,13 +8,19 @@ import * as kit from '../templates/source/radar-kit/kit.mjs';
  *  - the radar's output contract in templates/contracts/outputs.json (radar.v1) and its catalog-installers.json entry.
  * --check (part of npm run build) fails when any generated file is stale. A released version is never rewritten: bump the radar's version. */
 const check=process.argv.includes('--check');
-const kitRoot=new URL('../templates/source/radar-kit/',import.meta.url),radarsRoot=new URL('../templates/source/radars/',import.meta.url);
-const readKit=n=>readFile(new URL(n,kitRoot),'utf8');
-const [appSource,css,briefCore,common,brief,digest,alert]=await Promise.all(['radar.source.js','radar.css','brief-core.js','functions/common.js','functions/brief.js','functions/digest.js','functions/alert.js'].map(readKit));
+const radarsRoot=new URL('../templates/source/radars/',import.meta.url),kitBase=new URL('../templates/source/radar-kit/',import.meta.url);
+const current=await import(new URL('kit.mjs',kitBase).href),kits={};
+async function loadKit(version){
+ if(kits[version])return kits[version];
+ const root=!version||version===current.KIT_VERSION?kitBase:new URL('archive/'+version+'/',kitBase),readKit=n=>readFile(new URL(n,root),'utf8');
+ const kit=root===kitBase?current:await import(new URL('kit.mjs',root).href);if(version&&kit.KIT_VERSION!==version)throw Error('Kit '+version+' not found');
+ const [appSource,css,briefCore,common,brief,digest,alert]=await Promise.all(['radar.source.js','radar.css','brief-core.js','functions/common.js','functions/brief.js','functions/digest.js','functions/alert.js'].map(readKit));
+ return kits[version]={kit,appSource,css,briefCore,common,brief,digest,alert};
+}
 const outputs=[];
 async function output(url,text){if(check){let current=null;try{current=await readFile(url,'utf8');}catch{}if(current!==text)throw Error('Generated file is stale: '+url.pathname+' (run node scripts/build-radar-templates.mjs)');}else await writeFile(url,text);outputs.push(url.pathname);}
 
-export function buildSource(radar){
+function buildSource({kit,appSource,css,briefCore},radar){
  const layoutLine='const templateLayoutSchema='+JSON.stringify(kit.layoutSchema(radar))+';';
  const body='const RADAR='+JSON.stringify(kit.radarRuntime(radar))+';\n'+briefCore+'\n'+appSource;
  const pre='globalThis.__app=function(input,tools,templateConfiguration,templateBindings){';
@@ -23,14 +29,15 @@ export function buildSource(radar){
  return 'const RADAR_CSS='+JSON.stringify(css)+';\n'+layoutLine+'\n'+wrapped.slice(pre.length,-2)+'\n';
 }
 
-const slugs=(await readdir(radarsRoot,{withFileTypes:true})).filter(d=>d.isDirectory()).map(d=>d.name).sort();
+const slugs=(await readdir(radarsRoot,{withFileTypes:true})).filter(d=>d.isDirectory()&&!d.name.startsWith('_')).map(d=>d.name).sort();
 const contracts=JSON.parse(await readFile(new URL('../templates/contracts/outputs.json',import.meta.url),'utf8'));
 const installers=JSON.parse(await readFile(new URL('../templates/catalog-installers.json',import.meta.url),'utf8'));
 for(const slug of slugs){
  const dir=new URL(slug+'/',radarsRoot),readR=n=>readFile(new URL(n,dir),'utf8');
  const radar=JSON.parse(await readR('radar.json')),meta=JSON.parse(await readR('catalog.metadata.json')),demo=JSON.parse(await readR('demo_data.json'));
+ const K=await loadKit(radar.kit),{kit,css,briefCore,common,brief,digest,alert}=K;
  if(radar.slug!==slug)throw Error(slug+': radar.json slug must match its folder');
- const source=buildSource(radar),functions=kit.functionDecls(radar,{common:briefCore+'\n'+common,brief,digest,alert}),{instructions,documentation}=kit.catalogText(radar);
+ const source=buildSource(K,radar),functions=kit.functionDecls(radar,{common:briefCore+'\n'+common,brief,digest,alert}),{instructions,documentation}=kit.catalogText(radar);
  const entry={id:radar.id,version:radar.version,name:radar.name,description:meta.description,tags:meta.tags,whenToUse:meta.whenToUse,whenNotToUse:meta.whenNotToUse,instructions,documentation,engine:'frontend-js',
   defaults:{heading:radar.name,tableMap:'{}',pageSize:25,layoutProfile:'{}',readOnly:false,demoLabel:false,asOfOverride:''},
   options:{heading:{type:'string',description:'App heading shown above every screen.',default:radar.name},
@@ -47,7 +54,7 @@ for(const slug of slugs){
  await output(new URL('../templates/apps/'+radar.id+'-'+radar.version+'.json',import.meta.url),serialized);
  const schema=kit.installerSchema(radar);
  await output(new URL('schema.example.json',dir),JSON.stringify(schema,null,2)+'\n');
- contracts.roles[kit.roles(radar).events]=kit.outputContract(radar);
+ Object.assign(contracts.roles,kit.outputContracts?kit.outputContracts(radar):{[kit.roles(radar).events]:kit.outputContract(radar)});
  installers[radar.id+'@'+radar.version]='templates/source/radars/'+slug+'/schema.example.json';
  /* Offline preview: the same source and CSS with fictional records; reviews are simulated locally and nothing is sent. */
  const roleKeys=Object.keys(schema).filter(k=>demo.records.some(r=>r.role===k)||k!=='programs');

@@ -44,12 +44,22 @@ export async function suite(){
  return {pg,db,raw,human,ai,f,s,T,install,comp,mapOf,app,rows,save,workspace,text};
 }
 
-/** Saves the fictional demo set into an installed Trial Radar (reviewed creates by the owner), remapping record IDs. */
-export async function seedDemo(x:Awaited<ReturnType<typeof suite>>,w:string,map:any){
- const demo=JSON.parse(await readFile('templates/source/radars/trial-radar/demo_data.json','utf8'));const ids:Record<string,string>={};
+/** Saves a radar's fictional demo set into an installed radar app (reviewed creates by the owner), remapping record IDs. */
+export async function seedDemo(x:Awaited<ReturnType<typeof suite>>,w:string,map:any,slug='trial-radar'){
+ const demo=JSON.parse(await readFile('templates/source/radars/'+slug+'/demo_data.json','utf8'));const ids:Record<string,string>={};
  const fix=(v:any)=>typeof v==='string'&&ids[v]?ids[v]:v;
- for(const role of ['trialradar.settings','trialradar.scopes','trialradar.trials','trialradar.events','trialradar.runs'])for(const r of demo.records.filter((d:any)=>d.role===role)){
+ const order=[...new Set(demo.records.map((d:any)=>d.role))] as string[];
+ const rank=(role:string)=>role.endsWith('.settings')?0:role.endsWith('.scopes')?1:role.endsWith('.events')?3:role.endsWith('.runs')?4:2;
+ for(const role of order.sort((a,b)=>rank(a)-rank(b)))for(const r of demo.records.filter((d:any)=>d.role===role)){
   const data:any={};for(const [k,v] of Object.entries(r.data)){if(v===null||v===undefined)continue;data[k]=k==='scope_ids'?JSON.stringify(JSON.parse(String(v)).map(fix)):k==='sources_report'?JSON.stringify(JSON.parse(String(v)).map((s:any)=>({...s,scope_id:fix(s.scope_id)}))):fix(v);}
   ids[r.id]=await x.save(w,map[role].typeId,data);}
  return {ids,asOf:demo.asOf as string};
+}
+/** Approves a radar draft inside a disposable database and installs it (Use existing data?, automations selected or not). */
+export async function installRadar(x:Awaited<ReturnType<typeof suite>>,w:string,templateId:string,version:string,enabled=false){
+ await x.pg.query("UPDATE app_template_catalog SET status='approved' WHERE template_id=$1 AND version=$2",[templateId,version]);
+ const t=await new AppTemplates(undefined,x.db).read({templateId,version});const target={install:{templateId,version,digest:t.digest,name:t.name,requestKey:randomUUID()}};
+ const step=await dataAccessStep(x.f,x.human,w,target);
+ const receipt=await confirmDataAccess(x.f,x.human,w,{...target,connections:{},stepDigest:step.digest,automations:step.automations.map((r:any)=>({key:r.key,enabled,settings:{}}))});
+ return {step,receipt,template:t};
 }

@@ -1,0 +1,78 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {readFile} from 'node:fs/promises';
+import {appTemplateEntry} from '../src/workspace/app-templates.js';
+import {validateRecipeDeclarations,readRecipes} from '../src/automations/recipes-schema.js';
+import {validateAppFunctions} from '../src/workspace/app-functions-schema.js';
+import * as kit from '../templates/source/radar-kit/kit.mjs';
+import {radarHarness} from './fixtures/radar.js';
+
+/* Bio Radars wave 2 on kit 1.1.0 (BIO_RADAR.md §3, §5): Pipeline, Literature 2.0.0, Deal and Funding Radar, each in production QuickJS
+ * with platform-shaped reads and its fictional demo set (tests/fixtures/radar.ts). Trial Radar (kit 1.0.0) has its own tests. */
+const words=(t:string)=>t.split(/\s+/).filter(w=>/[A-Za-z0-9]/.test(w)).length;
+const SLUGS=['pipeline-radar','literature-radar','deal-radar','funding-radar'];
+const seed=JSON.parse(await readFile('templates/catalog-seed.json','utf8')),outputs=JSON.parse(await readFile('templates/contracts/outputs.json','utf8')).roles,installers=JSON.parse(await readFile('templates/catalog-installers.json','utf8'));
+
+for(const slug of SLUGS){
+ const h=await radarHarness(slug),{radar,entry,schema,T}=h,rows0=()=>h.fresh();
+ test(`${radar.name}: package, roles, contract, recipes and functions on kit 1.1.0; a draft until approved`,async()=>{
+  const raw=JSON.parse(await readFile(`templates/apps/${radar.id}-${radar.version}.json`,'utf8'));
+  appTemplateEntry.parse(raw);validateRecipeDeclarations(raw);validateAppFunctions(raw,Object.keys(schema));assert.equal(radar.kit,'1.1.0');assert.ok(raw.source.length<180000);
+  assert.deepEqual(Object.keys(schema),['organizations','programs',T('settings'),T('scopes'),T('tracker'),T('events'),T('runs')]);
+  assert.equal(schema[T('events')].contract,'radar.v1');assert.equal(outputs[T('events')].writer,radar.id);
+  assert.equal(schema[T('tracker')].contract,radar.trackerOutput?'radar.v1':radar.prefix+'.v1');assert.equal(!!outputs[T('tracker')],!!radar.trackerOutput,'tracker output registered only when the radar publishes it');
+  assert.equal(installers[radar.id+'@'+radar.version],'templates/source/radars/'+slug+'/schema.example.json');
+  assert.notEqual(seed[radar.id]?.version,radar.version,'draft until the owner approves it');
+  const [scan,alert]=readRecipes(raw).recommended as any[];assert.deepEqual([scan.key,alert.key],['scan','alert']);assert.ok(scan.research&&scan.email);
+  const g=scan.research.writeBindings.find((b:any)=>b.role===T('tracker'));assert.deepEqual(g.exceptFields,kit.userOwned(radar));
+  assert.deepEqual(scan.trigger.weekdays,[1]);assert.equal(scan.trigger.time,'07:00');
+  for(const k of ['whenToUse','whenNotToUse','description'])assert.ok(raw[k].length>40,k);
+  for(const f of radar.trackerFields)assert.ok(schema[T('tracker')].fields.some((x:any)=>x.key===f.key),f.key);
+ });
+ test(`${radar.name}: four screens, the tracker drawer and the calendar render with the demo data; reads are bounded`,async()=>{
+  const s=h.session(rows0());
+  for(const section of ['overview','tracker','events','setup']){const o=await s.open({section});assert.doesNotMatch(h.text(o.html),/could not be shown|Partial data/,section);assert.ok(o.calls.length<=16,section+' '+o.calls.length);}
+  const item=rows0().find(r=>r.role===T('tracker'))!;await s.open({section:'tracker'});await s.click('open:item:'+item.id+':'+item.data.natural_key);assert.match(s.html,/role="dialog"/);
+  await s.open({section:'events',esub:'calendar',month:'2026-11',panel:null});assert.match(h.text(s.html),/Nov 2026/);
+  for(const sub of ['template','fields','automations']){const o=await s.open({section:'setup',ssub:sub});assert.doesNotMatch(h.text(o.html),/could not be shown/);}
+  await s.open({section:'overview'});assert.match(h.text(s.html),new RegExp(radar.sources[radar.sources.length-1].name.replace(/[()]/g,'.')+' was not reachable in the last 3 runs'));
+ });
+ test(`${radar.name}: the brief carries the template, scopes, sources, current fields and user-owned fields`,async()=>{
+  const b=(await h.runFunction('brief',rows0())).out.context;
+  assert.deepEqual(b.research_template.rules.slice(0,8),kit.REQUIRED_RULES);assert.equal(b.active_scopes.length,1);assert.equal(b.active_scopes[0].sources.named[0].name,radar.sources[0].name);
+  for(const f of radar.trackerFields.filter((f:any)=>!(radar.userOwnedFields||[]).includes(f.key)))assert.ok(b.return_format[T('tracker')][f.key],f.key);
+  assert.deepEqual(b.user_owned_fields,kit.userOwned(radar));
+ });
+ test(`${radar.name}: the digest section (${radar.digestSection.title}) and the alert are written by app code`,async()=>{
+  const rows=rows0(),run=rows.filter(r=>r.role===T('runs')).sort((a,b)=>String(b.data.run_on).localeCompare(String(a.data.run_on)))[0];
+  const d=(await h.runFunction('digest_summary',rows,{records:[],run:{id:run.data.run_id,summary:run.data.summary}})).out;
+  assert.equal(d.nonEmpty,true);assert.match(d.subject,new RegExp('^'+radar.name+' · '));assert.ok(words(d.text)<=210,String(words(d.text)));
+  const watchedHigh=rows.some(e=>e.role===T('events')&&e.data.run_id===run.data.run_id&&e.data.impact==='high'&&rows.find(r=>r.id===e.data.item_id)?.data.watched===true);
+  assert.equal((await h.runFunction('alert_summary',rows,{records:[],run:{id:run.data.run_id}})).out.nonEmpty,watchedHigh);
+  return d;
+ });
+}
+
+test('Literature Radar 2.0.0: synthesis note per scope, reading queue kept by people, must-read papers in the digest; 1.2.2 stays installable',async()=>{
+ const h=await radarHarness('literature-radar'),rows=h.fresh(),s=h.session(rows);
+ await s.open({section:'setup'});await s.click('new:scope');assert.match(s.html,/<textarea[^>]*name="def_synthesis"/,'the synthesis note is a multi-line field');
+ await s.open({section:'tracker',panel:null});assert.match(h.text(s.html),/Reading queue/);await s.change('flt:queue_status','to_read');assert.ok(s.calls.some((c:any)=>c.v.filters?.queue_status==='to_read'),'the reading queue is a server-side filter');
+ const run=rows.find(r=>r.role==='literatureradar.runs'&&r.data.run_on==='2026-11-16')!;const d=(await h.runFunction('digest_summary',rows,{records:[],run:{id:run.data.run_id,summary:run.data.summary}})).out;
+ assert.match(d.text,/Must-read papers\n- .*: /);
+ assert.ok(kit.userOwned(h.radar).includes('queue_status')&&kit.userOwned(h.radar).includes('assignee'));
+ // The released 1.x line is unchanged and still approved by the seed.
+ assert.equal(seed['life.literature-radar'].version,'1.2.2');await readFile('templates/apps/life.literature-radar-1.2.2.json','utf8');
+});
+
+test('Deal and Funding Radar: trackers are radar.v1 outputs; digests show the largest disclosed amounts per currency and the most active investors',async()=>{
+ for(const [slug,re] of [['deal-radar',/Largest disclosed deals\n- .*: 1,175 USD[\s\S]*Total disclosed this period: .*USD.*EUR|Total disclosed this period: .*EUR.*USD/],['funding-radar',/Rounds in your space\n- .*USD[\s\S]*Most active lead investors: Northstar Ventures \(fictional\) \(\d\)/]] as const){
+  const h=await radarHarness(slug),rows=h.fresh();
+  // Make every item part of the latest run, as a build would.
+  const run=rows.find(r=>r.role===h.T('runs')&&r.data.run_on==='2026-11-16')!;for(const r of rows.filter(r=>r.role===h.T('tracker')))r.data.last_changed_run_id=run.data.run_id;
+  const d=(await h.runFunction('digest_summary',rows,{records:[],run:{id:run.data.run_id,summary:run.data.summary}})).out;assert.match(d.text,re,d.text);
+  assert.doesNotMatch(d.text,/Fernway Labs \(fictional\), Cedarline|undefined|NaN/);
+  assert.equal(outputs[h.T('tracker')].versions['radar.v1'].fields.length,h.schema[h.T('tracker')].fields.length);
+ }
+ // Undisclosed deal terms are never counted.
+ const h=await radarHarness('deal-radar');assert.ok(h.fresh().some(r=>r.role==='dealradar.deals'&&r.data.disclosed===false));
+});

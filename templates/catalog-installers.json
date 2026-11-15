@@ -34,5 +34,9 @@
   "life.data-room@1.0.0": "templates/source/data-room/schema.example.json",
   "life.partnership-tracker@2.0.0": "templates/source/partnership-tracker/archive/2.0.0/schema.example.json",
   "life.partnership-tracker@2.1.0": "templates/source/partnership-tracker/schema.example.json",
-  "life.trial-radar@1.0.0": "templates/source/radars/trial-radar/schema.example.json"
+  "life.trial-radar@1.0.0": "templates/source/radars/trial-radar/schema.example.json",
+  "life.deal-radar@1.0.0": "templates/source/radars/deal-radar/schema.example.json",
+  "life.funding-radar@1.0.0": "templates/source/radars/funding-radar/schema.example.json",
+  "life.literature-radar@2.0.0": "templates/source/radars/literature-radar/schema.example.json",
+  "life.pipeline-radar@1.0.0": "templates/source/radars/pipeline-radar/schema.example.json"
 }
