@@ -1,16 +1,20 @@
 import {readFile,writeFile} from 'node:fs/promises';
 import {transformSync} from 'esbuild';
-// Data Room (life.data-room) 1.x: catalog JSON and the offline fictional preview, generated from templates/source/data-room/.
+// Data Room (life.data-room) 1.1.0 (1.0.0 is archived unchanged under archive/1.0.0): catalog JSON and the offline fictional preview, generated from templates/source/data-room/.
 const root=new URL('../templates/source/data-room/',import.meta.url),read=n=>readFile(new URL(n,root),'utf8');
 const [metadata,source,css,demo,schema]=await Promise.all(['catalog.metadata.json','data-room.source.js','data-room.css','demo_data.json','schema.example.json'].map(read));
 // The readable source is canonical; the catalog carries it with whitespace and redundant syntax removed (identifiers unchanged) so it stays under the
 // 180,000-character catalog limit with room for the host-prepended configuration. Line 1 (templateLayoutSchema) is kept verbatim.
 const nl=source.indexOf('\n'),layoutLine=source.slice(0,nl);if(!layoutLine.startsWith('const templateLayoutSchema='))throw Error('Line 1 must declare templateLayoutSchema');
-const wrapped=transformSync('globalThis.__app=function(input,tools,templateConfiguration,templateBindings){'+source.slice(nl+1)+'\n};',{minifyWhitespace:true,minifySyntax:true,legalComments:'none'}).code.trim();
+// Line 2 (1.1.0) declares appCommands as one line of JSON; the platform reads it as data, so it is kept verbatim too.
+const nl2=source.indexOf('\n',nl+1),commandsLine=source.slice(nl+1,nl2);if(!commandsLine.startsWith('const appCommands=')||!commandsLine.endsWith(';'))throw Error('Line 2 must declare appCommands');
+const wrapped=transformSync('globalThis.__app=function(input,tools,templateConfiguration,templateBindings){'+source.slice(nl2+1)+'\n};',{minifyWhitespace:true,minifySyntax:true,legalComments:'none'}).code.trim();
 const pre='globalThis.__app=function(input,tools,templateConfiguration,templateBindings){';if(!wrapped.startsWith(pre)||!wrapped.endsWith('};'))throw Error('Unexpected minifier output');
-const entry=JSON.parse(metadata);entry.source='const DATAROOM_CSS='+JSON.stringify(css)+';\n'+layoutLine+'\n'+wrapped.slice(pre.length,-2)+'\n';
+const entry=JSON.parse(metadata);entry.source='const DATAROOM_CSS='+JSON.stringify(css)+';\n'+layoutLine+'\n'+commandsLine+'\n'+wrapped.slice(pre.length,-2)+'\n';
+// E7 read-only helpers: source lives in functions/*.js and is inlined into the immutable catalog entry.
+entry.functions=await Promise.all((entry.functions??[]).map(async({sourceFile,...f})=>({...f,source:(await read(sourceFile)).trim()})));
 const serialized=JSON.stringify(entry,null,2)+'\n';
-if(Buffer.byteLength(serialized)>300000||entry.source.length>180000||css.length>50000)throw Error('Data Room template exceeds catalog limits ('+entry.source.length+' source characters)');
+if(Buffer.byteLength(serialized)>380000||entry.source.length>240000||css.length>50000)throw Error('Data Room template exceeds catalog limits ('+entry.source.length+' source characters)');
 const catalog=new URL('../../apps/'+entry.id+'-'+entry.version+'.json',root);
 const preview=`<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Data Room fictional preview</title><style>${css}</style><body><div style="padding:10px 16px;background:#fff;border-bottom:1px solid #DCE4EA;font:13px Inter,Arial,sans-serif;color:#1F3D57">Fictional local demo, fixed as of 13 Nov 2026. Party pages, emails, documents, Database review, permissions and persistent layout use the TrialAgents host; this file contacts nobody.</div><div id="surface"></div><script>
 const source=${JSON.stringify(entry.source).replaceAll('</','<\/')};

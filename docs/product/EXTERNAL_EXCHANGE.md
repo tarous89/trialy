@@ -132,6 +132,12 @@ Recipient accounts or portals; e-signature (signed PDFs are uploaded back); wate
 7. Q&A: a private answer reaches only the asker; a published answer reaches the room or level without naming the asker; each triggers the matching email.
 8. Every new email type is shown exactly as sent and is human-confirmed, or pre-approved for the digest; assistants can draft but not send.
 
+### 5.1 Room additions for Data Room 1.1.0 (15 November 2026)
+
+- **Access-ending reminder switch.** `notifyAccessEnding` on `exchange.createGroup` (rooms; default on) and the reviewed room operation `set_exchange_room_notices` (`exchange.setRoomNotices`, `{groupId, expectedVersion, notifyAccessEnding}`), migration 075. With the switch off, the 7-day access-ending event and its workspace notification are skipped; access still ends on its date and emails already approved for parties are unchanged.
+- **Chosen documents in a documents-updated email.** `prepare_exchange_email` / `exchange.prepareEmail` accept `versionIds` for `documents_updated`: each person's `{documents}` lists only those versions they can open now. Without `versionIds`, "since" is the person's last digest or `documents_updated` email, else the digest approval, else the invitation.
+- Party questions and notes already reach the workspace at once (§2.4): the group owner and members with the external-send right get an in-app and an email notification.
+
 ## 6. Update extension (for Investor Updates)
 
 **Status:** scoped 14 November 2026 for [Investor Updates](app-template-blueprints/apps/INVESTOR_UPDATES.md) (BT2-06); implemented as its own PR on the room extension, before the Investor Updates app (migration 068, `src/domain/exchange-update-content.ts`, update view in `src/web/RecipientRoom.tsx`; template guidance 1.3.26; tests `tests/exchange-updates.test.ts` and `tests/visual/exchange-update.spec.cjs`). Everything in §2 and §5 still applies.

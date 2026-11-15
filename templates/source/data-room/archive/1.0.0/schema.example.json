@@ -1,0 +1,1395 @@
+{
+  "organizations": {
+    "name": "Organizations",
+    "contract": "core.v1",
+    "fields": [
+      {
+        "key": "name",
+        "name": "Name",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "org_type",
+        "name": "Type",
+        "kind": "select",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "options": [
+          "company",
+          "investor",
+          "cro",
+          "cdmo",
+          "site",
+          "funder",
+          "partner",
+          "agency",
+          "other"
+        ]
+      },
+      {
+        "key": "country",
+        "name": "Country",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "website",
+        "name": "Website",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "archived",
+        "name": "Archived",
+        "kind": "boolean",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      }
+    ],
+    "logicalFields": {
+      "name": "name",
+      "org_type": "org_type",
+      "country": "country",
+      "website": "website",
+      "archived": "archived"
+    }
+  },
+  "people": {
+    "name": "People",
+    "contract": "core.v1",
+    "optional": true,
+    "fields": [
+      {
+        "key": "name",
+        "name": "Name",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "organization_id",
+        "name": "Organization",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "description": "Record ID of an organizations record."
+      },
+      {
+        "key": "title",
+        "name": "Title",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "email",
+        "name": "Email",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "archived",
+        "name": "Archived",
+        "kind": "boolean",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      }
+    ],
+    "logicalFields": {
+      "name": "name",
+      "organization_id": "organization_id",
+      "title": "title",
+      "email": "email",
+      "archived": "archived"
+    }
+  },
+  "programs": {
+    "name": "Programs",
+    "contract": "core.v1",
+    "optional": true,
+    "fields": [
+      {
+        "key": "name",
+        "name": "Name",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "code",
+        "name": "Code",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "indication",
+        "name": "Indication",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "modality",
+        "name": "Modality",
+        "kind": "select",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "options": [
+          "small_molecule",
+          "biologic",
+          "antibody",
+          "cell_therapy",
+          "gene_therapy",
+          "rna",
+          "vaccine",
+          "device",
+          "other"
+        ]
+      },
+      {
+        "key": "stage",
+        "name": "Stage",
+        "kind": "select",
+        "required": true,
+        "multiple": false,
+        "ai": true,
+        "options": [
+          "discovery",
+          "preclinical",
+          "ind_enabling",
+          "phase_1",
+          "phase_2",
+          "phase_3",
+          "registration",
+          "approved"
+        ]
+      },
+      {
+        "key": "lead",
+        "name": "Lead",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "status",
+        "name": "Status",
+        "kind": "select",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "options": [
+          "active",
+          "paused",
+          "stopped",
+          "partnered"
+        ]
+      },
+      {
+        "key": "archived",
+        "name": "Archived",
+        "kind": "boolean",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      }
+    ],
+    "logicalFields": {
+      "name": "name",
+      "code": "code",
+      "indication": "indication",
+      "modality": "modality",
+      "stage": "stage",
+      "lead": "lead",
+      "status": "status",
+      "archived": "archived"
+    }
+  },
+  "agreements": {
+    "name": "Agreements",
+    "contract": "core.v1",
+    "optional": true,
+    "fields": [
+      {
+        "key": "name",
+        "name": "Name",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "counterparty_id",
+        "name": "Counterparty",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "description": "Record ID of an organizations record."
+      },
+      {
+        "key": "agreement_type",
+        "name": "Agreement type",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "status",
+        "name": "Status",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "effective_date",
+        "name": "Effective date",
+        "kind": "date",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "expiry_date",
+        "name": "Expiry date",
+        "kind": "date",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "archived",
+        "name": "Archived",
+        "kind": "boolean",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      }
+    ],
+    "logicalFields": {
+      "name": "name",
+      "counterparty_id": "counterparty_id",
+      "agreement_type": "agreement_type",
+      "status": "status",
+      "effective_date": "effective_date",
+      "expiry_date": "expiry_date",
+      "archived": "archived"
+    },
+    "description": "CDA references for \"Use Contracts\" rooms. Data Room binds the core fields only; Contracts-owned fields are left to Contracts, and a signed CDA is filed through Contracts' reviewed path."
+  },
+  "dataroom.settings": {
+    "name": "Data Room settings",
+    "contract": "dataroom.v1",
+    "fields": [
+      {
+        "key": "default_access_days",
+        "name": "Default access (days)",
+        "kind": "number",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "description": "Blank = until revoked. Default 180."
+      },
+      {
+        "key": "view_only_default",
+        "name": "View-only by default",
+        "kind": "boolean",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "quiet_days",
+        "name": "Quiet after (days)",
+        "kind": "number",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "description": "A live party with no open for this many days is quiet. Default 10."
+      },
+      {
+        "key": "qa_approval_required",
+        "name": "Q&A approval required",
+        "kind": "boolean",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "description": "An answer needs approval before it is sent or published. Default on."
+      },
+      {
+        "key": "notify_updates_default",
+        "name": "Updates digest on for new rooms",
+        "kind": "boolean",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "entry_text",
+        "name": "Entry step text",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "description": "Click-through text for the Confidential level."
+      },
+      {
+        "key": "sender_display",
+        "name": "Sender display name",
+        "kind": "select",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "options": [
+          "organization",
+          "first_name"
+        ]
+      },
+      {
+        "key": "email_texts",
+        "name": "Email texts",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "description": "JSON: {\"<email type>\":{\"<purpose>|all\":{subject,body}}}. Saved by the app from Settings."
+      }
+    ],
+    "logicalFields": {
+      "default_access_days": "default_access_days",
+      "view_only_default": "view_only_default",
+      "quiet_days": "quiet_days",
+      "qa_approval_required": "qa_approval_required",
+      "notify_updates_default": "notify_updates_default",
+      "entry_text": "entry_text",
+      "sender_display": "sender_display",
+      "email_texts": "email_texts"
+    }
+  },
+  "dataroom.templates": {
+    "name": "Index templates",
+    "contract": "dataroom.v1",
+    "fields": [
+      {
+        "key": "name",
+        "name": "Name",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "purpose",
+        "name": "Purpose",
+        "kind": "select",
+        "required": true,
+        "multiple": false,
+        "ai": true,
+        "options": [
+          "financing",
+          "licensing",
+          "partnering",
+          "m_and_a",
+          "other"
+        ]
+      },
+      {
+        "key": "content",
+        "name": "Content",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "description": "JSON: {sections:[{number,name,items:[{title,required,weight}]}]}"
+      },
+      {
+        "key": "archived",
+        "name": "Archived",
+        "kind": "boolean",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      }
+    ],
+    "logicalFields": {
+      "name": "name",
+      "purpose": "purpose",
+      "content": "content",
+      "archived": "archived"
+    }
+  },
+  "dataroom.rooms": {
+    "name": "Rooms",
+    "contract": "dataroom.v1",
+    "fields": [
+      {
+        "key": "name",
+        "name": "Name",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "purpose",
+        "name": "Purpose",
+        "kind": "select",
+        "required": true,
+        "multiple": false,
+        "ai": true,
+        "options": [
+          "financing",
+          "licensing",
+          "partnering",
+          "m_and_a",
+          "other"
+        ]
+      },
+      {
+        "key": "status",
+        "name": "Status",
+        "kind": "select",
+        "required": true,
+        "multiple": false,
+        "ai": true,
+        "options": [
+          "preparing",
+          "live",
+          "closed"
+        ]
+      },
+      {
+        "key": "program_ids",
+        "name": "Programs",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "description": "Comma-separated record IDs of programs records."
+      },
+      {
+        "key": "round_id",
+        "name": "Fundraise round",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "description": "Record ID of a Fundraise round, when connected."
+      },
+      {
+        "key": "opportunity_ref",
+        "name": "BD opportunity",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "description": "Reference of a BD Pipeline opportunity, when connected."
+      },
+      {
+        "key": "template_id",
+        "name": "Template",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "description": "Record ID of a dataroom.templates record."
+      },
+      {
+        "key": "cda_option",
+        "name": "CDA option",
+        "kind": "select",
+        "required": true,
+        "multiple": false,
+        "ai": true,
+        "options": [
+          "send_pdf",
+          "contracts",
+          "in_place",
+          "none"
+        ]
+      },
+      {
+        "key": "welcome_note",
+        "name": "Welcome note",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "contact_person_id",
+        "name": "Contact person",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "description": "Record ID of a people record."
+      },
+      {
+        "key": "notify_updates",
+        "name": "Updates digest",
+        "kind": "boolean",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "exchange_group_id",
+        "name": "Exchange group",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "description": "Platform exchange group of this room (written once when the room goes live)."
+      },
+      {
+        "key": "owner",
+        "name": "Owner",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "archived",
+        "name": "Archived",
+        "kind": "boolean",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      }
+    ],
+    "logicalFields": {
+      "name": "name",
+      "purpose": "purpose",
+      "status": "status",
+      "program_ids": "program_ids",
+      "round_id": "round_id",
+      "opportunity_ref": "opportunity_ref",
+      "template_id": "template_id",
+      "cda_option": "cda_option",
+      "welcome_note": "welcome_note",
+      "contact_person_id": "contact_person_id",
+      "notify_updates": "notify_updates",
+      "exchange_group_id": "exchange_group_id",
+      "owner": "owner",
+      "archived": "archived"
+    }
+  },
+  "dataroom.levels": {
+    "name": "Levels",
+    "contract": "dataroom.v1",
+    "fields": [
+      {
+        "key": "room_id",
+        "name": "Room",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true,
+        "description": "Record ID of a dataroom.rooms record."
+      },
+      {
+        "key": "name",
+        "name": "Name",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "kind",
+        "name": "Kind",
+        "kind": "select",
+        "required": true,
+        "multiple": false,
+        "ai": true,
+        "options": [
+          "non_confidential",
+          "confidential",
+          "custom"
+        ]
+      },
+      {
+        "key": "order",
+        "name": "Order",
+        "kind": "number",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "entry",
+        "name": "Entry step",
+        "kind": "select",
+        "required": true,
+        "multiple": false,
+        "ai": true,
+        "options": [
+          "none",
+          "click_through",
+          "signed_cda"
+        ]
+      }
+    ],
+    "logicalFields": {
+      "room_id": "room_id",
+      "name": "name",
+      "kind": "kind",
+      "order": "order",
+      "entry": "entry"
+    }
+  },
+  "dataroom.sections": {
+    "name": "Sections",
+    "contract": "dataroom.v1",
+    "fields": [
+      {
+        "key": "room_id",
+        "name": "Room",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true,
+        "description": "Record ID of a dataroom.rooms record."
+      },
+      {
+        "key": "number",
+        "name": "Number",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true,
+        "description": "For example 4.2"
+      },
+      {
+        "key": "name",
+        "name": "Name",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "parent_id",
+        "name": "Parent section",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "description": "Record ID of a dataroom.sections record."
+      },
+      {
+        "key": "order",
+        "name": "Order",
+        "kind": "number",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      }
+    ],
+    "logicalFields": {
+      "room_id": "room_id",
+      "number": "number",
+      "name": "name",
+      "parent_id": "parent_id",
+      "order": "order"
+    }
+  },
+  "dataroom.items": {
+    "name": "Index items",
+    "contract": "dataroom.v1",
+    "fields": [
+      {
+        "key": "room_id",
+        "name": "Room",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true,
+        "description": "Record ID of a dataroom.rooms record."
+      },
+      {
+        "key": "section_id",
+        "name": "Section",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true,
+        "description": "Record ID of a dataroom.sections record."
+      },
+      {
+        "key": "title",
+        "name": "Title",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "required",
+        "name": "Required",
+        "kind": "boolean",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "status",
+        "name": "Status",
+        "kind": "select",
+        "required": true,
+        "multiple": false,
+        "ai": true,
+        "options": [
+          "missing",
+          "in_progress",
+          "ready",
+          "not_applicable"
+        ]
+      },
+      {
+        "key": "owner",
+        "name": "Owner",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "due",
+        "name": "Due",
+        "kind": "date",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "document_id",
+        "name": "Document",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "description": "Platform document ID."
+      },
+      {
+        "key": "version_id",
+        "name": "Version",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "description": "Platform document version shown in the room."
+      },
+      {
+        "key": "level_id",
+        "name": "Level",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true,
+        "description": "Record ID of a dataroom.levels record."
+      },
+      {
+        "key": "view_only",
+        "name": "View only",
+        "kind": "boolean",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "updated_on",
+        "name": "Updated on",
+        "kind": "date",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "notes",
+        "name": "Notes",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      }
+    ],
+    "logicalFields": {
+      "room_id": "room_id",
+      "section_id": "section_id",
+      "title": "title",
+      "required": "required",
+      "status": "status",
+      "owner": "owner",
+      "due": "due",
+      "document_id": "document_id",
+      "version_id": "version_id",
+      "level_id": "level_id",
+      "view_only": "view_only",
+      "updated_on": "updated_on",
+      "notes": "notes"
+    }
+  },
+  "dataroom.access_grants": {
+    "name": "Access grants",
+    "contract": "dataroom.v1",
+    "description": "Published output dataroom.v1. TrialAgents keeps status, last_seen_on, agreement_accepted_on and source (tracked) current from the room; people and assistants cannot edit those fields.",
+    "fields": [
+      {
+        "key": "room_id",
+        "name": "Room",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "room_name",
+        "name": "Room name",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "room_purpose",
+        "name": "Room purpose",
+        "kind": "select",
+        "required": false,
+        "multiple": false,
+        "options": [
+          "financing",
+          "licensing",
+          "partnering",
+          "m_and_a",
+          "other"
+        ],
+        "ai": true
+      },
+      {
+        "key": "organization_id",
+        "name": "Organization",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "description": "Record ID of an organizations record.",
+        "ai": true
+      },
+      {
+        "key": "person_id",
+        "name": "Person",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "description": "Record ID of a people record.",
+        "ai": true
+      },
+      {
+        "key": "granted_on",
+        "name": "Granted on",
+        "kind": "date",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "expires_on",
+        "name": "Expires on",
+        "kind": "date",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "status",
+        "name": "Status",
+        "kind": "select",
+        "required": false,
+        "multiple": false,
+        "options": [
+          "invited",
+          "active",
+          "revoked",
+          "expired"
+        ],
+        "ai": true
+      },
+      {
+        "key": "agreement_accepted_on",
+        "name": "Agreement accepted on",
+        "kind": "date",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "source",
+        "name": "Source",
+        "kind": "select",
+        "required": false,
+        "multiple": false,
+        "options": [
+          "manual",
+          "tracked"
+        ],
+        "ai": true
+      },
+      {
+        "key": "level_ids",
+        "name": "Levels",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "description": "Comma-separated record IDs of dataroom.levels records."
+      },
+      {
+        "key": "recipient_email",
+        "name": "Email",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "exchange_id",
+        "name": "Exchange",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "description": "Platform exchange (one private link per person)."
+      },
+      {
+        "key": "cda_status",
+        "name": "CDA status",
+        "kind": "select",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "options": [
+          "not_needed",
+          "sent",
+          "signed",
+          "in_place_elsewhere"
+        ]
+      },
+      {
+        "key": "cda_agreement_id",
+        "name": "CDA agreement",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "description": "Record ID of a agreements record."
+      },
+      {
+        "key": "last_seen_on",
+        "name": "Last seen",
+        "kind": "date",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      }
+    ],
+    "logicalFields": {
+      "room_id": "room_id",
+      "room_name": "room_name",
+      "room_purpose": "room_purpose",
+      "organization_id": "organization_id",
+      "person_id": "person_id",
+      "granted_on": "granted_on",
+      "expires_on": "expires_on",
+      "status": "status",
+      "agreement_accepted_on": "agreement_accepted_on",
+      "source": "source",
+      "level_ids": "level_ids",
+      "recipient_email": "recipient_email",
+      "exchange_id": "exchange_id",
+      "cda_status": "cda_status",
+      "cda_agreement_id": "cda_agreement_id",
+      "last_seen_on": "last_seen_on"
+    }
+  },
+  "dataroom.engagement": {
+    "name": "Engagement",
+    "contract": "dataroom.v1",
+    "description": "Published output dataroom.v1. One row per person and document, written only by TrialAgents from the room (source tracked); read-only to people and assistants.",
+    "fields": [
+      {
+        "key": "grant_id",
+        "name": "Grant",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "organization_id",
+        "name": "Organization",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "description": "Record ID of an organizations record.",
+        "ai": true
+      },
+      {
+        "key": "person_id",
+        "name": "Person",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "description": "Record ID of a people record.",
+        "ai": true
+      },
+      {
+        "key": "document_ref",
+        "name": "Document reference",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "document_title",
+        "name": "Document title",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "first_viewed_on",
+        "name": "First viewed on",
+        "kind": "date",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "last_viewed_on",
+        "name": "Last viewed on",
+        "kind": "date",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "view_count",
+        "name": "Views",
+        "kind": "number",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "seconds_viewed",
+        "name": "Seconds viewed",
+        "kind": "number",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "downloads",
+        "name": "Downloads",
+        "kind": "number",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "source",
+        "name": "Source",
+        "kind": "select",
+        "required": false,
+        "multiple": false,
+        "options": [
+          "manual",
+          "docsend",
+          "sharevault",
+          "tracked"
+        ],
+        "ai": true
+      },
+      {
+        "key": "as_of",
+        "name": "As of",
+        "kind": "date",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "section_id",
+        "name": "Section",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "description": "Record ID of a dataroom.sections record."
+      }
+    ],
+    "logicalFields": {
+      "grant_id": "grant_id",
+      "organization_id": "organization_id",
+      "person_id": "person_id",
+      "document_ref": "document_ref",
+      "document_title": "document_title",
+      "first_viewed_on": "first_viewed_on",
+      "last_viewed_on": "last_viewed_on",
+      "view_count": "view_count",
+      "seconds_viewed": "seconds_viewed",
+      "downloads": "downloads",
+      "source": "source",
+      "as_of": "as_of",
+      "section_id": "section_id"
+    }
+  },
+  "dataroom.questions": {
+    "name": "Questions",
+    "contract": "dataroom.v1",
+    "fields": [
+      {
+        "key": "room_id",
+        "name": "Room",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true,
+        "description": "Record ID of a dataroom.rooms record."
+      },
+      {
+        "key": "grant_id",
+        "name": "Grant",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "description": "Record ID of a dataroom.access_grants record."
+      },
+      {
+        "key": "organization_id",
+        "name": "Organization",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "description": "Record ID of a organizations record."
+      },
+      {
+        "key": "person_id",
+        "name": "Person",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "description": "Record ID of a people record."
+      },
+      {
+        "key": "asked_on",
+        "name": "Asked on",
+        "kind": "date",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "category",
+        "name": "Category",
+        "kind": "select",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "options": [
+          "corporate",
+          "financial",
+          "legal_ip",
+          "clinical",
+          "regulatory",
+          "cmc",
+          "commercial",
+          "other"
+        ]
+      },
+      {
+        "key": "section_id",
+        "name": "Section",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "description": "Record ID of a dataroom.sections record."
+      },
+      {
+        "key": "item_id",
+        "name": "Item",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "description": "Record ID of a dataroom.items record."
+      },
+      {
+        "key": "question",
+        "name": "Question",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "status",
+        "name": "Status",
+        "kind": "select",
+        "required": true,
+        "multiple": false,
+        "ai": true,
+        "options": [
+          "new",
+          "assigned",
+          "drafting",
+          "in_review",
+          "answered",
+          "published",
+          "declined"
+        ]
+      },
+      {
+        "key": "assignee",
+        "name": "Assignee",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "due",
+        "name": "Due",
+        "kind": "date",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "answer",
+        "name": "Answer",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "approved_by",
+        "name": "Approved by",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "answered_on",
+        "name": "Answered on",
+        "kind": "date",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "visibility",
+        "name": "Visibility",
+        "kind": "select",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "options": [
+          "private",
+          "room",
+          "level"
+        ]
+      },
+      {
+        "key": "level_id",
+        "name": "Level",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "description": "Record ID of a dataroom.levels record."
+      },
+      {
+        "key": "reused_from",
+        "name": "Reused from",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "description": "Record ID of a dataroom.questions record."
+      },
+      {
+        "key": "document_ids",
+        "name": "Documents",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "message_id",
+        "name": "Exchange question",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "description": "Platform exchange question this record was created from."
+      }
+    ],
+    "logicalFields": {
+      "room_id": "room_id",
+      "grant_id": "grant_id",
+      "organization_id": "organization_id",
+      "person_id": "person_id",
+      "asked_on": "asked_on",
+      "category": "category",
+      "section_id": "section_id",
+      "item_id": "item_id",
+      "question": "question",
+      "status": "status",
+      "assignee": "assignee",
+      "due": "due",
+      "answer": "answer",
+      "approved_by": "approved_by",
+      "answered_on": "answered_on",
+      "visibility": "visibility",
+      "level_id": "level_id",
+      "reused_from": "reused_from",
+      "document_ids": "document_ids",
+      "message_id": "message_id"
+    }
+  }
+}

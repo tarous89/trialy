@@ -71,7 +71,8 @@ test('Workspace: exact setup, bounded maintenance, source preservation, reversib
  await assert.rejects(change({kind:'save_component',componentId:component.id,expectedVersion:6,projectId:destination.id,content:{name:'Bad binding',format:'trialy-ui',source:uiSource,bindings:[]}}),/declared/);
  const exported=await s.exportWorkspace(a,w.id);assert.equal(exported.workspace_nodes.length,3);assert.equal(exported.workspace_components.length,1);assert.equal(exported.maintenance_scopes.length,1);assert.equal(exported.identity_links.length,1);assert.equal(exported.record_observations.length,4);
  await save({kind:'update_type',typeId:table,expectedVersion:1,name:'Organizations',fields:[{key:'name',name:'Name',kind:'text',ai:true},{key:'address',name:'Address',kind:'text',ai:true},{key:'city',name:'City',kind:'text',ai:true},{key:'private',name:'Private',kind:'text',ai:false}]});
- await assert.rejects(f.readComponent(ai,w.id,component.id),/every workspace field/);
+ // The owner's own assistant has full access (owner decision, 15 November 2026); hidden fields stay out of its reads.
+ assert.equal((await f.readComponent(ai,w.id,component.id)).component.id,component.id);
  assert.equal((await f.readComponent(a,w.id,component.id)).component.id,component.id);
  await s.setAccessRules(a,w.id,{expectedVersion:(await s.accessRules(a,w.id)).version,aiHiddenTypes:[table]});assert.deepEqual((await f.nodes(ai,w.id)).nodes,[]);await assert.rejects(f.readComponent(ai,w.id,component.id));await assert.rejects(f.evidence(ai,w.id,receipt.recordIds[0]));
  }finally{await db.close();}
