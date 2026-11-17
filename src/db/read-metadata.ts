@@ -1,5 +1,6 @@
 import {requestMetrics} from './metrics.js';
 import {isDeepStrictEqual} from 'node:util';
+import {AsyncLocalStorage} from 'node:async_hooks';
 import type {Database,Connection} from './database.js';
 import {databaseContext,withDatabaseContext} from './context.js';
 import {fail} from '../shared/schema.js';
@@ -10,10 +11,14 @@ const eligible=(sql:string)=>{
  const q=sql.replace(/\s+/g,' ').trim();
  return /^SELECT w\.\*, m\.role AS tenant_role,.* FROM workspaces w JOIN memberships m .* WHERE w\.id=\$1$/.test(q)
   || /^SELECT \* FROM (workspace_components|workspace_nodes|entity_types) WHERE id=\$1 AND workspace_id=\$2$/.test(q)
+  || q==='SELECT id,project_id,allowed_users,ai_enabled,source_access,bindings,manifest FROM workspace_components WHERE id=$1 AND workspace_id=$2'
   || q==='SELECT fields FROM entity_types WHERE workspace_id=$1'
   || q==='SELECT fields FROM entity_types WHERE id=$1 AND workspace_id=$2'
   || q==='SELECT allowed_users,ai_enabled FROM document_access WHERE workspace_id=$1 UNION ALL SELECT allowed_users,ai_enabled FROM folder_access WHERE workspace_id=$1';
 };
+// Bounded per request. Large accounts need one entry per app, project and table in each actor scope;
+// beyond the bound every lookup would be repeated in full.
+const ENTRY_LIMIT=4096;
 const sessions=new WeakSet<Database>();
 /** Request-local reuse with an uncached final check of every reused result.
  * A concurrent permission/schema/source change rejects the entire response.
@@ -29,7 +34,7 @@ export async function withReadMetadata<T>(db:Database,read:(db:Database)=>Promis
   let entry=entries.get(key);
   if(entry){entry.hits++;const metrics=requestMetrics();if(metrics)metrics.metadataHits++;}
   else{
-   if(entries.size>=256)return db.query(sql,values);
+   if(entries.size>=ENTRY_LIMIT)return db.query(sql,values);
    entry={sql,values:structuredClone(values),context,result:db.query(sql,values),hits:0};entries.set(key,entry);
    entry.result.catch(()=>{entries.delete(key);});
   }
@@ -54,3 +59,20 @@ export async function withReadMetadata<T>(db:Database,read:(db:Database)=>Promis
 /** Explicit freshness boundary for reads that already recheck authorization. */
 export function freshReadDatabase(db:Database):Database{return originals.get(db)??db;}
 const originals=new WeakMap<Database,Database>();
+
+// Bounded reuse for code that reaches the database through one long-lived object (the app runtime).
+const ambient=new AsyncLocalStorage<{base:Database;scoped:Database}>(),ambientDatabases=new WeakSet<Database>();
+/** A database whose reads join the scope opened by readMetadataScope, and are otherwise unchanged. */
+export function ambientReadDatabase(db:Database):Database{
+ if(ambientDatabases.has(db))return db;
+ const view:Database={query:(sql,values)=>{const scope=ambient.getStore();return (scope?.base===db?scope.scoped:db).query(sql,values);},transaction:fn=>db.transaction(fn),close:async()=>{}};
+ ambientDatabases.add(view);originals.set(view,db);return view;
+}
+/** One bounded unit of read work (a single permission check or a single app data read): identical
+ * permission/schema lookups inside it run once, and every reused result is verified uncached before
+ * the unit returns. Nothing is reused between units, so each read an app makes is still checked. */
+export function readMetadataScope<T>(db:Database,read:()=>Promise<T>):Promise<T>{
+ const base=ambientDatabases.has(db)?originals.get(db):undefined;
+ if(!base||ambient.getStore())return read();
+ return withReadMetadata(base,scoped=>ambient.run({base,scoped},read));
+}

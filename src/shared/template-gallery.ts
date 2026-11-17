@@ -32,4 +32,5 @@ export const templateGallery:Record<string,{team:string;workflow:string;summary:
  'life.cro-sponsor-updates':{team:'CRO',workflow:'Study delivery',summary:'Collect team updates and prepare reviewed sponsor reports.'},
  'life.co-trial-monitoring-pv':{team:'Clinical operations',workflow:'Study delivery',summary:'Coordinate monitoring actions and partner PV obligations.'}
 };
-export function templateMediaUrl(id:string,version:string,kind:'screenshot'|'preview'){return `/api/app-templates/${encodeURIComponent(id)}/${encodeURIComponent(version)}/${kind}`;}
+/** digest: the listed catalog digest. With it, the browser may keep that exact version's screenshot. */
+export function templateMediaUrl(id:string,version:string,kind:'screenshot'|'preview',digest?:string){return `/api/app-templates/${encodeURIComponent(id)}/${encodeURIComponent(version)}/${kind}${digest&&kind==='screenshot'?'?d='+encodeURIComponent(digest):''}`;}

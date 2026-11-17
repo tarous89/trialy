@@ -7,7 +7,7 @@ import {appAutomationCopies,copyAppAutomations} from '../automations/copy.js';
 import {monitoringReceiptRuns} from '../app-services/monitoring-guard.js';
 import {appSections,sectionGrant,projectAppSections,validateSectionRevision} from '../domain/app-sections.js';
 import {openRuntimeView,assertRuntimeReadAccess,assertRuntimeScope,assertRuntimeWriteSchema,incompatible} from './runtime-view.js';
-import {withReadMetadata} from '../db/read-metadata.js';
+import {withReadMetadata,ambientReadDatabase,readMetadataScope} from '../db/read-metadata.js';
 import {isCatalogSource} from './catalog-source.js';
 import {FrontendQueue} from './frontend-queue.js';
 import {AppActions} from '../app-services/service.js';
@@ -58,6 +58,8 @@ const J=JSON.stringify;
 const activeFrontends=new FrontendQueue(2),activeDraftFrontends=new FrontendQueue(1,8);
 const customFrontendSession=Symbol('custom frontend needs independent capability transactions');
 const adapter=(tx:Connection):Database=>({query:tx.query.bind(tx),transaction:fn=>fn(tx),close:async()=>{}});
+/** Read-only app capabilities; anything that proposes, runs or calls out is never a reuse unit. */
+const READ_CAPABILITIES=new Set(['records.read','records.get','project.records','project.relationships','roles.list','integrations.list']);
 export class WorkspaceFoundation {
  constructor(public db:Database,private frontendSession:boolean|'custom'=false){}
  // Project-level sharing comes later. Avoid leaking project/scope metadata to partial-access members.
@@ -185,6 +187,9 @@ export class WorkspaceFoundation {
  async runFrontend(a:Actor,w:string,input:unknown,signal?:AbortSignal):Promise<any>{
   signal?.throwIfAborted();
   const request=frontendRequest.parse(input);if(request.componentId&&a.accessToolId!==request.componentId)return withActor({...a,accessToolId:request.componentId},()=>this.runFrontend({...a,accessToolId:request.componentId},w,input,signal));if(Buffer.byteLength(J(request))>150000)fail(400,'input_limit','Interface input is too large');
+  // Custom apps repeat the same permission lookups for every bound table. Each check and each data
+  // read below is one bounded unit: lookups repeat once per unit and reused results are verified.
+  if(this.frontendSession!==true&&ambientReadDatabase(this.db)!==this.db)return (Object.create(this,{db:{value:ambientReadDatabase(this.db)}}) as WorkspaceFoundation).runFrontend(a,w,request,signal);
   // Standard rendering uses one database session/transaction. Security context is
   // installed once; READ COMMITTED rechecks still see revocations before release.
   if(!this.frontendSession){
@@ -196,13 +201,14 @@ export class WorkspaceFoundation {
     return new WorkspaceFoundation(this.db,'custom').runFrontend(a,w,request,signal);
    }
   }
+  const unit=<T>(read:()=>Promise<T>)=>readMetadataScope(this.db,read);
   let content:any,version:number|undefined,viewId=request.viewId;let draftTables:string[]=[];let draftSchema=false;
-  if(request.componentId){const runtime=await this.runtimeComponent(this.db,a,w,request.componentId,request.expectedVersion,viewId);assertRuntimeScope(runtime.latest,runtime.c);content=runtime.c;version=content.version;viewId=runtime.view.id;}
+  if(request.componentId){const runtime=await unit(()=>this.runtimeComponent(this.db,a,w,request.componentId!,request.expectedVersion,viewId));assertRuntimeScope(runtime.latest,runtime.c);content=runtime.c;version=content.version;viewId=runtime.view.id;}
   else {const draft=(await this.db.query('SELECT * FROM workspace_previews WHERE id=$1 AND workspace_id=$2 AND user_id=$3 AND expires_at>now()',[request.previewId,w,a.userId])).rows[0];if(!draft||!['save_component','create_tracker'].includes(draft.body.operation.kind)||draft.body.operation.content.format!=='frontend-js')fail(404,'not_found','Code preview unavailable');await this.validate(this.db,a,w,draft.body.operation);content={...draft.body.operation.content,project_id:draft.body.operation.setup?.projectId??draft.body.operation.projectId};draftTables=(draft.body.operation.setup?.newTables??[]).map((t:any)=>t.id);draftSchema=!!(draftTables.length||draft.body.operation.setup?.extendTables?.length);}
   signal?.throwIfAborted();
   if(this.frontendSession===true&&!standardTracker(content.source))throw customFrontendSession;
   if(content.sectionsEmpty)return {html:'<p>No sections are shared with you.</p>',css:'',state:{},version,viewId,accessVersion:(await access(this.db,a,w)).access_version,accessStamp:await this.componentAccessStamp(a,w,content)};
-  if(!draftSchema&&!request.viewId)await validateResource(this.db,a,w,content,true); // create_tracker validation checks generated bindings, including virtual tables.
+  if(!draftSchema&&!request.viewId)await unit(()=>validateResource(this.db,a,w,content,true)); // create_tracker validation checks generated bindings, including virtual tables.
   if(request.event.action.startsWith('bound:')||request.event.action==='bound-batch'){
    if(!request.componentId||!content.manifest)fail(403,'preview_read_only','Open a saved connected resource');
    const edits=request.event.action==='bound-batch'?Object.entries(request.event.form):[[request.event.action,request.event.value]];
@@ -240,7 +246,7 @@ export class WorkspaceFoundation {
     if(request.componentId){const runtime=await this.runtimeComponent(this.db,a,w,request.componentId,version,viewId);assertRuntimeScope(runtime.latest,content);}
     else {const draft=(await this.db.query('SELECT * FROM workspace_previews WHERE id=$1 AND workspace_id=$2 AND user_id=$3 AND expires_at>now()',[request.previewId,w,a.userId])).rows[0];if(!draft)fail(404,'not_found','Code preview unavailable');await this.validate(this.db,a,w,draft.body.operation);}
    }
-   const currentPolicy=await access(this.db,a,w),accessStamp=request.componentId?await this.componentAccessStamp(a,w,content):undefined;
+   const currentPolicy=await access(this.db,a,w),accessStamp=request.componentId?await unit(()=>this.componentAccessStamp(a,w,content)):undefined;
    const tracker=knownTracker,pages:any[]=[];
    const tableCache=new Map<string,Promise<any>>(),pageRecords=new Map<string,any>(),resolvedPages=new Map<string,any>();
    const tableAccess=(typeId:string)=>{if(!tableCache.has(typeId))tableCache.set(typeId,typeAccess(this.db,a,w,typeId));return tableCache.get(typeId)!;};
@@ -371,7 +377,7 @@ export class WorkspaceFoundation {
     fail(403,'capability_unavailable','This interface capability is unavailable');
    };
    signal?.throwIfAborted();
-   const output=frontendOutput.parse(await (tracker?((_:string,input:any,call:any)=>renderStandard(tracker.config,tracker.theme,input,call)):execute)(content.source,{state:request.state,event:request.event,saved:!!request.componentId,writable,...(request.route?{route:request.route}:{})},async(name,value)=>{const result=await handler(name,value);if(tracker&&name==='records.read')pages.push({request:value,result});return result;},signal,release?.detachUntil));
+   const output=frontendOutput.parse(await (tracker?((_:string,input:any,call:any)=>renderStandard(tracker.config,tracker.theme,input,call)):execute)(content.source,{state:request.state,event:request.event,saved:!!request.componentId,writable,...(request.route?{route:request.route}:{})},async(name,value)=>{const result=await (READ_CAPABILITIES.has(name)?unit(()=>handler(name,value)):handler(name,value));if(tracker&&name==='records.read')pages.push({request:value,result});return result;},signal,release?.detachUntil));
    signal?.throwIfAborted();
    if(!tracker&&(output.controls?.length??0)>100)fail(400,'control_limit','Custom interfaces support at most 100 controls');
    if(Buffer.byteLength(J(output.state))>100000)fail(400,'state_limit','Interface state is too large');
@@ -526,7 +532,7 @@ export class WorkspaceFoundation {
  }
  private async componentAccessStamp(a:Actor,w:string,c:any):Promise<string>{
   if(a.accessToolId!==c.id)return withActor({...a,accessToolId:c.id},()=>this.componentAccessStamp({...a,accessToolId:c.id},w,c));
-  const p=await access(this.db,a,w),tool=await toolPolicy(this.db,a,p,c.id),tables=[];
+  const p=await access(this.db,a,w),tool=await toolPolicy(this.db,a,p,c.id,true),tables=[];
   for(const b of c.bindings){try{const {type,policy}=await typeAccess(this.db,a,w,b.typeId);tables.push({id:b.typeId,fields:visibleFields(type.fields,policy,a).filter(f=>b.fields.includes(f.key)),write:policy.write_fields.filter((k:string)=>b.fields.includes(k)),project:policy.scope_project});}catch(e){if(![403,404].includes((e as any).status))throw e;tables.push({id:b.typeId,fields:[]});}}
   return checksum(J({archived:p.archived,write:tool.grant.write,tables,sections:appSections(tool.c).map((s:any)=>({id:s.id,...sectionGrant(p,a,c.id,s.id)}))}));
  }

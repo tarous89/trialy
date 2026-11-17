@@ -6,6 +6,7 @@ import {addPublicAppServices} from './app-services.js';
 import {bundledAppFont} from '../workspace/design-quality.js';
 import {appPublicUrl,oauthPublicUrl} from '../shared/public-url.js';
 import {createRequestMetrics,metricSummary,withRequestMetrics} from '../db/metrics.js';
+import {withReadBatch} from '../db/database.js';
 import {AccessGrid} from '../domain/access-grid.js';
 import {AccessManagement} from '../domain/access-management.js';
 import {accountCatalog} from '../workspace/catalog.js';
@@ -43,7 +44,7 @@ export function baseApp() {
     ...(mcp&&['events/list','events/subscribe','events/unsubscribe'].includes(req.body?.method)?{mcpMethod:req.body.method}:{}),
     ...(mcp&&req.body?.method==='tools/call'&&['run_component_frontend','prepare_tool_layout','confirm_workspace_change','read_project_component','check_component_access','read_account_home','check_account_home'].includes(req.body.params?.name)?{tool:req.body.params.name}:{}),
     durationMs:Math.round(performance.now()-started),...metricSummary(metrics),status:res.statusCode,time:new Date().toISOString()}));
-  }});withRequestMetrics(metrics,next);
+  }});withRequestMetrics(metrics,()=>withReadBatch(next));
  });
  app.get('/health',(_req,res)=>res.json({status:'ok',service:'trialy'}));return app;
 }

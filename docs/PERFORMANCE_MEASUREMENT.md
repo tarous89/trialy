@@ -182,3 +182,36 @@ The review's empty-only template-profiling statement is outdated: the existing P
 P11a keeps published/draft execution capacity at 2/1 per process, with separate queues of at most 16/8 pending requests and two pending requests per user. Maximum wait is 1.5 seconds. Eligible navigation gets at most two busy retries with jittered 250/750 ms backoff. The queue opens no database transaction. Only queued admission repeats access validation; immediate admission retains initial/capability/final checks without an extra round. Queued revocation tests start no sandbox. Fairness rotates waiting users; it does not preempt running work or reserve one running slot per user. `runtimeQueued`/`runtimeQueueMs` measure waiting separately from execution; `runtimeBusy` includes full queues and expired waits. This is reliability under contention, not added processing capacity.
 
 N3 propagates HTTP response disconnects and MCP request cancellation to the queue/runtime and between Home queries. On cancellation or timeout, sandbox computation stops immediately. Frontend execution waits up to five seconds for a started host call, then settles and releases sandbox capacity while that call finishes its original receipt in the background. The same workspace/user/app key remains excluded until the call settles. `sandboxMs` ends at execution settlement (at most the 15-second guest deadline plus five-second grace); `runtimeDetached` marks this case. Late host-call/database timings may finish after the response log and are not guaranteed to appear in it. Other runtime callers retain their existing completion lifetime. This bounds frontend slot occupancy without interrupting or replaying started actions; it does not resolve database-pool exhaustion from indefinitely stuck SQL. No database-driver cancel is sent, and no cancelled mutation is replayed. Completed-response logs do not capture every disconnected request; these tests establish cancellation behavior, not production latency or saved CPU.
+
+## N1 and repeated permission reads
+
+Implemented 17 November 2026. Four changes, none of which alters a permission rule, a template or saved data:
+
+1. **Read batching (N1).** Inside one HTTP or MCP request, consecutive standalone queries share a transaction: `BEGIN`, the security context and `COMMIT` are sent once per burst instead of once per query. The transaction ends as soon as the request stops querying for one event-loop turn, so it is never open while app code, a connector, a file read or any other non-database work runs. Anything other than a plain `SELECT` (writes, row locks, advisory locks, `trialy_security` functions) is committed before its caller continues. A failed statement rolls back only itself. Explicit transactions are unchanged and never share or wait behind the batch connection. The security context is still transaction-local and is set again whenever the calling actor scope changes. Workers and scripts are unaffected. `DB_READ_BATCHING=false` on the web service restores one transaction per query.
+2. **Permission columns only.** A table permission check made for an app reads the app's permission columns, not its saved source. Source is read only when section rules exist for that app.
+3. **Bounded reuse per unit of work.** Each pre-run check and each read-only app capability call (`records.read`, `records.get`, `project.records`, `project.relationships`, `roles.list`, `integrations.list`) reuses identical permission and schema lookups within itself, using the existing verified request-local mechanism: every reused result is read again uncached before the unit returns, and a change rejects it with `access_changed`. Nothing is reused between units, the post-execution recheck is unchanged, and proposing, running actions and connector calls are never reuse units. The per-request entry bound rose from 256 to 4,096 so that large accounts stay inside it.
+4. **Apps page with archived helpers.** Helpers of an archived app are left out of the Apps page until the app is restored, instead of failing the page with `app_archived`.
+
+Local synthetic observation, real migrations and approved catalog apps, one owner, one workspace. Driver round trips are modelled from the adapter rules verified in `tests/read-batch.test.ts` and `tests/request-metrics.test.ts`; they are not production timings.
+
+| Read | Application queries before → after | Driver round trips before → after | Rows read before → after |
+| --- | ---: | ---: | ---: |
+| Apps page, 3 apps | 77 → 85 | 308 → 88 | 1.4 → 1.5 MB |
+| Apps page, 32 apps | 2,452 → 899 | 9,808 → 938 | 109 → 20 MB |
+| Open one catalog app: resolve | 28 → 28 | 112 → 31 | 0.5 → 0.1 MB |
+| Open one catalog app: access check | 51 → 51 | 204 → 54 | 0.9 → 0.2 MB |
+| Open one catalog app: run interface | 404 → 233 | 1,616 → 287 | 6.4 → 1.6 MB |
+| Show archived apps, 10 archived | 92 → 92 | 368 → 95 | 2.6 → 1.6 MB |
+| Archive an app (review and confirm) | 151 → 151 | 307 → 160 | 3.0 → 0.7 MB |
+
+The Apps page at three apps runs a few more application queries than before because reused lookups are verified at the end; its round trips still fall by about 70%. Not changed here: the Apps page still checks every app before choosing a page (P01). Compare `durationMs`, `databaseRoundTrips`, `transactions` and `contextSets` in the request log for `/api/account/home`, `/api/apps/resolve` and the app run route before and after release.
+
+## Template catalog and gallery screenshots
+
+Implemented 17 November 2026.
+
+- **Catalog payloads load once per process.** Each list, read, identity or preparation still reads which versions are approved (identity, version and digest only), so a withdrawal or a new approval applies on the next call. The validated payload of a published version, which is immutable, is loaded and validated once and then reused; only versions not yet held are fetched. Held entries are frozen because every caller shares them. The channel switches in `templates/catalog-availability.json` are applied on every call as before. At most 500 versions are held; a restart or deploy starts empty.
+- **Gallery screenshots.** The gallery requests each screenshot with the listed catalog digest (`?d=`). When it matches the approved version, the response is `private, max-age=604800`; any other request keeps `private, no-cache`. Approval, the platform switch and the gallery manifest are still checked on every request that reaches the server. A screenshot regenerated for an unchanged version can stay in a browser for up to a week. Live previews keep `no-store`.
+
+Local synthetic observation, 45 catalog rows and 32 approved apps: a template list or single-template read fell from 4.6 MB of rows and about 90 ms of server CPU on every call to no payload rows and about 5 ms after the first call in a process. The first call after a start still loads every approved payload once. Embedded hosts (ChatGPT and Claude) receive screenshots through the media tool and are unchanged.
+

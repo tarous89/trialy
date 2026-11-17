@@ -20,8 +20,12 @@ export function resourceGrant(p:any,a:Actor,kind:'project'|'tool',resourceId:str
  return {read,write,rules};
 }
 /** Context is constructed by the server after resolving the saved tool. Never accepted from generated code. */
-export async function toolPolicy(db:Connection,a:Actor,p:any,toolId:string){
- const c=(await db.query('SELECT * FROM workspace_components WHERE id=$1 AND workspace_id=$2',[toolId,p.id])).rows[0];if(!c)fail(404,'not_found','App unavailable');
+/** Columns a permission decision needs. Saved source is large and only section rules read it. */
+export const TOOL_POLICY_QUERY='SELECT id,project_id,allowed_users,ai_enabled,source_access,bindings,manifest FROM workspace_components WHERE id=$1 AND workspace_id=$2';
+export async function toolPolicy(db:Connection,a:Actor,p:any,toolId:string,withSource=false){
+ // Section restrictions are derived from saved source; every other decision uses the columns above.
+ const sections=withSource||(p.permission_rules??[]).some((r:any)=>r.kind==='app_section'&&r.resourceId===toolId);
+ const c=(await db.query(sections?'SELECT * FROM workspace_components WHERE id=$1 AND workspace_id=$2':TOOL_POLICY_QUERY,[toolId,p.id])).rows[0];if(!c)fail(404,'not_found','App unavailable');
  const parents:string[]=[];let current=c.project_id;
  while(current){if(parents.includes(current))fail(409,'folder_cycle','Invalid project hierarchy');parents.push(current);const n=(await db.query('SELECT * FROM workspace_nodes WHERE id=$1 AND workspace_id=$2',[current,p.id])).rows[0];if(!n||(p.role!=='owner'&&n.allowed_users!==null&&!n.allowed_users.includes(a.userId))||(a.origin==='ai'&&!n.ai_enabled))fail(403,'tool_access','Project access is restricted');current=n.parent_id;}
  if((p.role!=='owner'&&c.allowed_users!==null&&!c.allowed_users.includes(a.userId))||(a.origin==='ai'&&!c.ai_enabled))fail(403,'tool_access','App access is restricted');
