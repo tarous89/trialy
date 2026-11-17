@@ -19,7 +19,8 @@ jobs:
   core:
     name: core (unit and integration tests)
     runs-on: ubuntu-24.04
-    timeout-minutes: 40
+    # main's own core run already takes about 40 minutes (run 1075: 39m41s; run 1073 was cancelled at 40), so 60 leaves room.
+    timeout-minutes: 60
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
