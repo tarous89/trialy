@@ -30,13 +30,28 @@ export async function readTemplateGuidance(input:unknown={}){
 }
 export const templatePrepare=z.object({...appPreparationFields,templateId:key,version,digest:z.string().regex(/^[a-f0-9]{64}$/),name:z.string().trim().min(1).max(100),projectId:id.nullable().default(null),configuration:z.record(z.string(),z.unknown()).default({}),bindings:componentContent.shape.bindings,manifest:componentContent.shape.manifest}).strict();
 const directory=new URL('../../templates/apps/',import.meta.url);
+type CatalogEntry=z.infer<typeof appTemplateEntry>&{digest:string};
+/** Validated payloads of published versions, by identity and digest. Frozen: every caller shares them. */
+const parsedCatalog=new Map<string,CatalogEntry>(),CATALOG_CACHE_LIMIT=500;
+function deepFreeze<T>(value:T):T{if(value&&typeof value==='object'&&!Object.isFrozen(value)){Object.freeze(value);for(const v of Object.values(value as object))deepFreeze(v);}return value;}
 /** Publisher-controlled files only. Never load an arbitrary caller URL or filesystem path. */
 export class AppTemplates{
  /** With a channel, apps switched off for it (templates/catalog-availability.json) are neither listed nor readable. Without one, the whole approved catalog is visible (installed apps, internal checks). */
  constructor(private root:URL|string=directory,private db?:Database,private channel?:TemplateChannel){}
  private async entries(){return (await this.allEntries()).filter(t=>!this.channel||templateAvailable(t.id,this.channel));}
  private async allEntries(){
-  if(this.db){const rows=(await this.db.query("SELECT payload,digest FROM app_template_catalog WHERE status='approved' ORDER BY template_id,version")).rows;return rows.map(r=>({...appTemplateEntry.parse(r.payload),digest:r.digest}));}
+  if(this.db){
+   // Approval status is read on every call. A published version is immutable (syncTemplateCatalog), so its
+   // validated payload is loaded once per process and reused; only versions not yet held are fetched.
+   const approved=(await this.db.query("SELECT template_id,version,digest FROM app_template_catalog WHERE status='approved' ORDER BY template_id,version")).rows;
+   const held=(r:any)=>parsedCatalog.get(r.template_id+'@'+r.version+'#'+r.digest),missing=approved.filter(r=>!held(r));
+   if(missing.length){
+    const rows=(await this.db.query("SELECT template_id,version,digest,payload FROM app_template_catalog WHERE status='approved' AND digest=ANY($1::text[])",[missing.map(r=>r.digest)])).rows;
+    for(const r of rows){if(parsedCatalog.size>=CATALOG_CACHE_LIMIT)parsedCatalog.clear();parsedCatalog.set(r.template_id+'@'+r.version+'#'+r.digest,deepFreeze({...appTemplateEntry.parse(r.payload),digest:r.digest}));}
+   }
+   // A version withdrawn between the two reads is simply left out.
+   return approved.map(held).filter((t):t is CatalogEntry=>!!t);
+  }
   const names=(await readdir(this.root)).filter(n=>n.endsWith('.json')).sort();if(names.length>500)fail(500,'catalog_limit','Template catalog exceeds its bounded size');
   const entries=[];const seen=new Set<string>();
   for(const name of names){const raw=await readFile(this.root instanceof URL?new URL(name,this.root):`${this.root}/${name}`,'utf8');if(Buffer.byteLength(raw)>380000)fail(500,'template_limit','Template too large');const input=JSON.parse(raw);const value=appTemplateEntry.parse(input);const identity=value.id+'@'+value.version;if(seen.has(identity))fail(500,'template_duplicate','Duplicate template version');seen.add(identity);entries.push({...value,digest:createHash('sha256').update(raw).digest('hex')});}

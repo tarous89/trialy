@@ -204,5 +204,14 @@ Local synthetic observation, real migrations and approved catalog apps, one owne
 | Show archived apps, 10 archived | 92 → 92 | 368 → 95 | 2.6 → 1.6 MB |
 | Archive an app (review and confirm) | 151 → 151 | 307 → 160 | 3.0 → 0.7 MB |
 
-The Apps page at three apps runs a few more application queries than before because reused lookups are verified at the end; its round trips still fall by about 70%. Not changed here: the template catalog still loads every approved payload per list or read, gallery screenshots are still revalidated on each visit, and the Apps page still checks every app before choosing a page (P01). Compare `durationMs`, `databaseRoundTrips`, `transactions` and `contextSets` in the request log for `/api/account/home`, `/api/apps/resolve` and the app run route before and after release.
+The Apps page at three apps runs a few more application queries than before because reused lookups are verified at the end; its round trips still fall by about 70%. Not changed here: the Apps page still checks every app before choosing a page (P01). Compare `durationMs`, `databaseRoundTrips`, `transactions` and `contextSets` in the request log for `/api/account/home`, `/api/apps/resolve` and the app run route before and after release.
+
+## Template catalog and gallery screenshots
+
+Implemented 17 November 2026.
+
+- **Catalog payloads load once per process.** Each list, read, identity or preparation still reads which versions are approved (identity, version and digest only), so a withdrawal or a new approval applies on the next call. The validated payload of a published version, which is immutable, is loaded and validated once and then reused; only versions not yet held are fetched. Held entries are frozen because every caller shares them. The channel switches in `templates/catalog-availability.json` are applied on every call as before. At most 500 versions are held; a restart or deploy starts empty.
+- **Gallery screenshots.** The gallery requests each screenshot with the listed catalog digest (`?d=`). When it matches the approved version, the response is `private, max-age=604800`; any other request keeps `private, no-cache`. Approval, the platform switch and the gallery manifest are still checked on every request that reaches the server. A screenshot regenerated for an unchanged version can stay in a browser for up to a week. Live previews keep `no-store`.
+
+Local synthetic observation, 45 catalog rows and 32 approved apps: a template list or single-template read fell from 4.6 MB of rows and about 90 ms of server CPU on every call to no payload rows and about 5 ms after the first call in a process. The first call after a start still loads every approved payload once. Embedded hosts (ChatGPT and Claude) receive screenshots through the media tool and are unchanged.
 

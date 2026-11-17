@@ -20,7 +20,9 @@ import {listAppCommands,runAppCommand,resolveAppOpen,commandsList,commandRun,ope
 export function addAppApi(app:Express,f:WorkspaceFoundation){
  // The website catalog: apps switched off for the platform are not listed, previewed or installable here.
  const appTemplates=new AppTemplates(undefined,f.db,'platform');
- app.get('/api/app-templates/:templateId/:version/screenshot',async(req,res)=>{const bytes=await templateMedia(appTemplates,req.params.templateId,req.params.version,'screenshot');res.set('Cache-Control','private, no-cache').type('jpeg').send(bytes);});
+ // A published version is immutable, so a request naming its exact digest may be kept by that browser.
+ // Access, approval and the platform switch are still checked on every request that reaches the server.
+ app.get('/api/app-templates/:templateId/:version/screenshot',async(req,res)=>{const bytes=await templateMedia(appTemplates,req.params.templateId,req.params.version,'screenshot');const exact=typeof req.query.d==='string'&&req.query.d===(await appTemplates.identity({templateId:req.params.templateId,version:req.params.version})).digest;res.set('Cache-Control',exact?'private, max-age=604800':'private, no-cache').type('jpeg').send(bytes);});
  app.get('/api/app-templates/:templateId/:version/preview',async(req,res)=>{const html=await templateMedia(appTemplates,req.params.templateId,req.params.version,'preview');res.set('Cache-Control','private, no-store').set('Content-Security-Policy',"default-src 'none'; script-src 'unsafe-inline' 'unsafe-eval'; style-src 'unsafe-inline'; img-src data:; font-src data:; connect-src 'none'; form-action 'none'; base-uri 'none'; frame-ancestors 'self'; sandbox allow-scripts").type('html').send(html);});
  app.post('/api/workspaces/:workspaceId/apps/install-template/options',async(req,res)=>res.json(await readCatalogInstallation(f.db,req.actor!,id.parse(req.params.workspaceId),req.body)));
  app.post('/api/workspaces/:workspaceId/apps/install-template',async(req,res)=>res.json(await installCatalogApp(f,req.actor!,id.parse(req.params.workspaceId),req.body)));
