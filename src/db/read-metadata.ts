@@ -10,6 +10,7 @@ const eligible=(sql:string)=>{
  const q=sql.replace(/\s+/g,' ').trim();
  return /^SELECT w\.\*, m\.role AS tenant_role,.* FROM workspaces w JOIN memberships m .* WHERE w\.id=\$1$/.test(q)
   || /^SELECT \* FROM (workspace_components|workspace_nodes|entity_types) WHERE id=\$1 AND workspace_id=\$2$/.test(q)
+  || q==='SELECT id,project_id,allowed_users,ai_enabled,source_access,bindings,manifest FROM workspace_components WHERE id=$1 AND workspace_id=$2'
   || q==='SELECT fields FROM entity_types WHERE workspace_id=$1'
   || q==='SELECT fields FROM entity_types WHERE id=$1 AND workspace_id=$2'
   || q==='SELECT allowed_users,ai_enabled FROM document_access WHERE workspace_id=$1 UNION ALL SELECT allowed_users,ai_enabled FROM folder_access WHERE workspace_id=$1';

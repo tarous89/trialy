@@ -526,7 +526,7 @@ export class WorkspaceFoundation {
  }
  private async componentAccessStamp(a:Actor,w:string,c:any):Promise<string>{
   if(a.accessToolId!==c.id)return withActor({...a,accessToolId:c.id},()=>this.componentAccessStamp({...a,accessToolId:c.id},w,c));
-  const p=await access(this.db,a,w),tool=await toolPolicy(this.db,a,p,c.id),tables=[];
+  const p=await access(this.db,a,w),tool=await toolPolicy(this.db,a,p,c.id,true),tables=[];
   for(const b of c.bindings){try{const {type,policy}=await typeAccess(this.db,a,w,b.typeId);tables.push({id:b.typeId,fields:visibleFields(type.fields,policy,a).filter(f=>b.fields.includes(f.key)),write:policy.write_fields.filter((k:string)=>b.fields.includes(k)),project:policy.scope_project});}catch(e){if(![403,404].includes((e as any).status))throw e;tables.push({id:b.typeId,fields:[]});}}
   return checksum(J({archived:p.archived,write:tool.grant.write,tables,sections:appSections(tool.c).map((s:any)=>({id:s.id,...sectionGrant(p,a,c.id,s.id)}))}));
  }
