@@ -1,6 +1,6 @@
 # Investor Updates 1.0.0 (`life.investor-updates`)
 
-Scope: [INVESTOR_UPDATES.md](../../../docs/product/app-template-blueprints/apps/INVESTOR_UPDATES.md) (BT2-06, revised 15 November 2026). **Draft until the owner approves it**: it is not in `templates/catalog-seed.json`.
+Scope: [INVESTOR_UPDATES.md](../../../docs/product/app-template-blueprints/apps/INVESTOR_UPDATES.md) (BT2-06, revised 15 November 2026). **Published** on 17 November 2026 (owner approval): `templates/catalog-seed.json` names 1.0.0.
 
 Keep the board, investors and shareholders informed by email or in meetings. Investors are people (shared `people`), optionally linked to firms (shared `organizations`), in categories. Claude or ChatGPT writes each update, agenda and recap as **blocks with levels**; the app builds one version per category level, checks every fact, flags moved promises, gets one- or two-step approval and sends through the TrialAgents external exchange (update rooms, §5 and §6 U1–U4).
 

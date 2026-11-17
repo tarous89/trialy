@@ -44,8 +44,8 @@ async function suite(){
  await pg.query('INSERT INTO users(id,subject,email,name) VALUES($1::uuid,$1::text,$2,$3)',[human.userId,'anna@northwind.invalid','Anna (fictional)']);
  await pg.query("INSERT INTO oauth_tokens(hash,user_id,client_id,kind,family,expires_at) VALUES($1,$2,$3,'refresh',$4,$5)",[randomUUID(),human.userId,ai.clientId,ai.connectionFamily,Date.now()+86400000]);
  await syncTemplateCatalog(raw);
- // Investor Updates 1.0.0 is a draft in the repository catalog: it is approved only inside this disposable database.
- assert.equal((await pg.query<any>("SELECT status FROM app_template_catalog WHERE template_id='life.investor-updates' AND version='1.0.0'")).rows[0].status,'draft');
+ // Investor Updates 1.0.0 is approved by the seed (owner approval, 17 Nov 2026).
+ assert.equal((await pg.query<any>("SELECT status FROM app_template_catalog WHERE template_id='life.investor-updates' AND version='1.0.0'")).rows[0].status,'approved');
  await pg.query("UPDATE app_template_catalog SET status='approved' WHERE (template_id='life.investor-updates' AND version='1.0.0') OR (template_id='life.investor-crm' AND version='2.0.0')");
  const f=new WorkspaceFoundation(db),s=new Service(db),catalog=new AppTemplates(undefined,db);
  const T={iu:await catalog.read({templateId:'life.investor-updates',version:'1.0.0'}),fr:await catalog.read({templateId:'life.investor-crm',version:'2.0.0'})};

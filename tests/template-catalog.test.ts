@@ -17,7 +17,7 @@ test('catalog approval, complete suite installation, retry and tenant isolation'
   for(const file of (await readdir('migrations')).filter(f=>f.endsWith('.sql')).sort())await pg.exec(await readFile('migrations/'+file,'utf8'));
   const db:Database={query:(q,v)=>pg.query(q,v) as any,transaction:fn=>pg.transaction(tx=>fn(tx as Connection)),close:async()=>{}};
   await syncTemplateCatalog(db);const catalog=new AppTemplates(undefined,db);
-  const list=await catalog.list({limit:50});assert.equal(list.total,32);
+  const list=await catalog.list({limit:50});assert.equal(list.total,33);
   const actor={userId:randomUUID(),origin:'human' as const};await db.query('INSERT INTO users(id,subject,email,name) VALUES($1,$2,$3,$4)',[actor.userId,actor.userId,'catalog@example.invalid','Catalog tester']);
   const service=new Service(db),workspace=await service.createWorkspace(actor,'Catalog'),f=new WorkspaceFoundation(db);
   const tools=new Map<string,any>();addAppMcp({registerTool:(name:string,config:any,handler:any)=>tools.set(name,{config,handler})} as any,f,actor,(fn:any)=>fn,{});
@@ -49,7 +49,7 @@ test('catalog approval, complete suite installation, retry and tenant isolation'
   assert.equal((await db.query('SELECT count(*)::int n FROM entity_types')).rows[0].n,before);
   await db.query("UPDATE app_template_catalog SET install_schema=install_schema - 'zz_invalid' WHERE template_id=$1 AND version=$2",[candidate.id,candidate.version]);
   await pg.exec(await readFile('ops/runtime-role.sql','utf8'));await pg.exec('SET ROLE trialy_runtime');
-  assert.equal((await db.query('SELECT count(DISTINCT template_id)::int n FROM app_template_catalog')).rows[0].n,32);
+  assert.equal((await db.query('SELECT count(DISTINCT template_id)::int n FROM app_template_catalog')).rows[0].n,33);
   await assert.rejects(()=>db.query("UPDATE app_template_catalog SET status='approved'"));
   await pg.exec('RESET ROLE');
   const runtime:Database={query:(q,v)=>runtime.transaction(tx=>tx.query(q,v)),transaction:fn=>pg.transaction(async tx=>{await tx.exec('SET LOCAL ROLE trialy_runtime');await setDatabaseContext(tx as Connection);return fn(tx as Connection);}),close:async()=>{}};
@@ -62,7 +62,7 @@ test('catalog approval, complete suite installation, retry and tenant isolation'
   await assert.rejects(()=>templateMedia(catalog,'../../etc/passwd',t.version,'screenshot'));await assert.rejects(()=>installCatalogApp(f,actor,workspace.id,request));
   await assert.rejects(()=>installCatalogApp(f,{...actor,origin:'ai'},workspace.id,request));
   await assert.rejects(()=>installCatalogApp(f,{...actor,userId:randomUUID()},workspace.id,request));
-  assert.equal((await catalog.list({limit:50})).total,31);
+  assert.equal((await catalog.list({limit:50})).total,32);
  }finally{await pg.close();}
 });
 

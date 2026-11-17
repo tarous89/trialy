@@ -126,5 +126,9 @@
   "life.data-room": {
     "schema": "templates/source/data-room/schema.example.json",
     "version": "1.1.0"
+  },
+  "life.investor-updates": {
+    "schema": "templates/source/investor-updates/schema.example.json",
+    "version": "1.0.0"
   }
 }

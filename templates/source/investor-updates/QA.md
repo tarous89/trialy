@@ -1,6 +1,6 @@
 # Investor Updates 1.0.0 — QA record
 
-Scope: [INVESTOR_UPDATES.md](../../../docs/product/app-template-blueprints/apps/INVESTOR_UPDATES.md), revised 15 November 2026 (scope PR #186). Template guidance 1.3.31, rechecked against 1.3.32 (app code access): customization stays in settings, layout and records, and the catalog code holds no workspace data. Status: **draft** (not in `catalog-seed.json`; approval is the owner's).
+Scope: [INVESTOR_UPDATES.md](../../../docs/product/app-template-blueprints/apps/INVESTOR_UPDATES.md), revised 15 November 2026 (scope PR #186). Template guidance 1.3.31, rechecked against 1.3.32 (app code access): customization stays in settings, layout and records, and the catalog code holds no workspace data. Status: **published** 17 November 2026 (owner approval; `catalog-seed.json` names 1.0.0).
 
 ## Commands and outcomes
 

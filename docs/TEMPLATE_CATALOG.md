@@ -33,6 +33,8 @@ Fundraise (`life.investor-crm`) 2.0.0 was approved by the owner on 14 November 2
 
 Trial Radar (`life.trial-radar`) 1.0.0 was approved by the owner on 15 November 2026 (#179): the seed names it, so the catalog sync imports it approved. The other seven Bio Radars were approved the same day, each an independent app: Pipeline, Deal, Funding, Patent, Market and Regulatory Radar 1.0.0 and Literature Radar 2.0.0. None had been imported; the seed names them, and migration 074 withdraws Literature Radar 1.2.2 once (listed in `catalog-retirements.json`). Installed 1.2.2 apps keep their saved source and data; the 1.2.2 JSON is unchanged.
 
+Investor Updates (`life.investor-updates`) 1.0.0 was built on 15 November 2026 (#189) and approved by the owner on 17 November 2026. It had never been imported, so the seed names it and the catalog sync after migrations imports it approved; no migration. It is a new template, so nothing is retired. Gallery card and screenshot added. Scope: [INVESTOR_UPDATES.md](product/app-template-blueprints/apps/INVESTOR_UPDATES.md); deviations required by platform contracts are listed in `templates/source/investor-updates/QA.md`.
+
 For CRO Selection, when the owner approves 2.0.0, the publication change does four things:
 - names 2.0.0 in the seed;
 - adds a one-time migration that approves the 2.0.0 draft row and sets both retired versions to `draft` (withdrawn);

@@ -1,6 +1,6 @@
-## 15 November 2026 — Investor Updates 1.0.0 built (draft until approved)
+## 17 November 2026 — Investor Updates 1.0.0 published
 
-Investor Updates 1.0.0 (`life.investor-updates`, BT2-06) is built from the revised scope ([INVESTOR_UPDATES.md](docs/product/app-template-blueprints/apps/INVESTOR_UPDATES.md)) as a draft: it is not in `templates/catalog-seed.json` and needs the owner's approval. No platform change.
+Investor Updates 1.0.0 (`life.investor-updates`, BT2-06) is built from the revised scope ([INVESTOR_UPDATES.md](docs/product/app-template-blueprints/apps/INVESTOR_UPDATES.md)) and published at the owner's request (17 November 2026): the seed names 1.0.0, so the catalog sync after migrations imports it approved. It had never been imported, so no migration; nothing is retired. No platform change. The `core` CI job's timeout is raised from 40 to 60 minutes, because main's own run already took about 40 minutes.
 
 - **Model.** Investors are people (shared `people`, optionally linked to `organizations`) in categories (Board, Investors, Shareholders and custom ones, optionally by share class). Updates are email updates or meetings with a before part (agenda and pre-read) and an after part (recap). Blocks carry a level (board, investors, everyone); each category gets its version from the same draft and a person in several categories gets the highest version once.
 - **Screens.** Overview, Updates (review per version with fact panel, promise tracker, approval, send, engagement), Investors (people, categories, share classes), Plans & templates, Settings.
