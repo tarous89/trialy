@@ -17,7 +17,10 @@ test('catalog approval, complete suite installation, retry and tenant isolation'
   for(const file of (await readdir('migrations')).filter(f=>f.endsWith('.sql')).sort())await pg.exec(await readFile('migrations/'+file,'utf8'));
   const db:Database={query:(q,v)=>pg.query(q,v) as any,transaction:fn=>pg.transaction(tx=>fn(tx as Connection)),close:async()=>{}};
   await syncTemplateCatalog(db);const catalog=new AppTemplates(undefined,db);
-  const list=await catalog.list({limit:50});assert.equal(list.total,32);// 32 approved since migration 077 withdrew Sponsor RFP Management
+  assert.equal((await catalog.list({limit:50})).total,32);// 32 approved since migration 077 withdrew Sponsor RFP Management
+  // templates/catalog-availability.json: the 16 current apps are on for the platform, ChatGPT and Claude; the 16 older apps are off everywhere.
+  const list=await new AppTemplates(undefined,db,'platform').list({limit:50});assert.equal(list.total,16);
+  for(const channel of ['chatgpt','claude'] as const)assert.deepEqual((await new AppTemplates(undefined,db,channel).list({limit:50})).templates.map(t=>t.id),list.templates.map(t=>t.id));
   const actor={userId:randomUUID(),origin:'human' as const};await db.query('INSERT INTO users(id,subject,email,name) VALUES($1,$2,$3,$4)',[actor.userId,actor.userId,'catalog@example.invalid','Catalog tester']);
   const service=new Service(db),workspace=await service.createWorkspace(actor,'Catalog'),f=new WorkspaceFoundation(db);
   const tools=new Map<string,any>();addAppMcp({registerTool:(name:string,config:any,handler:any)=>tools.set(name,{config,handler})} as any,f,actor,(fn:any)=>fn,{});

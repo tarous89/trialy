@@ -12,6 +12,7 @@ import {requireCurrentAction} from '../domain/write-authorization.js';
 import {fail,id,ASSISTANT_NAMES,type Actor} from '../shared/schema.js';
 import {WorkspaceFoundation} from './service.js';
 import {installCatalogApp,sharedTableCandidates} from './template-catalog.js';
+import {requireTemplateAvailable,templateChannel} from './template-availability.js';
 import {roleKey} from './role-contracts.js';
 
 /**
@@ -45,7 +46,7 @@ async function accessSection(db:Connection,a:Actor,w:string){
 
 /** The existing tables an installation can connect to (one row per role) and who can use the app. Skipped when there is nothing to decide. */
 export async function dataAccessStep(f:WorkspaceFoundation,a:Actor,w:string,input:unknown){
- const v=dataAccessTarget.parse(input);
+ const v=dataAccessTarget.parse(input);requireTemplateAvailable(v.install.templateId,templateChannel(a));
  const row=(await f.db.query("SELECT install_schema,payload,digest FROM app_template_catalog WHERE template_id=$1 AND version=$2 AND status='approved'",[v.install.templateId,v.install.version])).rows[0];
  if(!row)fail(404,'not_found','Template unavailable');
  const tables=(await sharedTableCandidates(f.db,a,w,row.install_schema)).map((r:any)=>({role:r.role,name:r.name,readOnly:r.readOnly,

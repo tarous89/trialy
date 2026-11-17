@@ -11,6 +11,7 @@ import {fail,type Actor} from '../shared/schema.js';
 import {Service} from '../domain/service.js';
 import {WorkspaceFoundation} from './service.js';
 import {AppTemplates,appTemplateEntry} from './app-templates.js';
+import {requireTemplateAvailable,templateChannel} from './template-availability.js';
 import {appUrl} from '../shared/app-route.js';
 import {contractRegistry,readerAccepts,roleTables,outputWriter,roleKey} from './role-contracts.js';
 
@@ -36,7 +37,7 @@ export const catalogInstallationRead=z.object({templateId:z.string().max(80),ver
 /** One transaction: empty tables + app + existing audit/permission paths, or nothing. */
 export async function installCatalogApp(f:WorkspaceFoundation,a:Actor,w:string,input:unknown){
  requireCurrentAction(a);
- const v=catalogInstallation.parse(input);
+ const v=catalogInstallation.parse(input);requireTemplateAvailable(v.templateId,templateChannel(a));
  return f.db.transaction(async tx=>{
   await tx.query('SELECT pg_advisory_xact_lock(hashtext($1))',[a.userId+':'+w+':'+v.requestKey]);
   const db:Database={query:tx.query.bind(tx),transaction:fn=>fn(tx),close:async()=>{}};
@@ -143,7 +144,7 @@ export async function sharedTableCandidates(db:Connection,a:Actor,w:string,schem
 }
 /** What Use will reuse for an approved template (read only). */
 export async function readCatalogInstallation(db:Database,a:Actor,w:string,input:unknown){
- const v=catalogInstallationRead.parse(input);
+ const v=catalogInstallationRead.parse(input);requireTemplateAvailable(v.templateId,templateChannel(a));
  const row=(await db.query("SELECT install_schema FROM app_template_catalog WHERE template_id=$1 AND version=$2 AND status='approved'",[v.templateId,v.version])).rows[0];
  if(!row)fail(404,'not_found','Template unavailable');
  return {templateId:v.templateId,version:v.version,roles:await sharedTableCandidates(db,a,w,row.install_schema)};
