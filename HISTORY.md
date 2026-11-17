@@ -1,3 +1,7 @@
+## 17 November 2026 — Catalog channel switches; older apps switched off
+
+Every catalog app now has three switches in `templates/catalog-availability.json`: `platform`, `chatgpt` and `claude`. A switched-off app is not listed, readable, previewable or installable through that channel; saved apps keep working, and the public landing page is unchanged. At the owner's request the 16 current apps (Runway, Programs, Fundraise, Contracts, Partnerships, Data Room, Investor Updates, CRO Selection and the eight Bio Radars) are on everywhere and the 16 older apps are off everywhere. No migration: approval status in `app_template_catalog` is untouched, so switching an app back on is a one-line change. Details: [TEMPLATE_CATALOG.md](docs/TEMPLATE_CATALOG.md#channel-switches-platform-chatgpt-claude). Tests: `tests/template-availability.test.ts`, `tests/template-catalog.test.ts`.
+
 ## 17 November 2026 — Investor Updates 1.0.0 published
 
 Investor Updates 1.0.0 (`life.investor-updates`, BT2-06) is built from the revised scope ([INVESTOR_UPDATES.md](docs/product/app-template-blueprints/apps/INVESTOR_UPDATES.md)) and published at the owner's request (17 November 2026): the seed names 1.0.0, so the catalog sync after migrations imports it approved. It had never been imported, so no migration; nothing is retired. No platform change. The `core` CI job's timeout is raised from 40 to 60 minutes, because main's own run already took about 40 minutes.

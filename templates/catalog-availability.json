@@ -1,0 +1,165 @@
+{
+  "note": "Where each catalog app can be found and added. platform: the TrialAgents website template gallery and installer. chatgpt: the ChatGPT MCP endpoint (/mcp), including the plugin gallery. claude: the Claude MCP endpoint. false hides the app from that channel's catalog and blocks new installs there; saved apps keep working everywhere. The switch applies to every version of the app. It does not change the public landing page. Every app in catalog-seed.json must be listed with all three switches.",
+  "apps": {
+    "life.cash-runway": {
+      "platform": true,
+      "chatgpt": true,
+      "claude": true
+    },
+    "life.contracts": {
+      "platform": true,
+      "chatgpt": true,
+      "claude": true
+    },
+    "life.cro-selection": {
+      "platform": true,
+      "chatgpt": true,
+      "claude": true
+    },
+    "life.data-room": {
+      "platform": true,
+      "chatgpt": true,
+      "claude": true
+    },
+    "life.deal-radar": {
+      "platform": true,
+      "chatgpt": true,
+      "claude": true
+    },
+    "life.funding-radar": {
+      "platform": true,
+      "chatgpt": true,
+      "claude": true
+    },
+    "life.investor-crm": {
+      "platform": true,
+      "chatgpt": true,
+      "claude": true
+    },
+    "life.investor-updates": {
+      "platform": true,
+      "chatgpt": true,
+      "claude": true
+    },
+    "life.literature-radar": {
+      "platform": true,
+      "chatgpt": true,
+      "claude": true
+    },
+    "life.market-radar": {
+      "platform": true,
+      "chatgpt": true,
+      "claude": true
+    },
+    "life.partnership-tracker": {
+      "platform": true,
+      "chatgpt": true,
+      "claude": true
+    },
+    "life.patent-radar": {
+      "platform": true,
+      "chatgpt": true,
+      "claude": true
+    },
+    "life.pipeline-radar": {
+      "platform": true,
+      "chatgpt": true,
+      "claude": true
+    },
+    "life.project-oversight": {
+      "platform": true,
+      "chatgpt": true,
+      "claude": true
+    },
+    "life.regulatory-radar": {
+      "platform": true,
+      "chatgpt": true,
+      "claude": true
+    },
+    "life.trial-radar": {
+      "platform": true,
+      "chatgpt": true,
+      "claude": true
+    },
+    "life.client-signals-crm": {
+      "platform": false,
+      "chatgpt": false,
+      "claude": false
+    },
+    "life.co-site-feasibility": {
+      "platform": false,
+      "chatgpt": false,
+      "claude": false
+    },
+    "life.co-trial-monitoring-pv": {
+      "platform": false,
+      "chatgpt": false,
+      "claude": false
+    },
+    "life.cro-oversight": {
+      "platform": false,
+      "chatgpt": false,
+      "claude": false
+    },
+    "life.cro-resource-planning": {
+      "platform": false,
+      "chatgpt": false,
+      "claude": false
+    },
+    "life.cro-rfp-management": {
+      "platform": false,
+      "chatgpt": false,
+      "claude": false
+    },
+    "life.cro-site-feasibility": {
+      "platform": false,
+      "chatgpt": false,
+      "claude": false
+    },
+    "life.cro-sponsor-updates": {
+      "platform": false,
+      "chatgpt": false,
+      "claude": false
+    },
+    "life.experiment-notebook": {
+      "platform": false,
+      "chatgpt": false,
+      "claude": false
+    },
+    "life.grant-pipeline": {
+      "platform": false,
+      "chatgpt": false,
+      "claude": false
+    },
+    "life.hiring-resource-management": {
+      "platform": false,
+      "chatgpt": false,
+      "claude": false
+    },
+    "life.inventory-management": {
+      "platform": false,
+      "chatgpt": false,
+      "claude": false
+    },
+    "life.investigator-crm": {
+      "platform": false,
+      "chatgpt": false,
+      "claude": false
+    },
+    "life.pi-network-management": {
+      "platform": false,
+      "chatgpt": false,
+      "claude": false
+    },
+    "life.publication-management": {
+      "platform": false,
+      "chatgpt": false,
+      "claude": false
+    },
+    "life.trial-regulatory-submission": {
+      "platform": false,
+      "chatgpt": false,
+      "claude": false
+    }
+  }
+}
