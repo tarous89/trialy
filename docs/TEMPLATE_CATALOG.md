@@ -43,6 +43,14 @@ For CRO Selection, when the owner approves 2.0.0, the publication change does fo
 
 Released files, installer schemas and installed apps stay unchanged.
 
+## Channel switches (platform, ChatGPT, Claude)
+
+`templates/catalog-availability.json` gives every app in the seed three switches: `platform` (website template gallery and installer), `chatgpt` (the ChatGPT MCP endpoint, including the plugin gallery) and `claude` (the Claude MCP endpoint). A switch covers every version of the app. When it is `false`, that channel neither lists, reads, previews nor installs the app (`list_app_templates`, `read_app_template`, template media, `read_template_installation`, data access step, `install_app_template` and the website equivalents answer "Template unavailable"). Approval status is unchanged and saved apps keep working everywhere. The public landing page is a separate site and is not affected.
+
+The channel comes from the caller: signed-in website sessions are `platform`; MCP tokens are AI principals of ChatGPT or Claude. Apps outside the file (test fixtures, unreleased drafts) are not switched off, so a newly approved app must be added to the file; `tests/template-availability.test.ts` fails when a seed app has no entry.
+
+17 November 2026 (owner): the 16 current apps (Runway, Programs, Fundraise, Contracts, Partnerships, Data Room, Investor Updates, CRO Selection and the eight Bio Radars) are on for all three channels. The 16 older apps (Inventory Management, PI Network Management, Grant Pipeline, Site Feasibility Management — Sponsor, Experiment Notebook, Client Signals & CRM, Trial Regulatory Submission, CRO Oversight, Publication Management, Biotech Hiring & Resource Management, CRO Resource Planning, RFP Management, Site Feasibility Management, Investigator CRM, Sponsor Updates — CRO, Trial Monitoring & PV Oversight — Sponsor) are off for all three.
+
 Use the migration/operator database connection in `MIGRATION_DATABASE_URL`:
 
 ```

@@ -10,6 +10,7 @@ import {fail,id,type Actor} from '../shared/schema.js';
 import {componentContent} from './schema.js';
 import {trackerSetup,trackerOperation} from './tracker-template.js';
 import type {WorkspaceFoundation} from './service.js';
+import {templateAvailable,requireTemplateAvailable,type TemplateChannel} from './template-availability.js';
 const key=z.string().regex(/^[a-z][a-z0-9.-]{0,79}$/),version=z.string().regex(/^\d+\.\d+\.\d+$/);
 const option=z.object({type:z.enum(['string','number','boolean']),description:z.string().max(1000),required:z.boolean().default(false),default:z.union([z.string(),z.number(),z.boolean()]).optional(),enum:z.array(z.string()).max(50).optional()}).strict();
 const prose=z.string().min(1).max(6000),items=z.array(prose).min(1).max(20);
@@ -31,8 +32,10 @@ export const templatePrepare=z.object({...appPreparationFields,templateId:key,ve
 const directory=new URL('../../templates/apps/',import.meta.url);
 /** Publisher-controlled files only. Never load an arbitrary caller URL or filesystem path. */
 export class AppTemplates{
- constructor(private root:URL|string=directory,private db?:Database){}
- private async entries(){
+ /** With a channel, apps switched off for it (templates/catalog-availability.json) are neither listed nor readable. Without one, the whole approved catalog is visible (installed apps, internal checks). */
+ constructor(private root:URL|string=directory,private db?:Database,private channel?:TemplateChannel){}
+ private async entries(){return (await this.allEntries()).filter(t=>!this.channel||templateAvailable(t.id,this.channel));}
+ private async allEntries(){
   if(this.db){const rows=(await this.db.query("SELECT payload,digest FROM app_template_catalog WHERE status='approved' ORDER BY template_id,version")).rows;return rows.map(r=>({...appTemplateEntry.parse(r.payload),digest:r.digest}));}
   const names=(await readdir(this.root)).filter(n=>n.endsWith('.json')).sort();if(names.length>500)fail(500,'catalog_limit','Template catalog exceeds its bounded size');
   const entries=[];const seen=new Set<string>();
@@ -46,7 +49,7 @@ export class AppTemplates{
   return {guidance:templateGuidance,templates:matches.slice(q.offset,q.offset+q.limit).map(({source,options,defaults,instructions,documentation,examples,functions,recommendedAutomations,automationFeatures,...summary})=>({...summary,functionCount:readAppFunctions({functions}).functions.length,automationCount:recommendedAutomations?.length??0})),total:matches.length,nextOffset:q.offset+q.limit<matches.length?q.offset+q.limit:null};
  }
  async identity(input:unknown){
-  const v=templateRead.parse(input);
+  const v=templateRead.parse(input);if(this.channel)requireTemplateAvailable(v.templateId,this.channel);
   if(!this.db||!v.version){const t=await this.read(v);return {id:t.id,version:t.version,digest:t.digest};}
   const t=(await this.db.query("SELECT template_id,version,digest FROM app_template_catalog WHERE template_id=$1 AND version=$2 AND status='approved'",[v.templateId,v.version])).rows[0];
   if(!t)fail(404,'not_found','Template unavailable');return {id:t.template_id,version:t.version,digest:t.digest};

@@ -2,6 +2,7 @@ import {z} from 'zod';
 import {templateMedia} from '../workspace/template-media.js';
 import {catalogInstallation,catalogInstallationRead,installCatalogApp,readCatalogInstallation} from '../workspace/template-catalog.js';
 import {appDesignGuide} from '../shared/app-design.js';
+import {templateChannel} from '../workspace/template-availability.js';
 import {AppTemplates,templateQuery,templateRead,templatePrepare,readTemplateGuidance,templateGuidanceRequest} from '../workspace/app-templates.js';
 import {reuseApp,reuseAppOperation} from '../workspace/app-reuse.js';
 import {appPublicUrl,PLATFORM_ORIGIN} from '../shared/public-url.js';
@@ -17,7 +18,8 @@ import {requireHuman} from '../domain/write-authorization.js';
 import {readIntegration,chooseIntegrationSource,integrationRead,integrationChoice} from '../workspace/integrations.js';
 import {listAppCommands,runAppCommand,resolveAppOpen,commandsList,commandRun,openSource} from '../workspace/app-commands.js';
 export function addAppApi(app:Express,f:WorkspaceFoundation){
- const appTemplates=new AppTemplates(undefined,f.db);
+ // The website catalog: apps switched off for the platform are not listed, previewed or installable here.
+ const appTemplates=new AppTemplates(undefined,f.db,'platform');
  app.get('/api/app-templates/:templateId/:version/screenshot',async(req,res)=>{const bytes=await templateMedia(appTemplates,req.params.templateId,req.params.version,'screenshot');res.set('Cache-Control','private, no-cache').type('jpeg').send(bytes);});
  app.get('/api/app-templates/:templateId/:version/preview',async(req,res)=>{const html=await templateMedia(appTemplates,req.params.templateId,req.params.version,'preview');res.set('Cache-Control','private, no-store').set('Content-Security-Policy',"default-src 'none'; script-src 'unsafe-inline' 'unsafe-eval'; style-src 'unsafe-inline'; img-src data:; font-src data:; connect-src 'none'; form-action 'none'; base-uri 'none'; frame-ancestors 'self'; sandbox allow-scripts").type('html').send(html);});
  app.post('/api/workspaces/:workspaceId/apps/install-template/options',async(req,res)=>res.json(await readCatalogInstallation(f.db,req.actor!,id.parse(req.params.workspaceId),req.body)));
@@ -41,7 +43,8 @@ export function addAppApi(app:Express,f:WorkspaceFoundation){
  app.post('/api/workspaces/:workspaceId/apps/prepare',async(req,res)=>res.json(await prepareSimpleApp(f,req.actor!,id.parse(req.params.workspaceId),req.body)));
 }
 export function addAppMcp(server:McpServer,f:WorkspaceFoundation,a:Actor,safe:any,metadata:any){
- const appTemplates=new AppTemplates(undefined,f.db);
+ // MCP principals belong to one assistant; only ChatGPT's endpoint allows calls without sign-in (refused by safe).
+ const appTemplates=new AppTemplates(undefined,f.db,a?templateChannel(a):'chatgpt');
  const quiet=(fn:(v:any)=>Promise<any>)=>safe(async(v:any)=>appPreparationResult(await fn(v)));
  server.registerTool('read_app_design',{title:'Read app design kit',description:'Returns the current design kit, tested palettes, typography, spacing, component CSS, quality-check contract and authoring guardrails: apps reuse TrialAgents accounts, and TrialAgents logos require the official icon linked to https://platform.trialagents.com. Contains no account data.',inputSchema:{},annotations:{readOnlyHint:true,destructiveHint:false,openWorldHint:false},_meta:{securitySchemes:[{type:'noauth'}]}},async()=>{const result=appDesignGuide();return {content:[{type:'text',text:JSON.stringify(result)}],structuredContent:{result}};});
  server.registerTool('read_app_template_guidance',{title:'Read current template guidance',description:'Read the current versioned template usage or authoring contract. Covers lifecycle, design, documentation, platform account reuse without app-specific authentication, official TrialAgents logo/link requirements, data permissions, host integration, regression checks and optional ChatGPT tasks. Follow nextOffset to the end. Contains no account data.',inputSchema:templateGuidanceRequest.shape,annotations:{readOnlyHint:true,destructiveHint:false,openWorldHint:false},_meta:{securitySchemes:[{type:'noauth'}]}},async(v:any)=>{const result=await readTemplateGuidance(v);return {content:[{type:'text',text:JSON.stringify(result)}],structuredContent:{result}};});
