@@ -192,14 +192,14 @@ test('Acceptance 2: full selection — RFI → shortlist → RFP with pack and g
   await ui.click('onboarding-status');await ui.approve();assert.equal((await x.rows(tid('croselection.awards')))[0].data.onboarding_status,'complete');
   await ui.click('prepare-handoff');await ui.approve();
   const h=JSON.parse((await x.rows(tid('croselection.awards')))[0].data.handoff_status);
-  assert.equal(h.agreement.state,'draft_prepared');assert.deepEqual(h.runway.lines.map((l:any)=>[l.amount,l.monthly,l.months,l.start_month,l.end_month,l.category,l.driver]),[[1650000,82500,20,'2027-02-01','2028-09-01','Clinical','spread']]);assert.deepEqual(h.programs.milestones.map((m:any)=>m.date),['2027-01-18','2027-02-01','2027-05-02']);
+  assert.equal(h.agreement.state,'draft_prepared');assert.deepEqual(h.runway,{state:'read_by_runway',role:'croselection.awards'},'Runway reads the award itself; no plan lines are prepared');assert.deepEqual(h.programs.milestones.map((m:any)=>m.date),['2027-01-18','2027-02-01','2027-05-02']);
   await ui.open({section:'decision'});await ui.click('link-agreement');await ui.approve();assert.ok((await x.rows(tid('croselection.awards')))[0].data.agreement_id);
   await ui.click('stage:closed');await ui.approve();assert.equal((await x.rows(tid('croselection.requests')))[0].data.stage,'closed');
   console.log('# full selection confirmations (from the new request):',ui.confirmations);
  }finally{await x.pg.close();}
 });
 
-test('Acceptance 3, 7 and 8: CDA via Contracts and skip; handoff into Contracts, Runway and Programs; assistants cannot decide; install orders, partner deleted, tab removed, archive stops links, restore re-enables unexpired ones, reinstall offers restore',async()=>{
+test('Acceptance 3, 7 and 8: CDA via Contracts and skip; handoff into Contracts and Programs (Runway reads the award); an access rule can keep assistants from awarding; install orders, partner deleted, tab removed, archive stops links, restore re-enables unexpired ones, reinstall offers restore',async()=>{
  const x=await croSelectionSuite();const {f,s,actor,ai,T}=x;
  const change=(w:string,op:any)=>f.preview(actor,w,op).then((p:any)=>f.confirm(actor,w,p.id,p.digest));
  try{
@@ -230,7 +230,8 @@ test('Acceptance 3, 7 and 8: CDA via Contracts and skip; handoff into Contracts,
   await x.save(w,tid('croselection.proposals'),{invitation_id:inv.id,round:'rfp',version:1,submitted_on:'2026-12-01',source:'manual',total:1200000,currency:'EUR',duration_months:12,accepted_on:'2026-12-02'});
   await ui.open({section:'decision',requestId:rc.id});await ui.click('panel:decide:new');
   await ui.submit('decide',{invitation_id:inv.id,rationale:'Only qualified bidder (fictional).',approver:'R. Lead (fictional)',decided_on:'2026-12-10',start_date:'2027-01-04'});await ui.approve();
-  // Assistants never decide: with the documented Database rule (croselection.awards: Claude and ChatGPT read, no write) neither can prepare an award.
+  // Awarding is initiated by the user, in the app or through their assistant (decision.record). An owner who wants to keep assistants out of it
+  // sets the Database rule croselection.awards: Claude and ChatGPT read, no write; then neither can prepare an award.
   const {AccessGrid}=await import('../src/domain/access-grid.js');const grid=new AccessGrid(x.db);
   const gv=(await grid.read(actor,w)).version??(await x.pg.query<any>('SELECT access_version FROM workspaces WHERE id=$1',[w])).rows[0].access_version;
   await grid.save(actor,w,{expectedVersion:gv,changes:(['claude','chatgpt'] as const).map(subject=>({subject,kind:'table',resourceId:tid('croselection.awards'),read:true,write:false}))});
@@ -241,12 +242,10 @@ test('Acceptance 3, 7 and 8: CDA via Contracts and skip; handoff into Contracts,
   const msa=(await x.rows(cmap.agreements.typeId)).find((a:any)=>a.data.agreement_type==='msa')!;assert.equal(msa.data.status,'drafting');assert.equal(msa.data.counterparty_id,helix);
   await contractsUi.open({section:'pipeline'});assert.match(text(contractsUi.html),/MSA — Helix Clinical Research GmbH \(fictional\)/,'the draft agreement is in Contracts\' pipeline');
   await ui.click('link-agreement');await ui.approve();const agId=(await x.rows(tid('croselection.awards')))[0].data.agreement_id;assert.equal(agId,msa.id);
-  // The assistant proposes the prepared items in the owning apps' tables; a person approves; Runway and Programs then show them.
-  const [line]=h.runway.lines,ms=h.programs.milestones;
-  const pl=await s.preview(ai,w,{kind:'create_record',typeId:rmap['runway.plan_lines'].typeId,data:{name:line.name,direction:'spend',category:line.category,driver:line.driver,amount:line.amount,currency:line.currency,start_month:line.start_month,end_month:line.end_month,status:line.status,counterparty_id:line.counterparty_id,agreement_id:agId,program_id:prog,archived:false}});await s.commit(actor,pl.id,pl.digest);
+  // Runway reads the award itself (2.1.0: no Runway lines are prepared). The assistant proposes the prepared milestones in Programs; a person approves.
+  assert.deepEqual(h.runway,{state:'read_by_runway',role:'croselection.awards'});const ms=h.programs.milestones;
   const pm=await s.preview(ai,w,{kind:'bulk_records',changes:ms.map((m:any)=>({kind:'create_record',typeId:pmap['programs.plan_items'].typeId,data:{name:m.name,program_id:prog,item_type:'milestone',function:m.function,end_date:m.date,status:'planned',is_key:m.key,archived:false}}))});await s.commit(actor,pm.id,pm.digest);
-  assert.deepEqual([line.amount,line.monthly,line.start_month,line.end_month],[1200000,100000,'2027-01-01','2027-12-01']);
-  assert.equal((await x.rows(rmap['runway.plan_lines'].typeId)).length,1);assert.equal((await x.rows(pmap['programs.plan_items'].typeId)).length,3);
+  assert.equal((await x.rows(rmap['runway.plan_lines'].typeId)).length,0,'nothing is written into Runway');assert.equal((await x.rows(pmap['programs.plan_items'].typeId)).length,3);
   for(const [appId,sec] of [[rw,'overview'],[pr,'overview'],[ct,'register']] as const){const v=x.app(w,appId);await v.open({section:sec});assert.doesNotMatch(text(v.html),/could not be shown/);}
   // 8a. Partner deleted (archived): CRO Selection keeps working, with the agreements still readable.
   await change(w,{kind:'archive_component',componentId:ct,expectedVersion:await x.version(ct),archived:true});

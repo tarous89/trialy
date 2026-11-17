@@ -2,18 +2,22 @@ import {readFile,writeFile} from 'node:fs/promises';
 import {transformSync} from 'esbuild';
 // CRO Selection (life.cro-selection) 2.x: catalog JSON and the offline fictional preview, generated from templates/source/cro-selection/.
 // The released 1.0.1 files are archived unchanged under templates/source/cro-selection/archive/1.0.1/ (built by build-selection-template.mjs).
+// The 2.0.0 draft package is archived unchanged under archive/2.0.0/; its catalog JSON templates/apps/life.cro-selection-2.0.0.json is not rebuilt.
 const root=new URL('../templates/source/cro-selection/',import.meta.url),read=n=>readFile(new URL(n,root),'utf8');
 const [metadata,source,css,demo,schema]=await Promise.all(['catalog.metadata.json','cro-selection.source.js','cro-selection.css','demo_data.json','schema.example.json'].map(read));
-// The readable source is canonical; the catalog carries it with whitespace and redundant syntax removed (identifiers unchanged) so it stays under the
-// 180,000-character catalog limit with room for the host-prepended configuration. Line 1 (templateLayoutSchema) is kept verbatim.
-const nl=source.indexOf('\n'),layoutLine=source.slice(0,nl);if(!layoutLine.startsWith('const templateLayoutSchema='))throw Error('Line 1 must declare templateLayoutSchema');
-const wrapped=transformSync('globalThis.__app=function(input,tools,templateConfiguration,templateBindings){'+source.slice(nl+1)+'\n};',{minifyWhitespace:true,minifySyntax:true,legalComments:'none'}).code.trim();
+// The readable source is canonical; the catalog carries it with whitespace and redundant syntax removed (identifiers unchanged) so it stays well
+// under the 240,000-character catalog limit with room for the host-prepended configuration. Lines 1 (templateLayoutSchema) and 2 (appCommands,
+// read by the host as data) are kept verbatim.
+const nl=source.indexOf('\n'),nl2=source.indexOf('\n',nl+1),layoutLine=source.slice(0,nl),commandsLine=source.slice(nl+1,nl2);
+if(!layoutLine.startsWith('const templateLayoutSchema='))throw Error('Line 1 must declare templateLayoutSchema');
+if(!commandsLine.startsWith('const appCommands=')||!commandsLine.endsWith(';'))throw Error('Line 2 must declare appCommands on one line');
+const wrapped=transformSync('globalThis.__app=function(input,tools,templateConfiguration,templateBindings){'+source.slice(nl2+1)+'\n};',{minifyWhitespace:true,minifySyntax:true,legalComments:'none'}).code.trim();
 const pre='globalThis.__app=function(input,tools,templateConfiguration,templateBindings){';if(!wrapped.startsWith(pre)||!wrapped.endsWith('};'))throw Error('Unexpected minifier output');
-const entry=JSON.parse(metadata);entry.source='const CROSELECTION_CSS='+JSON.stringify(css)+';\n'+layoutLine+'\n'+wrapped.slice(pre.length,-2)+'\n';
+const entry=JSON.parse(metadata);entry.source='const CROSELECTION_CSS='+JSON.stringify(css)+';\n'+layoutLine+'\n'+commandsLine+'\n'+wrapped.slice(pre.length,-2)+'\n';
 const serialized=JSON.stringify(entry,null,2)+'\n';
-if(Buffer.byteLength(serialized)>300000||entry.source.length>180000||css.length>50000)throw Error('CRO Selection template exceeds catalog limits ('+entry.source.length+' source characters)');
+if(Buffer.byteLength(serialized)>300000||entry.source.length>240000||css.length>50000)throw Error('CRO Selection template exceeds catalog limits ('+entry.source.length+' source characters)');
 const catalog=new URL('../../apps/'+entry.id+'-'+entry.version+'.json',root);
-const preview=`<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>CRO Selection fictional preview</title><style>${css}</style><body><div style="padding:10px 16px;background:#fff;border-bottom:1px solid #DCE4EA;font:13px Inter,Arial,sans-serif;color:#1F3D57">Fictional local demo, fixed as of 13 Nov 2026. Supplier pages, emails, documents, Database review, permissions and persistent layout use the TrialAgents host; this file contacts nobody.</div><div id="surface"></div><script>
+const preview=`<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>CRO Selection fictional preview</title><style>${css}</style><body><div style="padding:10px 16px;background:#fff;border-bottom:1px solid #DCE4EA;font:13px Inter,Arial,sans-serif;color:#1F3D57">Fictional local demo, fixed as of 13 Nov 2026 (CRO Selection 2.1.0). Supplier pages, emails, documents, Database review, permissions and persistent layout use the TrialAgents host; this file contacts nobody.</div><div id="surface"></div><script>
 const source=${JSON.stringify(entry.source).replaceAll('</','<\/')};
 const demo=${demo};const metadata=${metadata};const schema=${schema};
 const roles=Object.keys(schema);

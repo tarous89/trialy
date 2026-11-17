@@ -3,9 +3,9 @@ import {randomUUID} from 'node:crypto';
 import {execute} from '../../src/foundation/runtime.js';
 import {appTemplates} from '../../src/workspace/app-templates.js';
 
-/* CRO Selection 2.0.0 unit harness: the catalog entry prepared exactly as AppTemplates.operation prepends configuration, executed in
+/* CRO Selection 2.1.0 unit harness: the catalog entry prepared exactly as AppTemplates.operation prepends configuration, executed in
  * production QuickJS. Records are the fictional demo set; the exchange is a mock with the platform's response shapes (fictional state). */
-export const entry=await appTemplates.read({templateId:'life.cro-selection',version:'2.0.0'});
+export const entry=await appTemplates.read({templateId:'life.cro-selection',version:'2.1.0'});
 export const schema=JSON.parse(await readFile('templates/source/cro-selection/schema.example.json','utf8'));
 export const demo=JSON.parse(await readFile('templates/source/cro-selection/demo_data.json','utf8'));
 export const roles=Object.keys(schema);
@@ -18,10 +18,11 @@ export const fresh=():Row[]=>structuredClone(demo.records);
 export const freshExchange=()=>structuredClone(demo.exchange);
 const READS=['exchange.list','exchange.status','exchange.listSubmissions','exchange.listMessages','exchange.defaultEmail','exchange.prepareEmail','exchange.listEmails','exchange.notifications'];
 export async function render(rows:Row[],state:any={},event:any={kind:'open',action:''},opts:any={}){
- const changes:any[]=[],calls:string[]=[],xwrites:any[]=[],X=opts.exchange??freshExchange();
+ const changes:any[]=[],calls:string[]=[],xwrites:any[]=[],X=opts.exchange??freshExchange();let layout:any=null;
  const output:any=await execute(source(opts.config,opts.bindings),{saved:opts.saved??true,writable:opts.writable??true,state,event},async(name,v:any)=>{
   calls.push(name);
   if(name==='records.propose'){if(opts.failPropose)throw Error('denied');changes.push(...v);return {status:'proposed'};}
+  if(name==='layout.propose'){if(layout)throw Error('One layout proposal per action');layout=v;return {status:'proposed'};}
   if(name==='documents.list')return {documents:demo.documents,total:demo.documents.length,complete:true};
   if(name.startsWith('exchange.')){
    if(opts.saved===false)throw Error('Save the app to use external exchanges');
@@ -40,7 +41,7 @@ export async function render(rows:Row[],state:any={},event:any={kind:'open',acti
   if(opts.read)return opts.read(v,rows);
   const all=rows.filter(r=>r.role===v.typeId).map(r=>({id:r.id,version:r.version,data:r.data}));
   return {rows:all.slice(v.offset,v.offset+v.limit),total:all.length};
- });return {output,changes,calls,xwrites,html:output.html as string,state:output.state};
+ });return {output,changes,calls,xwrites,layout,html:output.html as string,state:output.state};
 }
 export function approve(rows:Row[],changes:any[]){for(const c of changes){if(c.kind==='create_record')rows.push({id:randomUUID(),version:0,role:c.typeId,data:c.data});else{const r=rows.find(x=>x.id===c.recordId)!;if(r.version!==c.expectedVersion)throw Error('stale version');r.data={...r.data,...c.data};r.version++;}}}
 export const text=(html:string)=>html.replace(/<[^>]+>/g,' ').replace(/&amp;/g,'&').replace(/&#39;/g,"'").replace(/&quot;/g,'"').replace(/&lt;/g,'<').replace(/&gt;/g,'>').replace(/\s+/g,' ');
@@ -65,10 +66,10 @@ export async function croSelectionSuite(){
  await db.query('INSERT INTO users(id,subject,email,name) VALUES($1,$2,$3,$4)',[actor.userId,actor.userId,'owner@sponsor.invalid','Alex Owner (fictional)']);
  const f=new WorkspaceFoundation(db),s=new Service(db);
  await syncTemplateCatalog(db);
- // CRO Selection 2.0.0 is a draft in the repository catalog; it is approved only inside this disposable database.
- await pg.query("UPDATE app_template_catalog SET status='approved' WHERE (template_id='life.cro-selection' AND version='2.0.0') OR (template_id='life.contracts' AND version='1.0.0') OR (template_id='life.cash-runway' AND version='2.1.0') OR (template_id='life.project-oversight' AND version='2.1.0')");
+ // CRO Selection 2.1.0 is approved by the seed; the other versions used here are approved only inside this disposable database.
+ await pg.query("UPDATE app_template_catalog SET status='approved' WHERE (template_id='life.cro-selection' AND version='2.1.0') OR (template_id='life.contracts' AND version='1.0.0') OR (template_id='life.cash-runway' AND version='2.1.0') OR (template_id='life.project-oversight' AND version='2.1.0')");
  const catalog=new AppTemplates(undefined,db);
- const T={sel:await catalog.read({templateId:'life.cro-selection',version:'2.0.0'}),contracts:await catalog.read({templateId:'life.contracts',version:'1.0.0'}),programs:await catalog.read({templateId:'life.project-oversight',version:'2.1.0'}),runway:await catalog.read({templateId:'life.cash-runway',version:'2.1.0'})};
+ const T={sel:await catalog.read({templateId:'life.cro-selection',version:'2.1.0'}),contracts:await catalog.read({templateId:'life.contracts',version:'1.0.0'}),programs:await catalog.read({templateId:'life.project-oversight',version:'2.1.0'}),runway:await catalog.read({templateId:'life.cash-runway',version:'2.1.0'})};
  const install=async(w:string,t:any,name:string,connections:Record<string,string>={})=>{const target={install:{templateId:t.id,version:t.version,digest:t.digest,name,requestKey:randomUUID()}};const step=await dataAccessStep(f,actor,w,target);
   return {step,receipt:step.needed?await confirmDataAccess(f,actor,w,{...target,connections,stepDigest:step.digest}):await installCatalogApp(f,actor,w,target.install)};};
  const comp=async(w:string,id:string)=>(await f.readComponent(actor,w,id)).component;

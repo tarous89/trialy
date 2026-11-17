@@ -17,7 +17,7 @@ test('catalog approval, complete suite installation, retry and tenant isolation'
   for(const file of (await readdir('migrations')).filter(f=>f.endsWith('.sql')).sort())await pg.exec(await readFile('migrations/'+file,'utf8'));
   const db:Database={query:(q,v)=>pg.query(q,v) as any,transaction:fn=>pg.transaction(tx=>fn(tx as Connection)),close:async()=>{}};
   await syncTemplateCatalog(db);const catalog=new AppTemplates(undefined,db);
-  const list=await catalog.list({limit:50});assert.equal(list.total,33);
+  const list=await catalog.list({limit:50});assert.equal(list.total,32);// 32 approved since migration 077 withdrew Sponsor RFP Management
   const actor={userId:randomUUID(),origin:'human' as const};await db.query('INSERT INTO users(id,subject,email,name) VALUES($1,$2,$3,$4)',[actor.userId,actor.userId,'catalog@example.invalid','Catalog tester']);
   const service=new Service(db),workspace=await service.createWorkspace(actor,'Catalog'),f=new WorkspaceFoundation(db);
   const tools=new Map<string,any>();addAppMcp({registerTool:(name:string,config:any,handler:any)=>tools.set(name,{config,handler})} as any,f,actor,(fn:any)=>fn,{});
@@ -49,7 +49,7 @@ test('catalog approval, complete suite installation, retry and tenant isolation'
   assert.equal((await db.query('SELECT count(*)::int n FROM entity_types')).rows[0].n,before);
   await db.query("UPDATE app_template_catalog SET install_schema=install_schema - 'zz_invalid' WHERE template_id=$1 AND version=$2",[candidate.id,candidate.version]);
   await pg.exec(await readFile('ops/runtime-role.sql','utf8'));await pg.exec('SET ROLE trialy_runtime');
-  assert.equal((await db.query('SELECT count(DISTINCT template_id)::int n FROM app_template_catalog')).rows[0].n,33);
+  assert.equal((await db.query('SELECT count(DISTINCT template_id)::int n FROM app_template_catalog')).rows[0].n,32);// the runtime role sees approved templates only
   await assert.rejects(()=>db.query("UPDATE app_template_catalog SET status='approved'"));
   await pg.exec('RESET ROLE');
   const runtime:Database={query:(q,v)=>runtime.transaction(tx=>tx.query(q,v)),transaction:fn=>pg.transaction(async tx=>{await tx.exec('SET LOCAL ROLE trialy_runtime');await setDatabaseContext(tx as Connection);return fn(tx as Connection);}),close:async()=>{}};
@@ -62,7 +62,7 @@ test('catalog approval, complete suite installation, retry and tenant isolation'
   await assert.rejects(()=>templateMedia(catalog,'../../etc/passwd',t.version,'screenshot'));await assert.rejects(()=>installCatalogApp(f,actor,workspace.id,request));
   await assert.rejects(()=>installCatalogApp(f,{...actor,origin:'ai'},workspace.id,request));
   await assert.rejects(()=>installCatalogApp(f,{...actor,userId:randomUUID()},workspace.id,request));
-  assert.equal((await catalog.list({limit:50})).total,32);
+  assert.equal((await catalog.list({limit:50})).total,31);
  }finally{await pg.close();}
 });
 
@@ -184,5 +184,32 @@ test('migration 074 publishes the Bio Radars and Literature Radar 2.0.0 in place
   assert.ok(ret.some((r:any)=>r.templateId==='life.literature-radar'&&r.version==='1.2.2'&&r.replacedBy==='life.literature-radar@2.0.0'));
   await pg.query("UPDATE app_template_catalog SET status='approved' WHERE template_id='life.literature-radar' AND version='1.2.2'");await syncTemplateCatalog(db);
   assert.equal((await status())['life.literature-radar@1.2.2'],'approved');
+ }finally{await pg.close();}
+});
+
+test('migration 077 publishes CRO Selection 2.1.0 in place of CRO Selection 1.0.1 and Sponsor RFP Management 1.0.1, from the live catalog state, once',async()=>{
+ const pg=new PGlite();
+ try{
+  const files=(await readdir('migrations')).filter(f=>f.endsWith('.sql')).sort(),last=files.find(f=>f.startsWith('077_approve_cro_selection'))!;
+  for(const file of files.filter(f=>f<last))await pg.exec(await readFile('migrations/'+file,'utf8'));
+  const db:Database={query:(q,v)=>pg.query(q,v) as any,transaction:fn=>pg.transaction(tx=>fn(tx as Connection)),close:()=>pg.close()};
+  await syncTemplateCatalog(db);
+  const status=async()=>Object.fromEntries((await pg.query<any>("SELECT template_id||'@'||version AS k,status FROM app_template_catalog ORDER BY 1")).rows.map(r=>[r.k,r.status]));
+  // Live state before this deployment: both 1.0.1 versions approved, the 2.0.0 draft imported, 2.1.0 not yet imported.
+  await pg.query("UPDATE app_template_catalog SET status='approved' WHERE version='1.0.1' AND template_id IN ('life.cro-selection','life.sponsor-rfp-management')");
+  await pg.query("UPDATE app_template_catalog SET status='draft' WHERE template_id='life.cro-selection' AND version='2.0.0'");
+  await pg.query("DELETE FROM app_template_catalog WHERE template_id='life.cro-selection' AND version='2.1.0'");
+  const before=await status();
+  await pg.exec(await readFile('migrations/'+last,'utf8'));await syncTemplateCatalog(db);
+  const after=await status();
+  assert.deepEqual(['life.cro-selection@1.0.1','life.sponsor-rfp-management@1.0.1','life.cro-selection@2.0.0','life.cro-selection@2.1.0'].map(k=>after[k]),['draft','draft','draft','approved']);
+  for(const [k,v] of Object.entries(before))if(!['life.cro-selection@1.0.1','life.sponsor-rfp-management@1.0.1'].includes(k))assert.equal(after[k],v,k);
+  const catalog=new AppTemplates(undefined,db);
+  assert.deepEqual((await catalog.list({query:'cro selection'})).templates.filter((t:any)=>t.id==='life.cro-selection').map((t:any)=>t.version),['2.1.0']);
+  assert.ok(!(await catalog.list({query:'sponsor rfp'})).templates.some((t:any)=>t.id==='life.sponsor-rfp-management'),'withdrawn from the gallery');
+  const seed=JSON.parse(await readFile('templates/catalog-seed.json','utf8'));assert.deepEqual(seed['life.cro-selection'],{schema:'templates/source/cro-selection/schema.example.json',version:'2.1.0'});assert.equal(seed['life.sponsor-rfp-management'],undefined);
+  // A later operator decision is not undone by later deployments.
+  await pg.query("UPDATE app_template_catalog SET status='approved' WHERE template_id='life.sponsor-rfp-management' AND version='1.0.1'");await syncTemplateCatalog(db);
+  assert.equal((await status())['life.sponsor-rfp-management@1.0.1'],'approved');
  }finally{await pg.close();}
 });
