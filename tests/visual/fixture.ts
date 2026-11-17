@@ -29,7 +29,7 @@ export async function fixture(){
  const appTools=new Map<string,any>();addAppMcp({registerTool:(name:string,config:any,handler:any)=>appTools.set(name,{config,handler})} as any,f,actor,(fn:any)=>fn,{});
  const tools=async(name:string,v:any):Promise<any>=>{calls.push(name);
   if(['install_app_template','read_template_installation','read_data_access','confirm_data_access'].includes(name))return appTools.get(name).handler(v);
-  if(name==='list_app_templates')return new AppTemplates(undefined,db).list(v);
+  if(name==='list_app_templates')return new AppTemplates(undefined,db,'chatgpt').list(v);// the embedded app is the ChatGPT/Claude catalog
   if(name==='move_tool'){const {workspaceId,...request}=v;return moveTool(db,{...actor,origin:'ai',actionConfirmed:true},workspaceId??w.id,request);}
   if(name==='open_app')return openApp(f,actor,v);
   if(name==='open_workspace')return {screen:'home',uiBuild:'acceptance',viewerId:actor.userId,workspaces:[w],workspaceId:w.id,types:await s.types(actor,w.id)};
