@@ -117,7 +117,6 @@
     "view_only_default": false,
     "quiet_days": 10,
     "qa_approval_required": true,
-    "notify_updates_default": false,
     "sender_display": "organization"
    }
   },
@@ -135,7 +134,7 @@
     "cda_option": "none",
     "welcome_note": "Welcome to the Northwind Bio Series B data room. Start with the teaser and presentation; ask questions in Q&A.",
     "contact_person_id": null,
-    "notify_updates": true,
+    "access_ending_reminder": true,
     "owner": "Robin Lead"
    }
   },
@@ -693,7 +692,7 @@
     "opportunity_ref": "Cedarline: NWB-101 licence",
     "template_id": "builtin:licensing",
     "cda_option": "contracts",
-    "notify_updates": false,
+    "access_ending_reminder": true,
     "owner": "Robin Lead"
    }
   },

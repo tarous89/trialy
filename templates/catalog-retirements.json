@@ -5,14 +5,14 @@
       "templateId": "life.cro-selection",
       "version": "1.0.1",
       "replacedBy": "life.cro-selection@2.1.0",
-      "reason": "CRO Selection 2.1.0 (CRO_SELECTION.md, BT2-05 and §14) is the new major version of the same app; the 2.0.0 draft is archived unchanged; withdrawn on approval by migration 074.",
+      "reason": "CRO Selection 2.1.0 (CRO_SELECTION.md, BT2-05 and §14) is the new major version of the same app; the 2.0.0 draft is archived unchanged; withdrawn on approval by migration 077.",
       "decided": "2026-11-13"
     },
     {
       "templateId": "life.sponsor-rfp-management",
       "version": "1.0.1",
       "replacedBy": "life.cro-selection@2.1.0",
-      "reason": "Sponsor-side RFP management is covered by CRO Selection 2.1.0 (full selection mode); scope CRO_SELECTION.md; withdrawn on approval by migration 074 and removed from the seed.",
+      "reason": "Sponsor-side RFP management is covered by CRO Selection 2.1.0 (full selection mode); scope CRO_SELECTION.md; withdrawn on approval by migration 077 and removed from the seed.",
       "decided": "2026-11-13"
     },
     {
@@ -35,6 +35,20 @@
       "replacedBy": "life.investor-crm@2.0.0",
       "reason": "Fundraise 2.0.0 (FUNDRAISE.md, BT2-03) is the new major version of the same app; withdrawn on approval by migration 072.",
       "decided": "2026-11-11"
+    },
+    {
+      "templateId": "life.literature-radar",
+      "version": "1.2.2",
+      "replacedBy": "life.literature-radar@2.0.0",
+      "reason": "Literature Radar 2.0.0 (BIO_RADAR.md) rebuilds the same app on the Bio Radars kit; withdrawn on approval by migration 074.",
+      "decided": "2026-11-15"
+    },
+    {
+      "templateId": "life.project-oversight",
+      "version": "2.1.0",
+      "replacedBy": "life.project-oversight@2.2.0",
+      "reason": "Programs 2.2.0 (PROGRAMS.md §14) replaces 2.1.0: app commands, program team notifications and the weekly digest; withdrawn on approval by migration 075.",
+      "decided": "2026-11-15"
     }
   ]
 }

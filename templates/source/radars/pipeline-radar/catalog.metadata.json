@@ -1,0 +1,14 @@
+{
+  "description": "Watch competing assets for your indication or mechanism: company, mechanism, modality, phase, partners, discontinuations and new entrants, with sources. One table of assets, an events feed with a calendar, and a weekly scan + digest and high-impact alert run by Claude or ChatGPT.",
+  "tags": [
+    "biotech",
+    "competitive intelligence",
+    "pipeline",
+    "competitor assets",
+    "radar",
+    "bio radars",
+    "phase changes"
+  ],
+  "whenToUse": "Track competing assets for your programs (mechanism, modality, phase, partners) and get told about new entrants, phase changes, partnerships, discontinuations and readouts, with sources and a weekly digest.",
+  "whenNotToUse": "Clinical trial registrations and their changes (Trial Radar), papers (Literature Radar), deals with terms (Deal Radar), financings (Funding Radar), your own development plan (Programs), market access or sales (Market Radar), investment advice."
+}

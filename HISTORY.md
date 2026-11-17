@@ -1,6 +1,76 @@
+## 17 November 2026 — Investor Updates 1.0.0 published
+
+Investor Updates 1.0.0 (`life.investor-updates`, BT2-06) is built from the revised scope ([INVESTOR_UPDATES.md](docs/product/app-template-blueprints/apps/INVESTOR_UPDATES.md)) and published at the owner's request (17 November 2026): the seed names 1.0.0, so the catalog sync after migrations imports it approved. It had never been imported, so no migration; nothing is retired. No platform change. The `core` CI job's timeout is raised from 40 to 60 minutes, because main's own run already took about 40 minutes.
+
+- **Model.** Investors are people (shared `people`, optionally linked to `organizations`) in categories (Board, Investors, Shareholders and custom ones, optionally by share class). Updates are email updates or meetings with a before part (agenda and pre-read) and an after part (recap). Blocks carry a level (board, investors, everyone); each category gets its version from the same draft and a person in several categories gets the highest version once.
+- **Screens.** Overview, Updates (review per version with fact panel, promise tracker, approval, send, engagement), Investors (people, categories, share classes), Plans & templates, Settings.
+- **Sending** uses the external exchange update rooms (§5, §6 U1–U4): delivery records, links on a person's click, one confirmed send per version shown exactly as `exchange.prepareEmail` returns it; the first send locks the update. Reads and responses arrive as tracked records; questions use a reserved ask; answers go privately or to everyone invited.
+- **Automations.** Four install recommendations (agenda and pre-read draft, ready for review, new response, weekly digest) and a `scheduled_draft` app feature per email plan; three read-only helpers (`plan_brief`, `meeting_brief`, `updates_digest`). The app stores no schedules.
+- **App commands.** 39 (16 read, 22 propose, `layout.save`); none approves, sends, answers, unsubscribes or shows links.
+- **Deviations** where the platform contracts differ from the scope are listed in `templates/source/investor-updates/QA.md` (standard records on first use, questions as an ask, one confirmation per version, reminders confirmed when needed, PDF attached by a person, fact re-check limited to bound tables, scheduled draft on `plans.next_period_end`).
+
+Tests: `tests/investor-updates.test.ts`, `tests/investor-updates-commands.test.ts`, `tests/investor-updates-integration.test.ts` and `scripts/test-investor-updates-browser.ts`. Gallery card, screenshot and manifest entry for `life.investor-updates@1.0.0`.
+## 15 November 2026 — Data Room 1.1.0 published; app code access rule
+
+Data Room 1.1.0 (`life.data-room`) is published at the owner's request (seed entry; 1.0.0 was never approved and stays byte-identical, source in `templates/source/data-room/archive/1.0.0/`). Scope and decisions D1–D6: [DATA_ROOM.md §14](docs/product/app-template-blueprints/apps/DATA_ROOM.md#14-data-room-110-platform-standards-assistant-control-and-notifications).
+
+What changes in the app:
+- **App commands.** 32 commands (12 read, 19 propose, 1 layout) through the same handler as clicks. Commands never share, send or change a live room.
+- **Customization without code.** Custom fields on rooms, index items, parties and questions (`settings.custom_fields`); form layouts for rooms, items and questions. Hidden columns from the layout gear now apply (1.0.0 read the wrong key separator).
+- **Notifications.** Notify parties (chosen documents to all or chosen parties, one confirmed send) replaces the automatic daily digest. Access-ending reminder is a switch per room. Instant emails for party questions and notes are the platform's existing workspace notifications, now documented.
+- **One automation.** Weekly room summary to the owner (Mondays 08:00), written by the read-only helper `room_summary`; on by default at install, optional.
+
+Platform:
+- **App code access (owner decision):** reads made by running an app are always checked against the caller's own permissions. The workspace owner and the owner's assistant can run and change any app; unchanged approved catalog code can be run by anyone allowed to use the app (and their assistant); changing code needs full access (`code_change_restricted` otherwise). `src/workspace/service.ts` `componentSourcePolicy`, new `src/workspace/catalog-source.ts`; template guidance 1.3.32.
+- **Rooms:** `set_exchange_room_notices` / `exchange.setRoomNotices` and `notifyAccessEnding` (migration 076); `prepare_exchange_email` accepts `versionIds` for `documents_updated`, and "since" counts the person's last documents email.
+
+Tests: `tests/data-room-commands.test.ts`, `tests/app-source-access.test.ts` (new); Data Room unit, integration and browser tests updated; `tests/workspace.test.ts` now expects the owner's assistant to read app source.
+## 15 November 2026 — Programs 2.2.0 published
+
+New immutable version `life.project-oversight` 2.2.0. It aligns Programs with the app commands, Edit in App and app automation standards, following owner decisions P1–P5 in [PROGRAMS.md §14](docs/product/app-template-blueprints/apps/PROGRAMS.md#14-programs-220-assistant-control-team-notifications-and-the-weekly-digest).
+
+What changes in the app:
+- **App commands.** 27 commands share one handler with the buttons: 13 read, 13 propose, 1 layout. They come with form groups and layout labels/defaults, extra fields, and Edit in Runway for the linked cash forecast.
+- **Program team.** New `programs.team` table. The app keeps `owner_member_id`, `assigned_on` and `remind_on` on items and RAID entries, with a reminder lead time in Settings.
+- **Automations.** Six install recommendations: an AI weekly digest (saves to the new `programs.digests` table, then emails the owner, only when something needs attention) and five member notices. The digest without AI is an app feature. Both digest helpers and the app share one digest core. The 2.1.0 monthly reminder, slip notice and status draft are removed.
+
+Packaging:
+- The build minifies the catalog source, including local names, to stay under 180,000 characters.
+- 2.1.0 is archived unchanged under `templates/source/project-oversight/archive/2.1.0/`, and its installer entry points there.
+- Published at the owner's request: `catalog-seed.json` names 2.2.0, so the sync after migrations imports it approved; migration 075 withdraws 2.1.0 once (`catalog-retirements.json`); the gallery adds `life.project-oversight@2.2.0`. Installed 2.1.0 apps keep their source and data.
+
+Tests: `tests/programs-commands.test.ts` and `tests/programs-automations.test.ts`. `tests/programs.test.ts` now reads the archived 2.1.0 schema and demo data.
+
+## 15 November 2026 — Partnerships 2.2.0 published
+
+Partnerships 2.2.0 (`life.partnership-tracker`) is published at the owner's request. It aligns the app with the platform standards that shipped after 2.1.0 ([PARTNERSHIPS.md §12b](docs/product/app-template-blueprints/apps/PARTNERSHIPS.md)), with no platform change.
+
+What changes in the app:
+- **App commands.** 50 commands (18 read, 31 propose, `layout.save`) cover every screen and control. Propose commands replay the screens' own handler, now one `handle` function, so the review is identical to the click path; proposals are buffered into one review. Custom stages, new activity kinds and custom fields return `schema_change` naming the table change still needed.
+- **Integration standard.** Agreements (via `roles.list`) and linked Data Room access (via `integrations.list`) are labelled "From *App*" with Edit in *App* (`data-trialy-open`). Hand-entered access is refused in the form and the command while Data Room is linked. Bound fields this version does not know show as read-only "Additional fields".
+- **Automations.** The digest is now the email step of `partner_research`, one automation (E5); 2.1.0's separate `partner_digest` is gone. Every read binding is `fields:"all"` with confidential `exceptFields` (E6), so custom fields no longer stop research or briefs.
+- **Layout fix.** The native gear stores column visibility as `group:column`, but 2.1.0 read only `group.column`, so hiding a column with the gear had no effect. 2.2.0 reads both, and `layout.save` writes `group:column`.
+- **Settings.** JSON settings are compared by content, so re-saving an unchanged form proposes nothing.
+
+Publication:
+- `templates/catalog-seed.json` names 2.2.0, so the sync after migrations imports it approved. As with Runway 2.2.0, there is no migration: 2.1.0 stays approved in existing catalogs, the gallery and `list_app_templates` show the latest approved version, and installed 2.1.0 apps are unchanged.
+- The 2.1.0 package is archived byte-identical under `templates/source/partnership-tracker/archive/2.1.0/`. Its installer entry points there, so its preview hash still matches.
+- The build keeps line 2 (`appCommands`) verbatim, and its limits follow the catalog (240,000 source characters, 380,000 bytes).
+- The gallery has the `life.partnership-tracker@2.2.0` screenshot and manifest entry.
+
+Tests: `tests/partnerships-commands.test.ts` (new) covers the declaration, read results, click-path parity, buffering, customization, integrations and Additional fields. `tests/partnerships.test.ts` and `tests/partnerships-integration.test.ts` are updated, including E5/E6 on the real recipe path and commands through `run_app_command`. The browser test still passes.
+
+## 15 November 2026 — Bio Radars waves 2 and 3: Pipeline, Literature 2.0.0, Deal, Funding, Patent, Market and Regulatory Radar (published)
+
+The other seven Bio Radars are built as definitions on the radar kit, now 1.1.0: Pipeline Radar 1.0.0 (`life.pipeline-radar`), Literature Radar 2.0.0 (`life.literature-radar`), Deal Radar 1.0.0 (`life.deal-radar`) and Funding Radar 1.0.0 (`life.funding-radar`), weekly; Patent Radar 1.0.0 (`life.patent-radar`, "Not legal advice", expiries 24 months ahead), Market Radar 1.0.0 (`life.market-radar`) and Regulatory Radar 1.0.0 (`life.regulatory-radar`), monthly. The owner approved all seven the same day, each an independent app: the catalog seed names them, migration 074 withdraws Literature Radar 1.2.2 (existing installs unchanged), and each has a gallery card and screenshot. All eight radars are filed under the Research workflow in the gallery.
+
+- **Kit 1.1.0.** Released radars pin their kit version; kit 1.0.0 is frozen in `radar-kit/archive/1.0.0/`, so Trial Radar 1.0.0 is byte-identical. New optional definition keys: team-owned tracker fields, tracker outputs, item name field, disclaimer, multiline scope fields, past-only dates, item-based digest sections with per-currency totals and a Coming up window per radar.
+- **Outputs.** Deal and Funding Radar publish their trackers (`dealradar.deals`, `fundingradar.financings`, `radar.v1`, one writer) next to their events.
+- **Tests.** `tests/radars.test.ts` and `tests/radars-integration.test.ts`: install from the catalog, demo data, every screen and drawer, design gate at 1440 and 390 px, brief, digest and alert text, Needs setup without a runner, one writer.
+
 ## 15 November 2026 — CRO Selection 2.1.0 published
 
-Published at the owner's request in place of CRO Selection 1.0.1 and Sponsor RFP Management 1.0.1. `templates/catalog-seed.json` names 2.1.0 (imported approved by the catalog sync after migrations) and no longer lists Sponsor RFP Management; one-time migration 074 withdraws both 1.0.1 versions (and approves 2.1.0 if an earlier deployment had imported it as a draft). The 2.0.0 draft stays a draft. The gallery has the 2.1.0 screenshot and manifest entry, a new card summary, and no Sponsor RFP Management card. Installed 1.0.1 apps keep their saved source and data. `tests/template-catalog.test.ts` rehearses the deployment from the live catalog state.
+Published at the owner's request in place of CRO Selection 1.0.1 and Sponsor RFP Management 1.0.1. `templates/catalog-seed.json` names 2.1.0 (imported approved by the catalog sync after migrations) and no longer lists Sponsor RFP Management; one-time migration 077 withdraws both 1.0.1 versions (and approves 2.1.0 if an earlier deployment had imported it as a draft). The 2.0.0 draft stays a draft. The gallery has the 2.1.0 screenshot and manifest entry, a new card summary, and no Sponsor RFP Management card. Installed 1.0.1 apps keep their saved source and data. `tests/template-catalog.test.ts` rehearses the deployment from the live catalog state.
 
 ## 15 November 2026 — CRO Selection 2.1.0: platform changes and AI-native control
 
@@ -48,6 +118,10 @@ Owner decision: app commands and Edit in App are on without configuration, as ap
 ## 14 November 2026 — App automation recipes on by default
 
 Owner decision: install recommendations and app-feature setup are on without configuration. `recipesEnabled()` now returns true unless `APP_AUTOMATION_RECIPES_ENABLED=false`, which stays as an emergency off switch that stops new offers and setup reconciliation without a redeploy. Existing automations, installed apps and the exact review, ownership and write-grant checks are unchanged. Add app now offers the declared recommendations (for example, Partnerships research, digest and briefs) selected by default to the owner, and missing runners leave visible pending setup. No migration.
+
+## 14 November 2026 — Bio Radars kit 1.0.0 and Trial Radar 1.0.0 (draft)
+
+The radar kit (`templates/source/radar-kit/`) and its generator (`scripts/build-radar-templates.mjs`, `--check` in the build) build each Bio Radar from a definition: four screens on the Vivid kit (theme graphite) with server-side pages, five common tables, the brief builder shared by the app and its `brief` function, the research-template editor with versions, restore default and eight locked rules, tracker field labels and hiding, custom fields that flow into the brief's return format, the source report with the 3-run hint, the digest and alert written by read-only app functions (E7), and the recommended automations (scan + digest as one automation, E5; alert after the scan), with research write grants that resolve fields at run time (E6) and exclude user-owned fields. Trial Radar 1.0.0 (`life.trial-radar`, published 15 Nov on owner approval through the catalog seed) is the first radar: TrialAgents Intel (EU CTIS) first, then ClinicalTrials.gov, WHO ICTRP and company releases; weekly on Monday at 07:00; `trialradar.events` is a `radar.v1` output with one writer. Platform fix: run-triggered summary emails now re-check their research run as the batch owner (`authorizeSummaryRun`); before, every such email failed. Tests: 14 unit, 5 integration and a production-frame browser script at 1440 and 390 px, including 5,000 events and 2,000 trials. Trial and event drawers keep their actions at the top in normal flow, so scrolled content never sits under a fixed footer.
 
 ## 14 November 2026 — Partnerships 2.1.0 published
 

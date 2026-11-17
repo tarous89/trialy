@@ -18,10 +18,10 @@
 | 01 Runway | [apps/RUNWAY.md](apps/RUNWAY.md) | `life.cash-runway` 2.1.0 published (#131) |
 | 02 Programs | [apps/PROGRAMS.md](apps/PROGRAMS.md) | `life.project-oversight` 2.1.0 published (#136), with manual cash forecast and Runway integration |
 | 03 Fundraise | [apps/FUNDRAISE.md](apps/FUNDRAISE.md) | `life.investor-crm` 2.0.0 built in PR #137 and revised 14 Nov for default-on automations (#168/#169, helpers E7) and AI-native customization; **published** 14 Nov (owner approval; replaces Investor CRM 1.0.1, migration 072) |
-| 10 Bio Radars | [apps/BIO_RADAR.md](apps/BIO_RADAR.md) | Scoped (14 Nov); family of 8 small apps (Pipeline, Trial, Literature 2.0.0, Patent, Market, Deal, Funding, Regulatory Radar) on one radar kit; automations on by default; editable tracker and research template; build kit + Trial Radar first (on #168 and #169, plus platform additions E5 and E6 first) |
+| 10 Bio Radars | [apps/BIO_RADAR.md](apps/BIO_RADAR.md) | Scoped (14 Nov); family of 8 small apps (Pipeline, Trial, Literature 2.0.0, Patent, Market, Deal, Funding, Regulatory Radar) on one radar kit; automations on by default; editable tracker and research template; kit + Trial Radar 1.0.0 built and **published** 15 Nov (owner approval); Pipeline 1.0.0, Literature 2.0.0, Deal 1.0.0, Funding 1.0.0, Patent 1.0.0, Market 1.0.0 and Regulatory 1.0.0 built on kit 1.1.0 and **published** 15 Nov (owner approval), each an independent app; Literature 1.2.2 withdrawn |
 | 09 Lab Inventory | [apps/LAB_INVENTORY.md](apps/LAB_INVENTORY.md) | Scope approved (14 Nov); replaces `life.inventory-management` 1.0.2 as 2.0.0; no platform work (one PR) |
 | 07 Partnerships | [apps/PARTNERSHIPS.md](apps/PARTNERSHIPS.md) | `life.partnership-tracker` 2.0.0 built (draft until approved; replaces 1.1.1, listed in `catalog-retirements.json`); source `templates/source/partnership-tracker/` |
-| 06 Investor Updates | [apps/INVESTOR_UPDATES.md](apps/INVESTOR_UPDATES.md) | Scoped (14 Nov); AI-native (assistant drafts on schedule, app approves, sends, tracks); build after Data Room PR A: PR A update extension ([§6](../EXTERNAL_EXCHANGE.md#6-update-extension-for-investor-updates)), PR B app |
+| 06 Investor Updates | [apps/INVESTOR_UPDATES.md](apps/INVESTOR_UPDATES.md) | `life.investor-updates` 1.0.0 built (#189) and **published** 17 Nov (owner approval); source `templates/source/investor-updates/`; deviations for platform contracts in its QA.md |
 | 08 Data Room | [apps/DATA_ROOM.md](apps/DATA_ROOM.md) | Scope approved (13 Nov); hosted rooms (only) on external exchange + room extension ([§5](../EXTERNAL_EXCHANGE.md#5-room-extension-for-data-room)); build as PR A (platform) then PR B (app); includes Diligence Q&A (12) |
 | 04 Contracts | [apps/CONTRACTS.md](apps/CONTRACTS.md) | `life.contracts` 1.0.0 published (#141) |
 | 05 CRO Selection | [apps/CRO_SELECTION.md](apps/CRO_SELECTION.md) | Scoped (13 Nov); build after External exchange PR #147 is merged |
@@ -37,7 +37,7 @@ All apps follow [modular apps and shared data](../MODULAR_APPS_AND_SHARED_DATA.m
 | 3 | BT2-03 | **Fundraise** | Investor pipeline for a round, from first contact to signed commitment. | CEO, CFO | Foundersuite (+ Visible for engagement) | Core | replaces `investor-crm` |
 | 4 | BT2-04 | **Contracts** | Register of CDAs, MSAs, SOWs and other agreements with key dates and obligations. | CEO, BD, ClinOps, finance | ContractSafe/ContractWorks (size) + Gatekeeper/Contract Logix (biotech) + Ironclad (AI extraction) | Core | **new** |
 | 5 | BT2-05 | **CRO Selection** | Choose CROs, CDMOs and labs: from the need to a signed award and handover. | ClinOps, R&D leads | Scientist.com (+ Science Exchange; ClinAI / bid-grid practice) | Core | merge `cro-selection` + `sponsor-rfp-management` |
-| 6 | BT2-06 | **Investor Updates** | AI-drafted investor updates on a schedule: approve, send to the right contacts, track reads and asks. | CEO, CFO | Visible (+ Cabal for asks) | Core | **new** (split from Investor CRM) |
+| 6 | BT2-06 | **Investor Updates** | AI-drafted updates to the board, investors, shareholders and custom categories, by email or in meetings (agenda and pre-read before, recap after): approve, send, track reads, questions and asks. | CEO, CFO | Visible (+ Cabal for asks, Zeck / BoardPro for meetings) | Core | **new** (split from Investor CRM; takes meeting packs from 14) |
 | 7 | BT2-07 | **Partnerships** | Out-licensing, in-licensing and collaboration deals by asset: conferences, follow-ups and partner research. | CEO, BD | Inova (domain) + partneringONE practice + HubSpot (mechanics) | Core | replaces `partnership-tracker` (2.0.0) |
 | 8 | BT2-08 | **Data Room** | Prepare, share and track data rooms for financing, licensing, partnering and M&A, with diligence Q&A. | CEO, CFO, BD | ShareVault (domain) + DocSend/Papermark (mechanics) + Ansarada (Q&A) | Core | **new** (includes BT2-12) |
 | 9 | BT2-09 | **Lab Inventory** | Reagents, consumables and research materials: stock, expiry, requests, approvals and reorders. | Lab managers, scientists | Quartzy | Core | replaces `inventory-management` (2.0.0) |
@@ -45,7 +45,7 @@ All apps follow [modular apps and shared data](../MODULAR_APPS_AND_SHARED_DATA.m
 | 11 | BT2-11 | **Trial Finance** | Clinical budgets vs invoices and monthly accrual estimates. | CFO, ClinOps | Condor | Extended | **new** |
 | 12 | BT2-12 | ~~Diligence Q&A~~ | **Merged into Data Room (08)** on 13 Nov 2026: Q&A belongs to the room. Slot open. | — | — | — | — |
 | 13 | BT2-13 | **Lab Records** | Experiments, protocols and results linked to programs and outsourced studies. | CSO, scientists | Benchling | Extended | adapt `experiment-notebook` |
-| 14 | BT2-14 | **Board** | Board meetings, packs, resolutions and action items. | CEO, company secretary | Diligent Boards | Extended | **new** |
+| 14 | BT2-14 | **Board** | Formal governance: minutes, resolutions, written consents and board action items (pre-reads live in 06). | CEO, company secretary | BoardPro (+ Carta board consents) | Extended | **new** |
 | 15 | BT2-15 | **IP Portfolio** | Patent families, deadlines, costs and freedom-to-operate actions. | CEO, CSO, IP counsel | Anaqua | Extended | **new** |
 | 16 | BT2-16 | **CRO Oversight** | Vendor deliverables, KPIs, issues and governance during studies. | ClinOps, PM | Veeva Vault CTMS | Clinical-stage | adapt `cro-oversight` |
 | 17 | BT2-17 | **Site Finder** | Shortlist sites and investigators from trial history and track feasibility. | ClinOps, CMO | Veeva Study Startup + Citeline Sitetrove | Clinical-stage · **TrialAgents edge** | merge `co-site-feasibility` + `investigator-crm` |
@@ -61,7 +61,7 @@ All apps follow [modular apps and shared data](../MODULAR_APPS_AND_SHARED_DATA.m
 
 The apps are separate, but several share records and form natural packs (all over the shared Organization / Person / Program records):
 
-- **Finance pack:** Runway (01) ← Trial Finance (11) → Investor Updates (06) → Board (14). Accruals feed the runway; the runway feeds updates and board packs.
+- **Finance pack:** Runway (01) ← Trial Finance (11) → Investor Updates (06, including board pre-reads) → Board (14, minutes and resolutions). Accruals feed the runway; the runway feeds updates and board pre-reads.
 - **Deal pack** (fundraising *and* licensing follow the same path: targets → outreach → CDA → non-confidential deck → data room → diligence → term sheet): Fundraise (03), Partnerships (07), Contracts (04), Data Room (08, includes Diligence Q&A), Deal Comps (18).
 - **Outsourcing pack:** CRO Selection (05) → Contracts (04) → CRO Oversight (16) → Trial Finance (11).
 - **Clinical pack:** Trial Radar and Pipeline Radar (10), Site Finder (17), Regulatory (20), CRO Oversight (16).
@@ -136,9 +136,9 @@ Format per app: users and job · reference app · scope (in / out) · records ·
 - **Detailed scope:** final build scope in [apps/CRO_SELECTION.md](apps/CRO_SELECTION.md); suppliers respond through the platform [External exchange](../EXTERNAL_EXCHANGE.md).
 
 ### BT2-06 — Investor Updates (rank 6, Core)
-*AI-drafted investor updates on a schedule: approve, send to the right contacts, track reads and asks.*  
-*Long name: Investor Updates & Reporting*
-- **Final scope:** [apps/INVESTOR_UPDATES.md](apps/INVESTOR_UPDATES.md) (14 Nov 2026). It supersedes the earlier brief (KPI series, no email). It is AI-native: a scheduled update (template + data sources + contacts + frequency) asks Claude or ChatGPT to draft and design each update. The app holds the investor list (firms with contacts), previews the draft with a fact panel, gets approval, sends from TrialAgents and tracks reads and "I can help" responses. The cap table is a later app.
+*AI-drafted updates to the board, investors, shareholders and custom categories, by email or in meetings.*  
+*Long name: Investor & Board Updates*
+- **Final scope:** [apps/INVESTOR_UPDATES.md](apps/INVESTOR_UPDATES.md) (revised 15 Nov 2026). Investors are people in one or more **categories** (Board, Investors, Shareholders, plus custom ones), optionally defined by **share class**; v1 stores classes only, a cap-table app can provide holdings later. An **update** is an email or a **meeting** (board, shareholder, investor call, advisory) with a before part (agenda, pre-read) and an after part (recap). One draft yields each category's version from block levels. Templates and plans are presets; one-off AI drafts and "save as template" cover the rest. Four install automations (meeting before-draft, ready for review, new response, weekly digest) plus a scheduled draft per email plan.
 
 ### BT2-07 — Partnerships (rank 7, Core; formerly "BD Pipeline")
 *Out-licensing, in-licensing and collaboration deals by asset: conferences, follow-ups and partner research.*  
@@ -185,14 +185,14 @@ Merged into [Data Room (08)](apps/DATA_ROOM.md) on 13 November 2026: the questio
 - **Positioning note:** Benchling already sells to startups, so position this for teams that outsource most lab work and need an index of studies and results rather than a full notebook.
 
 ### BT2-14 — Board (rank 14, Extended)
-*Board meetings, packs, resolutions and action items.*  
-*Long name: Board & Governance*
-- **Users / job:** prepare board meetings and keep resolutions, approvals and action items in one place.
-- **Reference app:** Diligent Boards — board packs, minutes and actions.
-- **In scope:** meetings, agenda, board-pack contents (document references), minutes references, resolutions and written consents (metadata), action items. **Out:** legally binding e-signature, statutory filings, cap table.
-- **Records:** Board meeting; Agenda item; Resolution; Board action. Shared: Person, Document reference, Program.
-- **Screens:** Governance overview · Meeting prep · Resolutions register · Actions.
-- **Assistant angle:** assemble the board pack outline from 01, 02, 03 and 06.
+*Formal governance: minutes, resolutions, written consents and board action items.*  
+*Long name: Board Governance*
+- **Changed 15 Nov 2026:** board updates, meeting agendas and pre-reads, questions and recaps (for any meeting) moved to Investor Updates (06). Board keeps the legal record only, and is built only if design partners ask for more than 06.
+- **Users / job:** keep minutes, resolutions and written consents for each meeting, and track the board's action items.
+- **Reference app:** BoardPro (small boards) + Carta board consents (workflow only).
+- **In scope:** minutes (drafted by the assistant from notes, approved by the board), resolutions and written consents (metadata, approval status), action items with owners and due dates, director register. Reads 06's meetings. **Out:** legally binding e-signature, statutory filings, cap table, pre-reads (06).
+- **Records:** Minutes; Resolution; Board action; Director. Shared: Person, Document reference; 06 meetings (read).
+- **Screens:** Governance overview · Minutes · Resolutions · Actions.
 
 ### BT2-15 — IP Portfolio (rank 15, Extended)
 *Patent families, deadlines, costs and freedom-to-operate actions.*  

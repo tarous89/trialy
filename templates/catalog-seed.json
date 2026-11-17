@@ -9,7 +9,7 @@
   },
   "life.project-oversight": {
     "schema": "templates/source/project-oversight/schema.example.json",
-    "version": "2.1.0"
+    "version": "2.2.0"
   },
   "life.pi-network-management": {
     "schema": "templates/source/pi-network-management/schema_mapping.example.json",
@@ -29,7 +29,7 @@
   },
   "life.partnership-tracker": {
     "schema": "templates/source/partnership-tracker/schema.example.json",
-    "version": "2.1.0"
+    "version": "2.2.0"
   },
   "life.client-signals-crm": {
     "schema": "templates/source/client-signals-crm/schema_mapping.example.json",
@@ -40,8 +40,8 @@
     "version": "1.0.1"
   },
   "life.literature-radar": {
-    "schema": "templates/source/literature-radar/schema_mapping.example.json",
-    "version": "1.2.2"
+    "schema": "templates/source/radars/literature-radar/schema.example.json",
+    "version": "2.0.0"
   },
   "life.cro-oversight": {
     "schema": "templates/source/cro-oversight/schema.example.json",
@@ -90,5 +90,41 @@
   "life.contracts": {
     "schema": "templates/source/contracts/schema.example.json",
     "version": "1.1.0"
+  },
+  "life.trial-radar": {
+    "schema": "templates/source/radars/trial-radar/schema.example.json",
+    "version": "1.0.0"
+  },
+  "life.pipeline-radar": {
+    "schema": "templates/source/radars/pipeline-radar/schema.example.json",
+    "version": "1.0.0"
+  },
+  "life.deal-radar": {
+    "schema": "templates/source/radars/deal-radar/schema.example.json",
+    "version": "1.0.0"
+  },
+  "life.funding-radar": {
+    "schema": "templates/source/radars/funding-radar/schema.example.json",
+    "version": "1.0.0"
+  },
+  "life.patent-radar": {
+    "schema": "templates/source/radars/patent-radar/schema.example.json",
+    "version": "1.0.0"
+  },
+  "life.market-radar": {
+    "schema": "templates/source/radars/market-radar/schema.example.json",
+    "version": "1.0.0"
+  },
+  "life.regulatory-radar": {
+    "schema": "templates/source/radars/regulatory-radar/schema.example.json",
+    "version": "1.0.0"
+  },
+  "life.data-room": {
+    "schema": "templates/source/data-room/schema.example.json",
+    "version": "1.1.0"
+  },
+  "life.investor-updates": {
+    "schema": "templates/source/investor-updates/schema.example.json",
+    "version": "1.0.0"
   }
 }

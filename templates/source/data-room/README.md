@@ -1,4 +1,4 @@
-# Data Room 1.0.0 (`life.data-room`)
+# Data Room 1.1.0 (`life.data-room`)
 
 Prepare, share and track data rooms for financing, licensing, partnering and M&A, with diligence Q&A built in. Scope: [DATA_ROOM.md](../../../docs/product/app-template-blueprints/apps/DATA_ROOM.md). Platform: [external exchange rooms](../../../docs/product/EXTERNAL_EXCHANGE.md) (§5, #152; guidance 1.3.25).
 
@@ -6,7 +6,9 @@ Prepare, share and track data rooms for financing, licensing, partnering and M&A
 
 | File | Purpose |
 |---|---|
-| `data-room.source.js` | Readable app source (`frontend-js`). Line 1 is `templateLayoutSchema` with seven screen IDs. |
+| `data-room.source.js` | Readable app source (`frontend-js`). Line 1 is `templateLayoutSchema` (seven screens, column groups and form groups); line 2 is `appCommands` (32 commands). |
+| `functions/room_summary.js` | Read-only app helper (E7) that writes the weekly room summary email. |
+| `archive/1.0.0/` | The 1.0.0 source package, unchanged. |
 | `data-room.css` | Vivid kit styles, theme forest (`#087B58`). |
 | `catalog.metadata.json` | Catalog entry: description, options, instructions and documentation. |
 | `schema.example.json` | Installer schema with the roles below; `templates/catalog-installers.json` points here. |
@@ -14,7 +16,7 @@ Prepare, share and track data rooms for financing, licensing, partnering and M&A
 | `data-room.preview.html` | Offline fictional preview (generated). |
 | `QA.md` | DATA_ROOM.md §13 results. |
 
-Build: `node scripts/build-data-room-template.mjs` writes `templates/apps/life.data-room-1.0.0.json` and the preview. `--check` (part of `npm run build`) fails when either is stale.
+Build: `node scripts/build-data-room-template.mjs` writes `templates/apps/life.data-room-1.1.0.json` and the preview (1.0.0's catalog JSON is not rebuilt). `--check` (part of `npm run build`) fails when either is stale.
 
 ## Roles
 
@@ -47,7 +49,16 @@ Additions beyond §7:
 | Documents | `exchange.shareDocuments` publishes index changes. `exchange.replaceDocument` shows a newer version in place, in one review with the item update. |
 | Levels | `exchange.setLevels`, with `entered` for a CDA in place elsewhere or on file in Contracts. `exchange.defineLevels` adds custom levels. `exchange.acceptFile` on a signed CDA opens only its level. |
 | Q&A | `exchange.listQuestions` provides questions. `exchange.answer` answers privately; `exchange.publishAnswer` publishes to the room or one level, asker anonymised. |
-| Digest | `exchange.approveDigest` with the approved text. |
+| Notify parties | The person picks documents and all or chosen parties; `exchange.prepareEmail` (`documents_updated`, `exchangeIds`, `versionIds`), shown exactly as returned, then `exchange.sendEmail`. No automatic digest. |
+| Access-ending reminder | `rooms.access_ending_reminder`; `notifyAccessEnding` at go-live and `exchange.setRoomNotices` on a live room. |
 | Close | `exchange.revoke` and `exchange.extend`. Archiving the app stops links and tracking. |
 
 Assistants draft records and email batches; they never send, grant, change levels, publish, accept or revoke.
+
+## 1.1.0 changes ([DATA_ROOM.md §14](../../../docs/product/app-template-blueprints/apps/DATA_ROOM.md#14-data-room-110-platform-standards-assistant-control-and-notifications))
+
+- App commands for every action, through the same handler as clicks (`handle(event)`); commands never share, send or change a live room.
+- Custom fields (`settings.custom_fields`) and form layouts (`room_form`, `item_form`, `question_form`); hidden columns now honour the platform's `group:field` keys.
+- Notify parties replaces the daily digest; access-ending reminder per room; instant question emails documented.
+- One install recommendation: the weekly room summary (helper `room_summary`).
+- Settings `notify_updates_default` and rooms `notify_updates` removed; `custom_fields` and `access_ending_reminder` added.

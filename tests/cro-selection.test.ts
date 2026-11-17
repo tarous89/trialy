@@ -26,7 +26,7 @@ test('catalog entry, scalar schema, roles as in scope §7, croselection.awards i
  const prepared=`const templateConfiguration=${JSON.stringify({...entry.defaults,heading:'CRO Selection'})};\nconst templateBindings=[];\n${entry.source}`;
  assert.deepEqual(readCustomLayout(prepared)!.schema.screens.map(s=>s.id),['overview','requests','vendors','messages','proposals','evaluation','decision','settings']);
  for(const k of ['quickStart','dataContract','interactionContract','lifecycle','limitations','examples','tasks'])assert.ok((entry.documentation as any)[k],k);
- // Published (owner approval, 15 November 2026); 1.0.1 stays immutable and installable; both replaced versions are withdrawn by migration 074.
+ // Published (owner approval, 15 November 2026); 1.0.1 stays immutable and installable; both replaced versions are withdrawn by migration 077.
  const seed=JSON.parse(await readFile('templates/catalog-seed.json','utf8')),installers=JSON.parse(await readFile('templates/catalog-installers.json','utf8')),ret=JSON.parse(await readFile('templates/catalog-retirements.json','utf8')).retirements;
  assert.equal(seed['life.cro-selection'].version,'2.1.0');assert.equal(seed['life.sponsor-rfp-management'],undefined);assert.equal(installers['life.cro-selection@2.1.0'],'templates/source/cro-selection/schema.example.json');assert.equal(installers['life.cro-selection@2.0.0'],'templates/source/cro-selection/archive/2.0.0/schema.example.json');assert.equal(installers['life.cro-selection@1.0.1'],'templates/source/cro-selection/archive/1.0.1/schema.example.json');
  const old=await appTemplates.read({templateId:'life.cro-selection',version:'1.0.1'});assert.equal(old.version,'1.0.1');

@@ -9,9 +9,9 @@ import {fieldSchema} from '../src/shared/schema.js';
 
 /* Programs 2.1.0: the catalog entry, prepared exactly as AppTemplates.operation prepends configuration, executed in production QuickJS. */
 const entry=await appTemplates.read({templateId:'life.project-oversight',version:'2.1.0'});
-const schema=JSON.parse(await readFile('templates/source/project-oversight/schema.example.json','utf8'));
+const schema=JSON.parse(await readFile('templates/source/project-oversight/archive/2.1.0/schema.example.json','utf8'));
 const contract=JSON.parse(await readFile('templates/core-contract/v1.json','utf8'));
-const demo=JSON.parse(await readFile('templates/source/project-oversight/demo_data.json','utf8')).records;
+const demo=JSON.parse(await readFile('templates/source/project-oversight/archive/2.1.0/demo_data.json','utf8')).records;
 const roles=Object.keys(schema);
 const fullMap=Object.fromEntries(roles.map(r=>[r,{typeId:r,fields:schema[r].logicalFields,writableFields:schema[r].readOnly?[]:Object.keys(schema[r].logicalFields)}]));
 const fullBindings=roles.map(r=>({typeId:r,fields:Object.values(schema[r].logicalFields)}));

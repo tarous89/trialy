@@ -130,5 +130,53 @@
   "life.cro-selection@2.1.0": {
     "catalogDigest": "4353003711d4d3ac999f79e1e18a5ed97217b65a8765a8b6ab49c1a92fcf45b0",
     "previewSha256": "818a24abfd069b50f96ad9feb4b18b6233d66f125e4fc4b56bdc4b694ec13639"
+  },
+  "life.partnership-tracker@2.2.0": {
+    "catalogDigest": "fa0c1a458d41408948b3ea3d8e128c7d74c0027e2f1baa0c3e56c6b568d16347",
+    "previewSha256": "c26b2d85e566bd55f0a14429b9d1a4989c751882cfed34fe7646778e4144ea30"
+  },
+  "life.trial-radar@1.0.0": {
+    "catalogDigest": "c849acef0fa8aa4bdad0d4c0adba4eeb83cb62dbf6eda59a0b1944fb3fbfcc0f",
+    "previewSha256": "ad4ec2521d8f84a1870a6de63ece385dc9cb7f023d2f4f6ff1c6acf21d0f4b6d"
+  },
+  "life.project-oversight@2.2.0": {
+    "catalogDigest": "ac617bcb1314912bf6f40ede4adff47f94b763798d01259170125039e2b7b65a",
+    "previewSha256": "6a538ee4cb4f3e858c6798bb91e3879c317f42f576d74d9ee1a39be56bc1a4a8"
+  },
+  "life.deal-radar@1.0.0": {
+    "catalogDigest": "55e9be5f05869ecfbabaed4b3d66008ac1c4296e6c5298c2a382e2c8be8ba64f",
+    "previewSha256": "abab8472ccbcfac17d02f047bd2c8ebe3096fb51fd19976662589298454a3dec"
+  },
+  "life.funding-radar@1.0.0": {
+    "catalogDigest": "9d59ef7c52b8eb9e56988ec77b393c31e1bc04eea4303dd4fb0d4357103b1cca",
+    "previewSha256": "34f60031523597efbaf0a2b008ed76d75967c6842590f43af08d40be3f5f4298"
+  },
+  "life.literature-radar@2.0.0": {
+    "catalogDigest": "2fd7fbf24bbadef72c10a162be4384f09c2379725fa1b5bfc268fab55a3b07d1",
+    "previewSha256": "3d88722886f6995207ef7346699ae6de77326faa4b94475d15d1b42041241dc3"
+  },
+  "life.pipeline-radar@1.0.0": {
+    "catalogDigest": "ae9e20d80afd38c48513e86c8f81c31a7e9142acf9f568ad5db70af167a4a010",
+    "previewSha256": "ff87149f0f25bd07145b160cf0512b27cebb6029bc40210845f0da3411f786fd"
+  },
+  "life.market-radar@1.0.0": {
+    "catalogDigest": "912573af4ffd80dd3c782a40d05612c6915241bb33633aeb7e7bcc43385f58aa",
+    "previewSha256": "853715efe039366bd41126460811e29331864fb020c77bea11486fd6a8507d79"
+  },
+  "life.patent-radar@1.0.0": {
+    "catalogDigest": "a75baa1cee0c7b4abf3a2abc2ad05dd56b2cfaea5c438c338534c9ff1a0afed9",
+    "previewSha256": "1ab435bcd40fbbce1ed66a80ad23f9ebcfcaf695848ad7ceaacc4b2fe8f84418"
+  },
+  "life.regulatory-radar@1.0.0": {
+    "catalogDigest": "1acaca1f51f4c5d612754f048a06ae3cec373fd2645151f3bcffb99a97265990",
+    "previewSha256": "6f566e923f0b7c268110f12394c532232243ff58349888b50cf7fc47a75a5d08"
+  },
+  "life.investor-updates@1.0.0": {
+    "catalogDigest": "85d89d94fefd85eb9c06b3c4e62b4c4e40a9f5b2715128e72de17d11e28b7699",
+    "previewSha256": "e82926dad14469b815086a41a24708ba2849488f46de87f93474ff643b1a6c55"
+  },
+  "life.data-room@1.1.0": {
+    "catalogDigest": "908ca6f72018f98fcaf22da7b0be78eb3f383264aa527e98281468bdd388e011",
+    "previewSha256": "036e65d0dd36455438a131ed0caec4ff40fda4f38ad517b65878a144cf60c80d"
   }
 }

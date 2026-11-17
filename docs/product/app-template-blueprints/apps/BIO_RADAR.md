@@ -70,13 +70,13 @@ Custom `frontend-js` on the Vivid kit, theme **graphite**, declared in `template
 |---|---|
 | `<radar>.settings` (one row) | lookback_days (number, 90), impact_scale (text, JSON), research_template (text*, the workspace's current template), research_template_version (number), language (text) |
 | `<radar>.scopes` | name (text*), program_id (text), definition (text*, JSON; fields per radar, §3), sources (text*, JSON: name, covers, priority, notes), watchlist (text, JSON), include_notes (text), exclude_notes (text), status (select*: active / paused), archived (boolean). `last_run_on` is derived (latest completed run covering the scope), not stored |
-| `<radar>.<tracker>` | Radar-specific fields (§3), plus natural_key (text*), scope_id (text*), sources (text*, JSON), last_verified_on (date), last_changed_run_id (text), changed_fields (text, JSON: fields the last run changed), seen (boolean), watched (boolean), dismissed (boolean), user_notes (text) |
+| `<radar>.<tracker>` | Radar-specific fields (§3), plus natural_key (text*), scope_id (text*), program_id (text), sources (text*, JSON), last_verified_on (date), last_changed_run_id (text), changed_fields (text, JSON: fields the last run changed, ["new"] for a new row), seen_run_id (text: the run whose changes a person has seen), watched (boolean), dismissed (boolean), user_notes (text), archived (boolean) |
 | `<radar>.events` (output) | scope_id (text*), program_id (text), organization_id (text), item_id (text), natural_key (text*), kind (select*: per radar, §3), title (text*), summary (text), occurred_on (date), expected (boolean), expected_window (text), impact (select*: high / medium / low / none), direction (select: threat / opportunity / neutral), so_what (text), sources (text*, JSON), run_id (text), status (select*: new / reviewed / dismissed; research writes `new`), dismiss_reason (text), reviewed_by (text) |
 | `<radar>.runs` | run_id (text*, the platform run id), scope_ids (text*), kind (select*: build / refresh), run_on (date*), assistant (select: claude / chatgpt), automation_id (text), research_template_version (number), sources_report (text*, JSON per scope), items_added (number), items_updated (number), events_added (number), status (select*: completed / partial / failed) |
 
-**Who writes what.** Scans and chat research runs write the radar directly, with no approval per run or item: they create and update tracker rows and events (always with sources), set `changed_fields` and `last_changed_run_id` on the rows they change, and save one runs row per run. They never delete rows and leave user-owned fields alone: `seen`, `watched`, `dismissed`, `user_notes`, an event's `status` once it's `reviewed` or `dismissed`, `dismiss_reason` and `reviewed_by`. A dismissed item is not recreated: the natural key matches it, and the run only adds sources. The platform's per-field history shows every change by run, so a user can see and revert anything.
+**Who writes what.** Scans and chat research runs write the radar directly, with no approval per run or item: they create and update tracker rows (always with sources), set `changed_fields`, `last_changed_run_id` and `last_verified_on` on the rows they change, create events (status `new`) and save one runs row per run. Events are **create-only** for research, so a reviewed or dismissed event is never changed by a run; the same change found again gets the same key and is merged on screen with its sources combined. Research never deletes rows and never writes user-owned fields: `watched`, `seen_run_id`, `dismissed`, `user_notes` and `archived` on the tracker, `dismiss_reason`, `reviewed_by` and `archived` on events (they are outside its grant). A dismissed item is not recreated: the brief lists dismissed keys and the run only adds sources. The platform's per-field history shows every change by run.
 
-**Shared roles:** `programs` (core.v1, optional, read), `organizations` (core.v1, read/write; companies, investors, agencies).
+**Shared roles:** `programs` (core.v1, optional, read-only: connected when installed, never created), `organizations` (core.v1, read/write; companies, investors, agencies). Settings also hold `field_labels` (display names) and `hidden_fields` (columns hidden in the table; still researched).
 
 **Outputs:** each radar writes its own events output in one common contract, `radar.v1`: `pipelineradar.events`, `trialradar.events`, `literatureradar.events`, `patentradar.events`, `marketradar.events`, `dealradar.events`, `fundingradar.events`, `regulatoryradar.events`. Deal Radar and Funding Radar also output their trackers as `dealradar.deals` and `fundingradar.financings`. This keeps one writer per output. Rows that are not dismissed are readable by other apps; dismissed rows are not.
 
@@ -126,7 +126,7 @@ All emails follow the same rules: about 200 words maximum, empty sections omitte
 > **Bottom line:** one or two sentences on what changed for your programs.
 > **High impact** (max 3): {item}: {what happened} → *for us:* {so what} · [source]
 > **{Radar section}** (max 3; §3)
-> **Coming up (90 days):** dated items, with estimates marked "est."
+> **Coming up (90 days):** dated items from this run, with estimates marked "est." (the Overview lists all of them)
 > **Coverage:** sources used · not reachable (only if any)
 > Open {n} new items →
 
@@ -142,7 +142,7 @@ All emails follow the same rules: about 200 words maximum, empty sections omitte
 
 - **Estimates** (registry completion dates, expected decision dates, patent expiry estimates) show "est." everywhere.
 - **Duplicates** with the same natural key (§3) are merged and their sources combined.
-- **Changed in last run:** fields a run changed (`changed_fields`) are highlighted until the user marks the row seen; the detail panel shows old value, new value, run and source.
+- **Changed in last run:** fields a run changed (`changed_fields`) are highlighted until a person marks the row seen (`seen_run_id` = that run); the detail panel names the run, its events and sources, and the record history in Database shows old and new values.
 - **No unsourced data:** `sources` is required, so a run can't save a row or event without one.
 - **Source report:** each named source is used / not reachable / not relevant per scope and run. A source not reachable in 3 consecutive runs shows a hint on Overview.
 - **Cross-radar review** (on request: "review all radars for Program X"): the assistant reads the events outputs of every installed radar it can access and writes a report document. No app or automation is needed.
@@ -230,3 +230,22 @@ The kit is built on the shipped platform (#168 recipes, install popup, summary a
 **What's unchanged.** Writes stay within the app's own tables and the user's current access; the grant expires and can be revoked; every write has a receipt and field history; a field the user marks "assistant can't write" is never written. Template, scope and field edits by an assistant remain reviewed app changes.
 
 **Changes from the first version of this scope:** research updates the radar directly, so there is no proposed / confirmed queue; scan + digest is one automation (E5); custom fields work without re-approval (E6); there's no `defaultOn` field, since every install recommendation starts selected; the digest and alert are read-only summary bindings; the brief is a read-only binding; `last_run_on` is worked out from the runs table; and with no runner the scan shows Needs setup.
+
+
+## 7. Build notes (kit 1.0.0 and Trial Radar 1.0.0, 14 Nov 2026)
+
+- **Package:** `templates/source/radar-kit/` (kit library `kit.mjs`, app source, CSS, `brief-core.js` shared by the app and the `brief` function, function sources) and `templates/source/radars/<slug>/` (definition `radar.json`, catalog metadata, demo data). `scripts/build-radar-templates.mjs` generates each radar's catalog entry, installer schema, preview, `radar.v1` output entry and installer pointer; `--check` runs in `npm run build`. A new radar is a folder with those three files plus tests.
+- **Functions (E7):** `brief`, `digest_summary`, `alert_summary` are installed with the app (read-only, `records.read` and `tables.list`). Each data call of a summary function is re-authorized by the platform, so the digest uses three reads (the run's events, changed items and runs row).
+- **Custom fields:** the owner adds the field to the tracker table (reviewed schema change), then one reviewed app save adds it to the app's binding and the source's `templateBindings` header. It then appears as a column, in the brief's return format and in the research grant (E6) with no automation re-approval.
+- **Reads:** every list is a server-side page (search, exact filters, sort, paging); grouping and duplicate merging apply to the page; the calendar reads one month (`occurred_month`) at a time. Overview uses about 13 bounded reads.
+- **Platform fix in the same PR:** run-triggered summary emails (E1 + E3/E5) re-check their research run as the batch owner (`authorizeSummaryRun`); before, the check could not see the run and every such email failed.
+
+## 8. Build notes, waves 2 and 3 (kit 1.1.0, 15 Nov 2026)
+
+- **Radars:** Pipeline Radar 1.0.0, Literature Radar 2.0.0, Deal Radar 1.0.0 and Funding Radar 1.0.0, each a definition in `templates/source/radars/<slug>/` (generated by `_tools/make_wave2.py`). Published on owner approval (15 Nov 2026), each an independent app; migration 074 withdraws Literature Radar 1.2.2, whose installs are unchanged.
+- **Kit versioning:** Trial Radar 1.0.0 pins kit 1.0.0, frozen in `radar-kit/archive/1.0.0/`, so its package stays byte-identical. Kit 1.1.0 adds optional definition keys (`userOwnedFields`, `trackerOutput`, `itemNameField`, `disclaimer`, multiline scope fields, `dateField.upcoming`, item-based digest sections); see the kit README.
+- **Outputs:** Deal Radar and Funding Radar publish their trackers (`dealradar.deals`, `fundingradar.financings`) as `radar.v1` outputs with one writer, next to their events. Amounts are only those publicly disclosed, and totals are given per currency.
+- **Literature:** reading-queue fields `queue_status` and `assignee` belong to the team (excluded from the research grant); a per-scope synthesis prompt (multiline) feeds the brief; the digest's must-read section lists high-relevance publications from the run with why each matters.
+- **Wave 3:** Patent Radar, Market Radar and Regulatory Radar 1.0.0, monthly (first Monday, 07:00), from `_tools/make_wave3.py`. Patent Radar shows "Not legal advice" on every screen and in every email, and its Coming up window is 24 months (`comingDays: 730`) so expiries show; Market and Regulatory look 180 days ahead for decisions, advisory committees and consultation deadlines. Regulatory Radar dates a consultation_open event on its comment deadline.
+- **Tests:** `tests/radars.test.ts` (package, screens, brief, digest and alert per radar, plus wave-specific checks) and `tests/radars-integration.test.ts` (install, demo data, every screen and drawer, design gate at 1440 and 390 px, Needs setup without a runner, one writer). The shared run, email and scale behaviour is verified on Trial Radar.
+- **Kit fix at publication:** counts use the definition's plural label ("patent families").

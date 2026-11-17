@@ -27,7 +27,7 @@ export async function literatureFixture(){
   // Schema creation and every row use the normal reviewed database path.
   const id=(await save({kind:'create_record',typeId:map[role].typeId,data})).objects[0].id;ids[r.id]=id;
  }
- const entry=await appTemplates.read({templateId:'life.literature-radar'});
+ const entry=await appTemplates.read({templateId:'life.literature-radar',version:'1.2.2'});
  const op=await appTemplates.operation(f,actor,w.id,{templateId:entry.id,version:entry.version,digest:entry.digest,name:'Literature Pipeline',configuration:{tableMap:JSON.stringify(map)},bindings,manifest:{version:1,scope:'workspace',fields}});
  const p=await f.preview(actor,w.id,op),receipt=await f.confirm(actor,w.id,p.id,p.digest),component=(await f.readComponent(actor,w.id,receipt.id)).component;
  return {pg,db,actor,f,s,w,component,map,save,ids};

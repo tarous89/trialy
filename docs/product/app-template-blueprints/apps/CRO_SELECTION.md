@@ -230,7 +230,7 @@ CRO Selection never writes another app's own tables; handoffs are proposals in t
 
 ## 14. CRO Selection 2.1.0 — platform changes and AI-native control
 
-**Status:** Built as catalog version 2.1.0 and **published** (owner approval, 15 November 2026; seed entry and migration 074). The 2.0.0 draft had already been imported into the catalog (imported versions are immutable), so the revision is 2.1.0; the 2.0.0 package is archived unchanged under `templates/source/cro-selection/archive/2.0.0/` and its catalog JSON is kept byte for byte. Migration 074 withdraws CRO Selection 1.0.1 and Sponsor RFP Management 1.0.1; the seed no longer lists Sponsor RFP Management. Package: `templates/source/cro-selection/`; tests: `tests/cro-selection.test.ts`, `tests/cro-selection-integration.test.ts`, `tests/cro-selection-commands.test.ts`.
+**Status:** Built as catalog version 2.1.0 and **published** (owner approval, 15 November 2026; seed entry and migration 077). The 2.0.0 draft had already been imported into the catalog (imported versions are immutable), so the revision is 2.1.0; the 2.0.0 package is archived unchanged under `templates/source/cro-selection/archive/2.0.0/` and its catalog JSON is kept byte for byte. Migration 077 withdraws CRO Selection 1.0.1 and Sponsor RFP Management 1.0.1; the seed no longer lists Sponsor RFP Management. Package: `templates/source/cro-selection/`; tests: `tests/cro-selection.test.ts`, `tests/cro-selection-integration.test.ts`, `tests/cro-selection-commands.test.ts`.
 
 ### 14.1 Owner decisions (15 November 2026)
 

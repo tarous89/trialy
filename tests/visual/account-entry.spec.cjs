@@ -31,6 +31,9 @@ for(const width of [1440,390])test(`Login and account creation use the shared au
  await expect(page.getByLabel('Password',{exact:true})).toHaveAttribute('autocomplete','new-password');
  await expect(page.getByRole('checkbox')).toHaveAttribute('required','');
  await checkBrand(page,width);
+ await expect(page.getByRole('complementary',{name:'Beta testing'})).toBeVisible();
+ await expect(page.getByRole('link',{name:'Contact us for free custom implementation.'})).toHaveAttribute('href','mailto:contact@trialagents.com?subject=Free%20custom%20implementation');
+ await expect(page.getByRole('button',{name:'Create account',exact:true})).toBeEnabled();
  await expect(page).toHaveScreenshot(`auth-signup-${width}.png`);
  await page.getByRole('link',{name:'Already registered? Sign in'}).click();
  await expect(page.getByRole('heading',{name:'Sign in to TrialAgents'})).toBeVisible();

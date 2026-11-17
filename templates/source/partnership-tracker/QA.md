@@ -1,3 +1,20 @@
+# Partnerships 2.2.0: QA against PARTNERSHIPS.md §13
+
+**Revision run for 2.2.0 (15 November 2026; app commands, integration standard, E5 and E6; PARTNERSHIPS.md §12b).** Fictional data only. Same environment as below; this container's Playwright 1.51.1 was pointed at the installed Chromium build for the design gate and browser test (CI installs its own).
+
+| Test | Result |
+|---|---|
+| `tests/partnerships-commands.test.ts` (7 tests, new): declaration (50 commands, host validation, every id answered, input schema checked); read commands (no writes, under 64,000 characters, the app's own funnel, filters, saved views and digest); click-path parity for stage moves, the after-meeting log, new opportunity with tags, follow-up done, signal dismissal and acceptance, tags kept per category, contacts, meeting outcome; buffering (a failing step leaves no review), viewers, partial reads and app-managed fields; customization (views, settings change only what is given, stage labels and custom stages with `schema_change`, lists with a new activity kind, preferences, categories, custom field registration, `layout.save` accepted by the host's layout validation and applied by the app, legacy `group.column` keys converted); integrations (From Contracts / From Data Room with Edit in *App*, hand-entered access refused while linked, own table unchanged); Additional fields | pass |
+| `tests/partnerships.test.ts` (19 tests, updated for 2.2.0: package and archive, two recipes with E5 email and E6 reads, `roles.list` as the only new capability) | pass |
+| `tests/partnerships-integration.test.ts` (4 tests, updated: real installer, E5 follow-up email on the research automation with `follow_up_of`, dynamic read bindings with exclusions, From *App* labels and `resolve_app_open` after Contracts and Data Room, `data_room_access.add` refused, commands through `list_app_commands` / `run_app_command` confirmed only by a person; design gate) | pass |
+| `scripts/test-partnerships-browser.ts` (production frame, 1440 and 390 px) | pass |
+| Deploy rehearsal: a PGlite database migrated and synced from `main` (1.1.1 draft, 2.0.0 draft, 2.1.0 approved), then this branch's migrate and sync: no immutability error; 2.2.0 approved, 2.1.0 still approved; a second run changes nothing | pass |
+| `npm run check`, `npm run build` (includes `build-partnerships-template.mjs --check`) | pass |
+| `npm test` (692 tests) | 691 pass. The one failure is `monitoring-pv-integration.test.ts` (CO06 design gate), the same failure recorded on unmodified `main` in this container (see the 2.1.0 run below); this change does not touch Monitoring & PV. |
+| Catalog source 224,682 of 240,000 characters; catalog file 280,108 of 380,000 bytes | unit "package" |
+
+---
+
 # Partnerships 2.1.0: QA against PARTNERSHIPS.md §13
 
 Run on 14 November 2026 with fictional data only: production QuickJS, disposable PGlite databases with every migration and the runtime role, the real catalog installer and Use existing data? step, the shared research runner and email action pipeline, and the production sanitized frame with a manifest attached. No deployed account, connected assistant or real email was used.
