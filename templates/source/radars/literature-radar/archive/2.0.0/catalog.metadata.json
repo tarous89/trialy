@@ -1,0 +1,15 @@
+{
+  "description": "Papers, preprints, congress abstracts and reviews on your topics, targets and authors, with a reading queue and a synthesis note per topic. Literature Radar 2.0.0 runs on the Bio Radars kit: Claude or ChatGPT searches PubMed, bioRxiv/medRxiv, journals and congress sites weekly, and a digest lists must-read papers.",
+  "tags": [
+    "biotech",
+    "literature",
+    "publications",
+    "pubmed",
+    "preprints",
+    "reading queue",
+    "radar",
+    "bio radars"
+  ],
+  "whenToUse": "Keep up with the literature on your topics: new papers, preprints, abstracts and reviews with three-line summaries and why they matter, a reading queue per person and a synthesis note per topic, with a weekly digest of must-read papers.",
+  "whenNotToUse": "Systematic reviews or meta-analyses with formal screening protocols, citation network analysis, reference management for writing, full-text storage of paywalled papers, trials (Trial Radar), patents (Patent Radar), medical advice."
+}

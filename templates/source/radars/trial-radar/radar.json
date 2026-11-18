@@ -1,8 +1,8 @@
 {
-  "kit": "1.0.0",
+  "kit": "1.0.1",
   "slug": "trial-radar",
   "id": "life.trial-radar",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "name": "Trial Radar",
   "prefix": "trialradar",
   "trackerTable": "trials",

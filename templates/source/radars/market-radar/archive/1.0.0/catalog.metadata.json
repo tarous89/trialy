@@ -1,0 +1,15 @@
+{
+  "description": "Approvals, launches, label changes, pricing, reimbursement and HTA decisions, guidelines and reported sales for products in your indication, with sources. One table of products, an events feed with a calendar of decisions, and a monthly scan + digest and high-impact alert run by Claude or ChatGPT.",
+  "tags": [
+    "biotech",
+    "market access",
+    "hta",
+    "pricing",
+    "approvals",
+    "competitive intelligence",
+    "radar",
+    "bio radars"
+  ],
+  "whenToUse": "Follow the market for your indication: approvals and label changes, launches, HTA, pricing and reimbursement decisions, guideline positions and reported sales, with the next decisions coming up and a monthly digest.",
+  "whenNotToUse": "Market sizing or forecasting models, your own launch plan, pipeline assets before filing (Pipeline Radar), regulatory guidance and designations (Regulatory Radar), investment advice."
+}

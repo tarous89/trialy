@@ -19,16 +19,16 @@ const J=(v:any)=>JSON.stringify(v);
 const cmd=async(rows:Row[],c:string,input:any={})=>{const r=await render(rows,null,{kind:'command',action:c,value:J(input)});return r.state.command;};
 
 test('package: catalog entry, five screens, limits, build --check, installer, published (seeded), helpers and recipes valid',async()=>{
- assert.equal(entry.id,'life.investor-updates');assert.equal(entry.version,'1.0.0');assert.equal(entry.name,'Investor Updates');
- const raw=await readFile('templates/apps/life.investor-updates-1.0.0.json','utf8'),file=JSON.parse(raw);
+ assert.equal(entry.id,'life.investor-updates');assert.equal(entry.version,'1.0.1');assert.equal(entry.name,'Investor Updates');
+ const raw=await readFile('templates/apps/life.investor-updates-1.0.1.json','utf8'),file=JSON.parse(raw);
  assert.ok(appTemplateEntry.safeParse(file).success);assert.ok(Buffer.byteLength(raw)<=300000,'catalog file budget');assert.ok(file.source.length<=240000);
  const layout=JSON.parse(/^const templateLayoutSchema=(.+);$/m.exec(await readFile(root+'investor-updates.source.js','utf8'))![1]);
  assert.deepEqual(layout.screens.map((s:any)=>s.id),SCREENS);assert.deepEqual(Object.keys(layout.groups),['investors','updates']);
  assert.doesNotMatch(entry.source!,/const templateConfiguration|const templateBindings/,'the host prepends configuration and bindings');
  assert.match(execFileSync('node',['scripts/build-investor-updates-template.mjs','--check'],{encoding:'utf8'}),/verified/);
  assert.match(JSON.parse(await readFile('package.json','utf8')).scripts.build,/build-investor-updates-template\.mjs --check/);
- assert.equal(JSON.parse(await readFile('templates/catalog-installers.json','utf8'))['life.investor-updates@1.0.0'],root+'schema.example.json');
- assert.deepEqual(JSON.parse(await readFile('templates/catalog-seed.json','utf8'))['life.investor-updates'],{schema:root+'schema.example.json',version:'1.0.0'},'owner approval (17 Nov 2026): the seed names 1.0.0, so the catalog sync imports it approved');
+ assert.equal(JSON.parse(await readFile('templates/catalog-installers.json','utf8'))['life.investor-updates@1.0.1'],root+'schema.example.json');
+ assert.deepEqual(JSON.parse(await readFile('templates/catalog-seed.json','utf8'))['life.investor-updates'],{schema:root+'schema.example.json',version:'1.0.1'},'owner approval (17 Nov 2026): the seed names 1.0.0, so the catalog sync imports it approved');
  validateRecipeDeclarations(file);const fns=validateAppFunctions(file,Object.keys(schema));assert.deepEqual(fns.map(f=>f.name),['plan_brief','meeting_brief','updates_digest']);
  for(const f of fns){assert.deepEqual(f.scope.capabilities,['records.read'],'helpers only read');assert.equal(f.scope.documents,false);}
  const m=JSON.parse(await readFile(root+'catalog.metadata.json','utf8'));assert.equal(m.documentation.tasks.mode,'optional');

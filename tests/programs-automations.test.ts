@@ -41,8 +41,8 @@ async function suite(){
  await pg.query("INSERT INTO oauth_tokens(hash,user_id,client_id,kind,family,expires_at) VALUES($1,$2,$3,'refresh',$4,$5)",[randomUUID(),human.userId,ai.clientId,ai.connectionFamily,Date.now()+86400000]);
  await syncTemplateCatalog(raw);
  // Programs 2.2.0 is a draft until the owner approves it; it is approved only inside this disposable database.
- await pg.query("UPDATE app_template_catalog SET status='approved' WHERE template_id='life.project-oversight' AND version='2.2.0'");
- const f=new WorkspaceFoundation(db),s=new Service(db),F=await new AppTemplates(undefined,db).read({templateId:'life.project-oversight',version:'2.2.0'});
+ await pg.query("UPDATE app_template_catalog SET status='approved' WHERE template_id='life.project-oversight' AND version='2.2.1'");
+ const f=new WorkspaceFoundation(db),s=new Service(db),F=await new AppTemplates(undefined,db).read({templateId:'life.project-oversight',version:'2.2.1'});
  const install=async(w:string,name:string,choose=true)=>{const target={install:{templateId:F.id,version:F.version,digest:F.digest,name,requestKey:randomUUID()}};const step=await dataAccessStep(f,human,w,target);
   return {step,receipt:step.needed?await confirmDataAccess(f,human,w,{...target,connections:{},stepDigest:step.digest,...(step.automations.length?{automations:step.automations.map((r:any)=>({key:r.key,enabled:choose,settings:{}}))}:{})}):await installCatalogApp(f,human,w,target.install)};};
  const comp=async(w:string,id:string)=>(await f.readComponent(human,w,id)).component;

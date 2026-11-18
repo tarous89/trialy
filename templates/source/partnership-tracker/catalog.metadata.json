@@ -1,6 +1,6 @@
 {
   "id": "life.partnership-tracker",
-  "version": "2.2.0",
+  "version": "2.2.1",
   "name": "Partnerships",
   "description": "Out-licensing, in-licensing, co-development, research, academic and platform deals by asset in one pipeline, from first contact to signature. Partnering profiles per asset, a stage board with stage history, funnel and win/loss, partners and contacts with the full history (who met whom, what was shared, any decline and why), conferences with goals, who to meet, requests, one-page briefs and next steps, activities, a materials log and follow-ups, tag categories (Conference, Channel, Asset group and your own) with private or shared saved views, partner research (signals, target suggestions and a report per run), a digest email to members and draft meeting briefs. Claude or ChatGPT can run any action by command and change columns, views, stages, lists and fields, always reviewed. Links CDAs, term sheets and agreements from Contracts and data room access from Data Room when they are there. Outreach stays personal: the app never emails partners.",
   "tags": [

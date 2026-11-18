@@ -18,7 +18,7 @@ test('declarations: 32 commands read as data, valid; one weekly summary email wi
  validateAppCommands(entry.source);const list=readAppCommands(entry.source);assert.equal(list.length,32);
  assert.deepEqual(list.filter(c=>c.mode==='read').map(c=>c.id),['schema.describe','rooms.read','waiting.read','index.read','readiness.read','parties.read','activity.read','changes.read','brief.read','questions.read','notify.read','settings.read']);
  assert.deepEqual(list.filter(c=>c.mode==='layout').map(c=>c.id),['layout.save']);
- const raw=JSON.parse(await readFile('templates/apps/life.data-room-1.1.0.json','utf8'));validateRecipeDeclarations(raw);
+ const raw=JSON.parse(await readFile('templates/apps/life.data-room-1.1.1.json','utf8'));validateRecipeDeclarations(raw);
  const recs=readRecipes(raw).recommended;assert.deepEqual(recs.map((r:any)=>r.key),['weekly_room_summary']);
  assert.equal(recs[0].research,undefined);assert.equal(recs[0].email!.summaryBinding,'room_summary');assert.deepEqual((recs[0].trigger as any).weekdays,[1]);
  validateAppFunctions(raw,Object.keys(JSON.parse(await readFile('templates/source/data-room/schema.example.json','utf8'))));
@@ -126,7 +126,7 @@ test('access-ending reminder: a room switch; on a live room it is one review wit
 });
 
 test('weekly room summary helper: the app\'s rules from records only; nothing when no room is live',async()=>{
- const raw=JSON.parse(await readFile('templates/apps/life.data-room-1.1.0.json','utf8')),src=raw.functions[0].source as string;
+ const raw=JSON.parse(await readFile('templates/apps/life.data-room-1.1.1.json','utf8')),src=raw.functions[0].source as string;
  const today=new Date().toISOString().slice(0,10),ago=(n:number)=>new Date(Date.now()-n*86400000).toISOString().slice(0,10);
  const run=(rows:any[])=>{const roles=['dataroom.rooms','dataroom.access_grants','dataroom.engagement','dataroom.questions','dataroom.items','dataroom.settings','organizations','people'];const appRoles=Object.fromEntries(roles.map(r=>[r,r]));
   const tools={call:(name:string,v:any)=>{assert.equal(name,'records.read');const all=rows.filter(r=>r.role===v.typeId);return {rows:all.slice(v.offset,v.offset+v.limit).map(r=>({id:r.id,data:r.data})),total:all.length};}};

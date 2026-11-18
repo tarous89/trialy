@@ -1,3 +1,14 @@
+## 18 November 2026 — Batched reads in all 16 switched-on apps
+
+Every switched-on catalog app is republished as a patch release that reads through `records.readMany` and changes nothing else (owner approval, 18 November 2026): Runway 2.2.1, Contracts 1.1.1, CRO Selection 2.1.1, Data Room 1.1.1, Fundraise 2.0.1, Investor Updates 1.0.1, Partnerships 2.2.1, Programs 2.2.1, Literature Radar 2.0.1 and Deal, Funding, Market, Patent, Pipeline, Regulatory and Trial Radar 1.0.1. The seed names the new versions and migration 078 withdraws the sixteen they replace, once. Released versions are archived unchanged under each app's `archive/` folder; installed apps keep their saved source.
+
+- **Individually built apps.** Each has one read helper. Once a render needs a second table, the first page of every other connected table is read in one call, and the remaining pages of a long table in another. A screen that made 9 to 18 calls now makes 2 or 3.
+- **Radars.** Kit 1.2.0 (and kit 1.0.1 for Trial Radar, which stays on its own kit line) batches the shared reads and the Overview's reads.
+- **Unchanged.** Results, incomplete-data handling, restricted-table messages, limits and each app's call budget. Where the capability is missing or a batch fails, every read is one call as before, which is also how the offline previews run.
+- **Gallery.** The screens do not change, so each new version uses its predecessor's gallery image.
+
+Tests: `tests/batched-read-apps.test.ts` runs the published source of all sixteen in the production runtime both ways (one call per read, and batched) on the demo data, a long table and a restricted table, and requires identical screens and state; `tests/template-catalog.test.ts` covers migration 078. Each app's own tests now run against its new version.
+
 ## 18 November 2026 — Repair apps with stale field contracts
 
 Deleting an unused column could leave an app with an outdated schema contract, then prevent its repair because beginning or preparing an update tried to render the broken published app. Update preparation now reads authorized metadata and omits the old render only for `manifest_stale` or `manifest_binding`; the replacement still validates current bindings, renders its preview and requires exact finalization/confirmation. Other errors and access denials still propagate. No migrations or changes to saved records. Regression: `tests/tracker-query-readiness.test.ts` exercises the stale app, update preparation, reviewed repair and reopening with records retained.

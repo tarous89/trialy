@@ -41,8 +41,8 @@ async function suite(){
  await pg.query("INSERT INTO oauth_tokens(hash,user_id,client_id,kind,family,expires_at) VALUES($1,$2,$3,'refresh',$4,$5)",[randomUUID(),human.userId,ai.clientId,ai.connectionFamily,Date.now()+86400000]);
  await syncTemplateCatalog(raw);
  // Fundraise 2.0.0 is approved by the seed (owner approval, 14 Nov 2026); the update keeps this setup independent of it.
- await pg.query("UPDATE app_template_catalog SET status='approved' WHERE template_id='life.investor-crm' AND version='2.0.0'");
- const f=new WorkspaceFoundation(db),s=new Service(db),F=await new AppTemplates(undefined,db).read({templateId:'life.investor-crm',version:'2.0.0'});
+ await pg.query("UPDATE app_template_catalog SET status='approved' WHERE template_id='life.investor-crm' AND version='2.0.1'");
+ const f=new WorkspaceFoundation(db),s=new Service(db),F=await new AppTemplates(undefined,db).read({templateId:'life.investor-crm',version:'2.0.1'});
  const install=async(w:string,name:string,choose=true)=>{const target={install:{templateId:F.id,version:F.version,digest:F.digest,name,requestKey:randomUUID()}};const step=await dataAccessStep(f,human,w,target);
   return {step,receipt:step.needed?await confirmDataAccess(f,human,w,{...target,connections:{},stepDigest:step.digest,...(step.automations.length?{automations:step.automations.map((r:any)=>({key:r.key,enabled:choose,settings:{}}))}:{})}):await installCatalogApp(f,human,w,target.install)};};
  const comp=async(w:string,id:string)=>(await f.readComponent(human,w,id)).component;
@@ -58,7 +58,7 @@ async function suite(){
 const worker=<T>(fn:()=>T)=>withDatabaseContext({service:'worker'},fn);
 
 test('declarations: weekly research and one weekly digest email, no signed-commitment notice, two read-only helpers, strict catalog validation',async()=>{
- const entry=JSON.parse(await readFile('templates/apps/life.investor-crm-2.0.0.json','utf8')),roles=Object.keys(JSON.parse(await readFile('templates/source/investor-crm/schema.example.json','utf8')));
+ const entry=JSON.parse(await readFile('templates/apps/life.investor-crm-2.0.1.json','utf8')),roles=Object.keys(JSON.parse(await readFile('templates/source/investor-crm/schema.example.json','utf8')));
  validateRecipeDeclarations(entry);const fns=validateAppFunctions(entry,roles);
  const recs=readRecipes(entry).recommended;assert.deepEqual(recs.map(r=>r.key),['investor_research','weekly_digest'],'no signed-commitment notice');
  assert.deepEqual(recs.map(r=>[(r.trigger as any).frequency,(r.trigger as any).time,(r.trigger as any).weekdays]),[['weekly','07:00',[1]],['weekly','09:00',[1]]],'research Monday 07:00, digest two hours later');

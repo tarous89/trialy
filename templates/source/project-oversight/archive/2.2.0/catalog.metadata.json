@@ -1,0 +1,414 @@
+{
+  "id": "life.project-oversight",
+  "version": "2.2.0",
+  "name": "Programs",
+  "description": "Milestones, dependencies, risks and decisions across all programs. One integrated timeline per program by function with baselines, slips with reasons, the critical path, stage gates, a RAID log, monthly updates and frozen leadership reports; a program team that is notified when assigned or when something is due; a weekly digest of what needs attention; cash at key milestones from your own forecast or from Runway.",
+  "tags": [
+    "biotech",
+    "program-management",
+    "milestones",
+    "gantt",
+    "critical-path",
+    "stage-gates",
+    "raid",
+    "board",
+    "notifications"
+  ],
+  "whenToUse": "A small biotech (roughly 10–50 people) needs one integrated view of program milestones, dependencies, gates, risks and monthly status without enterprise PPM: an integrated timeline per program across CMC, nonclinical, clinical and regulatory, the critical path, slips with reasons, gate readiness and a monthly leadership report.",
+  "whenNotToUse": "Task-level project management (use the team's task tool), resource and capacity planning, portfolio prioritisation or rNPV, budgets (use Runway), timesheets, Kanban boards, document approval workflows, validated GxP or Part 11 project records, and any patient-level data.",
+  "engine": "frontend-js",
+  "defaults": {
+    "heading": "Programs",
+    "tableMap": "{}",
+    "pageSize": 25,
+    "layoutProfile": "{}",
+    "readOnly": false,
+    "demoLabel": false,
+    "asOfOverride": ""
+  },
+  "options": {
+    "heading": {
+      "type": "string",
+      "description": "App heading shown above every screen.",
+      "default": "Programs"
+    },
+    "tableMap": {
+      "type": "string",
+      "description": "JSON object keyed by stable role key: core data contract v1 roles programs (required) and people (optional, read only here); app roles programs.plan_items, programs.slips, programs.decisions, programs.raid, programs.updates, programs.reports, programs.settings; integration runway.month_closes: this app's own cash forecast table, or Runway snapshots (read only) once the user links Runway inside the app. Each value is {typeId:<authorized table UUID>, fields:{<logical key>:<real field key>}, writableFields:[<logical keys>]}. Real keys are lowercase snake_case.",
+      "default": "{}"
+    },
+    "pageSize": {
+      "type": "number",
+      "description": "Rows per page in registers, 10–50; the template clamps the value.",
+      "default": 25
+    },
+    "layoutProfile": {
+      "type": "string",
+      "description": "JSON presentation profile written only by native layout settings through a reviewed, versioned app update.",
+      "default": "{}"
+    },
+    "readOnly": {
+      "type": "boolean",
+      "description": "When true, the app proposes no writes even for users who may edit.",
+      "default": false
+    },
+    "demoLabel": {
+      "type": "boolean",
+      "description": "Label the app as a fictional demo. Only for the repository preview.",
+      "default": false
+    },
+    "asOfOverride": {
+      "type": "string",
+      "description": "Optional fixed as-of date (YYYY-MM-DD) for previews and tests only. Leave empty: the app uses today's date from the app runtime.",
+      "default": ""
+    }
+  },
+  "instructions": "Programs 2.2.0 is a custom frontend-js program-management app that follows docs/product/MODULAR_APPS_AND_SHARED_DATA.md: the shared programs and people tables use the core data contract v1 role keys, app tables use programs.* role keys, features that use another app's data degrade gracefully, and removing an app or tab never deletes data. It replaces Programs 2.1.0 for new installs; saved apps are not migrated.\n\nClaude and ChatGPT can do everything a person can do in Programs, limited only by the user's access and the access given to that assistant on the Access page. Every write is a reviewed proposal the user approves.\n\n1. Discover and pin. Read read_app_template_guidance (usage, then authoring when extending) to the last nextOffset, read_app_design, list_app_templates and read_app_template for life.project-oversight. Pin this exact version and digest and keep one requestKey for the creation.\n2. Install and reuse. Before installing, call list_archived_items (kind apps, this templateId); if an archived Programs app exists, offer to restore it first. The platform Use action shows the shared-data choice: a compatible programs table (for example from Runway) is reused by default; separate data is an explicit choice (for a confidential program, use a separate app with separate data in a restricted project). people and Runway's month closes are connected when present and never created. The Add app dialog lists the included automations, all on by default (§9). Never seed demo data.\n3. Use app commands, not your own calculations. After the app is saved, call list_app_commands, then run_app_command. Start with schema.describe (forms, fields, options, rules, team, layout groups). Read commands return the app's own results: overview.read, attention.read (what the weekly digest reports), timeline.read (critical path, slips, cash at key milestones), item.drivers, item.impact (slip needed and successors pushed by a date move), gates.read, raid.read, updates.read, report.preview, reports.read, digests.read and team.read. Never compute the critical path, slips, readiness, due-soon, overdue or cash markers yourself; ask the app.\n4. Change things the way a click does. Propose commands run the same handler as the button and return the same review: record.save {role, id?, fields} for any form (programs, items, decisions, raid, updates, team, closes, settings), with item.save, program.save, team.save and settings.save as shortcuts; record.duplicate; record.archive (archive, never delete); baseline.set {program_id}; baseline.reset {item_id, reason}; gate.record {gate_id, outcome, decided_on, approver, rationale, follow_ups[], cancel_item_ids[]}; raid.promote {id, to}; report.save {month, title, narrative}; reminders.refresh; layout.save. A later end date on a baselined planned, in-progress or at-risk item needs slip_reason (scientific, cro_vendor, regulatory, manufacturing, funding, other) and writes exactly one slip; run item.impact first and pass accept_downstream:true only when the user accepts the successor moves. prepare_change on the bound tables still works but skips the app's validation and the slip rule, so prefer commands.\n5. First plan in one session. From a development plan, slide, spreadsheet or description the user shares, propose the program (program.save), then plan items by function with owners, dates, item_type and one predecessor each (item.save; create predecessors first), the first gates with criteria lines ([met], [not met] or [open]) and top risks. Add the people who own work to the program team (team.save; a workspace member ID makes notifications work: look it up with find_identity_candidates or reference_options, or leave it blank). Do not set baselines until the user confirms the plan, then baseline.set.\n6. Human judgements stay human. Never set a program's health or a gate outcome unless the user tells you the judgement; health needs a rationale and the assessment date. Never invent progress in updates or reports.\n7. Values from other apps. When the cash forecast is linked to Runway it is read-only here and labelled \"From Runway\"; change it in Runway (the app shows Edit in Runway when the user may open it). Programs' own outputs (key milestones in programs.plan_items, programs.reports) are read by Runway, Contracts, Fundraise and Partnerships.\n8. Customize everything. Screens, columns and forms: layout.save {screens, order, hide, show, labels, defaults} (form groups item_form, decision_form, raid_form, program_form, update_form, team_form; required fields cannot be hidden); the user can also use the native gear. Business settings: settings.save. New fields on request: add the field to the table with a reviewed schema change and, in the same app revision, list it in the tableMap entry's extraFields [{key,label,kind,options?}] and writableExtra, so it appears in the forms and details at once; fields added later in Database are not picked up automatically. New screens, charts, forms, theme or workflows: a reviewed app revision (begin_app_update → finalize_app_preview → the user's confirmation). A revision must keep: the stable role keys and core v1 fields, the programs.v2 fields other apps read (plan_items name, program_id, item_type, end_date, status, is_key, archived; reports), the slip rule, the calculations, the app-maintained notification fields (owner_member_id, assigned_on, remind_on, added_on), the \"From App\" labels and the declared commands with click parity; a revision that changes one says so in the review.\n9. Automations (TrialAgents Automations; the app works fully without any). Included at install, on by default, each can be turned off: (a) Weekly digest: every Monday, Claude or ChatGPT (when connected) writes a short summary of program status and what needs attention from the digest_brief helper, saves it in programs.digests and emails it to the owner; weeks with nothing important save and send nothing; (b–f) notices to team members with a member ID: added to a program team, assigned an item, an item due in the reminder lead time (Settings, default 7 days), assigned a RAID entry, a RAID review due. Without a member ID the notice goes to the automation's recipients (the owner). Available later in Automations → From app features: the weekly digest without AI (same content, deterministic). Recipients can be changed by the owner in Automations or through you with the exact reviewed setup.\n",
+  "documentation": {
+    "quickStart": [
+      "Read the current usage/authoring guidance and this template's documentation; pin life.project-oversight 2.2.0 and its digest with one requestKey.",
+      "Before installing, check for an archived Programs app and offer to restore it. Use installs it; keep the default to reuse an existing programs table (e.g. from Runway) unless the user wants separate data. The included automations are on by default; the user can turn any off.",
+      "Settings → Add program: name, stage and lead. Settings → Program team: add the people who own work, with their workspace member ID for notifications.",
+      "Plan → Add item for milestones and key activities with function, owner (picked from the team), dates, status and one predecessor; mark the decisive milestones as key. Or ask Claude or ChatGPT to build a first plan from a document you share.",
+      "Plan → Set baseline when the plan is agreed. Timeline then shows baseline ghost bars, the critical path and slips.",
+      "Gates & decisions → Add gate with criteria; RAID → add top risks; Updates → monthly update per program, then save the month's leadership report. Weekly digests appear under Updates.",
+      "Assistants: list_app_commands, then run_app_command (schema.describe first). Every proposal is reviewed."
+    ],
+    "dataContract": "Stable role keys. Core data contract v1: programs (name text*, code text, indication text, modality select small_molecule/biologic/antibody/cell_therapy/gene_therapy/rna/vaccine/device/other, stage select* discovery/preclinical/ind_enabling/phase_1/phase_2/phase_3/registration/approved, lead text, status select active/paused/stopped/partnered, archived boolean; Programs-owned optional fields health select unassessed/green/amber/red, health_rationale text, health_date date) and people (name*, organization_id, title, email, archived; optional, read only in Programs; owner fields stay plain text names). App tables: programs.plan_items (name text*, program_id text* record ID of programs, item_type select* milestone/activity, function select* cmc/nonclinical/clinical/regulatory/other, owner text, start_date date, end_date date* (the milestone date for milestones), baseline_start date, baseline_end date, status select* planned/in_progress/done/at_risk/cancelled, predecessor_id text record ID of one plan_items record (finish-to-start, no lag), is_key boolean, notes text, owner_member_id text, assigned_on date, remind_on date, archived boolean); programs.slips (plan_item_id text*, changed_on date*, old_end date*, new_end date*, days number*, reason select* scientific/cro_vendor/regulatory/manufacturing/funding/other, detail text); programs.decisions (name text*, program_id text*, kind select* gate/decision, target_date date, criteria text one per line [met]/[not met]/[open], outcome select pending/go/no_go/conditional/decided, decided_on date, approver text, options text, rationale text, linked_item_id text record ID of a plan item or RAID entry, archived boolean); programs.raid (name text*, program_id text, raid_type select* risk/assumption/issue/dependency, likelihood and impact select low/medium/high, owner text, mitigation text, next_review date, status select* open/monitoring/closed, linked_item_id text, owner_member_id text, assigned_on date, remind_on date, archived boolean); programs.updates (program_id text*, month date* first day, health select*, rationale, summary, next_steps, author text); programs.reports (month date*, title text*, narrative text, contents text frozen JSON written once by the app, saved_on date); programs.settings (one row: functions and stages comma lists of enabled options in display order, health_definitions text, due_soon_days number default 90, update_day number default 5, reminder_days number default 7); programs.team (program_id text*, name text*, member_id text workspace member UUID, role text, added_on date, archived boolean); programs.digests (run_on date*, period text*, summary text*, attention_count number, run_id text, written_by select claude/chatgpt; written only by the weekly digest research, read-only in the app). Notification fields are kept by the app on every save, never typed: owner_member_id = the member ID of the owner's name on the program team; assigned_on = the day that member changed; remind_on = end_date minus reminder_days while planned/in_progress/at_risk (RAID: next_review while not closed), empty otherwise; team added_on = the day a member ID was added. reminders.refresh (Settings → Update owners and reminders) brings them up to date after a team or settings change. Integration runway.month_closes (contract runway.v2): Programs' own cash forecast (month, closing_balance, currency; one closing cash figure per month) until the user links Runway in the app; then Runway's month closes (month, closed, currency, metrics frozen JSON v2), read only. App output for other apps: programs.plan_items with is_key (Runway reads key milestones) and programs.reports. Every field is scalar multiple:false; relationships are record IDs, never names. Slip rule: a later end_date on a planned, in_progress or at_risk item with a baseline creates exactly one slips record in the same review. Health is always a human judgement with a date and rationale; the app never sets it. Access is app-level only: no per-screen protection is advertised. Hiding a program is not security; use a separate app with separate data in a restricted project. Reads are bounded to 800 rows per table; partial reads disable the critical path and totals.",
+    "interactionContract": "Seven screens with stable IDs for the native layout gear: overview, timeline, plan, decisions, raid, updates, settings; column groups items, raid, decisions; form groups item_form, decision_form, raid_form, program_form, update_form, team_form (order, hide optional fields, labels and defaults). Overview: next key milestone, KPIs, program cards, next N days, slips this quarter, exceptions. Timeline: Gantt by program and function lane, baselines, critical path, \"what drives this date\", Present mode, cash markers. Plan, Gates & decisions, RAID, Updates (monthly updates, leadership report, report archive, weekly digests) and Settings (settings, cash forecast, program team, programs). Every button and the records it proposes (the same commands for assistants): Add/Edit item → one plan_items create/update with the app-maintained notification fields; a later committed date also creates one slips record (reason required) and, when accepted, updates each pushed successor (and a slip for baselined ones) [item.save]. Duplicate → create without baseline [record.duplicate]. Archive → archived:true, reminders cleared; an item that is someone's predecessor cannot be archived [record.archive]. Set baseline → baseline_start/baseline_end = current dates on up to 50 unbaselined items of a program [baseline.set]. Reset baseline → baseline = current dates, reason appended to notes [baseline.reset]. Record outcome → decisions outcome/decided_on/approver/rationale, plus follow-up milestone creates and cancellations in the same review [gate.record]. Promote → new linked RAID entry of the next type, original closed [raid.promote]. Add update → one updates create (one per program and month) [record.save role updates]. Save report → one reports create with frozen contents computed by the app [report.save]. Settings → one settings create/update [settings.save]. Add team member → one team create; with a member ID the person is notified [team.save]. Update owners and reminders → updates owner_member_id/assigned_on/remind_on on up to 50 drifted items and RAID entries [reminders.refresh]. Cash forecast month → one month_closes create/update while not linked to Runway; once linked it is read-only and labelled \"From Runway\" with Edit in Runway when allowed. Read-only features have read commands that return the same figures as the screens: overview.read, attention.read, timeline.read, item.drivers, item.impact, gates.read, raid.read, updates.read, report.preview, reports.read, digests.read, team.read, schema.describe. Every input carries data-ui-state and a stable data-action; failed saves keep the draft. A command that fails leaves no partial review.",
+    "lifecycle": "A fresh preview renders with no writes. After the app is saved, every create, edit, archive, baseline, slip, gate outcome, promotion and report save is an exact records.propose batch (≤ 50 writes) that the user approves in the host review; the app shows a notice until then and the database is unchanged. Edits capture the record version when the editor opens; successors moved by an accepted downstream preview and milestones cancelled by a gate outcome carry the versions captured when the editor or gate opened, so a concurrent edit is rejected, not overwritten. Reconcile ambiguous saves by receipt; never retry with a new key. Saved reports are frozen; their contents never change after later edits. The as-of date is today's date from the app runtime and only filters the view (due soon, overdue, quarter); slips record changed_on and reports saved_on as that date. Layout changes are presentation-only reviewed app updates; saved configuration is re-read on every render. App commands run the saved version only (unsaved previews are read-only); a stale version is rejected and the same requestKey returns the same review. Archiving or deleting the app archives it and keeps all tables and records; restoring brings its automations back switched off. Removing a tab unbinds it; adding it back reconnects the same tables. Installing again first offers to restore an archived Programs app.",
+    "limitations": [
+      "One predecessor per item, finish-to-start, no lags or other dependency types; no resources, capacity or percent-complete roll-ups.",
+      "App-level access only: per-screen restrictions are not advertised for this custom app. Confidential programs need a separate app with separate data in a restricted project.",
+      "Reads are bounded to 800 rows per table; larger plans show partial data and withhold the critical path and totals.",
+      "Present mode cannot export an image file inside custom apps; use a screenshot or print to PDF. Report export is copyable Markdown text.",
+      "Notifications need the person on the program team with their workspace member ID; apps cannot list workspace members, so the ID is entered (an assistant can look it up). Reassigning an item to someone else on the same day an assignment notice was already sent does not send a second notice that day.",
+      "Reminder dates are stored copies kept by the app's saves and commands; edits made directly in Database or a changed team or lead time need Update owners and reminders.",
+      "The AI weekly digest needs a connected Claude or ChatGPT runner; without one it shows Needs setup, and the digest without AI can be set up in Automations. No GxP or Part 11 claims."
+    ],
+    "examples": [
+      {
+        "prompt": "Set up Programs for PX-101 from this development plan (fictional): IND-enabling small molecule, GMP batch to January, tox to February, IND end of March, first participant dosed end of May. Ana Ruiz leads CMC.",
+        "expectedBehavior": "Pins and installs the template (reusing an existing programs table), then with app commands proposes the program, Ana Ruiz on the program team (member ID looked up or left blank), plan items by function with owners and predecessors, the gate and top risks; sets no baseline until the user confirms the plan."
+      },
+      {
+        "prompt": "The GMP batch moves from 31 January to 21 February because of the CDMO. What happens to the IND date?",
+        "expectedBehavior": "Runs item.impact, explains the critical path and the successors pushed by 21 days, then item.save with slip_reason cro_vendor (exactly one slip) and accept_downstream only if the user accepts."
+      },
+      {
+        "prompt": "Prepare the gate pack for the IND go / no-go.",
+        "expectedBehavior": "Reads gates.read, raid.read and recent decisions; summarises readiness and days to the gate; records no outcome."
+      },
+      {
+        "prompt": "Add a 'CRO' field to plan items and hide Notes from the item form.",
+        "expectedBehavior": "Adds the field with a reviewed schema change and lists it in extraFields/writableExtra in the same app revision so it shows in the form at once; hides Notes with layout.save (item_form:notes)."
+      },
+      {
+        "prompt": "Send the weekly digest to the CMC lead as well, and we do not want the RAID review reminders.",
+        "expectedBehavior": "Uses read_app_automation_features and the exact reviewed automation setup to add the recipient to the weekly digest and switch off the RAID review reminder; the app keeps working either way."
+      }
+    ],
+    "tasks": {
+      "mode": "optional",
+      "whenUseful": "Included at install, on by default, each can be turned off: the weekly digest (Monday 08:00 Europe/Berlin; research on the user's Claude or ChatGPT runner writes the summary from the digest_brief helper, saves it in programs.digests and emails it to the owner, only when something needs attention) and five notices to registered team members: added to a program team, assigned an item, item due (reminder lead time before the end date), assigned a RAID entry, RAID review due. Later in Automations → From app features: the weekly digest without AI (digest_email helper; sends only when something needs attention). Manual path: Overview shows exceptions and the next N days whenever the app is opened.",
+      "readRequirements": "Weekly digest: programs, programs.plan_items, programs.slips, programs.decisions, programs.raid, programs.updates, programs.settings (all fields, through the digest_brief helper) and programs.digests (run_on, period). Notices: the triggering record's date, member ID and the fields named in the email.",
+      "outputContract": "Weekly digest: at most one programs.digests row per week {run_on, period, summary, attention_count, run_id, written_by}, create only, saved only when attention.count > 0; otherwise no_update and no email. Notices: one email per triggering date to the record's member, never for done, cancelled, closed or archived work (their reminder dates are empty).",
+      "promptExample": "Weekly digest for Programs. Read the digest_brief context. If digest.count is 0, save nothing and complete as no_update. Otherwise write about 150 words: one line per program (health, next key milestone), then what needs attention (overdue, due in the next 14 days, slipped this week, gates not ready, reviews past due, health to assess, missing updates) with names, dates and owners, most urgent first; no invented progress. Save one programs.digests row {run_on: today, period: 'week of <d Mon>', summary, attention_count: digest.count, run_id, written_by} and complete with the same summary."
+    }
+  },
+  "examples": [
+    {
+      "heading": "Programs",
+      "tableMap": "{}",
+      "pageSize": 25,
+      "layoutProfile": "{}",
+      "readOnly": false,
+      "demoLabel": false,
+      "asOfOverride": ""
+    }
+  ],
+  "deprecated": false,
+  "recommendedAutomations": [
+    {
+      "key": "weekly_digest",
+      "name": "Weekly digest",
+      "description": "Every Monday, a short AI summary of program status and what needs attention, emailed to you. Quiet weeks send nothing.",
+      "trigger": {
+        "kind": "calendar",
+        "frequency": "weekly",
+        "time": "08:00",
+        "timeZone": "Europe/Berlin",
+        "anchor": "2026-11-16",
+        "weekdays": [
+          1
+        ]
+      },
+      "research": {
+        "briefBinding": "digest_brief",
+        "objective": "Each week, summarise the status of every program in Programs and what needs attention, save it as one weekly digest and complete with that summary; save nothing in a week where nothing needs attention.",
+        "instructions": "Weekly digest for Programs. Use only the digest_brief context (the app's own rules) and the records it names; do not search the web. If digest.count is 0, save nothing and complete the run as no_update. Otherwise write the digest in about 150 words, in this order: a first line 'Programs · week of <d Mon>: N items need attention'; one line per program with health and the next key milestone; then the sections Overdue, Due in the next 14 days, Slipped this week, Gates not ready, Risks and issues past review, Health to assess and Missing monthly update, most urgent first, at most three items per section ('· N more'), with names, dates and owners; leave out empty sections; never invent progress, never judge health yourself, never include anything not in the context. If the context says the data is incomplete, say so in one line. Last line 'Open Programs →'. Save exactly one programs.digests row {run_on: today, period: 'week of <d Mon>', summary: the digest, attention_count: digest.count, run_id, written_by: claude or chatgpt}, unless a row with the same period already exists (then complete as no_update). Save it, then complete the run with the same summary. Never change any other table and never email anyone yourself.",
+        "sourcePolicy": "Programs records only, through the digest_brief helper and the read bindings. No external sources.",
+        "readBindings": [
+          {
+            "role": "programs",
+            "fields": "all"
+          },
+          {
+            "role": "programs.plan_items",
+            "fields": "all"
+          },
+          {
+            "role": "programs.slips",
+            "fields": "all"
+          },
+          {
+            "role": "programs.decisions",
+            "fields": "all"
+          },
+          {
+            "role": "programs.raid",
+            "fields": "all"
+          },
+          {
+            "role": "programs.updates",
+            "fields": "all"
+          },
+          {
+            "role": "programs.settings",
+            "fields": "all"
+          },
+          {
+            "role": "programs.digests",
+            "fields": [
+              "run_on",
+              "period"
+            ]
+          }
+        ],
+        "writeBindings": [
+          {
+            "role": "programs.digests",
+            "fields": [
+              "run_on",
+              "period",
+              "summary",
+              "attention_count",
+              "run_id",
+              "written_by"
+            ],
+            "allowCreate": true,
+            "allowUpdate": false
+          }
+        ]
+      },
+      "email": {
+        "subject": "Programs weekly digest",
+        "text": "{{run.summary}}",
+        "when": "meaningful"
+      }
+    },
+    {
+      "key": "team_added",
+      "name": "Added to a program team",
+      "description": "Tells a team member when they are added to a program team.",
+      "trigger": {
+        "kind": "record_date",
+        "role": "programs.team",
+        "field": "added_on",
+        "offsetMinutes": 0,
+        "time": "08:00",
+        "timeZone": "Europe/Berlin"
+      },
+      "email": {
+        "memberField": "member_id",
+        "fields": [
+          "name"
+        ],
+        "subject": "You were added to a program team in Programs",
+        "text": "Hello {{record.name}},\n\nYou were added to a program team in Programs. You will be notified when you are assigned a milestone, activity or risk, and before it is due.\n\nOpen Programs to see the plan."
+      }
+    },
+    {
+      "key": "item_assigned",
+      "name": "Assigned a milestone or activity",
+      "description": "Tells the owner when a milestone or activity is assigned to them.",
+      "trigger": {
+        "kind": "record_date",
+        "role": "programs.plan_items",
+        "field": "assigned_on",
+        "offsetMinutes": 0,
+        "time": "08:00",
+        "timeZone": "Europe/Berlin"
+      },
+      "email": {
+        "memberField": "owner_member_id",
+        "fields": [
+          "name",
+          "end_date",
+          "status"
+        ],
+        "subject": "Programs: you own {{record.name}}",
+        "text": "You are now the owner of {{record.name}} in Programs.\n\nEnd date: {{record.end_date}}\nStatus: {{record.status}}\n\nOpen Programs to see what it depends on and what depends on it."
+      }
+    },
+    {
+      "key": "item_due",
+      "name": "Milestone or activity due soon",
+      "description": "Reminds the owner before an open milestone or activity is due (lead time in Settings, default 7 days).",
+      "trigger": {
+        "kind": "record_date",
+        "role": "programs.plan_items",
+        "field": "remind_on",
+        "offsetMinutes": 0,
+        "time": "08:00",
+        "timeZone": "Europe/Berlin"
+      },
+      "email": {
+        "memberField": "owner_member_id",
+        "fields": [
+          "name",
+          "end_date",
+          "status"
+        ],
+        "subject": "Programs: {{record.name}} is due on {{record.end_date}}",
+        "text": "{{record.name}} is due on {{record.end_date}} (status: {{record.status}}).\n\nIf the date will move, change it in Programs with the reason, so the plan and the slip history stay right."
+      }
+    },
+    {
+      "key": "raid_assigned",
+      "name": "Assigned a risk or issue",
+      "description": "Tells the owner when a RAID entry is assigned to them.",
+      "trigger": {
+        "kind": "record_date",
+        "role": "programs.raid",
+        "field": "assigned_on",
+        "offsetMinutes": 0,
+        "time": "08:00",
+        "timeZone": "Europe/Berlin"
+      },
+      "email": {
+        "memberField": "owner_member_id",
+        "fields": [
+          "name",
+          "raid_type"
+        ],
+        "subject": "Programs: you own the {{record.raid_type}} {{record.name}}",
+        "text": "You are now the owner of the {{record.raid_type}} {{record.name}} in Programs.\n\nOpen Programs to see its mitigation and next review."
+      }
+    },
+    {
+      "key": "raid_review",
+      "name": "Risk or issue review due",
+      "description": "Reminds the owner on the next review date of an open RAID entry.",
+      "trigger": {
+        "kind": "record_date",
+        "role": "programs.raid",
+        "field": "remind_on",
+        "offsetMinutes": 0,
+        "time": "08:00",
+        "timeZone": "Europe/Berlin"
+      },
+      "email": {
+        "memberField": "owner_member_id",
+        "fields": [
+          "name",
+          "raid_type",
+          "next_review"
+        ],
+        "subject": "Programs: review the {{record.raid_type}} {{record.name}} today",
+        "text": "The {{record.raid_type}} {{record.name}} is due for review today ({{record.next_review}}).\n\nUpdate its likelihood, impact, mitigation or status in Programs, and set the next review date."
+      }
+    }
+  ],
+  "automationFeatures": [
+    {
+      "key": "weekly_digest_plain",
+      "name": "Weekly digest without AI",
+      "description": "Every Monday, the same status and attention list as a plain email, without Claude or ChatGPT. Quiet weeks send nothing.",
+      "trigger": {
+        "kind": "calendar",
+        "frequency": "weekly",
+        "time": "08:00",
+        "timeZone": "Europe/Berlin",
+        "anchor": "2026-11-16",
+        "weekdays": [
+          1
+        ]
+      },
+      "email": {
+        "summaryBinding": "digest_email",
+        "subject": "Programs weekly digest",
+        "text": "Your weekly Programs digest. Open Programs to see the plan."
+      }
+    }
+  ],
+  "functions": [
+    {
+      "name": "digest_brief",
+      "purpose": "Weekly digest context: program status and what needs attention, by the app's own rules, for the AI digest.",
+      "inputContract": {
+        "type": "object"
+      },
+      "outputContract": {
+        "type": "object",
+        "required": [
+          "context"
+        ]
+      },
+      "scope": {
+        "capabilities": [
+          "records.read"
+        ],
+        "roles": [
+          "programs",
+          "programs.plan_items",
+          "programs.slips",
+          "programs.decisions",
+          "programs.raid",
+          "programs.updates",
+          "programs.settings"
+        ],
+        "documents": false
+      },
+      "sourceFiles": [
+        "functions/digest-core.js",
+        "functions/reader.js",
+        "functions/digest-brief.js"
+      ]
+    },
+    {
+      "name": "digest_email",
+      "purpose": "Weekly digest without AI: program status and what needs attention as plain text; nothing to report sends nothing.",
+      "inputContract": {
+        "type": "object"
+      },
+      "outputContract": {
+        "type": "object",
+        "required": [
+          "nonEmpty",
+          "text"
+        ]
+      },
+      "scope": {
+        "capabilities": [
+          "records.read"
+        ],
+        "roles": [
+          "programs",
+          "programs.plan_items",
+          "programs.slips",
+          "programs.decisions",
+          "programs.raid",
+          "programs.updates",
+          "programs.settings"
+        ],
+        "documents": false
+      },
+      "sourceFiles": [
+        "functions/digest-core.js",
+        "functions/reader.js",
+        "functions/digest-email.js"
+      ]
+    }
+  ]
+}

@@ -1,6 +1,6 @@
 {
   "id": "life.cash-runway",
-  "version": "2.2.0",
+  "version": "2.2.1",
   "name": "Runway",
   "description": "Cash, burn and runway by program, with what-if scenarios. One live forecast from spend and cash-in lines, people and milestones; a locked budget per year; monthly close with variance and frozen snapshots; 12 currencies with monthly rates. Claude and ChatGPT can run every action through app commands.",
   "tags": [

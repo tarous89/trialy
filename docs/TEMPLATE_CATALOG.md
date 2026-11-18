@@ -69,3 +69,11 @@ Apps open in the same platform tab, under the TrialAgents header. Platform navig
 Templates is not in the sidebar. Reach the dedicated page through New → App or Browse app templates on Apps. The web header always has Open ChatGPT and Open Claude CTA buttons; the plugin uses Open TrialAgents instead. Cards have only Preview and Use actions and an always-visible customization/usability note for both assistants. Full descriptions open with the preview.
 
 The Templates page has Team/Workflow filters, screenshots and sandboxed interactive sample previews. Apps only links to this dedicated destination. Card metadata lives in `src/shared/template-gallery.ts`. Generate versioned screenshots and the digest manifest with `node scripts/build-template-screenshots.mjs` after installing Playwright Chromium. The script only renders repository sample HTML and blocks external requests. For new catalog versions, add their reviewed metadata and installer mapping (without expanding bootstrap approval), generate media, and approve through the operator flow. Media endpoints check approval and exact catalog digest; preview HTML is also hash checked and sandboxed without account, network, forms, popups or top navigation access. Preview does not install anything.
+
+On 18 November 2026 the owner approved a batched-read patch release of all 16 switched-on apps in one decision: Runway 2.2.1, Contracts 1.1.1, CRO Selection 2.1.1, Data Room 1.1.1, Fundraise 2.0.1, Investor Updates 1.0.1, Partnerships 2.2.1, Programs 2.2.1, Literature Radar 2.0.1 and Deal, Funding, Market, Patent, Pipeline, Regulatory and Trial Radar 1.0.1. Each is its predecessor with `records.readMany` in its read helper and no feature change:
+- the seed names the new versions, so the sync after migrations imports them approved;
+- migration 078 withdraws the sixteen replaced versions once, as listed in `templates/catalog-retirements.json`;
+- each released version is archived unchanged under its app's `archive/<version>/` folder and its installer entry points there;
+- the screens are unchanged, so each new version's gallery image is its predecessor's.
+
+Installed apps keep their saved source and keep working; they gain the faster reads only when their source is updated to the new version.

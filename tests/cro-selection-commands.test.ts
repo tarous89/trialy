@@ -154,8 +154,8 @@ test('real platform: list_app_commands and run_app_command as the assistant, a p
   // Layout through a command is a presentation-only review of the same app.
   const lay=await run('layout.save',{hide:['vendors:country']});assert.equal(lay.ok,true,lay.error);assert.ok(lay.proposal);
   // Runway 2.2.0 connects the croselection.awards role to CRO Selection's awards (platform dialog, a person) and offers it in Plan.
-  await x.pg.query("UPDATE app_template_catalog SET status='approved' WHERE template_id='life.cash-runway' AND version='2.2.0'");
-  const R=await new (await import('../src/workspace/app-templates.js')).AppTemplates(undefined,x.db).read({templateId:'life.cash-runway',version:'2.2.0'});
+  await x.pg.query("UPDATE app_template_catalog SET status='approved' WHERE template_id='life.cash-runway' AND version='2.2.1'");
+  const R=await new (await import('../src/workspace/app-templates.js')).AppTemplates(undefined,x.db).read({templateId:'life.cash-runway',version:'2.2.1'});
   const rw=(await x.install(w,R,'Runway')).receipt.appId;
   // Installed after CRO Selection, Runway's Use existing data? step connects the published awards by default (read only).
   const rmap=x.mapOf(await x.comp(w,rw));assert.equal(rmap['croselection.awards'].typeId,tid('croselection.awards'),'Runway reads CRO Selection\'s awards');

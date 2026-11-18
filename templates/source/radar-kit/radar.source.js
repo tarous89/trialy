@@ -51,15 +51,34 @@ const CUSTOM_KEYS=roleMap.tracker?Object.keys(roleMap.tracker.fields).filter(k=>
 
 let callsLeft=60;const problems=[];
 /** One bounded server-side page. Filters, sort and search apply to the whole table before paging. */
-function read(role,o){
- o=o||{};const m=roleMap[role];
- if(!m)return {rows:[],total:0,ok:false,unbound:true};
- if(callsLeft<=0){problems.push('Read budget used up for '+ROLE_LABEL[role]+'.');return {rows:[],total:null,ok:false};}callsLeft--;
+/* Batched reads (kit 1.2.0): reads a screen always makes together are requested in one call (records.readMany) by prime()
+ * and then handed to read() in the usual order. Every result, message and the call budget are unchanged. Where the
+ * capability is missing or a batch fails, each read is one call, as before. A primed result is used once. */
+let batchReads=true;const primed={};
+function query(m,o){
  const filters={};for(const [k,v] of Object.entries(o.filters||{}))if(m.fields[k]&&v!==''&&v!==null&&v!==undefined)filters[m.fields[k]]=String(v);
  const q={typeId:m.typeId,limit:o.limit===undefined?100:o.limit,offset:o.offset||0,filters};
  if(o.sort&&m.fields[o.sort.field])q.sort={field:m.fields[o.sort.field],direction:o.sort.dir==='asc'?'asc':'desc'};
  if(o.q)q.q=String(o.q).slice(0,200);
- let p;try{p=tools.call('records.read',q);}catch(e){problems.push('The '+ROLE_LABEL[role]+' table could not be read.');return {rows:[],total:null,ok:false};}
+ return q;
+}
+function prime(specs){
+ if(!batchReads)return;
+ const items=[];for(const [role,o] of specs){const m=roleMap[role];if(!m)continue;const q=query(m,o||{}),key=JSON.stringify(q);if(!primed[key]&&!items.some(x=>x.key===key))items.push({key,q});}
+ const part=items.slice(0,Math.min(12,Math.max(0,callsLeft)));if(part.length<2)return;
+ try{const out=tools.call('records.readMany',{reads:part.map(x=>x.q)});if(out&&Array.isArray(out.results)&&out.results.length===part.length){callsLeft-=part.length;part.forEach((x,i)=>{primed[x.key]=[out.results[i]];});return;}}catch(e){}
+ batchReads=false;
+}
+function read(role,o){
+ o=o||{};const m=roleMap[role];
+ if(!m)return {rows:[],total:0,ok:false,unbound:true};
+ const q=query(m,o),key=JSON.stringify(q),held=primed[key]&&primed[key].length?primed[key].shift():undefined;
+ let p;
+ if(held!==undefined)p=held;
+ else{
+  if(callsLeft<=0){problems.push('Read budget used up for '+ROLE_LABEL[role]+'.');return {rows:[],total:null,ok:false};}callsLeft--;
+  try{p=tools.call('records.read',q);}catch(e){problems.push('The '+ROLE_LABEL[role]+' table could not be read.');return {rows:[],total:null,ok:false};}
+ }
  if(!p||p.unavailable){problems.push('The '+ROLE_LABEL[role]+' table is not available to you.');return {rows:[],total:null,ok:false};}
  const rows=(Array.isArray(p.rows)?p.rows:[]).map(r=>{const data={};for(const [k,real] of Object.entries(m.fields))if(has(r.data,real)){const v=r.data[real];data[k]=v!==null&&typeof v==='object'?JSON.stringify(v):v;}return {id:String(r.id),version:r.version,data};});
  const total=p.total===null||p.total===undefined?null:Number(p.total);
@@ -88,9 +107,11 @@ const colVisible=(g,id)=>st.layout.visible[g+'.'+id]!==false;
 const draftOf=k=>st.f[k]&&typeof st.f[k]==='object'?st.f[k]:{};
 
 /* Shared reads for every screen: settings, scopes, latest runs (bounded). */
+const RUNS_QUERY={limit:30,sort:{field:'run_on',dir:'desc'}};
+prime([['settings',{limit:5}],['scopes',{limit:100,offset:0}],['runs',RUNS_QUERY],['programs',{limit:100}]]);
 const S0=read('settings',{limit:5});const SETTINGS=(S0.rows[0]||{data:{}});const SET=SETTINGS.data;
 const SC=readMany('scopes',300,{});const SCOPES=SC.rows.filter(s=>s.data.archived!==true);const SCOPE={};for(const s of SC.rows)SCOPE[s.id]=s;
-const RUNS=read('runs',{limit:30,sort:{field:'run_on',dir:'desc'}});
+const RUNS=read('runs',RUNS_QUERY);
 /* Several runs can share a date (Build now and the scan); the platform breaks ties oldest first, so put the newest first within a date. */
 RUNS.rows=RUNS.rows.map((r,i)=>({r,i})).sort((a,b)=>String(b.r.data.run_on||'').localeCompare(String(a.r.data.run_on||''))||b.i-a.i).map(x=>x.r);const LAST_RUN=RUNS.rows[0]||null;
 const PROGRAMS=roleMap.programs?read('programs',{limit:100}).rows:[];const PROGRAM={};for(const p of PROGRAMS)PROGRAM[p.id]=p;
@@ -234,14 +255,19 @@ function heading(){return '<header class="rd-top"><div><div class="rd-eyebrow">'
 
 /* 1 Overview */
 function overview(){
- const highQ=read('events',{filters:{impact:'high',status:'new'},sort:{field:'occurred_on',dir:'desc'},limit:5});
- const items=read('tracker',{limit:0}),watched=read('tracker',{filters:{watched:'true'},limit:0}),newEv=read('events',{filters:{status:'new'},limit:0});
+ /* The same queries are primed in one call and then read in order. */
+ const runId=LAST_RUN?LAST_RUN.data.run_id:'';
+ const Q={high:['events',{filters:{impact:'high',status:'new'},sort:{field:'occurred_on',dir:'desc'},limit:5}],items:['tracker',{limit:0}],watched:['tracker',{filters:{watched:'true'},limit:0}],newEv:['events',{filters:{status:'new'},limit:0}],
+  latest:['events',{sort:{field:'occurred_on',dir:'desc'},limit:100}],runEv:['events',{filters:{run_id:runId},sort:{field:'impact',dir:'asc'},limit:6}],runItems:['tracker',{filters:{last_changed_run_id:runId},limit:6}]};
+ prime([Q.high,Q.items,Q.watched,Q.newEv,Q.latest].concat(runId?[Q.runEv,Q.runItems]:[]));
+ const highQ=read(...Q.high);
+ const items=read(...Q.items),watched=read(...Q.watched),newEv=read(...Q.newEv);
  /* Coming dates: one read of the latest-dated events (newest first), kept to the next comingDays (90 by default). If more than 100 events are dated after
   * that window, the list says it may be incomplete rather than reading month by month. */
- const end=addDays(AS_OF,R.comingDays||90),latest=read('events',{sort:{field:'occurred_on',dir:'desc'},limit:100});
+ const end=addDays(AS_OF,R.comingDays||90),latest=read(...Q.latest);
  const coming=latest.rows.filter(e=>{const d=validDate(e.data.occurred_on);return d&&d>=AS_OF&&d<=end&&e.data.status!=='dismissed';}).sort((a,b)=>String(a.data.occurred_on).localeCompare(String(b.data.occurred_on)));
  const comingPartial=(latest.total||0)>100&&latest.rows.length>0&&validDate(latest.rows[latest.rows.length-1].data.occurred_on)>end;
- const runId=LAST_RUN?LAST_RUN.data.run_id:'';const runEv=runId?read('events',{filters:{run_id:runId},sort:{field:'impact',dir:'asc'},limit:6}):{rows:[],total:0},runItems=runId?read('tracker',{filters:{last_changed_run_id:runId},limit:6}):{rows:[],total:0};
+ const runEv=runId?read(...Q.runEv):{rows:[],total:0},runItems=runId?read(...Q.runItems):{rows:[],total:0};
  const hints=sourceHints();
  const k='<div class="rd-kpis">'+kpi(R.trackerLabel+' tracked',items.total===null?'—':items.total,(watched.total||0)+' watched')+kpi('New events',newEv.total===null?'—':newEv.total,'to review',newEv.total?'':'')+kpi('High impact, new',highQ.total===null?'—':highQ.total,'high-impact events to review',highQ.total?'bad':'')+'</div>';
  for(const e of highQ.rows)remember('events',e);const hi=highQ.rows.map(e=>'<li><span>'+bL(esc(e.data.title||'Event'),'open:event:'+e.id+':'+String(e.data.natural_key||''))+'<span class="rd-sub">'+esc(KIND_LABEL[e.data.kind]||label(e.data.kind))+' · '+esc(scopeName(e.data.scope_id))+(e.data.so_what?' · '+esc(textOf(e.data.so_what,140)):'')+'</span></span><span>'+dateCell(validDate(e.data.occurred_on),bool(e.data.expected))+'</span></li>');

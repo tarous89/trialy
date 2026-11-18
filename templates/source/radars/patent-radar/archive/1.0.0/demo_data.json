@@ -1,0 +1,369 @@
+{
+ "asOf": "2026-11-16",
+ "note": "Fictional demo data for Patent Radar. Every company, asset, identifier and URL is invented; .invalid domains resolve nowhere.",
+ "records": [
+  {
+   "role": "patentradar.settings",
+   "id": "00000000-0000-4000-8000-000000000001",
+   "version": 0,
+   "data": {
+    "lookback_days": 90,
+    "research_template_version": 1
+   }
+  },
+  {
+   "role": "patentradar.scopes",
+   "id": "00000000-0000-4000-8000-000000000002",
+   "version": 0,
+   "data": {
+    "name": "Fibrosis (fictional)",
+    "definition": "{\"targets\": \"fibrosis\"}",
+    "sources": "[{\"name\": \"Espacenet\", \"covers\": \"Worldwide publications, INPADOC families and legal status.\", \"priority\": 1, \"notes\": \"Use the public site on the web.\"}, {\"name\": \"Google Patents\", \"covers\": \"Full text, claims and citations.\", \"priority\": 2, \"notes\": \"Use the public site on the web.\"}, {\"name\": \"Lens.org\", \"covers\": \"Families, assignees and scholarly links.\", \"priority\": 3, \"notes\": \"Use the public site on the web.\"}, {\"name\": \"USPTO\", \"covers\": \"US applications, grants, PTAB and term adjustments.\", \"priority\": 4, \"notes\": \"Use the public site on the web.\"}, {\"name\": \"EPO Register\", \"covers\": \"EP procedure, oppositions and legal events.\", \"priority\": 5, \"notes\": \"Use the public site on the web.\"}]",
+    "watchlist": "[]",
+    "status": "active",
+    "archived": false
+   }
+  },
+  {
+   "role": "patentradar.runs",
+   "id": "00000000-0000-4000-8000-000000000003",
+   "version": 0,
+   "data": {
+    "run_id": "00000000-0000-4000-9100-000000000001",
+    "scope_ids": "[\"00000000-0000-4000-8000-000000000002\"]",
+    "kind": "build",
+    "run_on": "2026-11-02",
+    "assistant": "claude",
+    "research_template_version": 1,
+    "sources_report": "[{\"scope_id\": \"00000000-0000-4000-8000-000000000002\", \"sources\": [{\"name\": \"Espacenet\", \"status\": \"used\", \"note\": \"\"}, {\"name\": \"Google Patents\", \"status\": \"used\", \"note\": \"\"}, {\"name\": \"Lens.org\", \"status\": \"not_relevant\", \"note\": \"\"}, {\"name\": \"USPTO\", \"status\": \"not_relevant\", \"note\": \"\"}, {\"name\": \"EPO Register\", \"status\": \"not_reachable\", \"note\": \"\"}]}]",
+    "items_added": 6,
+    "items_updated": 0,
+    "events_added": 6,
+    "summary": "Fictional run for the demo. Two changes this week.",
+    "status": "completed"
+   }
+  },
+  {
+   "role": "patentradar.runs",
+   "id": "00000000-0000-4000-8000-000000000004",
+   "version": 0,
+   "data": {
+    "run_id": "00000000-0000-4000-9100-000000000002",
+    "scope_ids": "[\"00000000-0000-4000-8000-000000000002\"]",
+    "kind": "refresh",
+    "run_on": "2026-11-09",
+    "assistant": "claude",
+    "research_template_version": 1,
+    "sources_report": "[{\"scope_id\": \"00000000-0000-4000-8000-000000000002\", \"sources\": [{\"name\": \"Espacenet\", \"status\": \"used\", \"note\": \"\"}, {\"name\": \"Google Patents\", \"status\": \"used\", \"note\": \"\"}, {\"name\": \"Lens.org\", \"status\": \"not_relevant\", \"note\": \"\"}, {\"name\": \"USPTO\", \"status\": \"not_relevant\", \"note\": \"\"}, {\"name\": \"EPO Register\", \"status\": \"not_reachable\", \"note\": \"\"}]}]",
+    "items_added": 1,
+    "items_updated": 2,
+    "events_added": 6,
+    "summary": "Fictional run for the demo. Two changes this week.",
+    "status": "completed"
+   }
+  },
+  {
+   "role": "patentradar.runs",
+   "id": "00000000-0000-4000-8000-000000000005",
+   "version": 0,
+   "data": {
+    "run_id": "00000000-0000-4000-9100-000000000003",
+    "scope_ids": "[\"00000000-0000-4000-8000-000000000002\"]",
+    "kind": "refresh",
+    "run_on": "2026-11-16",
+    "assistant": "claude",
+    "research_template_version": 1,
+    "sources_report": "[{\"scope_id\": \"00000000-0000-4000-8000-000000000002\", \"sources\": [{\"name\": \"Espacenet\", \"status\": \"used\", \"note\": \"\"}, {\"name\": \"Google Patents\", \"status\": \"used\", \"note\": \"\"}, {\"name\": \"Lens.org\", \"status\": \"not_relevant\", \"note\": \"\"}, {\"name\": \"USPTO\", \"status\": \"not_relevant\", \"note\": \"\"}, {\"name\": \"EPO Register\", \"status\": \"not_reachable\", \"note\": \"\"}]}]",
+    "items_added": 1,
+    "items_updated": 2,
+    "events_added": 6,
+    "summary": "Fictional run for the demo. Two changes this week.",
+    "status": "completed"
+   }
+  },
+  {
+   "role": "patentradar.families",
+   "id": "00000000-0000-4000-8000-000000000006",
+   "version": 0,
+   "data": {
+    "title": "LPA1 antagonists and uses thereof (fictional)",
+    "family_id": "90000001",
+    "numbers": "EP9000001B1, US19000001B2",
+    "office": "EP",
+    "assignee_name": "Maplecrest Pharma (fictional)",
+    "priority_date": "2009-03-12",
+    "status": "granted",
+    "expiry_estimate": "2028-03-12",
+    "cpc": "A61K31/00; A61P11/00",
+    "claims_summary": "Fictional claims: compounds of formula I and their use in fibrosis.",
+    "own_family": false,
+    "natural_key": "inpadoc:90000001",
+    "scope_id": "00000000-0000-4000-8000-000000000002",
+    "sources": "[{\"title\": \"Source (fictional)\", \"url\": \"https://news.example.invalid/inpadoc:90000001\", \"date\": \"2026-11-16\"}]",
+    "last_verified_on": "2026-11-16",
+    "last_changed_run_id": "00000000-0000-4000-9100-000000000003",
+    "changed_fields": "[\"family_id\"]",
+    "watched": true,
+    "dismissed": false
+   }
+  },
+  {
+   "role": "patentradar.families",
+   "id": "00000000-0000-4000-8000-000000000007",
+   "version": 0,
+   "data": {
+    "title": "Inhaled formulations of LPA1 antagonists (fictional)",
+    "family_id": "90000002",
+    "numbers": "WO2026/900002A1",
+    "office": "WO",
+    "assignee_name": "Northwind Bio (fictional)",
+    "priority_date": "2025-05-20",
+    "status": "published",
+    "expiry_estimate": "2045-05-20",
+    "cpc": "A61K31/00; A61P11/00",
+    "claims_summary": "Fictional claims: compounds of formula I and their use in fibrosis.",
+    "own_family": false,
+    "natural_key": "inpadoc:90000002",
+    "scope_id": "00000000-0000-4000-8000-000000000002",
+    "sources": "[{\"title\": \"Source (fictional)\", \"url\": \"https://news.example.invalid/inpadoc:90000002\", \"date\": \"2026-11-16\"}]",
+    "last_verified_on": "2026-11-16",
+    "last_changed_run_id": "00000000-0000-4000-9100-000000000001",
+    "changed_fields": "[]",
+    "watched": false,
+    "dismissed": false
+   }
+  },
+  {
+   "role": "patentradar.families",
+   "id": "00000000-0000-4000-8000-000000000008",
+   "version": 0,
+   "data": {
+    "title": "Autotaxin inhibitor salts (fictional)",
+    "family_id": "90000003",
+    "numbers": "EP9000003B1",
+    "office": "EP",
+    "assignee_name": "Quillmont Bio (fictional)",
+    "priority_date": "2010-11-02",
+    "status": "opposed",
+    "expiry_estimate": "2030-11-02",
+    "cpc": "A61K31/00; A61P11/00",
+    "claims_summary": "Fictional claims: compounds of formula I and their use in fibrosis.",
+    "own_family": false,
+    "natural_key": "inpadoc:90000003",
+    "scope_id": "00000000-0000-4000-8000-000000000002",
+    "sources": "[{\"title\": \"Source (fictional)\", \"url\": \"https://news.example.invalid/inpadoc:90000003\", \"date\": \"2026-11-16\"}]",
+    "last_verified_on": "2026-11-16",
+    "last_changed_run_id": "00000000-0000-4000-9100-000000000001",
+    "changed_fields": "[]",
+    "watched": false,
+    "dismissed": false
+   }
+  },
+  {
+   "role": "patentradar.families",
+   "id": "00000000-0000-4000-8000-000000000009",
+   "version": 0,
+   "data": {
+    "title": "Crystalline form of NWB-101 (fictional)",
+    "family_id": "90000004",
+    "numbers": "EP9000004A1, US19000004A1",
+    "office": "EP",
+    "assignee_name": "Nordwell Bio (fictional)",
+    "priority_date": "2023-02-14",
+    "status": "filed",
+    "expiry_estimate": "2043-02-14",
+    "cpc": "A61K31/00; A61P11/00",
+    "claims_summary": "Fictional claims: compounds of formula I and their use in fibrosis.",
+    "own_family": true,
+    "natural_key": "inpadoc:90000004",
+    "scope_id": "00000000-0000-4000-8000-000000000002",
+    "sources": "[{\"title\": \"Source (fictional)\", \"url\": \"https://news.example.invalid/inpadoc:90000004\", \"date\": \"2026-11-16\"}]",
+    "last_verified_on": "2026-11-16",
+    "last_changed_run_id": "00000000-0000-4000-9100-000000000001",
+    "changed_fields": "[]",
+    "watched": false,
+    "dismissed": false
+   }
+  },
+  {
+   "role": "patentradar.families",
+   "id": "00000000-0000-4000-8000-000000000010",
+   "version": 0,
+   "data": {
+    "title": "Anti-fibrotic combination therapy (fictional)",
+    "family_id": "90000005",
+    "numbers": "US19000005B2",
+    "office": "US",
+    "assignee_name": "Cedarline Pharma (fictional)",
+    "priority_date": "2007-06-30",
+    "status": "granted",
+    "expiry_estimate": "2027-06-30",
+    "cpc": "A61K31/00; A61P11/00",
+    "claims_summary": "Fictional claims: compounds of formula I and their use in fibrosis.",
+    "own_family": false,
+    "natural_key": "inpadoc:90000005",
+    "scope_id": "00000000-0000-4000-8000-000000000002",
+    "sources": "[{\"title\": \"Source (fictional)\", \"url\": \"https://news.example.invalid/inpadoc:90000005\", \"date\": \"2026-11-16\"}]",
+    "last_verified_on": "2026-11-16",
+    "last_changed_run_id": "00000000-0000-4000-9100-000000000001",
+    "changed_fields": "[]",
+    "watched": false,
+    "dismissed": false
+   }
+  },
+  {
+   "role": "patentradar.families",
+   "id": "00000000-0000-4000-8000-000000000011",
+   "version": 0,
+   "data": {
+    "title": "PDE4B inhibitors for lung fibrosis (fictional)",
+    "family_id": "90000006",
+    "numbers": "EP9000006B1",
+    "office": "EP",
+    "assignee_name": "Larkspur Medicines (fictional)",
+    "priority_date": "2006-01-15",
+    "status": "lapsed",
+    "expiry_estimate": "2026-01-15",
+    "cpc": "A61K31/00; A61P11/00",
+    "claims_summary": "Fictional claims: compounds of formula I and their use in fibrosis.",
+    "own_family": false,
+    "natural_key": "inpadoc:90000006",
+    "scope_id": "00000000-0000-4000-8000-000000000002",
+    "sources": "[{\"title\": \"Source (fictional)\", \"url\": \"https://news.example.invalid/inpadoc:90000006\", \"date\": \"2026-11-16\"}]",
+    "last_verified_on": "2026-11-16",
+    "last_changed_run_id": "00000000-0000-4000-9100-000000000003",
+    "changed_fields": "[\"new\"]",
+    "watched": false,
+    "dismissed": false
+   }
+  },
+  {
+   "role": "patentradar.events",
+   "id": "00000000-0000-4000-8000-000000000012",
+   "version": 0,
+   "data": {
+    "scope_id": "00000000-0000-4000-8000-000000000002",
+    "item_id": "00000000-0000-4000-8000-000000000008",
+    "natural_key": "inpadoc:90000003|patent_granted|2026-11-11",
+    "kind": "patent_granted",
+    "title": "EP9000003 granted (fictional)",
+    "summary": "Fictional event for the demo.",
+    "occurred_on": "2026-11-11",
+    "occurred_month": "2026-11",
+    "expected": false,
+    "impact": "medium",
+    "direction": "neutral",
+    "sources": "[{\"title\": \"Source (fictional)\", \"url\": \"https://news.example.invalid/e0\", \"date\": \"2026-11-11\"}]",
+    "run_id": "00000000-0000-4000-9100-000000000003",
+    "status": "new"
+   }
+  },
+  {
+   "role": "patentradar.events",
+   "id": "00000000-0000-4000-8000-000000000013",
+   "version": 0,
+   "data": {
+    "scope_id": "00000000-0000-4000-8000-000000000002",
+    "item_id": "00000000-0000-4000-8000-000000000008",
+    "natural_key": "inpadoc:90000003|opposition|2026-11-13",
+    "kind": "opposition",
+    "title": "Opposition filed against EP9000003 (fictional)",
+    "summary": "Fictional event for the demo.",
+    "occurred_on": "2026-11-13",
+    "occurred_month": "2026-11",
+    "expected": false,
+    "impact": "high",
+    "direction": "threat",
+    "so_what": "Could change the plan for NWB-101 (fictional).",
+    "sources": "[{\"title\": \"Source (fictional)\", \"url\": \"https://news.example.invalid/e1\", \"date\": \"2026-11-13\"}]",
+    "run_id": "00000000-0000-4000-9100-000000000003",
+    "status": "new"
+   }
+  },
+  {
+   "role": "patentradar.events",
+   "id": "00000000-0000-4000-8000-000000000014",
+   "version": 0,
+   "data": {
+    "scope_id": "00000000-0000-4000-8000-000000000002",
+    "item_id": "00000000-0000-4000-8000-000000000010",
+    "natural_key": "inpadoc:90000005|expiry_upcoming|2027-06-30",
+    "kind": "expiry_upcoming",
+    "title": "US19000005 expires (fictional)",
+    "summary": "Fictional event for the demo.",
+    "occurred_on": "2027-06-30",
+    "occurred_month": "2027-06",
+    "expected": true,
+    "impact": "high",
+    "direction": "threat",
+    "so_what": "Could change the plan for NWB-101 (fictional).",
+    "sources": "[{\"title\": \"Source (fictional)\", \"url\": \"https://news.example.invalid/e2\", \"date\": \"2027-06-30\"}]",
+    "run_id": "00000000-0000-4000-9100-000000000001",
+    "status": "new"
+   }
+  },
+  {
+   "role": "patentradar.events",
+   "id": "00000000-0000-4000-8000-000000000015",
+   "version": 0,
+   "data": {
+    "scope_id": "00000000-0000-4000-8000-000000000002",
+    "item_id": "00000000-0000-4000-8000-000000000006",
+    "natural_key": "inpadoc:90000001|expiry_upcoming|2028-03-12",
+    "kind": "expiry_upcoming",
+    "title": "EP9000001 expires (fictional)",
+    "summary": "Fictional event for the demo.",
+    "occurred_on": "2028-03-12",
+    "occurred_month": "2028-03",
+    "expected": true,
+    "impact": "medium",
+    "direction": "neutral",
+    "sources": "[{\"title\": \"Source (fictional)\", \"url\": \"https://news.example.invalid/e3\", \"date\": \"2028-03-12\"}]",
+    "run_id": "00000000-0000-4000-9100-000000000001",
+    "status": "reviewed"
+   }
+  },
+  {
+   "role": "patentradar.events",
+   "id": "00000000-0000-4000-8000-000000000016",
+   "version": 0,
+   "data": {
+    "scope_id": "00000000-0000-4000-8000-000000000002",
+    "item_id": "00000000-0000-4000-8000-000000000007",
+    "natural_key": "inpadoc:90000002|patent_published|2026-11-05",
+    "kind": "patent_published",
+    "title": "WO2026/900002 published (fictional)",
+    "summary": "Fictional event for the demo.",
+    "occurred_on": "2026-11-05",
+    "occurred_month": "2026-11",
+    "expected": false,
+    "impact": "medium",
+    "direction": "neutral",
+    "sources": "[{\"title\": \"Source (fictional)\", \"url\": \"https://news.example.invalid/e4\", \"date\": \"2026-11-05\"}]",
+    "run_id": "00000000-0000-4000-9100-000000000001",
+    "status": "reviewed"
+   }
+  },
+  {
+   "role": "patentradar.events",
+   "id": "00000000-0000-4000-8000-000000000017",
+   "version": 0,
+   "data": {
+    "scope_id": "00000000-0000-4000-8000-000000000002",
+    "item_id": "00000000-0000-4000-8000-000000000011",
+    "natural_key": "inpadoc:90000006|legal_event|2026-10-20",
+    "kind": "legal_event",
+    "title": "EP9000006 lapsed for non-payment (fictional)",
+    "summary": "Fictional event for the demo.",
+    "occurred_on": "2026-10-20",
+    "occurred_month": "2026-10",
+    "expected": false,
+    "impact": "low",
+    "direction": "neutral",
+    "sources": "[{\"title\": \"Source (fictional)\", \"url\": \"https://news.example.invalid/e5\", \"date\": \"2026-10-20\"}]",
+    "run_id": "00000000-0000-4000-9100-000000000001",
+    "status": "reviewed"
+   }
+  }
+ ]
+}

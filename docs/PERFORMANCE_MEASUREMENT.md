@@ -225,3 +225,20 @@ Implemented 18 November 2026.
 
 Local synthetic observation: a runtime start fell from a median of about 80 ms to about 16 ms when a prepared process was waiting (fast multi-core machine; the saving on a throttled half core is expected to be larger and is unmeasured). An app making six reads across three tables ran 185 application queries with separate reads and 124 with one batch. Request counts per screen: platform open 2 sequential steps to 1; app open from the Apps page 2 to 1; app open by URL 3 to 1.
 
+## Batched reads in the 16 switched-on apps
+
+Implemented 18 November 2026 as a patch release of every switched-on catalog app (see `docs/TEMPLATE_CATALOG.md` and `HISTORY.md`). Data calls for two consecutive screens (open, then one more render) on each app's demo data, from `tests/batched-read-apps.test.ts`, which runs the published source in the production runtime:
+
+| App | Calls with one call per read | Calls with batched reads |
+| --- | ---: | ---: |
+| Runway 2.2.1 | 30 | 6 |
+| Contracts 1.1.1 | 18 | 4 |
+| CRO Selection 2.1.1 | 28 | 6 |
+| Data Room 1.1.1 | 26 | 4 |
+| Fundraise 2.0.1 | 24 | 4 |
+| Investor Updates 1.0.1 | 26 | 4 |
+| Partnerships 2.2.1 | 36 | 6 |
+| Programs 2.2.1 | 24 | 4 |
+| Each of the eight radars | 22 | 4 |
+
+The number of reads is the same in both columns; each read is still checked and counted against the app's budget. Screens and state are identical in both modes on the demo data, on a 350-row table and with a restricted table. These are call counts on fictional records with no database: the server-side saving per call is the batched permission lookup measured above, and production timings remain unmeasured. Installed copies of earlier versions are unchanged.

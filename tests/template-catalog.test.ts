@@ -125,12 +125,13 @@ test('migration 075 publishes Programs 2.2.0 in place of 2.1.0, from the live ca
   await pg.query("DELETE FROM app_template_catalog WHERE template_id='life.project-oversight' AND version='2.2.0'");
   const before=await status();
   await pg.exec(await readFile('migrations/'+last,'utf8'));await syncTemplateCatalog(db);
-  const after=await status();assert.equal(after['life.project-oversight@2.1.0'],'draft');assert.equal(after['life.project-oversight@2.2.0'],'approved');
+  // The seed now names 2.2.1 (migration 078), so 2.2.0 is imported as a draft here and 2.2.1 is the approved version.
+  const after=await status();assert.equal(after['life.project-oversight@2.1.0'],'draft');assert.equal(after['life.project-oversight@2.2.0'],'draft');assert.equal(after['life.project-oversight@2.2.1'],'approved');
   for(const [k,v] of Object.entries(before))if(!k.startsWith('life.project-oversight@'))assert.equal(after[k],v,k);
   const listed=(await new AppTemplates(undefined,db).list({query:'programs'})).templates.filter((t:any)=>t.id==='life.project-oversight');
-  assert.deepEqual(listed.map((t:any)=>t.version),['2.2.0']);
-  const seed=JSON.parse(await readFile('templates/catalog-seed.json','utf8'));assert.deepEqual(seed['life.project-oversight'],{schema:'templates/source/project-oversight/schema.example.json',version:'2.2.0'});
-  const gallery=JSON.parse(await readFile('resources/template-gallery/manifest.json','utf8'));assert.ok(gallery['life.project-oversight@2.2.0'],'gallery media for 2.2.0');
+  assert.deepEqual(listed.map((t:any)=>t.version),['2.2.1']);
+  const seed=JSON.parse(await readFile('templates/catalog-seed.json','utf8'));assert.deepEqual(seed['life.project-oversight'],{schema:'templates/source/project-oversight/schema.example.json',version:'2.2.1'});
+  const gallery=JSON.parse(await readFile('resources/template-gallery/manifest.json','utf8'));assert.ok(gallery['life.project-oversight@2.2.0'],'gallery media for 2.2.0');assert.ok(gallery['life.project-oversight@2.2.1'],'gallery media for 2.2.1');
   // A later operator decision is not undone.
   await pg.query("UPDATE app_template_catalog SET status='approved' WHERE template_id='life.project-oversight' AND version='2.1.0'");await syncTemplateCatalog(db);
   assert.equal((await status())['life.project-oversight@2.1.0'],'approved');
@@ -150,12 +151,13 @@ test('migration 073 publishes Contracts 1.1.0 in place of 1.0.0, from the live c
   await pg.query("DELETE FROM app_template_catalog WHERE template_id='life.contracts' AND version='1.1.0'");
   const before=await status();
   await pg.exec(await readFile('migrations/'+last,'utf8'));await syncTemplateCatalog(db);
-  const after=await status();assert.equal(after['life.contracts@1.0.0'],'draft');assert.equal(after['life.contracts@1.1.0'],'approved');
+  // The seed now names 1.1.1 (migration 078), so 1.1.0 is imported as a draft here and 1.1.1 is the approved version.
+  const after=await status();assert.equal(after['life.contracts@1.0.0'],'draft');assert.equal(after['life.contracts@1.1.0'],'draft');assert.equal(after['life.contracts@1.1.1'],'approved');
   for(const [k,v] of Object.entries(before))if(!k.startsWith('life.contracts@'))assert.equal(after[k],v,k);
   const listed=(await new AppTemplates(undefined,db).list({query:'contracts'})).templates.filter((t:any)=>t.id==='life.contracts');
-  assert.deepEqual(listed.map((t:any)=>t.version),['1.1.0']);
+  assert.deepEqual(listed.map((t:any)=>t.version),['1.1.1']);
   // Seed and retirement record match; a later operator decision is not undone.
-  const seed=JSON.parse(await readFile('templates/catalog-seed.json','utf8'));assert.deepEqual(seed['life.contracts'],{schema:'templates/source/contracts/schema.example.json',version:'1.1.0'});
+  const seed=JSON.parse(await readFile('templates/catalog-seed.json','utf8'));assert.deepEqual(seed['life.contracts'],{schema:'templates/source/contracts/schema.example.json',version:'1.1.1'});
   await pg.query("UPDATE app_template_catalog SET status='approved' WHERE template_id='life.contracts' AND version='1.0.0'");await syncTemplateCatalog(db);
   assert.equal((await status())['life.contracts@1.0.0'],'approved');
  }finally{await pg.close();}
@@ -176,14 +178,16 @@ test('migration 074 publishes the Bio Radars and Literature Radar 2.0.0 in place
   const before=await status();
   await pg.exec(await readFile('migrations/'+last,'utf8'));await syncTemplateCatalog(db);
   const after=await status();assert.equal(after['life.literature-radar@1.2.2'],'draft');
-  for(const k of radars)assert.equal(after[k],'approved',k);
+  // The seed now names the next patch of each radar (migration 078): the versions published here are imported as drafts and their successors are approved.
+  const next=(k:string)=>k.replace(/\d+$/,n=>String(Number(n)+1));
+  for(const k of radars){assert.equal(after[k],'draft',k);assert.equal(after[next(k)],'approved',next(k));}
   for(const [k,v] of Object.entries(before))if(!k.startsWith('life.literature-radar@'))assert.equal(after[k],v,k);
   const catalog=new AppTemplates(undefined,db);
-  assert.deepEqual((await catalog.list({query:'literature'})).templates.filter((t:any)=>t.id==='life.literature-radar').map((t:any)=>t.version),['2.0.0']);
+  assert.deepEqual((await catalog.list({query:'literature'})).templates.filter((t:any)=>t.id==='life.literature-radar').map((t:any)=>t.version),['2.0.1']);
   const listed=(await catalog.list({limit:50})).templates.map((t:any)=>t.id);for(const k of radars)assert.ok(listed.includes(k.split('@')[0]),k);
   // Seed and retirement record match; a later operator decision is not undone.
   const seed=JSON.parse(await readFile('templates/catalog-seed.json','utf8')),ret=JSON.parse(await readFile('templates/catalog-retirements.json','utf8')).retirements;
-  for(const k of radars){const [id,v]=k.split('@');assert.equal(seed[id].version,v,k);}
+  for(const k of radars){const [id,v]=next(k).split('@');assert.equal(seed[id].version,v,k);}
   assert.ok(ret.some((r:any)=>r.templateId==='life.literature-radar'&&r.version==='1.2.2'&&r.replacedBy==='life.literature-radar@2.0.0'));
   await pg.query("UPDATE app_template_catalog SET status='approved' WHERE template_id='life.literature-radar' AND version='1.2.2'");await syncTemplateCatalog(db);
   assert.equal((await status())['life.literature-radar@1.2.2'],'approved');
@@ -205,14 +209,54 @@ test('migration 077 publishes CRO Selection 2.1.0 in place of CRO Selection 1.0.
   const before=await status();
   await pg.exec(await readFile('migrations/'+last,'utf8'));await syncTemplateCatalog(db);
   const after=await status();
-  assert.deepEqual(['life.cro-selection@1.0.1','life.sponsor-rfp-management@1.0.1','life.cro-selection@2.0.0','life.cro-selection@2.1.0'].map(k=>after[k]),['draft','draft','draft','approved']);
+  // The seed now names 2.1.1 (migration 078), so 2.1.0 is imported as a draft here and 2.1.1 is the approved version.
+  assert.deepEqual(['life.cro-selection@1.0.1','life.sponsor-rfp-management@1.0.1','life.cro-selection@2.0.0','life.cro-selection@2.1.0','life.cro-selection@2.1.1'].map(k=>after[k]),['draft','draft','draft','draft','approved']);
   for(const [k,v] of Object.entries(before))if(!['life.cro-selection@1.0.1','life.sponsor-rfp-management@1.0.1'].includes(k))assert.equal(after[k],v,k);
   const catalog=new AppTemplates(undefined,db);
-  assert.deepEqual((await catalog.list({query:'cro selection'})).templates.filter((t:any)=>t.id==='life.cro-selection').map((t:any)=>t.version),['2.1.0']);
+  assert.deepEqual((await catalog.list({query:'cro selection'})).templates.filter((t:any)=>t.id==='life.cro-selection').map((t:any)=>t.version),['2.1.1']);
   assert.ok(!(await catalog.list({query:'sponsor rfp'})).templates.some((t:any)=>t.id==='life.sponsor-rfp-management'),'withdrawn from the gallery');
-  const seed=JSON.parse(await readFile('templates/catalog-seed.json','utf8'));assert.deepEqual(seed['life.cro-selection'],{schema:'templates/source/cro-selection/schema.example.json',version:'2.1.0'});assert.equal(seed['life.sponsor-rfp-management'],undefined);
+  const seed=JSON.parse(await readFile('templates/catalog-seed.json','utf8'));assert.deepEqual(seed['life.cro-selection'],{schema:'templates/source/cro-selection/schema.example.json',version:'2.1.1'});assert.equal(seed['life.sponsor-rfp-management'],undefined);
   // A later operator decision is not undone by later deployments.
   await pg.query("UPDATE app_template_catalog SET status='approved' WHERE template_id='life.sponsor-rfp-management' AND version='1.0.1'");await syncTemplateCatalog(db);
   assert.equal((await status())['life.sponsor-rfp-management@1.0.1'],'approved');
  }finally{await pg.close();}
 });
+
+test('migration 078 publishes the batched-read release of all 16 switched-on apps in place of the versions they replace, once',async()=>{
+ const pg=new PGlite();
+ try{
+  const files=(await readdir('migrations')).filter(f=>f.endsWith('.sql')).sort(),last=files.find(f=>f.startsWith('078_approve_batched_read'))!;
+  for(const file of files.filter(f=>f<last))await pg.exec(await readFile('migrations/'+file,'utf8'));
+  const db:Database={query:(q,v)=>pg.query(q,v) as any,transaction:fn=>pg.transaction(tx=>fn(tx as Connection)),close:()=>pg.close()};
+  await syncTemplateCatalog(db);
+  const status=async()=>Object.fromEntries((await pg.query<any>("SELECT template_id||'@'||version AS k,status FROM app_template_catalog ORDER BY 1")).rows.map(r=>[r.k,r.status]));
+  const releases:[string,string,string][]=[['life.cash-runway','2.2.0','2.2.1'],['life.contracts','1.1.0','1.1.1'],['life.cro-selection','2.1.0','2.1.1'],['life.data-room','1.1.0','1.1.1'],['life.investor-crm','2.0.0','2.0.1'],['life.investor-updates','1.0.0','1.0.1'],['life.partnership-tracker','2.2.0','2.2.1'],['life.project-oversight','2.2.0','2.2.1'],
+   ['life.deal-radar','1.0.0','1.0.1'],['life.funding-radar','1.0.0','1.0.1'],['life.literature-radar','2.0.0','2.0.1'],['life.market-radar','1.0.0','1.0.1'],['life.patent-radar','1.0.0','1.0.1'],['life.pipeline-radar','1.0.0','1.0.1'],['life.regulatory-radar','1.0.0','1.0.1'],['life.trial-radar','1.0.0','1.0.1']];
+  const availability=JSON.parse(await readFile('templates/catalog-availability.json','utf8')).apps;
+  assert.deepEqual(releases.map(r=>r[0]).sort(),Object.keys(availability).filter(id=>availability[id].platform||availability[id].chatgpt||availability[id].claude).sort(),'every switched-on app, and only those');
+  // Live state before this deployment: the replaced versions approved, the new ones not yet imported.
+  for(const [id,old,next] of releases){await pg.query("UPDATE app_template_catalog SET status='approved' WHERE template_id=$1 AND version=$2",[id,old]);await pg.query('DELETE FROM app_template_catalog WHERE template_id=$1 AND version=$2',[id,next]);}
+  const before=await status();
+  await pg.exec(await readFile('migrations/'+last,'utf8'));await syncTemplateCatalog(db);
+  const after=await status(),touched=new Set(releases.flatMap(([id,old,next])=>[id+'@'+old,id+'@'+next]));
+  for(const [id,old,next] of releases){assert.equal(after[id+'@'+old],'draft',id);assert.equal(after[id+'@'+next],'approved',id);}
+  for(const [k,v] of Object.entries(before))if(!touched.has(k))assert.equal(after[k],v,k);
+  const catalog=new AppTemplates(undefined,db),listed=(await catalog.list({limit:50})).templates;
+  const seed=JSON.parse(await readFile('templates/catalog-seed.json','utf8')),ret=JSON.parse(await readFile('templates/catalog-retirements.json','utf8')).retirements;
+  const gallery=JSON.parse(await readFile('resources/template-gallery/manifest.json','utf8')),installers=JSON.parse(await readFile('templates/catalog-installers.json','utf8'));
+  for(const [id,old,next] of releases){
+   assert.equal(listed.find((t:any)=>t.id===id)?.version,next,id);assert.equal(seed[id].version,next,id);
+   assert.ok(ret.some((r:any)=>r.templateId===id&&r.version===old&&r.replacedBy===id+'@'+next),id);
+   // Both versions keep their own installer schema, preview and gallery image; the released one is never changed.
+   assert.ok(gallery[id+'@'+old]&&gallery[id+'@'+next],id);assert.match(installers[id+'@'+old],/\/archive\//,id);assert.doesNotMatch(installers[id+'@'+next],/\/archive\//,id);
+   for(const version of [old,next]){assert.ok((await templateMedia(catalog,id,version,'preview').catch(()=>null))||version===old,id+'@'+version);}
+   const released=JSON.parse(await readFile(`templates/apps/${id}-${old}.json`,'utf8')),current=JSON.parse(await readFile(`templates/apps/${id}-${next}.json`,'utf8'));
+   assert.equal(released.name,current.name,id);assert.deepEqual(Object.keys(released.options??{}),Object.keys(current.options??{}),id);
+   assert.match(current.source,/records\.readMany/,id);assert.doesNotMatch(released.source,/records\.readMany/,id);
+  }
+  // A later operator decision is not undone.
+  await pg.query("UPDATE app_template_catalog SET status='approved' WHERE template_id='life.cash-runway' AND version='2.2.0'");await syncTemplateCatalog(db);
+  assert.equal((await status())['life.cash-runway@2.2.0'],'approved');
+ }finally{await pg.close();}
+});
+

@@ -1,0 +1,247 @@
+{
+  "kit": "1.1.0",
+  "slug": "pipeline-radar",
+  "id": "life.pipeline-radar",
+  "version": "1.0.0",
+  "name": "Pipeline Radar",
+  "prefix": "pipelineradar",
+  "trackerTable": "assets",
+  "trackerLabel": "Assets",
+  "itemLabel": "asset",
+  "itemsLabel": "assets",
+  "cadence": "weekly",
+  "itemNameField": "name",
+  "scopeFields": [
+    {
+      "key": "indication",
+      "name": "Indication",
+      "kind": "text",
+      "required": true,
+      "placeholder": "e.g. idiopathic pulmonary fibrosis"
+    },
+    {
+      "key": "mechanism",
+      "name": "Mechanism or target",
+      "kind": "text",
+      "placeholder": "e.g. LPA1, autotaxin"
+    },
+    {
+      "key": "modality",
+      "name": "Modality",
+      "kind": "text",
+      "placeholder": "e.g. small molecule, antibody"
+    },
+    {
+      "key": "line",
+      "name": "Line of therapy",
+      "kind": "text",
+      "placeholder": "e.g. first line, add-on"
+    },
+    {
+      "key": "geographies",
+      "name": "Geographies",
+      "kind": "text",
+      "placeholder": "e.g. US, EU, China"
+    }
+  ],
+  "trackerFields": [
+    {
+      "key": "name",
+      "name": "Asset",
+      "kind": "text",
+      "required": true
+    },
+    {
+      "key": "organization_id",
+      "name": "Company",
+      "kind": "text",
+      "description": "Record ID of an organizations record."
+    },
+    {
+      "key": "company_name",
+      "name": "Company name",
+      "kind": "text"
+    },
+    {
+      "key": "partner_ids",
+      "name": "Partners",
+      "kind": "text",
+      "description": "Comma-separated organizations record IDs."
+    },
+    {
+      "key": "partner_names",
+      "name": "Partner names",
+      "kind": "text"
+    },
+    {
+      "key": "mechanism",
+      "name": "Mechanism",
+      "kind": "text"
+    },
+    {
+      "key": "modality",
+      "name": "Modality",
+      "kind": "select",
+      "options": [
+        "small_molecule",
+        "antibody",
+        "biologic",
+        "cell_therapy",
+        "gene_therapy",
+        "rna",
+        "vaccine",
+        "other"
+      ]
+    },
+    {
+      "key": "phase",
+      "name": "Phase",
+      "kind": "select",
+      "options": [
+        "preclinical",
+        "phase_1",
+        "phase_2",
+        "phase_3",
+        "filed",
+        "approved",
+        "discontinued"
+      ]
+    },
+    {
+      "key": "indications",
+      "name": "Indications",
+      "kind": "text"
+    },
+    {
+      "key": "line",
+      "name": "Line",
+      "kind": "text"
+    },
+    {
+      "key": "status",
+      "name": "Status",
+      "kind": "select",
+      "options": [
+        "active",
+        "on_hold",
+        "discontinued",
+        "unknown"
+      ]
+    },
+    {
+      "key": "next_milestone",
+      "name": "Next milestone",
+      "kind": "text"
+    },
+    {
+      "key": "next_milestone_on",
+      "name": "Next milestone date",
+      "kind": "date"
+    },
+    {
+      "key": "next_milestone_estimated",
+      "name": "Milestone date is an estimate",
+      "kind": "boolean"
+    },
+    {
+      "key": "own",
+      "name": "Our own asset",
+      "kind": "boolean"
+    }
+  ],
+  "naturalKey": {
+    "label": "company and asset",
+    "rule": "Company name and asset name (code or INN), lower case, joined by \"|\", e.g. \"maplecrest pharma|fx-101\"."
+  },
+  "dateField": {
+    "key": "next_milestone_on",
+    "estimated": "next_milestone_estimated",
+    "label": "Next milestone"
+  },
+  "eventKinds": [
+    {
+      "key": "new_entrant",
+      "label": "New entrant"
+    },
+    {
+      "key": "phase_change",
+      "label": "Phase change"
+    },
+    {
+      "key": "partnership",
+      "label": "Partnership"
+    },
+    {
+      "key": "discontinuation",
+      "label": "Discontinuation"
+    },
+    {
+      "key": "readout",
+      "label": "Readout"
+    },
+    {
+      "key": "other",
+      "label": "Other"
+    }
+  ],
+  "digestSection": {
+    "title": "Phase changes and new entrants",
+    "kinds": [
+      "phase_change",
+      "new_entrant",
+      "discontinuation"
+    ],
+    "hint": "phase changes, new entrants"
+  },
+  "listColumns": [
+    "name",
+    "company_name",
+    "mechanism",
+    "modality",
+    "phase",
+    "indications",
+    "next_milestone_on",
+    "status"
+  ],
+  "optionLabels": {
+    "phase_1": "Phase 1",
+    "phase_2": "Phase 2",
+    "phase_3": "Phase 3",
+    "small_molecule": "Small molecule",
+    "cell_therapy": "Cell therapy",
+    "gene_therapy": "Gene therapy",
+    "rna": "RNA",
+    "on_hold": "On hold"
+  },
+  "sources": [
+    {
+      "name": "Company pipelines and press releases",
+      "covers": "Pipeline pages, press releases, investor presentations.",
+      "priority": 1,
+      "notes": "Use the public site on the web."
+    },
+    {
+      "name": "Public pipeline summaries",
+      "covers": "Pharmaprojects-type public summaries, trade press databases (free parts).",
+      "priority": 2,
+      "notes": "Summarise; do not copy paid content."
+    },
+    {
+      "name": "News",
+      "covers": "Trade and business news.",
+      "priority": 3,
+      "notes": "Use the public site on the web."
+    }
+  ],
+  "instruction": "You watch competing assets for the scopes below. For each active scope, find assets that match its indication, mechanism or target, modality, line and geographies, and changes since the last run: new entrants, phase changes, partnerships, discontinuations and readouts. Keep each asset current in the Assets table and record each change as an event. Mark estimated milestone dates as estimates. Explain in one or two sentences why each high-impact change matters for the scope's program (so_what).",
+  "examplePrompts": [
+    {
+      "prompt": "Set up Pipeline Radar for our LPA1 program and build it now.",
+      "expectedBehavior": "Install Pipeline Radar, add a scope (indication, mechanism LPA1), then Build now in chat: the assistant reads the brief, fills Assets and events with sources and saves a run with its source report."
+    },
+    {
+      "prompt": "Who entered the IPF space this quarter?",
+      "expectedBehavior": "Read Pipeline Radar events of kind new_entrant for the scope and summarise them with sources. Nothing is written."
+    }
+  ]
+}

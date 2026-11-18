@@ -46,8 +46,8 @@ test('the 2.1.0 catalog entry (approved in deployed catalogs) replaces 2.0.0 and
  try{
   await syncTemplateCatalog(x.db);
   // Since 14 November 2026 the seed names 2.2.0: a fresh catalog approves 2.2.0. Existing catalogs keep 2.1.0 approved (status is never reset on deploy).
-  assert.equal((await x.db.query("SELECT status FROM app_template_catalog WHERE template_id='life.cash-runway' AND version='2.2.0'")).rows[0].status,'approved');
-  await x.db.query("UPDATE app_template_catalog SET status='approved' WHERE template_id='life.cash-runway' AND version='2.1.0'");await x.db.query("UPDATE app_template_catalog SET status='draft' WHERE template_id='life.cash-runway' AND version='2.2.0'");
+  assert.equal((await x.db.query("SELECT status FROM app_template_catalog WHERE template_id='life.cash-runway' AND version='2.2.1'")).rows[0].status,'approved');
+  await x.db.query("UPDATE app_template_catalog SET status='approved' WHERE template_id='life.cash-runway' AND version='2.1.0'");await x.db.query("UPDATE app_template_catalog SET status='draft' WHERE template_id='life.cash-runway' AND version='2.2.1'");
   const row=(await x.db.query("SELECT status,install_schema FROM app_template_catalog WHERE template_id='life.cash-runway' AND version='2.1.0'")).rows[0];
   assert.equal(row.status,'approved');assert.equal(Object.keys(row.install_schema).length,13);
   for(const old of ['1.2.2','2.0.0'])assert.equal((await x.db.query("SELECT status FROM app_template_catalog WHERE template_id='life.cash-runway' AND version=$1",[old])).rows[0].status,'draft');

@@ -7,7 +7,7 @@ import {appTemplates} from '../../src/workspace/app-templates.js';
  * executed in production QuickJS. records.read behaves like the platform: exact-match filters on string values, search over values, sort with
  * empty values last (select fields in option order), then paging; total counts all matches. Functions run in the same QuickJS runtime with
  * the injected appRoles map. Records are the fictional demo set (as of 16 Nov 2026). */
-export const entry=await appTemplates.read({templateId:'life.trial-radar',version:'1.0.0',includeFunctionSource:true} as any);
+export const entry=await appTemplates.read({templateId:'life.trial-radar',version:'1.0.1',includeFunctionSource:true} as any);
 export const root='templates/source/radars/trial-radar/';
 export const radar=JSON.parse(await readFile(root+'radar.json','utf8'));
 export const schema=JSON.parse(await readFile(root+'schema.example.json','utf8'));

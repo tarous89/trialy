@@ -9,7 +9,7 @@ import {fieldSchema} from '../src/shared/schema.js';
 
 /* Contracts 1.1.0: the catalog entry, prepared exactly as AppTemplates.operation prepends configuration, executed in production QuickJS.
  * Fixtures are the fictional demo records; every date and total below was computed by hand (QA.md), not by the app's formulas. */
-const entry=await appTemplates.read({templateId:'life.contracts',version:'1.1.0'});
+const entry=await appTemplates.read({templateId:'life.contracts',version:'1.1.1'});
 const schema=JSON.parse(await readFile('templates/source/contracts/schema.example.json','utf8'));
 const contract=JSON.parse(await readFile('templates/core-contract/v1.json','utf8'));
 const registry=JSON.parse(await readFile('templates/contracts/outputs.json','utf8'));
@@ -42,7 +42,7 @@ const text=(html:string)=>html.replace(/<[^>]+>/g,' ').replace(/&amp;/g,'&').rep
 const terms=(rows:Row[],ag:string)=>rows.find(r=>r.role==='contracts.terms'&&r.data.agreement_id===ag)!;
 
 test('catalog entry, contract-shaped scalar schema, roles as in the scope and seven layout screens',async()=>{
- assert.equal(entry.version,'1.1.0');assert.equal(entry.name,'Contracts');assert.equal(entry.engine,'frontend-js');assert.ok(entry.source!.length<180000);
+ assert.equal(entry.version,'1.1.1');assert.equal(entry.name,'Contracts');assert.equal(entry.engine,'frontend-js');assert.ok(entry.source!.length<180000);
  for(const def of Object.values(schema) as any[])for(const f of def.fields){assert.ok(fieldSchema.safeParse(f).success,JSON.stringify(f));assert.equal(f.multiple,false);assert.match(f.key,/^[a-z][a-z0-9_]{0,63}$/);}
  // Core roles: the core contract v1 fields; Contracts owns the seven optional agreements fields; Programs-owned health fields are not bound.
  const strip=(fs:any[])=>fs.map(({owner,...f}:any)=>f);
@@ -292,7 +292,7 @@ test('1.1.0 C3/C7: values from a connected app are labelled From <App>; unknown 
 });
 
 test('1.1.0: no automations are declared and no setting refers to one',async()=>{
- const raw=JSON.parse(await readFile('templates/apps/life.contracts-1.1.0.json','utf8'));
+ const raw=JSON.parse(await readFile('templates/apps/life.contracts-1.1.1.json','utf8'));
  assert.equal(raw.recommendedAutomations,undefined);assert.equal(raw.automationFeatures,undefined);assert.equal(raw.documentation.tasks.mode,'none');
  assert.doesNotMatch(raw.instructions,/summaryBinding|actions_summary|digest_day/);
  const s=text((await render(fresh(),{section:'settings'})).html);assert.match(s,/Contracts needs none/);

@@ -1,6 +1,6 @@
 {
   "id": "life.cro-selection",
-  "version": "2.1.0",
+  "version": "2.1.1",
   "name": "CRO Selection",
   "description": "Choose CROs, CDMOs and labs, from the need to a signed award and a clean handover. Quick quote or full selection: longlist, optional RFI, RFP through private supplier links (no supplier accounts), questions and clarifications, a normalised bid grid with deviations, blind weighted scoring, qualification, bid defence, a recorded decision with notices to every supplier, onboarding and an award that other apps can read.",
   "tags": [

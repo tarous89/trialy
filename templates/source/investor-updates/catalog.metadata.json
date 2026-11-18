@@ -1,6 +1,6 @@
 {
   "id": "life.investor-updates",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "name": "Investor Updates",
   "description": "Keep your board, investors and shareholders informed by email or in meetings. Investors are people (optionally linked to firms) in categories with optional share-class rules. Claude or ChatGPT writes each update, agenda and recap as blocks with levels; the app builds one version per category, checks every fact, flags moved promises, gets one- or two-step approval and sends through TrialAgents: per-person online page and archive, read tracking without open pixels, questions and \"I can help\".",
   "tags": [

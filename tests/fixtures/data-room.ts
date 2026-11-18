@@ -5,7 +5,7 @@ import {appTemplates} from '../../src/workspace/app-templates.js';
 
 /* Data Room 1.1.0 unit harness: the catalog entry prepared exactly as AppTemplates.operation prepends configuration, executed in
  * production QuickJS. Records are the fictional demo set; the exchange is a mock with the platform's response shapes (fictional state). */
-export const entry=await appTemplates.read({templateId:'life.data-room',version:'1.1.0'});
+export const entry=await appTemplates.read({templateId:'life.data-room',version:'1.1.1'});
 export const schema=JSON.parse(await readFile('templates/source/data-room/schema.example.json','utf8'));
 export const demo=JSON.parse(await readFile('templates/source/data-room/demo_data.json','utf8'));
 export const roles=Object.keys(schema);
@@ -69,9 +69,9 @@ export async function dataRoomSuite(){
  const f=new WorkspaceFoundation(db),s=new Service(db);
  await syncTemplateCatalog(db);
  // Data Room 1.1.0 is approved by the seed (owner approval, 15 November 2026); Contracts 1.0.0 and Programs 2.1.0 are approved here for these tests.
- await pg.query("UPDATE app_template_catalog SET status='approved' WHERE (template_id='life.data-room' AND version='1.1.0') OR (template_id='life.contracts' AND version='1.0.0') OR (template_id='life.project-oversight' AND version='2.1.0')");
+ await pg.query("UPDATE app_template_catalog SET status='approved' WHERE (template_id='life.data-room' AND version='1.1.1') OR (template_id='life.contracts' AND version='1.0.0') OR (template_id='life.project-oversight' AND version='2.1.0')");
  const catalog=new AppTemplates(undefined,db);
- const T={room:await catalog.read({templateId:'life.data-room',version:'1.1.0'}),contracts:await catalog.read({templateId:'life.contracts',version:'1.0.0'}),programs:await catalog.read({templateId:'life.project-oversight',version:'2.1.0'})};
+ const T={room:await catalog.read({templateId:'life.data-room',version:'1.1.1'}),contracts:await catalog.read({templateId:'life.contracts',version:'1.0.0'}),programs:await catalog.read({templateId:'life.project-oversight',version:'2.1.0'})};
  const install=async(w:string,t:any,name:string,connections:Record<string,string>={})=>{const target={install:{templateId:t.id,version:t.version,digest:t.digest,name,requestKey:randomUUID()}};const step=await dataAccessStep(f,actor,w,target);
   return {step,receipt:step.needed?await confirmDataAccess(f,actor,w,{...target,connections,stepDigest:step.digest}):await installCatalogApp(f,actor,w,target.install)};};
  const comp=async(w:string,id:string)=>(await f.readComponent(actor,w,id)).component;
