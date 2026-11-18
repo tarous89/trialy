@@ -1,18 +1,29 @@
 // This host never evaluates guest source with Node. Only QuickJS inside bounded WASM does.
 import { RELEASE_ASYNC, newVariant, newQuickJSAsyncWASMModuleFromVariant } from 'quickjs-emscripten';
 const MAX = 1024 * 1024;
-let pending;
+let pending, deadline = Infinity;
+// Everything that does not depend on the guest is prepared as soon as the process starts, so a
+// process started ahead of time can begin a run immediately. A process still serves exactly one
+// run and is killed by its host afterwards: no runtime, memory or state is ever shared between runs.
+const prepared = (async () => {
+ const memory = new WebAssembly.Memory({initial:256,maximum:1024}); // Hard 64 MiB WASM ceiling.
+ const module = await newQuickJSAsyncWASMModuleFromVariant(newVariant(RELEASE_ASYNC,{wasmMemory:memory}));
+ if(module.getWasmMemory()!==memory) throw new Error('memory_boundary_unavailable');
+ const rt=module.newRuntime();rt.setMemoryLimit(16*1024*1024);rt.setMaxStackSize(256*1024);
+ rt.setInterruptHandler(()=>Date.now()>deadline);
+ return {rt,vm:rt.newContext()};
+})();
+prepared.then(()=>process.send?.({kind:'ready'}),()=>{});
+// A waiting process never outlives its host.
+process.on('disconnect',()=>process.exit(0));
+let started=false;
 process.on('message', async message => {
  if (message.kind === 'reply') { if (pending) { const done=pending; pending=undefined; done(message); } return; }
- if (message.kind !== 'start') return;
+ if (message.kind !== 'start' || started) return;
+ started=true;
  try {
-  const memory = new WebAssembly.Memory({initial:256,maximum:1024}); // Hard 64 MiB WASM ceiling.
-  const module = await newQuickJSAsyncWASMModuleFromVariant(newVariant(RELEASE_ASYNC,{wasmMemory:memory}));
-  if(module.getWasmMemory()!==memory) throw new Error('memory_boundary_unavailable');
-  const rt=module.newRuntime();rt.setMemoryLimit(16*1024*1024);rt.setMaxStackSize(256*1024);
-  rt.setInterruptHandler(()=>Date.now()>message.deadline);
-  const vm=rt.newContext();
-  process.send({kind:'ready'});
+  const {rt,vm}=await prepared;
+  deadline=message.deadline;
   const call=vm.newAsyncifiedFunction('__call',async handle=>{
    const raw=vm.getString(handle);if(raw.length>MAX)throw new Error('Request too large');
    const reply=await new Promise(resolve=>{pending=resolve;process.send({kind:'call',raw});});

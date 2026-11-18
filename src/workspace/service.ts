@@ -38,7 +38,7 @@ import {Foundation} from '../foundation/service.js';
 import {z} from 'zod';
 import {id} from '../shared/schema.js';
 import {requireCurrentAction,requireHuman,type WriteAuthorization} from '../domain/write-authorization.js';
-import {execute} from '../foundation/runtime.js';
+import {execute,LIMITS} from '../foundation/runtime.js';
 import {frontendRequest,frontendOutput,frontendRead,componentRecordChanges} from './frontend.js';
 import {interfaceSchema} from './ui.js';
 import {randomUUID} from 'node:crypto';
@@ -59,7 +59,8 @@ const activeFrontends=new FrontendQueue(2),activeDraftFrontends=new FrontendQueu
 const customFrontendSession=Symbol('custom frontend needs independent capability transactions');
 const adapter=(tx:Connection):Database=>({query:tx.query.bind(tx),transaction:fn=>fn(tx),close:async()=>{}});
 /** Read-only app capabilities; anything that proposes, runs or calls out is never a reuse unit. */
-const READ_CAPABILITIES=new Set(['records.read','records.get','project.records','project.relationships','roles.list','integrations.list']);
+export const READ_BATCH_LIMIT=12;
+const READ_CAPABILITIES=new Set(['records.read','records.readMany','records.get','project.records','project.relationships','roles.list','integrations.list']);
 export class WorkspaceFoundation {
  constructor(public db:Database,private frontendSession:boolean|'custom'=false){}
  // Project-level sharing comes later. Avoid leaking project/scope metadata to partial-access members.
@@ -253,7 +254,8 @@ export class WorkspaceFoundation {
    const bound=Object.fromEntries(content.bindings.map((b:any)=>[b.typeId,b.fields]));
    const pageReader=new DerivedReader(this.db,a,w,Object.keys(bound),bound);
    const writable=!!request.componentId&&!currentPolicy.archived&&currentPolicy.role!=='inspector'&&(await toolPolicy(this.db,a,currentPolicy,request.componentId)).grant.write;
-   const handler=async(name:string,value:unknown)=>{
+   let batchedReads=0;
+   const handler=async(name:string,value:unknown):Promise<any>=>{
     signal?.throwIfAborted();
     if(['actions.list','actions.run','actions.status','connectors.status'].includes(name)&&process.env.SIMPLE_APPS_ENABLED==='true'){
      if(!request.componentId)fail(403,'preview_read_only','Open a saved app');
@@ -333,6 +335,15 @@ export class WorkspaceFoundation {
      if(content.manifest?.scope==='project'&&!(await this.db.query('SELECT id FROM project_records WHERE workspace_id=$1 AND project_id=$2 AND record_id=$3 AND revoked_at IS NULL',[w,content.project_id,record.id])).rows.length)fail(404,'not_found','Record unavailable');
      const resolved=await pageReader.read({...record,data:Object.fromEntries(Object.entries(record.data).filter(([key])=>binding.fields.includes(key)))});
      return {id:record.id,typeId:record.type_id,version:record.version,data:resolved.data};
+    }
+    // Several record reads in one call. Each read is checked exactly like records.read (binding,
+    // permissions, filters, limits) and the run's call and size budgets still apply; permission
+    // lookups are made once for the batch and verified before it returns.
+    if(name==='records.readMany'){
+     const v=z.object({reads:z.array(z.unknown()).min(1).max(READ_BATCH_LIMIT)}).strict().parse(value);
+     if((batchedReads+=v.reads.length)>LIMITS.calls)fail(400,'capability_limit','This app made too many reads');
+     const results=[];for(const read of v.reads){signal?.throwIfAborted();results.push(await handler('records.read',read));}
+     return {results};
     }
     if(name==='records.read'){
      if(draftTables.includes((value as any)?.typeId)){const v=frontendRead.parse(value);return {rows:[],total:0,limit:v.limit,offset:v.offset};}
@@ -542,7 +553,19 @@ export class WorkspaceFoundation {
   if(viewId){const row=(await this.db.query('SELECT version FROM app_runtime_views WHERE id=$1 AND workspace_id=$2 AND user_id=$3 AND app_id=$4 AND (origin=$5 OR ($5=\'human\' AND origin=\'ai\'))',[viewId,w,a.userId,id,a.origin])).rows[0];await this.runtimeComponent(this.db,a,w,id,row?.version,viewId);}
   return {id:c.id,version:c.version,accessVersion:(await access(this.db,a,w)).access_version,accessStamp:await this.componentAccessStamp(a,w,c)};
  }
- async readComponent(a:Actor,w:string,id:string,includeOutput=false){const component=projectAppSections(await access(this.db,a,w),a,await this.component(this.db,a,w,id));const initialOutput=includeOutput&&(standardTracker(component.source)||component.sectionsEmpty)&&!component.archived&&!component.project_archived?await this.runFrontend(a,w,{componentId:id,expectedVersion:component.version,event:{kind:'open'}}):undefined;return {workspaceId:w,workspaceFoundation:true,component,...(initialOutput?{initialOutput}:{})};}
+ /** includeOutput returns the first render with the read, so opening an app is one request.
+  * A custom app's first render is optional here: if it cannot be produced (busy runtime, an error
+  * in the app), the read still succeeds and the client renders and reports exactly as before.
+  * 'optional' applies that to every app kind (the website's open by link, which had no render before). */
+ async readComponent(a:Actor,w:string,id:string,includeOutput:boolean|'optional'=false,route?:unknown){
+  const component=projectAppSections(await access(this.db,a,w),a,await this.component(this.db,a,w,id));let initialOutput:any;
+  if(includeOutput&&!component.archived&&!component.project_archived){
+   const request={componentId:id,expectedVersion:component.version,event:{kind:'open'},...(route?{route}:{})};
+   if(includeOutput===true&&(standardTracker(component.source)||component.sectionsEmpty))initialOutput=await this.runFrontend(a,w,request);
+   else if(component.format==='frontend-js'||standardTracker(component.source)||component.sectionsEmpty)try{initialOutput=await this.runFrontend(a,w,request);}catch{initialOutput=undefined;}
+  }
+  return {workspaceId:w,workspaceFoundation:true,component,...(initialOutput?{initialOutput}:{})};
+ }
  async componentHistory(a:Actor,w:string,id:string){
   const current=await this.component(this.db,a,w,id),p=await access(this.db,a,w);
   const rows=(await this.db.query("SELECT * FROM revisions WHERE workspace_id=$1 AND object_id=$2 AND object_kind='workspace_component' ORDER BY version DESC",[w,id])).rows;
