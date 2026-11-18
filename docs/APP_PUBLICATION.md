@@ -19,3 +19,18 @@ A small banner offers an explicit refresh. It does not re-render the app, mark i
 Migration `048_app_runtime_views.sql` and the additive privileges in `ops/runtime-role.sql` ship with the existing migration hook. No customer app, template or database schema is rewritten. This behavior applies to clients running the updated frontend; already loaded frontend bundles from before deployment need a normal page refresh to adopt it.
 
 Backend coverage includes old-version reads and saves, proposals confirmed after publication, fresh-version opens, invalid/cross-user/cross-origin tokens, schema migration failures, public links, access revocation and expiry. Browser coverage exercises standalone, embedded and public apps, retained inputs, user-controlled refresh, failed-refresh recovery, dismissible action errors, idempotent retry after a lost save response, and existing navigation/save flows.
+
+## Updating an installed catalog app
+
+An installed catalog app keeps the code of the version it was installed from. When a newer approved version of the same app exists, the app's Settings menu on the website offers **Update to version X** to the workspace owner and editors (`src/workspace/app-update.ts`).
+
+The update is offered only when nothing but the template code would change:
+
+- the saved code is exactly an approved version (changed code, or code of a withdrawn version, is never replaced);
+- both versions have the same installer schema (tables and fields), options, defaults and helper functions. Generated helpers embed their app's version and kit numbers in a constant; those labels alone may differ, and the installed helpers keep the label they were installed with;
+- a version that changes tables, options or helpers needs its own reviewed upgrade and is not offered here.
+
+Preparing the update writes only a private review. Confirming it is the ordinary reviewed app save: the app's generated configuration and bindings lines are kept exactly, the template code behind them is replaced, and the revision records the new catalog origin. Name, layout, bindings, data, access, sections and automations are unchanged. People with the app open keep their loaded version until they refresh, as for any publication.
+
+Limits: website only (the ChatGPT and Claude hosts have no update tools yet); one app at a time; no automatic or bulk update. An earlier version must stay approved until its installed copies are updated, because an installed copy counts as unchanged catalog code only while its version is approved.
+

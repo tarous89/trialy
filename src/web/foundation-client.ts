@@ -8,6 +8,8 @@ export function foundationClient(api:(path:string,method?:string,body?:unknown,o
  const automation=services+'/automations';
  const routes:Record<string,[string,string?,unknown?]>={
  list_app_templates:['/api/app-templates/list','POST',clean],
+ read_app_update:[`/api/workspaces/${v.workspaceId}/apps/${v.componentId}/update`],
+ prepare_app_update:[`/api/workspaces/${v.workspaceId}/apps/${v.componentId}/update`,'POST',{expectedVersion:v.expectedVersion,toVersion:v.toVersion,toDigest:v.toDigest}],
  read_app_template:['/api/app-templates/read','POST',clean],
  install_app_template:[`/api/workspaces/${v.workspaceId}/apps/install-template`,'POST',clean],
  read_template_installation:[`/api/workspaces/${v.workspaceId}/apps/install-template/options`,'POST',clean],

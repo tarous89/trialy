@@ -57,6 +57,10 @@ export class AppTemplates{
   for(const name of names){const raw=await readFile(this.root instanceof URL?new URL(name,this.root):`${this.root}/${name}`,'utf8');if(Buffer.byteLength(raw)>380000)fail(500,'template_limit','Template too large');const input=JSON.parse(raw);const value=appTemplateEntry.parse(input);const identity=value.id+'@'+value.version;if(seen.has(identity))fail(500,'template_duplicate','Duplicate template version');seen.add(identity);entries.push({...value,digest:createHash('sha256').update(raw).digest('hex')});}
   return entries;
  }
+ /** Every approved version of one app, oldest first (installed copies are matched against these). */
+ async versions(templateId:string){return (await this.allEntries()).filter(t=>t.id===templateId).sort((a,b)=>compare(a.version,b.version));}
+ /** The approved version whose code is exactly this saved template code, if any. */
+ async matching(body:string){return (await this.allEntries()).find(t=>typeof t.source==='string'&&t.source.length===body.length&&t.source===body)??null;}
  async list(input:unknown={}){
   const q=templateQuery.parse(input),latest=new Map<string,Awaited<ReturnType<AppTemplates['entries']>>[number]>();
   for(const t of await this.entries()){const prev=latest.get(t.id);if(!prev||compare(t.version,prev.version)>0)latest.set(t.id,t);}

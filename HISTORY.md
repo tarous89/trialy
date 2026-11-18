@@ -1,3 +1,9 @@
+## 18 November 2026 — Update an installed catalog app to its newer version
+
+An installed catalog app keeps the code it was installed with, so the batched-read releases reached only new installs. The app's Settings menu on the website now offers **Update to version X** to the owner and editors when a newer approved version of the same app exists and nothing but the template code would change (same tables and fields, options, defaults and helpers; unchanged saved code). The update is the ordinary reviewed app save: configuration and bindings lines are kept, the code behind them is replaced, and the catalog origin is recorded. Changed code is never replaced. Details and limits: [APP_PUBLICATION.md](docs/APP_PUBLICATION.md#updating-an-installed-catalog-app).
+
+Tests: `tests/app-update.test.ts` installs the earlier version of all sixteen switched-on apps, updates each and checks that only the template code changed; `tests/visual/app-update.spec.cjs` covers the offer and confirmation on the website.
+
 ## 18 November 2026 — Batched reads in all 16 switched-on apps
 
 Every switched-on catalog app is republished as a patch release that reads through `records.readMany` and changes nothing else (owner approval, 18 November 2026): Runway 2.2.1, Contracts 1.1.1, CRO Selection 2.1.1, Data Room 1.1.1, Fundraise 2.0.1, Investor Updates 1.0.1, Partnerships 2.2.1, Programs 2.2.1, Literature Radar 2.0.1 and Deal, Funding, Market, Patent, Pipeline, Regulatory and Trial Radar 1.0.1. The seed names the new versions, so the gallery and new installs use them. The sixteen earlier versions are not withdrawn: an installed copy counts as unchanged catalog code only while its version is approved, and withdrawing them would stop members with hidden fields or documents from opening installed copies. There is no catalog migration. Released versions are archived unchanged under each app's `archive/` folder; installed apps keep their saved source.
