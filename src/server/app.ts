@@ -27,7 +27,9 @@ import { AppError, id, recordQuerySchema, fieldChangeQuerySchema } from '../shar
 import { Service } from '../domain/service.js';
 import {inspectionHtml} from '../domain/inspection.js';
 import { templates } from '../domain/templates.js';
-export function baseApp() {
+/** requestsPerMinute: the per-address request limit. Production uses the default; only the browser-test fixture, whose
+ * whole suite arrives from one address, passes a higher number. */
+export function baseApp(requestsPerMinute=180) {
  const app=express();app.disable('x-powered-by');app.use(helmet({contentSecurityPolicy:{directives:{defaultSrc:["'self'"],scriptSrc:["'self'"],styleSrc:["'self'","'unsafe-inline'"],imgSrc:["'self'","data:","blob:"],frameSrc:["'self'",...new Set([new URL(appPublicUrl()).origin,oauthPublicUrl()]),"blob:"],frameAncestors:["'self'"]}}}));
  // Public stateless frame shell. HTTP sandbox also protects direct navigation.
  app.get('/frontend/frame',async(_req,res)=>{
@@ -35,7 +37,7 @@ export function baseApp() {
   res.removeHeader('X-Frame-Options');res.set('Content-Security-Policy',`sandbox allow-scripts${process.env.SIMPLE_APPS_ENABLED==='true'?' allow-popups allow-popups-to-escape-sandbox':''}; default-src 'none'; script-src 'sha256-${hash}'; style-src 'unsafe-inline'; img-src data:; font-src data:; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'`);
   res.set('Cache-Control','public, max-age=0, must-revalidate');res.set('Cross-Origin-Resource-Policy','cross-origin');res.type('html').send(await frontendFrameDocument(bundledAppFont));
  });
- app.use(express.json({verify:(req,_res,buffer)=>{if(req.url==='/notifications/webhook')(req as any).rawBody=Buffer.from(buffer);},limit:'36mb'}));app.use(rateLimit({windowMs:60000,limit:180,standardHeaders:'draft-8',legacyHeaders:false,skip:req=>req.path===CLAUDE_MCP_PATH&&!!req.get('authorization')}));
+ app.use(express.json({verify:(req,_res,buffer)=>{if(req.url==='/notifications/webhook')(req as any).rawBody=Buffer.from(buffer);},limit:'36mb'}));app.use(rateLimit({windowMs:60000,limit:requestsPerMinute,standardHeaders:'draft-8',legacyHeaders:false,skip:req=>req.path===CLAUDE_MCP_PATH&&!!req.get('authorization')}));
  app.use((req,res,next)=>{
   const requestId=randomUUID(),path=req.path,started=performance.now(),metrics=createRequestMetrics();res.set('X-Request-ID',requestId);
   res.on('finish',()=>{if(process.env.NODE_ENV!=='test'){
