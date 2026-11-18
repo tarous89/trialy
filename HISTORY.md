@@ -1,3 +1,20 @@
+## 18 November 2026 — Update an installed catalog app to its newer version
+
+An installed catalog app keeps the code it was installed with, so the batched-read releases reached only new installs. The app's Settings menu on the website now offers **Update to version X** to the owner and editors when a newer approved version of the same app exists and nothing but the template code would change (same tables and fields, options, defaults and helpers; unchanged saved code). The update is the ordinary reviewed app save: configuration and bindings lines are kept, the code behind them is replaced, and the catalog origin is recorded. Changed code is never replaced. Details and limits: [APP_PUBLICATION.md](docs/APP_PUBLICATION.md#updating-an-installed-catalog-app).
+
+Tests: `tests/app-update.test.ts` installs the earlier version of all sixteen switched-on apps, updates each and checks that only the template code changed; `tests/visual/zzzz-app-update.spec.cjs` covers the offer and confirmation on the website.
+
+## 18 November 2026 — Batched reads in all 16 switched-on apps
+
+Every switched-on catalog app is republished as a patch release that reads through `records.readMany` and changes nothing else (owner approval, 18 November 2026): Runway 2.2.1, Contracts 1.1.1, CRO Selection 2.1.1, Data Room 1.1.1, Fundraise 2.0.1, Investor Updates 1.0.1, Partnerships 2.2.1, Programs 2.2.1, Literature Radar 2.0.1 and Deal, Funding, Market, Patent, Pipeline, Regulatory and Trial Radar 1.0.1. The seed names the new versions, so the gallery and new installs use them. The sixteen earlier versions are not withdrawn: an installed copy counts as unchanged catalog code only while its version is approved, and withdrawing them would stop members with hidden fields or documents from opening installed copies. There is no catalog migration. Released versions are archived unchanged under each app's `archive/` folder; installed apps keep their saved source.
+
+- **Individually built apps.** Each has one read helper. Once a render needs a second table, the first page of every other connected table is read in one call, and the remaining pages of a long table in another. A screen that made 9 to 18 calls now makes 2 or 3.
+- **Radars.** Kit 1.2.0 (and kit 1.0.1 for Trial Radar, which stays on its own kit line) batches the shared reads and the Overview's reads.
+- **Unchanged.** Results, incomplete-data handling, restricted-table messages, limits and each app's call budget. Where the capability is missing or a batch fails, every read is one call as before, which is also how the offline previews run.
+- **Gallery.** The screens do not change, so each new version uses its predecessor's gallery image.
+
+Tests: `tests/batched-read-apps.test.ts` runs the published source of all sixteen in the production runtime both ways (one call per read, and batched) on the demo data, a long table and a restricted table, and requires identical screens and state; `tests/template-catalog.test.ts` covers the release (new versions listed, earlier versions still approved). Each app's own tests now run against its new version.
+
 ## 18 November 2026 — Repair apps with stale field contracts
 
 Deleting an unused column could leave an app with an outdated schema contract, then prevent its repair because beginning or preparing an update tried to render the broken published app. Update preparation now reads authorized metadata and omits the old render only for `manifest_stale` or `manifest_binding`; the replacement still validates current bindings, renders its preview and requires exact finalization/confirmation. Other errors and access denials still propagate. No migrations or changes to saved records. Regression: `tests/tracker-query-readiness.test.ts` exercises the stale app, update preparation, reviewed repair and reopening with records retained.

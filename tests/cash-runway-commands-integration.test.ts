@@ -23,9 +23,9 @@ async function setup(){
  const f=new WorkspaceFoundation(db),s=new Service(db);
  await syncTemplateCatalog(db);
  // 2.2.0 and Programs 2.1.0 are drafts; they are approved only inside this test database.
- await pg.query("UPDATE app_template_catalog SET status='approved' WHERE (template_id='life.cash-runway' AND version='2.2.0') OR (template_id='life.project-oversight' AND version='2.1.0')");
+ await pg.query("UPDATE app_template_catalog SET status='approved' WHERE (template_id='life.cash-runway' AND version='2.2.1') OR (template_id='life.project-oversight' AND version='2.1.0')");
  const catalog=new AppTemplates(undefined,db);
- const R=await catalog.read({templateId:'life.cash-runway',version:'2.2.0'}),P=await catalog.read({templateId:'life.project-oversight',version:'2.1.0'});
+ const R=await catalog.read({templateId:'life.cash-runway',version:'2.2.1'}),P=await catalog.read({templateId:'life.project-oversight',version:'2.1.0'});
  const install=async(w:string,t:any,name:string)=>{const target={install:{templateId:t.id,version:t.version,digest:t.digest,name,requestKey:randomUUID()}};const step=await dataAccessStep(f,actor,w,target);return step.needed?confirmDataAccess(f,actor,w,{...target,connections:{},stepDigest:step.digest}):installCatalogApp(f,actor,w,target.install);};
  const comp=async(w:string,id:string)=>(await f.readComponent(actor,w,id)).component;
  const mapOf=(c:any)=>JSON.parse(JSON.parse(/^const templateConfiguration=(.+);\n/.exec(c.source)![1]).tableMap);

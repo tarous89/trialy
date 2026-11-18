@@ -17,7 +17,7 @@ for(const slug of SLUGS){
  const h=await radarHarness(slug),{radar,entry,schema,T}=h,rows0=()=>h.fresh();
  test(`${radar.name}: package, roles, contract, recipes and functions on kit 1.1.0; published through the seed`,async()=>{
   const raw=JSON.parse(await readFile(`templates/apps/${radar.id}-${radar.version}.json`,'utf8'));
-  appTemplateEntry.parse(raw);validateRecipeDeclarations(raw);validateAppFunctions(raw,Object.keys(schema));assert.equal(radar.kit,'1.1.0');assert.ok(raw.source.length<180000);
+  appTemplateEntry.parse(raw);validateRecipeDeclarations(raw);validateAppFunctions(raw,Object.keys(schema));assert.equal(radar.kit,'1.2.0');assert.ok(raw.source.length<180000);
   assert.deepEqual(Object.keys(schema),['organizations','programs',T('settings'),T('scopes'),T('tracker'),T('events'),T('runs')]);
   assert.equal(schema[T('events')].contract,'radar.v1');assert.equal(outputs[T('events')].writer,radar.id);
   assert.equal(schema[T('tracker')].contract,radar.trackerOutput?'radar.v1':radar.prefix+'.v1');assert.equal(!!outputs[T('tracker')],!!radar.trackerOutput,'tracker output registered only when the radar publishes it');
@@ -62,7 +62,7 @@ test('Literature Radar 2.0.0: synthesis note per scope, reading queue kept by pe
  assert.match(d.text,/Must-read papers\n- .*: /);
  assert.ok(kit.userOwned(h.radar).includes('queue_status')&&kit.userOwned(h.radar).includes('assignee'));
  // 2.0.0 replaces 1.2.2 in the seed (migration 074 withdraws 1.2.2); the 1.2.2 package is unchanged for existing installs.
- assert.equal(seed['life.literature-radar'].version,'2.0.0');await readFile('templates/apps/life.literature-radar-1.2.2.json','utf8');
+ assert.equal(seed['life.literature-radar'].version,'2.0.1');await readFile('templates/apps/life.literature-radar-1.2.2.json','utf8');
 });
 
 test('Deal and Funding Radar: trackers are radar.v1 outputs; digests show the largest disclosed amounts per currency and the most active investors',async()=>{

@@ -1,6 +1,6 @@
 {
   "id": "life.project-oversight",
-  "version": "2.2.0",
+  "version": "2.2.1",
   "name": "Programs",
   "description": "Milestones, dependencies, risks and decisions across all programs. One integrated timeline per program by function with baselines, slips with reasons, the critical path, stage gates, a RAID log, monthly updates and frozen leadership reports; a program team that is notified when assigned or when something is due; a weekly digest of what needs attention; cash at key milestones from your own forecast or from Runway.",
   "tags": [

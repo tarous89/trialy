@@ -1,4 +1,4 @@
-# Bio Radars kit 1.1.0
+# Bio Radars kit 1.2.0
 
 Shared source for every Bio Radar app (scope: [BIO_RADAR.md](../../../docs/product/app-template-blueprints/apps/BIO_RADAR.md) §2, §5 and §7). A radar is a definition on this kit; the kit supplies the four screens, the common tables, the brief builder, the research-template editor, the source report, the digest and alert, and the recommended automations.
 
@@ -18,7 +18,9 @@ Shared source for every Bio Radar app (scope: [BIO_RADAR.md](../../../docs/produ
 | Version | Used by | Changes |
 |---|---|---|
 | 1.0.0 (`archive/1.0.0/`) | Trial Radar 1.0.0 | First release. |
-| 1.1.0 (current) | Pipeline Radar 1.0.0, Literature Radar 2.0.0, Deal Radar 1.0.0, Funding Radar 1.0.0, Patent Radar 1.0.0, Market Radar 1.0.0, Regulatory Radar 1.0.0 | New definition keys (below); multiline scope fields; disclaimer in the footer, digest and alert; item-based digest section with disclosed amounts per currency; thousands separators in the digest; a Coming up window per radar; drawers scroll as a whole so the footer never covers a field. |
+| 1.1.0 (`archive/1.1.0/`) | Pipeline Radar 1.0.0, Literature Radar 2.0.0, Deal Radar 1.0.0, Funding Radar 1.0.0, Patent Radar 1.0.0, Market Radar 1.0.0, Regulatory Radar 1.0.0 | New definition keys (below); multiline scope fields; disclaimer in the footer, digest and alert; item-based digest section with disclosed amounts per currency; thousands separators in the digest; a Coming up window per radar; drawers scroll as a whole so the footer never covers a field. |
+| 1.0.1 (`archive/1.0.1/`) | Trial Radar 1.0.1 | Kit 1.0.0 with batched reads (`records.readMany`) and no other change, so Trial Radar keeps its 1.0.0 behavior. |
+| 1.2.0 (current) | Pipeline, Deal, Funding, Patent, Market and Regulatory Radar 1.0.1, Literature Radar 2.0.1 | Kit 1.1.0 with batched reads: the shared reads (settings, scopes, runs, programs) are one call and the Overview's reads are one call. Results, messages and the call budget are unchanged; without the capability each read is one call. |
 
 Definition keys added in 1.1.0 (all optional):
 

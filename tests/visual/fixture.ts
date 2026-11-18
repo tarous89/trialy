@@ -16,7 +16,9 @@ import {baseApp} from '../../src/server/app.js';import {Service} from '../../src
 
 export async function fixture(){
  const pg=new PGlite();const db:Database={query:(q,v)=>pg.query(q,v) as any,transaction:fn=>pg.transaction(tx=>fn(tx as Connection)),close:()=>pg.close()};
- const app=baseApp();app.set('trust proxy','loopback');const server=app.listen(Number(process.env.VISUAL_TEST_PORT||4179),'127.0.0.1');await new Promise<void>(r=>server.once('listening',r));const base='http://127.0.0.1:'+(server.address() as any).port;process.env.PUBLIC_URL=base;
+ // Every browser test reaches this server from one address. At the production limit of 180 requests a minute a test
+ // occasionally received 429 at a random step and failed with a different symptom each time.
+ const app=baseApp(100000);app.set('trust proxy','loopback');const server=app.listen(Number(process.env.VISUAL_TEST_PORT||4179),'127.0.0.1');await new Promise<void>(r=>server.once('listening',r));const base='http://127.0.0.1:'+(server.address() as any).port;process.env.PUBLIC_URL=base;
  for(const file of (await readdir('migrations')).filter(f=>f.endsWith('.sql')).sort())await pg.exec(await readFile('migrations/'+file,'utf8'));
  const actor={userId:randomUUID(),origin:'human' as const};await db.query('INSERT INTO users(id,subject,email,name) VALUES($1,$2,$3,$4)',[actor.userId,actor.userId,'fixture@example.invalid','Fixture']);const s=new Service(db),f=new WorkspaceFoundation(db),w=await s.createWorkspace(actor,'Test account');await s.setAi(actor,w.id,true);
  const save=async(op:any)=>{const p=await s.preview(actor,w.id,op);return s.commit(actor,p.id,p.digest);};

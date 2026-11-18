@@ -1,8 +1,8 @@
 {
-  "kit": "1.1.0",
+  "kit": "1.2.0",
   "slug": "regulatory-radar",
   "id": "life.regulatory-radar",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "name": "Regulatory Radar",
   "prefix": "regulatoryradar",
   "trackerTable": "items",

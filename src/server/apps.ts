@@ -10,6 +10,7 @@ import type {Express} from 'express';
 import type {McpServer} from '@modelcontextprotocol/sdk/server/mcp.js';
 import {appPreparationResult,backgroundMetadata} from './ui-resource.js';
 import {id,fail,type Actor} from '../shared/schema.js';
+import {readAppUpdate,prepareAppUpdate} from '../workspace/app-update.js';
 import {appLocation} from '../shared/app-route.js';
 import {prepareApp,prepareSimpleApp,prepareRenderedApp,readApp,openApp} from '../workspace/apps.js';
 import type {WorkspaceFoundation} from '../workspace/service.js';
@@ -42,6 +43,9 @@ export function addAppApi(app:Express,f:WorkspaceFoundation){
  app.post('/api/workspaces/:workspaceId/apps/from-template',async(req,res)=>{const w=id.parse(req.params.workspaceId);res.json(await f.prepareRenderedTracker(req.actor!,w,await appTemplates.operation(f,req.actor!,w,req.body)));});
  app.post('/api/workspaces/:workspaceId/apps/from-existing',async(req,res)=>{const w=id.parse(req.params.workspaceId);res.json(await f.prepareRenderedTracker(req.actor!,w,await reuseAppOperation(f,req.actor!,w,req.body)));});
  app.post('/api/apps/resolve',async(req,res)=>res.json(await readApp(f,req.actor!,req.body)));
+ // Updating an installed catalog app to a newer published version of the same app (website; reviewed like any app change).
+ app.get('/api/workspaces/:workspaceId/apps/:appId/update',async(req,res)=>res.json(await readAppUpdate(f,req.actor!,id.parse(req.params.workspaceId),id.parse(req.params.appId))));
+ app.post('/api/workspaces/:workspaceId/apps/:appId/update',async(req,res)=>res.json(await prepareAppUpdate(f,req.actor!,id.parse(req.params.workspaceId),{...req.body,componentId:id.parse(req.params.appId)})));
  // The website opens an app with one read, started alongside the account check: the location and its first render.
  // The location travels in a header, which another site cannot send with a visitor's session.
  app.get('/api/apps/resolve',async(req,res)=>{let location:unknown;try{location=JSON.parse(z.string().max(2000).parse(req.get('x-app-location')));}catch{fail(400,'invalid_location','Open the app from its link');}res.set('Cache-Control','no-store').json(await readApp(f,req.actor!,location,true));});

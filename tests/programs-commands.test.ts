@@ -11,7 +11,7 @@ import {validateAppFunctions} from '../src/workspace/app-functions-schema.js';
 
 /* Programs 2.2.0 (PROGRAMS.md §14): app commands with click parity, the program team and app-kept notification fields,
  * form customization, Edit in Runway, the weekly digest helpers and the install recommendations. Production QuickJS, fictional data. */
-const entry=await appTemplates.read({templateId:'life.project-oversight',version:'2.2.0'});
+const entry=await appTemplates.read({templateId:'life.project-oversight',version:'2.2.1'});
 const schema=JSON.parse(await readFile('templates/source/project-oversight/schema.example.json','utf8'));
 const roles=Object.keys(schema);
 const map=Object.fromEntries(roles.map(r=>[r,{typeId:r,fields:schema[r].logicalFields,writableFields:r==='people'?[]:Object.keys(schema[r].logicalFields)}]));
@@ -60,7 +60,7 @@ function dataset(){
 }
 
 test('the catalog declares every command as data; each read runs, answers and writes nothing',async()=>{
- assert.equal(entry.version,'2.2.0');
+ assert.equal(entry.version,'2.2.1');
  const commands=readAppCommands(entry.source);assert.equal(commands.length,27);
  assert.deepEqual([...new Set(commands.map(c=>c.mode))].sort(),['layout','propose','read']);
  const d=dataset(),inputs:any={'item.drivers':{item_id:d.ind},'item.impact':{item_id:d.gmp,end_date:'2027-02-21'},'report.preview':{month:'2026-11'}};
@@ -156,7 +156,7 @@ test('attention.read and both digest helpers agree; nothing important means no e
  assert.deepEqual(Object.fromEntries(Object.entries(att.attention).map(([k,v]:any)=>[k,v.map((x:any)=>x.name)])),{overdue:['Stability protocol'],due_soon:['Release spec'],slips:['Stability protocol'],gates:['IND go / no-go'],reviews:['CDMO capacity'],stale_health:['PX-202 (fictional)'],missing_update:['PX-202 (fictional)']});
  assert.equal(att.count,7);
  // Run the installed helpers the way the function runtime does: appRoles injected, read-only records.read, today from the clock.
- const raw=JSON.parse(await readFile('templates/apps/life.project-oversight-2.2.0.json','utf8')),fns=validateAppFunctions(raw,roles);assert.deepEqual(fns.map(f=>f.name),['digest_brief','digest_email']);
+ const raw=JSON.parse(await readFile('templates/apps/life.project-oversight-2.2.1.json','utf8')),fns=validateAppFunctions(raw,roles);assert.deepEqual(fns.map(f=>f.name),['digest_brief','digest_email']);
  const runFn=async(name:string,rows:Row[])=>{const f=fns.find(x=>x.name===name)!;const calls:string[]=[];
   const out=await execute(`const appRoles=${JSON.stringify(Object.fromEntries(roles.map(r=>[r,r])))};\n${f.source}`,null,async(n,v:any)=>{calls.push(n);assert.equal(n,'records.read');const all=rows.filter(r=>r.role===v.typeId).map(r=>({id:r.id,version:r.version,data:r.data}));return {rows:all.slice(v.offset,v.offset+v.limit),total:all.length};});
   assert.ok(calls.every(c=>c==='records.read'),'helpers only read');return out as any;};
@@ -172,7 +172,7 @@ test('attention.read and both digest helpers agree; nothing important means no e
 });
 
 test('install recommendations: the AI digest saves before it emails; five member notices; the digest without AI is a later feature',async()=>{
- const raw=JSON.parse(await readFile('templates/apps/life.project-oversight-2.2.0.json','utf8'));validateRecipeDeclarations(raw);validateAppFunctions(raw,roles);const {recipes,recommended,unavailable}=readRecipes(raw);assert.deepEqual(unavailable,[]);
+ const raw=JSON.parse(await readFile('templates/apps/life.project-oversight-2.2.1.json','utf8'));validateRecipeDeclarations(raw);validateAppFunctions(raw,roles);const {recipes,recommended,unavailable}=readRecipes(raw);assert.deepEqual(unavailable,[]);
  assert.deepEqual(recommended.map(r=>r.key),['weekly_digest','team_added','item_assigned','item_due','raid_assigned','raid_review']);
  const dig=recommended[0];assert.equal(dig.research!.briefBinding,'digest_brief');assert.equal(dig.email!.when,'meaningful','quiet weeks send nothing');
  assert.deepEqual(dig.research!.writeBindings!.map(b=>[b.role,b.allowCreate,b.allowUpdate]),[['programs.digests',true,false]],'research only creates a digest');

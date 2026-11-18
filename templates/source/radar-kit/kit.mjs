@@ -3,7 +3,7 @@
  * (scripts/build-radar-templates.mjs) combines them with the shared app source, CSS and function sources into the immutable catalog entry.
  * Nothing here is radar-specific: a new radar is a definition, its sources, template, demo data and tests. */
 
-export const KIT_VERSION='1.1.0';
+export const KIT_VERSION='1.2.0';
 
 /* §2.3: every default template carries these rules. Users may add rules but not remove these: they are kept apart from the editable part. */
 export const REQUIRED_RULES=[

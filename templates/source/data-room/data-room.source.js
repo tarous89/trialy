@@ -124,13 +124,40 @@ for(const role of Object.keys(S)){
  roleMap[role]={typeId:m.typeId,fields,writable:(Array.isArray(m.writableFields)?m.writableFields:[]).filter(x=>fields[x]&&!(S[role].find(f=>f.key===x)||{}).tracked)};
 }
 const PAGE=100,MAX_PAGES=8;let callsLeft=90;const cache={};
+/* Batched reads (1.1.1): once a render needs a second table, the first page of every other connected table is read in
+ * one call (records.readMany), and the remaining pages of a long table in another. Results, limits and the call budget are
+ * unchanged. Where the capability is missing or a batch fails, every read falls back to one call each, as before. */
+let batchReads=true,rolesRead=0;const ahead={};
+function readBatch(reads){
+ if(!batchReads)return null;
+ try{const out=tools.call('records.readMany',{reads});if(out&&Array.isArray(out.results)&&out.results.length===reads.length)return out.results;}catch(e){}
+ batchReads=false;return null;
+}
+function readAhead(){
+ if(++rolesRead!==2)return;
+ const rest=Object.keys(roleMap).filter(r=>!cache[r]&&!ahead[r]);
+ for(let i=0;i<rest.length&&batchReads;i+=12){
+  const part=rest.slice(i,i+12).slice(0,Math.max(0,callsLeft));if(part.length<2)return;
+  const pages=readBatch(part.map(r=>({typeId:roleMap[r].typeId,limit:PAGE,offset:0,filters:{}})));if(!pages)return;
+  callsLeft-=part.length;part.forEach((r,k)=>{ahead[r]=[pages[k]];});
+ }
+}
+function readRest(role,m,offset,total,page){
+ const n=Math.min(Math.ceil((total-offset)/PAGE),MAX_PAGES-1-page,callsLeft);if(n<2)return;
+ const pages=readBatch(Array.from({length:n},(_,k)=>({typeId:m.typeId,limit:PAGE,offset:offset+k*PAGE,filters:{}})));
+ if(pages){callsLeft-=n;ahead[role]=pages;}
+}
 function readRole(role){
  if(cache[role])return cache[role];const m=roleMap[role];
  if(!m)return cache[role]={rows:[],allRows:[],complete:false,unbound:true,unavailable:false,total:0,truncated:false,invalid:0};
+ readAhead();
  const rows=[];let offset=0,total=null,complete=false,unavailable=false,truncated=false,invalid=0;
  for(let page=0;page<MAX_PAGES;page++){
-  if(callsLeft<=0){truncated=true;break;}callsLeft--;
-  let p;try{p=tools.call('records.read',{typeId:m.typeId,limit:PAGE,offset,filters:{}});}catch(e){unavailable=true;break;}
+  let p;const queued=ahead[role]&&ahead[role].length?ahead[role].shift():undefined;
+  if(queued!==undefined)p=queued;
+  else{if(callsLeft<=0){truncated=true;break;}callsLeft--;
+   try{p=tools.call('records.read',{typeId:m.typeId,limit:PAGE,offset,filters:{}});}catch(e){unavailable=true;break;}
+  }
   if(!p||p.unavailable){unavailable=true;break;}
   const chunk=Array.isArray(p.rows)?p.rows:[];total=p.total===null||p.total===undefined||!Number.isFinite(Number(p.total))?null:Number(p.total);
   for(const r of chunk){const data={};for(const [logical,real] of Object.entries(m.fields))if(has(r.data,real)){const v=r.data[real];if(v!==null&&typeof v==='object'){invalid++;continue;}data[logical]=v;}rows.push({id:String(r.id),version:r.version,data});}
@@ -138,6 +165,7 @@ function readRole(role){
   if(total!==null&&offset>=total){complete=true;break;}
   if(chunk.length<PAGE)break;
   if(page===MAX_PAGES-1)truncated=true;
+  else if(total!==null&&!(ahead[role]&&ahead[role].length))readRest(role,m,offset,total,page);
  }
  return cache[role]={rows:rows.filter(r=>!bool(r.data.archived)),allRows:rows,total:total===null?rows.length:total,complete,unavailable,unbound:false,truncated,invalid};
 }

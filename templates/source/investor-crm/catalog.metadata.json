@@ -1,6 +1,6 @@
 {
   "id": "life.investor-crm",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "name": "Fundraise",
   "description": "Investor pipeline for a round, from first contact to signed commitment: a ranked target list on shared organizations, a pipeline board by stage, a round thermometer where only signed commitments count as raised, stale and due follow-ups, lead and syndicate, light offer comparison, tranches tied to milestones (published for Runway and Investor Updates), pass-reason patterns and data-room engagement per investor. Data room and milestone data are your own entries until you link Data Room or Programs inside the app.",
   "tags": [

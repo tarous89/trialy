@@ -29,7 +29,7 @@ export async function fundraiseFixture(opts:{demo?:boolean}={}){
  if(opts.demo!==false){const demo=JSON.parse(await readFile('templates/source/investor-crm/demo_data.json','utf8')).records;
   for(const r of demo){const data=Object.fromEntries(Object.entries(r.data).filter(([,v])=>v!==null).map(([k,v])=>[k,FUNDRAISE_REF_KEYS.includes(k)?ids[v as string]:v]));
    ids[r.id]=(await save({kind:'create_record',typeId:map[r.role].typeId,data})).objects[0].id;}}
- const entry=await appTemplates.read({templateId:'life.investor-crm',version:'2.0.0'});
+ const entry=await appTemplates.read({templateId:'life.investor-crm',version:'2.0.1'});
  const op=await appTemplates.operation(f,actor,w.id,{templateId:entry.id,version:entry.version,digest:entry.digest,name:'Fundraise',configuration:{tableMap:JSON.stringify(map),asOfOverride:'2026-11-11'},bindings,manifest:{version:1,scope:'workspace',fields,roles}});
  const p=await f.preview(actor,w.id,op),receipt=await f.confirm(actor,w.id,p.id,p.digest),component=(await f.readComponent(actor,w.id,receipt.id)).component;
  return {pg,db,actor,f,s,w,component,map,bindings,fields,save,ids,entry};

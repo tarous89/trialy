@@ -27,9 +27,9 @@ export async function suite(){
  await pg.query("INSERT INTO oauth_tokens(hash,user_id,client_id,kind,family,expires_at) VALUES($1,$2,$3,'refresh',$4,$5)",[randomUUID(),human.userId,ai.clientId,ai.connectionFamily,Date.now()+86400000]);
  await syncTemplateCatalog(raw);
  // Trial Radar 1.0.0 is published: the seed approves it on first import.
- assert.equal((await pg.query<any>("SELECT status FROM app_template_catalog WHERE template_id='life.trial-radar' AND version='1.0.0'")).rows[0].status,'approved');
+ assert.equal((await pg.query<any>("SELECT status FROM app_template_catalog WHERE template_id='life.trial-radar' AND version='1.0.1'")).rows[0].status,'approved');
  const f=new WorkspaceFoundation(db),s=new Service(db),catalog=new AppTemplates(undefined,db);
- const T=await catalog.read({templateId:'life.trial-radar',version:'1.0.0'});
+ const T=await catalog.read({templateId:'life.trial-radar',version:'1.0.1'});
  const install=async(w:string,name='Trial Radar',enabled=true)=>{const target={install:{templateId:T.id,version:T.version,digest:T.digest,name,requestKey:randomUUID()}};const step=await dataAccessStep(f,human,w,target);
   return {step,receipt:await confirmDataAccess(f,human,w,{...target,connections:{},stepDigest:step.digest,automations:step.automations.map((r:any)=>({key:r.key,enabled,settings:{}}))})};};
  const comp=async(w:string,id:string)=>(await f.readComponent(human,w,id)).component;

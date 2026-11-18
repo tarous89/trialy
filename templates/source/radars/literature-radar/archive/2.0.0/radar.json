@@ -1,0 +1,232 @@
+{
+  "kit": "1.1.0",
+  "slug": "literature-radar",
+  "id": "life.literature-radar",
+  "version": "2.0.0",
+  "name": "Literature Radar",
+  "prefix": "literatureradar",
+  "trackerTable": "publications",
+  "trackerLabel": "Publications",
+  "itemLabel": "publication",
+  "itemsLabel": "publications",
+  "cadence": "weekly",
+  "userOwnedFields": [
+    "queue_status",
+    "assignee"
+  ],
+  "scopeFields": [
+    {
+      "key": "topics",
+      "name": "Topics",
+      "kind": "text",
+      "required": true,
+      "placeholder": "e.g. fibroblast activation in IPF"
+    },
+    {
+      "key": "targets",
+      "name": "Targets",
+      "kind": "text",
+      "placeholder": "e.g. LPA1, ATX"
+    },
+    {
+      "key": "authors",
+      "name": "Authors",
+      "kind": "text",
+      "placeholder": "Comma-separated"
+    },
+    {
+      "key": "journals",
+      "name": "Journals or congresses",
+      "kind": "text",
+      "placeholder": "e.g. AJRCCM, ATS"
+    },
+    {
+      "key": "keywords",
+      "name": "Keywords",
+      "kind": "text",
+      "placeholder": "Comma-separated"
+    },
+    {
+      "key": "synthesis",
+      "name": "Synthesis note",
+      "kind": "text",
+      "multiline": true,
+      "placeholder": "Your running synthesis for this topic (kept by people; the research reads it)."
+    }
+  ],
+  "trackerFields": [
+    {
+      "key": "title",
+      "name": "Title",
+      "kind": "text",
+      "required": true
+    },
+    {
+      "key": "kind",
+      "name": "Kind",
+      "kind": "select",
+      "options": [
+        "paper",
+        "preprint",
+        "abstract",
+        "review"
+      ]
+    },
+    {
+      "key": "venue",
+      "name": "Journal or venue",
+      "kind": "text"
+    },
+    {
+      "key": "published_on",
+      "name": "Published",
+      "kind": "date"
+    },
+    {
+      "key": "doi",
+      "name": "DOI",
+      "kind": "text"
+    },
+    {
+      "key": "pmid",
+      "name": "PMID",
+      "kind": "text"
+    },
+    {
+      "key": "url",
+      "name": "URL",
+      "kind": "text"
+    },
+    {
+      "key": "authors",
+      "name": "Authors",
+      "kind": "text"
+    },
+    {
+      "key": "topic",
+      "name": "Topic",
+      "kind": "text"
+    },
+    {
+      "key": "summary",
+      "name": "Summary (3 lines)",
+      "kind": "text"
+    },
+    {
+      "key": "why_it_matters",
+      "name": "Why it matters",
+      "kind": "text"
+    },
+    {
+      "key": "relevance",
+      "name": "Relevance",
+      "kind": "select",
+      "options": [
+        "high",
+        "medium",
+        "low"
+      ]
+    },
+    {
+      "key": "queue_status",
+      "name": "Reading queue",
+      "kind": "select",
+      "options": [
+        "to_read",
+        "read",
+        "key",
+        "skipped"
+      ],
+      "description": "Set by people."
+    },
+    {
+      "key": "assignee",
+      "name": "Assignee",
+      "kind": "text",
+      "description": "Set by people."
+    }
+  ],
+  "naturalKey": {
+    "label": "DOI or PMID",
+    "rule": "The DOI in lower case (10.xxxx/...) when it has one, otherwise \"pmid:\" and the PMID."
+  },
+  "dateField": {
+    "key": "published_on",
+    "label": "Published",
+    "upcoming": false
+  },
+  "eventKinds": [
+    {
+      "key": "publication",
+      "label": "Publication"
+    },
+    {
+      "key": "conference_data",
+      "label": "Conference data"
+    },
+    {
+      "key": "retraction",
+      "label": "Retraction"
+    }
+  ],
+  "digestSection": {
+    "title": "Must-read papers",
+    "source": "items",
+    "filter": {
+      "relevance": "high"
+    },
+    "lineField": "why_it_matters",
+    "hint": "must-read papers"
+  },
+  "listColumns": [
+    "title",
+    "kind",
+    "venue",
+    "published_on",
+    "topic",
+    "relevance",
+    "queue_status",
+    "assignee"
+  ],
+  "optionLabels": {
+    "to_read": "To read",
+    "key": "Key paper"
+  },
+  "sources": [
+    {
+      "name": "PubMed",
+      "covers": "Peer-reviewed papers with PMIDs.",
+      "priority": 1,
+      "notes": "Use the public site on the web."
+    },
+    {
+      "name": "bioRxiv and medRxiv",
+      "covers": "Preprints.",
+      "priority": 2,
+      "notes": "Use the public site on the web."
+    },
+    {
+      "name": "Journals",
+      "covers": "Journal sites and tables of contents.",
+      "priority": 3,
+      "notes": "Summarise paywalled content; do not copy it."
+    },
+    {
+      "name": "Congress sites",
+      "covers": "Abstracts and late-breakers.",
+      "priority": 4,
+      "notes": "Use the public site on the web."
+    }
+  ],
+  "instruction": "You watch the literature for the scopes below. For each active scope, find papers, preprints, congress abstracts and reviews on its topics, targets, authors, journals and keywords since the last run, and retractions of papers already in the table. Add each publication once (by DOI or PMID) with a three-line summary, why it matters for the topic and a relevance rating; record conference data and retractions as events. Read the scope's synthesis note for context; do not change it.",
+  "examplePrompts": [
+    {
+      "prompt": "Set up Literature Radar for fibroblast biology in IPF and build it now.",
+      "expectedBehavior": "Install Literature Radar 2.0.0, add a scope (topics, targets, authors), then Build now in chat: publications with summaries and relevance, events and a run with its source report."
+    },
+    {
+      "prompt": "What are this week's must-read papers?",
+      "expectedBehavior": "Read Literature Radar publications with relevance high from the latest run and list them with why they matter. Nothing is written."
+    }
+  ]
+}

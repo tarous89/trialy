@@ -9,7 +9,7 @@ import {readCustomLayout,updateCustomLayout} from '../src/shared/custom-layout.j
 import {inspectAppDesign} from '../src/workspace/design-quality.js';
 
 /* Runway 2.2.0 (RUNWAY.md §14): app commands, scenarios, customization and integrations, in production QuickJS. */
-const entry=await appTemplates.read({templateId:'life.cash-runway',version:'2.2.0'});
+const entry=await appTemplates.read({templateId:'life.cash-runway',version:'2.2.1'});
 const schema=JSON.parse(await readFile('templates/source/cash-runway/schema.example.json','utf8'));
 const roles=Object.keys(schema);
 const map=Object.fromEntries(roles.map(r=>[r,{typeId:r,fields:schema[r].logicalFields,writableFields:Object.keys(schema[r].logicalFields)}]));

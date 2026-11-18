@@ -1,0 +1,224 @@
+{
+  "kit": "1.1.0",
+  "slug": "funding-radar",
+  "id": "life.funding-radar",
+  "version": "1.0.0",
+  "name": "Funding Radar",
+  "prefix": "fundingradar",
+  "trackerTable": "financings",
+  "trackerLabel": "Financings",
+  "itemLabel": "financing",
+  "itemsLabel": "financings",
+  "cadence": "weekly",
+  "itemNameField": "company_name",
+  "trackerOutput": {
+    "note": "amounts are as announced; never add different currencies"
+  },
+  "scopeFields": [
+    {
+      "key": "modalities",
+      "name": "Modalities",
+      "kind": "text",
+      "placeholder": "e.g. small molecules"
+    },
+    {
+      "key": "indications",
+      "name": "Indications",
+      "kind": "text",
+      "required": true,
+      "placeholder": "e.g. fibrosis"
+    },
+    {
+      "key": "regions",
+      "name": "Regions",
+      "kind": "text",
+      "placeholder": "e.g. EU, US"
+    },
+    {
+      "key": "stages",
+      "name": "Company stages",
+      "kind": "text",
+      "placeholder": "e.g. seed to series B"
+    },
+    {
+      "key": "round_kinds",
+      "name": "Round kinds",
+      "kind": "text",
+      "placeholder": "e.g. series, crossover, grant"
+    }
+  ],
+  "trackerFields": [
+    {
+      "key": "kind",
+      "name": "Kind",
+      "kind": "select",
+      "options": [
+        "seed",
+        "series",
+        "crossover",
+        "ipo",
+        "follow_on",
+        "grant",
+        "debt"
+      ]
+    },
+    {
+      "key": "company_id",
+      "name": "Company",
+      "kind": "text",
+      "description": "Record ID of an organizations record."
+    },
+    {
+      "key": "company_name",
+      "name": "Company name",
+      "kind": "text",
+      "required": true
+    },
+    {
+      "key": "announced_on",
+      "name": "Announced",
+      "kind": "date"
+    },
+    {
+      "key": "amount",
+      "name": "Amount",
+      "kind": "number"
+    },
+    {
+      "key": "currency",
+      "name": "Currency",
+      "kind": "text"
+    },
+    {
+      "key": "lead_investor_ids",
+      "name": "Lead investors",
+      "kind": "text",
+      "description": "Comma-separated organizations record IDs."
+    },
+    {
+      "key": "lead_investors",
+      "name": "Lead investor names",
+      "kind": "text"
+    },
+    {
+      "key": "investor_ids",
+      "name": "Investors",
+      "kind": "text",
+      "description": "Comma-separated organizations record IDs."
+    },
+    {
+      "key": "investors",
+      "name": "Investor names",
+      "kind": "text"
+    },
+    {
+      "key": "stage",
+      "name": "Stage",
+      "kind": "text"
+    },
+    {
+      "key": "modality",
+      "name": "Modality",
+      "kind": "text"
+    },
+    {
+      "key": "indication",
+      "name": "Indication",
+      "kind": "text"
+    },
+    {
+      "key": "use_of_proceeds",
+      "name": "Use of proceeds",
+      "kind": "text"
+    }
+  ],
+  "naturalKey": {
+    "label": "company, kind and date",
+    "rule": "Company name in lower case, the kind and the announcement date, joined by \"|\". The same round reported within 7 days is the same round: reuse its key."
+  },
+  "dateField": {
+    "key": "announced_on",
+    "label": "Announced",
+    "upcoming": false
+  },
+  "eventKinds": [
+    {
+      "key": "financing",
+      "label": "Financing"
+    },
+    {
+      "key": "ipo",
+      "label": "IPO"
+    },
+    {
+      "key": "grant",
+      "label": "Grant"
+    }
+  ],
+  "digestSection": {
+    "title": "Rounds in your space",
+    "source": "items",
+    "amountField": "amount",
+    "currencyField": "currency",
+    "countField": "lead_investors",
+    "countLabel": "Most active lead investors",
+    "hint": "rounds and investors"
+  },
+  "listColumns": [
+    "company_name",
+    "kind",
+    "announced_on",
+    "amount",
+    "currency",
+    "lead_investors",
+    "stage",
+    "indication"
+  ],
+  "optionLabels": {
+    "ipo": "IPO",
+    "follow_on": "Follow-on"
+  },
+  "sources": [
+    {
+      "name": "Press releases",
+      "covers": "Company and newswire announcements.",
+      "priority": 1,
+      "notes": "Use the public site on the web."
+    },
+    {
+      "name": "News",
+      "covers": "Trade and business news.",
+      "priority": 2,
+      "notes": "Use the public site on the web."
+    },
+    {
+      "name": "SEC filings",
+      "covers": "Form D, S-1 and 424B filings (EDGAR).",
+      "priority": 3,
+      "notes": "Use the public site on the web."
+    },
+    {
+      "name": "EU Funding & Tenders",
+      "covers": "EU grants (Horizon Europe, EIC).",
+      "priority": 4,
+      "notes": "Use the public site on the web."
+    },
+    {
+      "name": "NIH RePORTER",
+      "covers": "US grants (SBIR/STTR and others).",
+      "priority": 5,
+      "notes": "Use the public site on the web."
+    }
+  ],
+  "instruction": "You watch financings in the scopes below: seed, series, crossover, IPO, follow-on, grant and debt rounds in their modalities, indications, regions and stages, announced since the last run. Record each round once with the company, amount and currency as announced, lead and other investors, stage and use of proceeds. Never estimate undisclosed amounts.",
+  "examplePrompts": [
+    {
+      "prompt": "Set up Funding Radar for fibrosis biotechs and build it now.",
+      "expectedBehavior": "Install Funding Radar, add a scope (indications, stages), then Build now in chat: financings with investors, events and a run with its source report."
+    },
+    {
+      "prompt": "Which investors led fibrosis rounds this year?",
+      "expectedBehavior": "Read Funding Radar financings for the scope and count lead investors. Nothing is written."
+    }
+  ]
+}

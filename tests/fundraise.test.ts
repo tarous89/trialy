@@ -8,7 +8,7 @@ import {readCustomLayout} from '../src/shared/custom-layout.js';
 import {fieldSchema} from '../src/shared/schema.js';
 
 /* Fundraise 2.0.0: the catalog entry, prepared exactly as AppTemplates.operation prepends configuration, executed in production QuickJS. */
-const entry=await appTemplates.read({templateId:'life.investor-crm',version:'2.0.0'});
+const entry=await appTemplates.read({templateId:'life.investor-crm',version:'2.0.1'});
 const schema=JSON.parse(await readFile('templates/source/investor-crm/schema.example.json','utf8'));
 const core=JSON.parse(await readFile('templates/core-contract/v1.json','utf8'));
 const registry=JSON.parse(await readFile('templates/contracts/outputs.json','utf8')).roles;
@@ -38,7 +38,7 @@ const opp=(rows:Row[],name:string,round=seed(rows))=>rows.find(r=>r.role==='fund
 const strip=({ai,...f}:any)=>f;
 
 test('catalog entry, contract-exact roles, the fundraise.tranches output and seven layout screens',async()=>{
- assert.equal(entry.version,'2.0.0');assert.equal(entry.name,'Fundraise');assert.equal(entry.engine,'frontend-js');assert.ok(entry.source!.length<180000);
+ assert.equal(entry.version,'2.0.1');assert.equal(entry.name,'Fundraise');assert.equal(entry.engine,'frontend-js');assert.ok(entry.source!.length<180000);
  for(const def of Object.values(schema) as any[])for(const f of def.fields){assert.ok(fieldSchema.safeParse(f).success,JSON.stringify(f));assert.equal(f.multiple,false);assert.match(f.key,/^[a-z][a-z0-9_]{0,63}$/);}
  // Core roles use exactly the core data contract v1 fields.
  for(const role of ['organizations','people']){assert.equal(schema[role].contract,'core.v1');assert.deepEqual(schema[role].fields,core.roles[role].fields.map(({owner,...f}:any)=>f),role);}

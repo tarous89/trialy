@@ -18,8 +18,8 @@ const bool=(v:any)=>v===true||v==='true';
 const SCREENS=['overview','pipeline','partners','conferences','activity','research','settings'];
 
 test('package: catalog entry, seven screens, limits, build --check, installer, seed, 2.1.0 archived unchanged, retirement of 1.1.1',async()=>{
- assert.equal(entry.id,'life.partnership-tracker');assert.equal(entry.version,'2.2.0');assert.equal(entry.name,'Partnerships');
- assert.ok(appTemplateEntry.safeParse(JSON.parse(await readFile('templates/apps/life.partnership-tracker-2.2.0.json','utf8'))).success);
+ assert.equal(entry.id,'life.partnership-tracker');assert.equal(entry.version,'2.2.1');assert.equal(entry.name,'Partnerships');
+ assert.ok(appTemplateEntry.safeParse(JSON.parse(await readFile('templates/apps/life.partnership-tracker-2.2.1.json','utf8'))).success);
  // 2.1.0 is published and immutable: its catalog JSON and package stay byte-identical (archive/2.1.0 holds the package and its preview).
  const v21=JSON.parse(await readFile('templates/apps/life.partnership-tracker-2.1.0.json','utf8'));assert.equal(v21.version,'2.1.0');assert.equal(v21.recommendedAutomations.length,3);
  assert.equal(JSON.parse(await readFile(root+'archive/2.1.0/catalog.metadata.json','utf8')).version,'2.1.0');assert.match(await readFile(root+'archive/2.1.0/partnerships.source.js','utf8'),/Partnerships 2\.1\.0/);
@@ -30,12 +30,12 @@ test('package: catalog entry, seven screens, limits, build --check, installer, s
  assert.match(execFileSync('node',['scripts/build-partnerships-template.mjs','--check'],{encoding:'utf8'}),/verified/);
  assert.match(execFileSync('node',['scripts/build-partnership-template.mjs','--check'],{encoding:'utf8'}),/1\.1\.1: catalog and preview verified/);
  const installers=JSON.parse(await readFile('templates/catalog-installers.json','utf8'));
- assert.equal(installers['life.partnership-tracker@2.2.0'],root+'schema.example.json');assert.equal(installers['life.partnership-tracker@2.1.0'],root+'archive/2.1.0/schema.example.json');assert.equal(installers['life.partnership-tracker@2.0.0'],root+'archive/2.0.0/schema.example.json');assert.equal(installers['life.partnership-tracker@1.1.1'],root+'archive/1.1.1/schema_mapping.example.json');
+ assert.equal(installers['life.partnership-tracker@2.2.1'],root+'schema.example.json');assert.equal(installers['life.partnership-tracker@2.1.0'],root+'archive/2.1.0/schema.example.json');assert.equal(installers['life.partnership-tracker@2.0.0'],root+'archive/2.0.0/schema.example.json');assert.equal(installers['life.partnership-tracker@1.1.1'],root+'archive/1.1.1/schema_mapping.example.json');
  // 2.0.0 was imported as a draft by an earlier deployment; catalog rows are immutable, so its files stay byte-identical in the archive.
  const old=JSON.parse(await readFile('templates/apps/life.partnership-tracker-2.0.0.json','utf8'));assert.equal(old.version,'2.0.0');assert.equal(old.recommendedAutomations,undefined);
  assert.equal(JSON.stringify(Object.keys(JSON.parse(await readFile(root+'archive/2.0.0/schema.example.json','utf8')))),JSON.stringify(Object.keys(schema).filter(k=>k!=='partnerships.research_reports')));
  // Owner approval (15 Nov 2026): the seed names 2.2.0 (2.1.0 stays approved for existing catalogs, as for Runway 2.2.0); migration 071 withdrew 1.1.1 once.
- const seed=JSON.parse(await readFile('templates/catalog-seed.json','utf8'));assert.deepEqual(seed['life.partnership-tracker'],{schema:root+'schema.example.json',version:'2.2.0'});
+ const seed=JSON.parse(await readFile('templates/catalog-seed.json','utf8'));assert.deepEqual(seed['life.partnership-tracker'],{schema:root+'schema.example.json',version:'2.2.1'});
  assert.match(await readFile('migrations/071_approve_partnerships_2_1_0.sql','utf8'),/SET status='draft' WHERE template_id='life\.partnership-tracker' AND version='1\.1\.1' AND status='approved'/);
  const ret=JSON.parse(await readFile('templates/catalog-retirements.json','utf8')).retirements.find((r:any)=>r.templateId==='life.partnership-tracker');
  assert.deepEqual([ret.version,ret.replacedBy],['1.1.1','life.partnership-tracker@2.1.0']);
@@ -340,7 +340,7 @@ test('acceptance 7 and 8: no screen or action sends email or contacts partners; 
  for(const r of rowsOf('partnerships.opportunities').slice(0,6))await all({},{kind:'click',action:'open:opp:'+r.id});
  for(const r of rowsOf('organizations').slice(0,4))await all({},{kind:'click',action:'open:org:'+r.id});
  for(const a of ['panel:log','panel:fu','panel:meeting','add:opps','add:people','add:confs'])await all({section:'conferences'},{kind:'click',action:a});
- assert.deepEqual([...seen].sort(),['documents.list','integrations.list','records.read','roles.list'].sort(),'reads only: roles.list names the apps that write read-only roles');
+ assert.deepEqual([...seen].sort(),['documents.list','integrations.list','records.read','records.readMany','roles.list'].sort(),'reads only: roles.list names the apps that write read-only roles; records.readMany is the batched read (2.2.1)');
  // Writes come only from records.propose; a read-only copy or an unsaved preview proposes nothing.
  const o=OPP('Ironvale: NWB-101 Japan rights');
  const ro=await render(rows,{panel:{type:'opp',id:o,version:0}},{kind:'submit',action:'move-stage',form:{to:'cda'}},{writable:false});assert.equal(ro.changes.length,0);assert.match(ro.state.notice,/cannot/);

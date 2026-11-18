@@ -1,6 +1,6 @@
 {
   "id": "life.contracts",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "name": "Contracts",
   "description": "Register of CDAs, MSAs, SOWs and other agreements with key dates and obligations: contract families with total value, notice and expiry alarms, obligations owed by and to the company, a CDA check, a pre-signature pipeline and a due-diligence list. Signed originals are TrialAgents documents; Claude or ChatGPT proposes terms with quotes and a person verifies them.",
   "tags": [

@@ -6,7 +6,7 @@ import {appTemplates} from '../../src/workspace/app-templates.js';
 /* Investor Updates 1.0.0 unit harness: the catalog entry prepared exactly as AppTemplates.operation prepends configuration, executed in
  * production QuickJS. Records are the fictional demo set (as of 15 Nov 2026). Exchange reads and writes use the platform response shapes
  * (status saved for preparation, review_required for sends), and record the calls so tests can assert what the app asked for. */
-export const entry=await appTemplates.read({templateId:'life.investor-updates',version:'1.0.0'});
+export const entry=await appTemplates.read({templateId:'life.investor-updates',version:'1.0.1'});
 export const root='templates/source/investor-updates/';
 export const schema=JSON.parse(await readFile(root+'schema.example.json','utf8'));
 export const demo=JSON.parse(await readFile(root+'demo_data.json','utf8'));

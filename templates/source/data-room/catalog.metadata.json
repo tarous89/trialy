@@ -1,6 +1,6 @@
 {
  "id": "life.data-room",
- "version": "1.1.0",
+ "version": "1.1.1",
  "name": "Data Room",
  "description": "Prepare, share and track data rooms for financing, licensing, partnering and M&A, with diligence Q&A built in. A standard 9-section biotech index weighted by purpose, a readiness checklist with owners and due dates, documents from the platform document store (one set reused across rooms, versions kept in place), levels (Non-confidential, Confidential and custom) with a click-through or signed-CDA entry step, one private link per person with no recipient accounts, emails from TrialAgents in one confirmed send, per-person and per-document engagement, structured Q&A with approval and private or published answers, and a disclosure record. Notify all or chosen parties about new documents in one confirmed send, an access-ending reminder per room, instant emails for party questions, and a weekly room summary. Claude and ChatGPT can run every action through app commands and customize forms, fields and templates. Writes the dataroom.v1 outputs that Fundraise and Partnerships read.",
  "tags": [

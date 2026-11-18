@@ -20,9 +20,9 @@ const words=(t:string)=>t.split(/\s+/).filter(w=>/[A-Za-z0-9]/.test(w)).length;
 
 test('package: the generator is deterministic and the catalog entry, recipes, functions, installer and contract validate',async()=>{
  await promisify(execFile)('node',['scripts/build-radar-templates.mjs','--check']);
- const raw=JSON.parse(await readFile('templates/apps/life.trial-radar-1.0.0.json','utf8'));
+ const raw=JSON.parse(await readFile('templates/apps/life.trial-radar-1.0.1.json','utf8'));
  appTemplateEntry.parse(raw);validateRecipeDeclarations(raw);validateAppFunctions(raw,Object.keys(schema));
- assert.equal(raw.id,'life.trial-radar');assert.equal(raw.version,'1.0.0');assert.ok(raw.whenToUse&&raw.whenNotToUse);assert.ok(raw.source.length<180000);
+ assert.equal(raw.id,'life.trial-radar');assert.equal(raw.version,'1.0.1');assert.ok(raw.whenToUse&&raw.whenNotToUse);assert.ok(raw.source.length<180000);
  assert.ok(raw.source.includes('const templateLayoutSchema={"screens":[{"id":"overview","label":"Overview"},{"id":"tracker","label":"Trials"},{"id":"events","label":"Events"},{"id":"setup","label":"Setup"}]'));
  assert.deepEqual(raw.functions.map((f:any)=>f.name),['brief','digest_summary','alert_summary']);
  for(const f of raw.functions){assert.deepEqual(f.scope.capabilities,['records.read','tables.list']);assert.equal(f.scope.documents,false);}
@@ -32,9 +32,9 @@ test('package: the generator is deterministic and the catalog entry, recipes, fu
  const outputs=JSON.parse(await readFile('templates/contracts/outputs.json','utf8'));const out=outputs.roles['trialradar.events'];
  assert.deepEqual([out.kind,out.writer],['output','life.trial-radar']);assert.match(out.description,/dismissed rows .* are never counted/);
  assert.deepEqual(out.versions['radar.v1'].fields.map((f:any)=>f.key),schema['trialradar.events'].fields.map((f:any)=>f.key));
- assert.equal(JSON.parse(await readFile('templates/catalog-installers.json','utf8'))['life.trial-radar@1.0.0'],'templates/source/radars/trial-radar/schema.example.json');
+ assert.equal(JSON.parse(await readFile('templates/catalog-installers.json','utf8'))['life.trial-radar@1.0.1'],'templates/source/radars/trial-radar/schema.example.json');
  // Published on owner approval (15 Nov 2026): the seed approves 1.0.0 on first import.
- assert.equal(JSON.parse(await readFile('templates/catalog-seed.json','utf8'))['life.trial-radar'].version,'1.0.0');
+ assert.equal(JSON.parse(await readFile('templates/catalog-seed.json','utf8'))['life.trial-radar'].version,'1.0.1');
  // Trial specifics (§3): scope fields, tracker fields, natural key, event kinds, digest section, sources with TrialAgents Intel first.
  assert.deepEqual(radar.scopeFields.map((f:any)=>f.key),['indication','interventions','sponsors','phases','countries']);
  for(const k of ['registry_ids','title','sponsor_id','asset','phase','status','enrollment','primary_endpoint','primary_completion','completion_estimated','countries','sites_count','last_change'])assert.ok(schema['trialradar.trials'].fields.some((f:any)=>f.key===k),k);
@@ -182,7 +182,7 @@ test('acceptance 10 and tracker actions: people act through reviewed proposals o
  await s.submit('save-item',{status:'completed',sources:'Registry https://registry.example.invalid/x'});assert.equal(s.changes[0].expectedVersion,v,'the version from when the editor opened');
  assert.throws(()=>{for(const c of s.changes){const r=rows.find(x=>x.id===c.recordId)!;if(r.version!==c.expectedVersion)throw Error('stale version');}},/stale/);
  // Every write the app makes is a records.propose; it never sends email or calls anything else.
- const all=new Set<string>();for(const section of ['overview','tracker','events','setup']){const o=await s.open({section,panel:null});for(const c of o.calls)all.add(c.name);}assert.deepEqual([...all].sort(),['records.read']);
+ const all=new Set<string>();for(const section of ['overview','tracker','events','setup']){const o=await s.open({section,panel:null});for(const c of o.calls)all.add(c.name);}assert.deepEqual([...all].sort(),['records.read','records.readMany']);// reads only; records.readMany is the batched read (1.0.1)
 });
 
 test('events: the review queue, mark reviewed, dismiss with a reason, duplicates merged, a page reviewed at once',async()=>{
