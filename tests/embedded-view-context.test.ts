@@ -1,12 +1,15 @@
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
-import {createViewContextPublisher,viewContextText} from '../src/embed/view-context.js';
+import {backgroundViewContext,createViewContextPublisher,viewContextText} from '../src/embed/view-context.js';
 import {appSignInReturn} from '../src/shared/app-route.js';
 const parse=(text:string)=>JSON.parse(text.slice(text.indexOf('\n')+1));
 test('view context allowlists and bounds metadata without record values or draft content',()=>{
  const result=parse(viewContextText({view:'database',workspaceId:'workspace',tableId:'table',field:'name',fields:Array.from({length:90},()=>({key:'name',name:'N'.repeat(300),value:'PRIVATE'})),selectedRecordIds:Array(30).fill('id'),scope:{kind:'column',resourceId:'table',field:'name',grant:'PRIVATE'},editing:true,password:'PRIVATE',records:[{name:'PRIVATE'}],draft:'PRIVATE'} as any));
- assert.equal(result.fields.length,80);assert.equal(result.fields[0].name.length,160);assert.equal(result.selectedRecordIds.length,25);
+ assert.equal(result.fields,undefined);assert.equal(result.selectedRecordIds.length,25);
  assert.equal(JSON.stringify(result).includes('PRIVATE'),false);assert.deepEqual(result.scope,{kind:'column',resourceId:'table',field:'name'});assert.equal(result.field,'name');
+});
+test('automatic navigation context is only addressed to the assistant',()=>{
+ assert.deepEqual(backgroundViewContext('current view'),{content:[{type:'text',text:'current view',annotations:{audience:['assistant']}}]});
 });
 test('context updates serialize, coalesce to the latest view, and recover from host failures',async()=>{
  const sent:string[]=[];let release:()=>void=()=>{};
