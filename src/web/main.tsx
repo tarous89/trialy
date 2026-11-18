@@ -53,6 +53,8 @@ import {SchemaMigration} from './SchemaMigration.js';
 import {AutomationsPage} from '../shared/AutomationsPage.js';
 import {AutomationBoundary} from '../shared/AutomationSettings.js';
 import {MfaSettings} from './MfaSettings.js';
+import {primeEarlyRead,takeEarlyRead,dropEarlyReads,earlyReadKey} from '../shared/early-reads.js';
+import {parseAppUrl} from '../shared/app-route.js';
 import {AccessRules} from './AccessRules.js';
 import {AccountSecurity} from './AccountSecurity.js';
 import {Connections} from './Connections.js';
@@ -60,7 +62,9 @@ import {WorkspacePolicy} from './WorkspacePolicy.js';
 import {BulkImport} from '../shared/BulkImport.js';
 import {ViewPicker,RecordView} from '../shared/WorkspaceViews.js';
 let csrf='';
-async function api(path:string,method='GET',body?:unknown,options?:WorkspaceRequestOptions){return withWorkspaceActivity(async()=>{const r=await fetch(path,{signal:options?.signal,method,credentials:'same-origin',headers:{'Content-Type':'application/json','X-CSRF-Token':csrf},body:body===undefined?undefined:JSON.stringify(body)});const data=await r.json();if(!r.ok)throw Object.assign(new Error(data.message??'This action could not complete'),{status:r.status,code:data.error});return data;},options);}
+/** The Apps page's first request, exactly as HomePanel makes it; these are also the server's defaults. */
+const EARLY_HOME={query:'',kind:'all',projectId:'',sort:'updated',offset:0,limit:20};
+async function api(path:string,method='GET',body?:unknown,options?:WorkspaceRequestOptions){return withWorkspaceActivity(async()=>{const r=await fetch(path,{signal:options?.signal,method,credentials:'same-origin',headers:{'Content-Type':'application/json','X-CSRF-Token':csrf,...options?.headers},body:body===undefined?undefined:JSON.stringify(body)});const data=await r.json();if(!r.ok)throw Object.assign(new Error(data.message??'This action could not complete'),{status:r.status,code:data.error});return data;},options);}
 const queryParams=new URLSearchParams(location.search);if(queryParams.get('tab')==='changes'||queryParams.has('workspaceId'))sessionStorage.setItem('trialy.review',location.search);
 const reviewParams=new URLSearchParams(location.search||sessionStorage.getItem('trialy.review')||'');
 const legacy=queryParams.get('legacy')==='1';
@@ -96,8 +100,13 @@ function App(){
  useAccessRecheck(()=>loadMe({background:true}),!!me);
  const meReads=useRef(accountReads());
  async function loadMe(options:WorkspaceRequestOptions={},fresh=false){return withWorkspaceActivity(()=>meReads.current.run(isCurrent=>readMe(options,isCurrent),fresh),options);}
- async function readMe(options:WorkspaceRequestOptions,isCurrent:()=>boolean){try{const d=await api('/api/me','GET',undefined,options);if(!isCurrent())return;csrf=d.csrf;sessionStorage.removeItem('trialy.review');setMe(d.user);if(!d.workspaces.length&&!reviewParams.get('workspaceId')){const initialized=await api('/api/account/initialize','POST',{});d.workspaces=initialized.workspaces;}if(!isCurrent())return;const requested=reviewParams.get('workspaceId');const mismatch=!!requested&&!d.workspaces.some((w:any)=>w.id===requested);setAccountMismatch(mismatch);setWorkspaces(d.workspaces);if(mismatch){setWorkspace('');setBoot(false);return;}setWorkspace(current=>d.workspaces.some((w:any)=>w.id===current)?current:d.workspaces.find((w:any)=>w.id===reviewParams.get('workspaceId'))?.id||d.workspaces[0]?.id||'');}catch(e){if(!isCurrent())return;if(!me||[401,403,404].includes((e as any)?.status)){setMe(null);setWorkspace('');setRows([]);setDocuments([]);setHistory([]);setPreview(null);setVisited([]);}else setError((e as Error).message||'Account access could not be checked. Try again.');}finally{if(isCurrent())setBoot(false);}}
- useEffect(()=>{void api('/api/config').then(setConfig).finally(()=>setConfigReady(true));void loadMe();},[]);
+ async function readMe(options:WorkspaceRequestOptions,isCurrent:()=>boolean){try{const d=await api('/api/me','GET',undefined,options);if(!isCurrent())return;csrf=d.csrf;sessionStorage.removeItem('trialy.review');setMe(d.user);if(!d.workspaces.length&&!reviewParams.get('workspaceId')){dropEarlyReads();const initialized=await api('/api/account/initialize','POST',{});d.workspaces=initialized.workspaces;}if(!isCurrent())return;const requested=reviewParams.get('workspaceId');const mismatch=!!requested&&!d.workspaces.some((w:any)=>w.id===requested);setAccountMismatch(mismatch);setWorkspaces(d.workspaces);if(mismatch){setWorkspace('');setBoot(false);return;}setWorkspace(current=>d.workspaces.some((w:any)=>w.id===current)?current:d.workspaces.find((w:any)=>w.id===reviewParams.get('workspaceId'))?.id||d.workspaces[0]?.id||'');}catch(e){if(!isCurrent())return;if(!me||[401,403,404].includes((e as any)?.status)){setMe(null);setWorkspace('');setRows([]);setDocuments([]);setHistory([]);setPreview(null);setVisited([]);}else setError((e as Error).message||'Account access could not be checked. Try again.');}finally{if(isCurrent())setBoot(false);}}
+ useEffect(()=>{
+  // Start this screen's first read with the account check instead of after it.
+  const app=parseAppUrl(location.pathname+location.search);
+  if(app)primeEarlyRead(earlyReadKey('app',app),()=>api('/api/apps/resolve','GET',undefined,{headers:{'X-App-Location':JSON.stringify(app)}}));
+  else if(tab==='home')primeEarlyRead(earlyReadKey('home',EARLY_HOME),()=>api('/api/account/home'));
+  void api('/api/config').then(setConfig).finally(()=>setConfigReady(true));void loadMe();},[]);
  async function run(fn:()=>Promise<void>){setBusy(true);setError('');setNotice('');try{await fn();}catch(e){setError((e as Error).message);}finally{setBusy(false);}}
  async function loadRecords(){const request=++recordRequest.current;setRows([]);setTotal(0);setSummary(null);if(typeId&&selected&&metadata.ready){
   const queryParams=new URLSearchParams({limit:'25',offset:String(offset),q:query});if(activeView)queryParams.set('viewId',activeView.id);
@@ -128,7 +137,7 @@ function App(){
  {config.simpleApps&&workspace&&tab==='apps'&&<AppServicesPanel onAutomations={()=>setTab('automations')} call={(name,args)=>foundationCall(name,{workspaceId:workspace,...args})} reviewId={reviewParams.get('serviceReview')??undefined} appId={reviewParams.get('serviceApp')??undefined}/>}
  {config.simpleApps&&tab==='connectors'&&<ConnectorsPanel workspaceId={workspace} call={foundationCall} initialConnectionId={reviewParams.get('connectionId')??undefined} initialReviewId={reviewParams.get('connectorReview')??undefined}/>}
  {workspace&&tab==='create'&&<CreationCenter key={creationKind} kind={creationKind} call={(name,args)=>foundationCall(name,{workspaceId:workspace,...args})} onClose={()=>setTab('home')} onCreated={()=>{setHomeRevision(r=>r+1);setTab('home');void refresh();}}/>}
- {workspace&&visited.includes('home')&&<div hidden={tab!=='home'}><HomePanel loadTypes={id=>api(`/api/workspaces/${id}/types`)} active={tab==='home'} loadHome={(args,options)=>api('/api/account/home','POST',args,options)} onLegacyAutomations={()=>setTab('automations')} viewerId={me.id} key={me.id+':'+workspace+':'+homeRevision} workspaceId={workspace} types={types} call={foundationCall} onDocuments={()=>setTab('documents')}/></div>}
+ {workspace&&visited.includes('home')&&<div hidden={tab!=='home'}><HomePanel loadTypes={id=>api(`/api/workspaces/${id}/types`)} active={tab==='home'} loadHome={(args,options)=>takeEarlyRead(earlyReadKey('home',args),()=>api('/api/account/home','POST',args,options))} onLegacyAutomations={()=>setTab('automations')} viewerId={me.id} key={me.id+':'+workspace+':'+homeRevision} workspaceId={workspace} types={types} call={foundationCall} onDocuments={()=>setTab('documents')}/></div>}
  {workspace&&tab==='logs'&&<LogsPanel key={workspace} workspaceId={workspace} call={foundationCall}/>}
  {error&&<SystemNotice error message={error} onDismiss={()=>setError('')}/>}{notice&&<SystemNotice message={notice} onDismiss={()=>setNotice('')}/>}
  {workspace&&['trackers','forms','visuals'].includes(tab)&&<ProjectFilter workspaceId={workspace} value={projectId} onChange={setProjectId} call={foundationCall}/>}

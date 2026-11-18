@@ -1,5 +1,5 @@
 /** Local transport options only; never sent as API/MCP arguments. */
-export type WorkspaceRequestOptions={signal?:AbortSignal;background?:boolean};
+export type WorkspaceRequestOptions={signal?:AbortSignal;background?:boolean;headers?:Record<string,string>};
 
 /** Routine checks and collapsed archive counts do not make a usable view busy.
  * Explicit foreground work may override this; all other calls remain foreground.

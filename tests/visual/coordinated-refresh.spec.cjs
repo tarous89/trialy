@@ -37,7 +37,7 @@ for(const embedded of [false,true])test(`Superseded Home searches cannot replace
  const response=name=>({projects:[],resources:[{id:f.appId,workspaceId:f.workspaceId,name,kind:'generic',source:'component',projectIds:[],description:'Search fixture',updatedAt:'2026-11-13T00:00:00Z'}],total:1,revision:'search-revision'});
  page.on('requestfailed',r=>{if(new URL(r.url()).pathname==='/api/account/home'&&r.postDataJSON()?.query==='slow')aborted=true;});
  await page.route(embedded?'**/fixture/tool':'**/api/account/home',async route=>{
-  const body=route.request().postDataJSON();if(embedded&&body.name!=='read_account_home')return route.continue();const args=embedded?body.arguments:body;
+  const body=route.request().postDataJSON();if(embedded&&body.name!=='read_account_home')return route.continue();const args=embedded?body.arguments:body??{};
   if(args.query==='slow'){slowStarted=true;await gate;}const result=response(args.query==='slow'?'Old result':args.query==='current'?'Current result':'Initial result');
   await route.fulfill({json:embedded?{content:[],structuredContent:{result}}:result}).catch(()=>{});
  });

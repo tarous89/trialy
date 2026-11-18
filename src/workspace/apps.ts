@@ -16,12 +16,13 @@ function appOperation(input:unknown){
  const v=prepareApp.parse(input);
  return {kind:'save_component' as const,preparation:{requestKey:v.requestKey,replacesPreviewId:v.replacesPreviewId,expectedDigest:v.expectedDigest},projectId:v.projectId,componentId:v.appId,expectedVersion:v.expectedVersion,content:{...v.content,resourceKind:'generic' as const}};
 }
-export async function readApp(f:WorkspaceFoundation,a:Actor,input:unknown){
+/** includeOutput: also return the app's first render for this route (website open in one request). */
+export async function readApp(f:WorkspaceFoundation,a:Actor,input:unknown,includeOutput=false){
  const v=appLocation.parse(input),w=v.workspaceId;
  if(v.source==='component'){
-  const {component}=await f.readComponent(a,w,v.appId);
+  const {component,initialOutput}=await f.readComponent(a,w,v.appId,includeOutput?'optional':false,v.route) as any;
   if(component.archived||component.project_archived)fail(404,'not_found','App unavailable');
-  return {...v,url:appUrl(v),component};
+  return {...v,url:appUrl(v),component,...(initialOutput?{initialOutput}:{})};
  }
  if(v.source==='preview'){
   const resolved=await f.resolveTrackerPreview(a,w,v.appId);

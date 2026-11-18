@@ -1,6 +1,6 @@
 # TrialAgents template authoring standard
 
-Version: 1.3.32
+Version: 1.3.33
 
 ## Who can run and change app code (1.3.32)
 
@@ -360,6 +360,8 @@ Cash Runway's complete source package and valid scalar schema/mapping examples a
 Before editing an existing app, call `begin_app_update` with its current component version. It invalidates older review candidates while keeping the saved app usable. Prepare and revise quietly using the same requestKey, replacesPreviewId and current expectedDigest. Preparation is not completion: AI app previews are drafts, with no Save/Ignore controls. Finish all requested schema, data and layout work and validation before calling `finalize_app_preview` once as the last app mutation. This returns the current review digest and displays the completed preview. Only then present the revision for approval. If more work is required, begin an update again before editing; never finalize intermediate work. On failure, reopen the saved app and report the unfinished changes; do not finalize a partial result.
 
 For data saves through `commit_change`, include the exact `review` string returned by `prepare_change`. It contains the reviewed change details and is digest-checked by the server; never substitute a model-written summary. User authorization, current access checks and version checks remain required.
+
+When a screen needs several tables or pages at once, read them in one call: `tools.call('records.readMany', {reads: [...]})` takes 1 to 12 `records.read` requests and returns `{results: [...]}` in the same order, each result exactly what `records.read` returns (including `unavailable` for a restricted table). Every read is checked like a single read, and a run may make at most 100 batched reads in total. Prefer it over a sequence of `records.read` calls on open: the platform checks the app's permissions once for the batch instead of once per read.
 
 Tracker sorting, search and filters must apply to the entire authorized table before pagination. Use `records.read` with `sort: {field, direction: 'asc'|'desc'}`, `q`, filters, limit and offset. Reset offset after changing sort/search/filter. Select fields sort in schema option order; numeric fields sort numerically, missing values last. Calculated-field sorting is explicitly rejected rather than silently sorting a single page. Cache identity includes sort, query and filters. Never sort or search only the loaded page.
 
