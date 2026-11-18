@@ -4,6 +4,7 @@ import {randomUUID} from 'node:crypto';
 import {readFile,readdir} from 'node:fs/promises';
 import {PGlite} from '@electric-sql/pglite';
 import type {Database,Connection} from '../src/db/database.js';
+import {archiveFields} from '../src/domain/archive.js';
 import {Foundation} from '../src/foundation/service.js';
 import {Service} from '../src/domain/service.js';
 import {WorkspaceFoundation} from '../src/workspace/service.js';
@@ -62,9 +63,15 @@ test('connected resources enforce schema/value separation, shared edits, project
  await f.confirm(owner,w.id,afterExtension.proposal!.id,afterExtension.proposal!.digest);
  assert.equal((await f.runFrontend(ai,w.id,{componentId:c.id,expectedVersion:0})).controls?.[0].value,'Works after adding columns');
  await assert.rejects(f.runFrontend(member,w.id,{componentId:c.id,expectedVersion:0}));
- await save({kind:'update_type',typeId:table,expectedVersion:1,name:'Vendors renamed',fields:extended.map(field=>({...field,name:field.name+' changed'}))});
+ await db.transaction(async tx=>{
+  const type=(await tx.query('SELECT * FROM entity_types WHERE id=$1 FOR UPDATE',[table])).rows[0];
+  const workspace=(await tx.query('SELECT id,tenant_id FROM workspaces WHERE id=$1',[w.id])).rows[0];
+  await archiveFields(tx,owner,w.id,workspace,type,['geographic_priority'],c.id,'Remove unused column');
+ });
+ assert.equal((await f.runFrontend(ai,w.id,{componentId:c.id,expectedVersion:0})).controls?.[0].value,'Works after adding columns');
+ await save({kind:'update_type',typeId:table,expectedVersion:2,name:'Vendors renamed',fields:extended.filter(field=>field.key!=='geographic_priority').map(field=>({...field,name:field.name+' changed'}))});
  await assert.rejects(f.runFrontend(ai,w.id,{componentId:c.id,expectedVersion:0}),/Connected fields changed/);
- await change({kind:'save_component',componentId:c.id,expectedVersion:0,projectId:project.id,content:{...content,manifest:{...manifest,fields:manifest.fields.map(x=>({...x,schemaVersion:2}))}}});
+ await change({kind:'save_component',componentId:c.id,expectedVersion:0,projectId:project.id,content:{...content,manifest:{...manifest,fields:manifest.fields.map(x=>({...x,schemaVersion:3}))}}});
  assert.ok(await f.runFrontend(ai,w.id,{componentId:c.id,expectedVersion:1}));
  }finally{await db.close();}
 });
