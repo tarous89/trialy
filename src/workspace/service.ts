@@ -487,18 +487,29 @@ export class WorkspaceFoundation {
    // atomically using its existing insert/delete permissions, keeping its identity.
    await tx.query('DELETE FROM workspace_previews WHERE workspace_id=$1 AND user_id=$2 AND id=ANY($3::uuid[])',[w,a.userId,[target,preview.id]]);
    await tx.query('INSERT INTO workspace_previews(id,workspace_id,user_id,body,digest) VALUES($1,$2,$3,$4,$5)',[target,w,a.userId,J(row.body),digest]);
-   if(row.body.reviewState==='draft'&&op.componentId){const saved=await f.readComponent(a,w,op.componentId,true);return {...saved,screen:'tracker',appUpdating:true,saveStatus:'revision',preview:{...preview,id:target,body:row.body.operation,digest},designQuality};}
+   if(row.body.reviewState==='draft'&&op.componentId){const saved=await f.readComponentForUpdate(a,w,op.componentId);return {...saved,screen:'tracker',appUpdating:true,saveStatus:'revision',preview:{...preview,id:target,body:row.body.operation,digest},designQuality};}
    return {workspaceId:w,screen:'tracker-preview',preview:{...preview,id:target,body:row.body.operation,digest},initialOutput,designQuality,saveStatus:op.componentId?'revision':'unsaved',previewStatus:'prepared',preparedAt:new Date().toISOString(),displayStatus:'awaiting_client'};
   });
  }
  async beginAppUpdate(a:Actor,w:string,componentId:string,expectedVersion:number){
   return this.db.transaction(async tx=>{
    await tx.query('SELECT id FROM workspaces WHERE id=$1 FOR UPDATE',[w]);
-   const f=new WorkspaceFoundation(adapter(tx)),saved=await f.readComponent(a,w,componentId,true);
+   const f=new WorkspaceFoundation(adapter(tx)),saved=await f.readComponentForUpdate(a,w,componentId);
    if(saved.component.version!==expectedVersion)fail(409,'stale_version','App changed; read its current version');
    await tx.query("DELETE FROM workspace_previews WHERE workspace_id=$1 AND user_id=$2 AND body->'operation'->>'componentId'=$3 AND body->'operation'->>'kind' IN ('save_component','create_tracker')",[w,a.userId,componentId]);
    return {...saved,screen:'tracker',appUpdating:true};
   });
+ }
+ /** A stale published data contract must not prevent an authorized replacement from being reviewed.
+  * Read source/access normally first; only rendering's schema-contract failures can omit output.
+  * The replacement still goes through full current binding validation and preview rendering. */
+ private async readComponentForUpdate(a:Actor,w:string,id:string){
+  const saved=await this.readComponent(a,w,id);
+  try{return {...await this.readComponent(a,w,id,true),requiresBindingReview:false};}
+  catch(error:any){
+   if(!['manifest_stale','manifest_binding'].includes(error?.code))throw error;
+   return {...saved,requiresBindingReview:true};
+  }
  }
  async finalizeAppPreview(a:Actor,w:string,previewId:string,digest:string){
   return this.db.transaction(async tx=>{
