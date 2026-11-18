@@ -57,6 +57,23 @@ test('full-table ordering, filtering, searching, exact review and draft finaliza
   const repeat=await f.finalizeAppPreview(ai,w.id,ready2.preview.id,ready2.preview.digest);assert.equal(repeat.preview.digest,ready2.preview.digest);
   const receipt=await f.confirm(human,w.id,ready2.preview.id,ready2.preview.digest);assert.equal(receipt.id,saved.id);
   assert.equal((await f.readComponent(human,w.id,saved.id)).component.version,1);
+  // Reproduce a column-removal schema revision: the saved interface still has its old
+  // contract. Repair must not require that old interface to render successfully.
+  await db.query('UPDATE entity_types SET version=version+1 WHERE id=$1',[typeId]);
+  await assert.rejects(f.readComponent(ai,w.id,saved.id,true),(e:any)=>e.code==='manifest_stale');
+  const editing=await f.beginAppUpdate(ai,w.id,saved.id,1);
+  assert.equal(editing.requiresBindingReview,true);
+  const repaired=await trackerOperation(f,ai,w.id,{name:'Priority tracker',description:'',omitSource:true,showExample:false,tabs:[{name:'Companies',typeId,filters:['priority'],columns:[{field:'name'},{field:'priority'},{field:'score'}]}]});
+  const repair=await f.prepareRenderedTracker(ai,w.id,{...repaired,componentId:saved.id,expectedVersion:1});
+  assert.equal(repair.requiresBindingReview,true);
+  assert.equal(repair.preview.reviewState,'draft');
+  const repairReady=await f.finalizeAppPreview(ai,w.id,repair.preview.id,repair.preview.digest);
+  const repairReceipt=await f.confirm(human,w.id,repairReady.preview.id,repairReady.preview.digest);
+  assert.equal(repairReceipt.id,saved.id);
+  const reopened=await f.readComponent(ai,w.id,saved.id,true);
+  assert.equal(reopened.component.version,2);
+  assert.ok(reopened.initialOutput);
+  assert.equal((await s.records(ai,w.id,typeId,{limit:1})).total,66);
  }finally{await pg.close();}
 });
 test('cache keeps different full-table sorts and searches separate',()=>{
