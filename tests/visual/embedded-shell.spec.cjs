@@ -64,8 +64,10 @@ test('database columns and access selection update host context without record o
  await page.goto(base+'/?apps=1');await page.waitForFunction(()=>window.hostReady);await page.evaluate(workspaceId=>window.deliver({screen:'home',workspaceId,viewerId:'fixture',workspaces:[],types:[]}),f.workspaceId);
  const root=page.frameLocator('#app');await root.getByRole('button',{name:'Database',exact:true}).click();await expect(root.getByRole('heading',{name:'Context companies',exact:true})).toBeVisible();
  await root.locator('.ty-db-tree-row').locator('..').getByRole('button',{name:'Company name',exact:true}).click();
- await expect.poll(()=>currentView(page)).toMatchObject({view:'database',tableId,field:'name',fields:[{key:'name',name:'Company name'}]});
+ await expect.poll(()=>currentView(page)).toMatchObject({view:'database',tableId,field:'name'});
  await root.getByRole('switch',{name:'Allow edits'}).check();await root.getByRole('button',{name:'Edit Company name in row '+recordId}).click();await root.locator('.ty-db-editor textarea').fill('PRIVATE DRAFT TEXT');
+ expect(await currentView(page)).not.toHaveProperty('fields');
+ expect(await page.evaluate(()=>window.modelContextUpdates.at(-1).content[0].annotations.audience)).toEqual(['assistant']);
  await expect.poll(()=>currentView(page)).toMatchObject({editing:true,hasUnsavedChanges:true});expect(await page.evaluate(()=>JSON.stringify(window.modelContextUpdates))).not.toMatch(/PRIVATE RECORD VALUE|PRIVATE DRAFT TEXT/);
  await root.getByRole('button',{name:'Ignore changes',exact:true}).click();await root.getByRole('button',{name:'Access',exact:true}).click();
  await expect.poll(()=>currentView(page)).toMatchObject({view:'access-control',subjectId:expect.any(String)});
