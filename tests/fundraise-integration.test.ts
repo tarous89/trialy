@@ -301,7 +301,7 @@ test('customization: a custom field added by an assistant through reviewed chang
 /* Publication (owner approval, 14 Nov 2026): the seed names 2.0.0, so the catalog sync imports it approved; migration 072
  * withdraws Investor CRM 1.0.1 once, as it would on the production catalog where 1.0.1 is approved. */
 test('publication: seed approves Fundraise 2.0.0; migration 072 withdraws 1.0.1; installed 1.0.1 JSON unchanged',async()=>{
- const seed=JSON.parse(await readFile('templates/catalog-seed.json','utf8'));assert.deepEqual(seed['life.investor-crm'],{schema:'templates/source/investor-crm/schema.example.json',version:'2.0.1'});// 2.0.1 since migration 078
+ const seed=JSON.parse(await readFile('templates/catalog-seed.json','utf8'));assert.deepEqual(seed['life.investor-crm'],{schema:'templates/source/investor-crm/schema.example.json',version:'2.0.1'});// 2.0.1 since 18 November 2026
  const ret=JSON.parse(await readFile('templates/catalog-retirements.json','utf8')).retirements.find((r:any)=>r.templateId==='life.investor-crm');assert.deepEqual([ret.version,ret.replacedBy],['1.0.1','life.investor-crm@2.0.0']);
  const pg=new PGlite();
  try{
@@ -309,7 +309,7 @@ test('publication: seed approves Fundraise 2.0.0; migration 072 withdraws 1.0.1;
   const db:Database={query:(q,v)=>pg.query(q,v) as any,transaction:fn=>pg.transaction(tx=>fn(tx as Connection)),close:()=>pg.close()};
   await syncTemplateCatalog(db);
   const status=async(v:string)=>(await pg.query<any>("SELECT status FROM app_template_catalog WHERE template_id='life.investor-crm' AND version=$1",[v])).rows[0]?.status;
-  assert.equal(await status('2.0.1'),'approved','the sync after migrations imports the seeded version approved');assert.equal(await status('2.0.0'),'draft','superseded by 2.0.1 (migration 078)');
+  assert.equal(await status('2.0.1'),'approved','the sync after migrations imports the seeded version approved');assert.equal(await status('2.0.0'),'draft','in a new database the seed imports only 2.0.1 approved');
   // Production state before this deployment: 1.0.1 approved. The one-time migration withdraws it.
   await pg.query("UPDATE app_template_catalog SET status='approved' WHERE template_id='life.investor-crm' AND version='1.0.1'");
   await pg.exec(await readFile('migrations/072_approve_fundraise_2_0_0.sql','utf8'));

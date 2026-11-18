@@ -72,7 +72,8 @@ The Templates page has Team/Workflow filters, screenshots and sandboxed interact
 
 On 18 November 2026 the owner approved a batched-read patch release of all 16 switched-on apps in one decision: Runway 2.2.1, Contracts 1.1.1, CRO Selection 2.1.1, Data Room 1.1.1, Fundraise 2.0.1, Investor Updates 1.0.1, Partnerships 2.2.1, Programs 2.2.1, Literature Radar 2.0.1 and Deal, Funding, Market, Patent, Pipeline, Regulatory and Trial Radar 1.0.1. Each is its predecessor with `records.readMany` in its read helper and no feature change:
 - the seed names the new versions, so the sync after migrations imports them approved;
-- migration 078 withdraws the sixteen replaced versions once, as listed in `templates/catalog-retirements.json`;
+- the sixteen earlier versions stay approved and are not listed in `templates/catalog-retirements.json`. The gallery and new installs use the newest approved version of an app. An installed copy counts as unchanged catalog code only while its version is approved (`isCatalogSource`), so withdrawing a version stops members with hidden fields or documents from opening installed copies of it; withdraw one only after its installed copies have been updated;
+- there is no catalog migration in this release;
 - each released version is archived unchanged under its app's `archive/<version>/` folder and its installer entry points there;
 - the screens are unchanged, so each new version's gallery image is its predecessor's.
 
