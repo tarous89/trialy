@@ -2,7 +2,7 @@
 
 An installed catalog app keeps the code it was installed with, so the batched-read releases reached only new installs. The app's Settings menu on the website now offers **Update to version X** to the owner and editors when a newer approved version of the same app exists and nothing but the template code would change (same tables and fields, options, defaults and helpers; unchanged saved code). The update is the ordinary reviewed app save: configuration and bindings lines are kept, the code behind them is replaced, and the catalog origin is recorded. Changed code is never replaced. Details and limits: [APP_PUBLICATION.md](docs/APP_PUBLICATION.md#updating-an-installed-catalog-app).
 
-Tests: `tests/app-update.test.ts` installs the earlier version of all sixteen switched-on apps, updates each and checks that only the template code changed; `tests/visual/app-update.spec.cjs` covers the offer and confirmation on the website.
+Tests: `tests/app-update.test.ts` installs the earlier version of all sixteen switched-on apps, updates each and checks that only the template code changed; `tests/visual/zzzz-app-update.spec.cjs` covers the offer and confirmation on the website.
 
 ## 18 November 2026 — Batched reads in all 16 switched-on apps
 

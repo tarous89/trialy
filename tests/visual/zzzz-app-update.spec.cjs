@@ -1,3 +1,4 @@
+// Runs last: it adds apps to the shared fixture workspace, which earlier specs photograph.
 const {test,expect,openPlatform}=require('./test.cjs');
 const base='http://127.0.0.1:4179';
 async function call(page,name,args){const r=await (await page.request.post(base+'/fixture/tool',{data:{name,arguments:args}})).json();expect(r.isError,JSON.stringify(r)).not.toBe(true);return r.structuredContent.result;}
