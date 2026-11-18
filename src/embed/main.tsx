@@ -2,7 +2,7 @@ import {workspaceRequestOptions,type WorkspaceRequestOptions} from '../shared/wo
 import {withWorkspaceActivity} from '../shared/WorkspaceActivity.js';
 import {TemplateCatalog} from '../shared/TemplateCatalog.js';
 import {WorkspaceView,type WorkspaceViewState} from '../shared/WorkspaceView.js';
-import {createViewContextPublisher,viewContextText} from './view-context.js';
+import {backgroundViewContext,createViewContextPublisher,viewContextText} from './view-context.js';
 import {EmbeddedConnectors} from './Connectors.js';
 import {AutomationsPage} from '../shared/AutomationsPage.js';
 import {SystemNotice} from '../shared/SystemNotice.js';
@@ -126,7 +126,7 @@ function Workspace(){
  const details=Object.values(viewDetails).filter(d=>d.view===contextView||(['app','database'].includes(contextView)&&d.view==='access-control'));
  const detail=Object.assign({},...details.map(d=>Object.fromEntries(Object.entries(d).filter(([,v])=>v!==undefined))));
  const contextText=viewContextText({view:contextView,workspaceId:state.workspaceId,...(view==='tracker'?{appId:openedTracker?.id??trackerPreview?.id,appName:openedTracker?.name,appVersion:openedTracker?.version,route:trackerRoute.path}:{}),...detail});
- const publishView=React.useMemo(()=>createViewContextPublisher(async text=>{await bridge.updateModelContext({content:[{type:'text',text}]});}),[]);
+ const publishView=React.useMemo(()=>createViewContextPublisher(async text=>{await bridge.updateModelContext(backgroundViewContext(text));}),[]);
  useEffect(()=>{if(!ready||!bridge.getHostCapabilities()?.updateModelContext?.text)return;const timer=setTimeout(()=>publishView(contextText),250);return()=>clearTimeout(timer);},[ready,contextText,publishView]);
  const openApp=()=>{void bridge.openLink({url:platform.origin+(state.workspaceId?'/?workspaceId='+encodeURIComponent(state.workspaceId):'')});};
  const openSettings=()=>{void bridge.openLink({url:platform.origin+'/?tab=access'+(state.workspaceId?'&workspaceId='+encodeURIComponent(state.workspaceId):'')});};
