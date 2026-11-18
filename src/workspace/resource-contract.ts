@@ -14,7 +14,7 @@ export const resourceManifest=z.object({...recipeDeclarations,...functionDeclara
 export type Manifest=z.infer<typeof resourceManifest>;
 // Optional new columns do not change an existing app's reviewed field contract.
 // Verify the complete saved schema history; missing or incompatible history fails closed.
-async function compatibleSchema(db:Connection,w:string,type:any,version:number){
+async function compatibleSchema(db:Connection,w:string,type:any,version:number,boundFields:ReadonlySet<string>){
  if(version>=type.version)return version===type.version;
  const revisions=(await db.query("SELECT version,snapshot FROM revisions WHERE workspace_id=$1 AND object_id=$2 AND object_kind='type' AND version >= $3 AND version <= $4 ORDER BY version",[w,type.id,version,type.version])).rows;
  if(revisions.length!==type.version-version+1)return false;
@@ -24,7 +24,12 @@ async function compatibleSchema(db:Connection,w:string,type:any,version:number){
  for(let i=1;i<=revisions.length;i++){
   const next=i===revisions.length?type.fields:revisions[i].snapshot?.fields;
   if(!Array.isArray(next)||i<revisions.length&&revisions[i].version!==version+i)return false;
-  if(fields.some((old:any)=>!next.some((f:any)=>f.key===old.key&&isDeepStrictEqual(normalize(f),normalize(old)))))return false;
+  for(const old of fields){
+   const current=next.find((field:any)=>field.key===old.key);
+   // Archiving an unbound column leaves the app's reviewed connections intact.
+   if(!current&&!boundFields.has(old.key))continue;
+   if(!current||!isDeepStrictEqual(normalize(current),normalize(old)))return false;
+  }
   if(next.some((f:any)=>!fields.some((old:any)=>old.key===f.key)&&(f.required||derived(f))))return false;
   fields=next;
  }
@@ -40,13 +45,14 @@ export async function validateResource(db:Connection,a:Actor,w:string,c:any,part
  if(new Set(m.fields.map(f=>f.id)).size!==m.fields.length)fail(400,'duplicate_control','Manifest field IDs must be unique');
  for(const b of c.bindings){
   let pair;try{pair=await typeAccess(db,a,w,b.typeId);}catch(e){if(partial)continue;throw e;}const {type,policy}=pair,visible=visibleFields(type.fields,policy,a);
+  const boundFields=new Set<string>(m.fields.filter(f=>f.typeId===b.typeId).map(f=>f.field));
   const compatible=new Map<number,boolean>();
   for(const key of b.fields)if(!m.fields.some(f=>f.typeId===b.typeId&&f.field===key))fail(400,'unmapped_binding','Every bound field must be declared in the manifest');
   for(const f of m.fields.filter(f=>f.typeId===b.typeId)){
    const field=visible.find(k=>k.key===f.field);
    if(partial&&!field)continue;
    if(!b.fields.includes(f.field)||!field)fail(403,'manifest_binding','Manifest references an unavailable or undeclared field');
-   if(!compatible.has(f.schemaVersion))compatible.set(f.schemaVersion,await compatibleSchema(db,w,type,f.schemaVersion));
+   if(!compatible.has(f.schemaVersion))compatible.set(f.schemaVersion,await compatibleSchema(db,w,type,f.schemaVersion,boundFields));
    if(!compatible.get(f.schemaVersion)||field.kind!==f.kind)fail(409,'manifest_stale','Connected fields changed; review the app bindings. The saved app and its records are retained.');
    if(f.mode==='write'&&derived(field))fail(400,'derived_read_only','Calculated fields are read-only');
   }
