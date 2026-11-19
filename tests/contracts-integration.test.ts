@@ -96,7 +96,6 @@ test('Contracts alone with own milestones; Programs added later is offered, chos
   await change({kind:'archive_component',componentId:app,expectedVersion:await x.version(app),archived:true});
   assert.deepEqual((await pg.query<any>('SELECT id,fields,archived_fields FROM entity_types WHERE workspace_id=$1 ORDER BY id',[w])).rows,fieldsBefore);
   assert.ok((await archivedItems(f,actor,w,{kind:'apps'})).items.some((i:any)=>i.id===app));
-  await assert.rejects(()=>installCatalogApp(f,actor,w,{templateId:C.id,version:C.version,digest:C.digest,name:'Contracts',requestKey:randomUUID()}),/Restore your archived Contracts app/);
   await change({kind:'archive_component',componentId:app,expectedVersion:await x.version(app),archived:false});
   const j=(await pg.query<any>('SELECT paused,deleted_at FROM app_actions WHERE id=$1',[action])).rows[0];assert.deepEqual([j.paused,j.deleted_at],[true,null]);
   assert.match(text((await x.run(w,app)).html),/Supply agreement — Corvane/);

@@ -142,7 +142,6 @@ test('rule 9 modularity: alone, with Programs, Programs deleted, binding removed
   // 5. Reinstall: the archived Runway is offered first; restoring brings back the same data; "start fresh" keeps the old data.
   await change(w1.id,{kind:'archive_component',componentId:alone.appId,expectedVersion:await v(alone.appId),archived:true});
   const tablesBefore=await count('SELECT count(*)::int n FROM entity_types WHERE workspace_id=$1',[w1.id]);
-  await assert.rejects(()=>installCatalogApp(f,actor,w1.id,{templateId:t.id,version:t.version,digest:t.digest,name:'Runway',requestKey:randomUUID()}),/Restore your archived Runway app/);
   await change(w1.id,{kind:'archive_component',componentId:alone.appId,expectedVersion:await v(alone.appId),archived:false});
   const restored=(await f.readComponent(actor,w1.id,alone.appId)).component;assert.equal(restored.archived,false);assert.deepEqual(restored.bindings,c1.bindings);
   assert.match((await open(w1.id,alone.appId)).html,/Set up your first runway/);

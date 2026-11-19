@@ -94,7 +94,7 @@ Same pattern on **Apps**, **Automations** and **Database** (tables, and fields o
 - **Restore:** brings back the item with its links; automations come back **disabled**. Restoring an automation archived together with its app happens by restoring the app. A name clash adds "(restored)". If something the item depends on was permanently deleted, restore says exactly what is unavailable and proceeds only after the user confirms.
 - **Delete:** a confirmation lists what will be removed and what stays (e.g. "Deleting this app keeps its 3 tables and 412 records in Database"). For fields and tables, Delete is **enabled only when the item is empty and unused**; otherwise it is disabled with a one-line reason (e.g. "Contains 58 values" or "Used by archived app Runway"). Items scheduled for automatic purge show "Deletes automatically on 12 Feb 2027" in the same light text.
 - **Assistants:** Claude and ChatGPT may list archived items for an authorized owner and prepare a restore for review. Permanent deletion is always a human action in the platform, never an assistant action.
-- **Templates:** installing a template whose app is archived first offers "Restore your archived Runway app" before creating a new one.
+- **Templates:** installing a template always creates a new app. Archived apps are restored only from the archived apps list (decision A9, 19 November 2026).
 - **Logs:** archive, restore, permanent delete and automatic purge are recorded in Logs and the audit trail.
 
 ### Review of PR #117 (migration 059, `src/workspace/app-cleanup.ts`)

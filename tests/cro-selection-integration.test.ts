@@ -272,7 +272,6 @@ test('Acceptance 3, 7 and 8: CDA via Contracts and skip; handoff into Contracts 
   await change(sw,{kind:'archive_component',componentId:a2,expectedVersion:await x.version(a2),archived:true});
   assert.equal((await pa.get()).status,404);assert.equal((await pb.get()).status,404);
   const {installCatalogApp}=await import('../src/workspace/template-catalog.js');
-  await assert.rejects(()=>installCatalogApp(f,actor,sw,{templateId:T.sel.id,version:T.sel.version,digest:T.sel.digest,name:'CRO Selection',requestKey:randomUUID()}),/Restore your archived CRO Selection app/);
   await change(sw,{kind:'archive_component',componentId:a2,expectedVersion:await x.version(a2),archived:false});
   assert.equal((await pa.get()).status,200,'unexpired link works again');const closed=await pb.get();assert.equal(closed.status,200);assert.equal(closed.body.closed,true,'expired link stays closed');
   await u2.open({section:'vendors'});assert.doesNotMatch(text(u2.html),/could not be shown/);

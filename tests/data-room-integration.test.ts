@@ -206,7 +206,6 @@ test('Acceptance 7: modularity and archive first — alone, with partners, partn
   await change({kind:'archive_component',componentId:id,expectedVersion:await x.version(id),archived:true});
   assert.equal((await pa.get()).status,404,'archiving the app stops every link');assert.equal(await x.track(),0,'and every tracked update');
   const {installCatalogApp}=await import('../src/workspace/template-catalog.js');
-  await assert.rejects(()=>installCatalogApp(x.f,actor,w,{templateId:T.room.id,version:T.room.version,digest:T.room.digest,name:'Data Room',requestKey:randomUUID()}),/Restore your archived Data Room app/);
   await change({kind:'archive_component',componentId:id,expectedVersion:await x.version(id),archived:false});
   assert.equal((await pa.get()).status,200,'unexpired grant works again');assert.equal((await pb.get()).status,404,'an expired grant stays closed');
   await x.track();assert.deepEqual((await x.rows(tid('dataroom.access_grants'))).map((g:any)=>g.data.status).sort(),['active','expired']);

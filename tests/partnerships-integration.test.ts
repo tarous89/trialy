@@ -86,7 +86,6 @@ test('Acceptance 9 and package: install alone, with Contracts and Data Room (any
   await ui.open({section:'overview'});assert.doesNotMatch(ui.html,/aria-label="Research"/);assert.equal((await x.rows(map['partnerships.opportunities'].typeId)).length,1);
   // Archive the app, reinstall offers the restore first; restoring keeps every record.
   await change({kind:'archive_component',componentId:id,expectedVersion:(await x.comp(w,id)).version,archived:true});
-  await assert.rejects(()=>installCatalogApp(x.f,x.human,w,{templateId:x.T.bd.id,version:x.T.bd.version,digest:x.T.bd.digest,name:'Partnerships',requestKey:randomUUID()}),/Restore your archived Partnerships app/);
   await change({kind:'archive_component',componentId:id,expectedVersion:(await x.comp(w,id)).version,archived:false});assert.equal((await x.rows(map['partnerships.opportunities'].typeId)).length,1);
 
   // Installed after Contracts and Data Room: agreements and dataroom.v1 connect at install (read-only); CDA status and engagement show.
