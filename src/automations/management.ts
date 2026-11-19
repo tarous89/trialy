@@ -71,7 +71,9 @@ export class AutomationManagement{
    const lastTest=(await this.db.query("SELECT id,status,delivery_status,created_at FROM (SELECT id,status,NULL::text AS delivery_status,created_at FROM automation_occurrences WHERE monitor_id=$1 AND user_id=$2 AND reason='test_run' UNION ALL SELECT id,status,delivery_status,created_at FROM app_service_jobs WHERE user_id=$2 AND payload->'test'->>'automationId'=$1::text) t ORDER BY created_at DESC LIMIT 1",[row.id,a.userId])).rows[0]??null;
    visible.push({...definition,followUps,connectors:[row.executor,...(followUps.length?['email']:[])],canEdit:canEdit(a,ownedBy({assistant:row.owner})),lastTest,prompt,blockedReason,services:dependency?.services??[],effectiveEnabled:row.enabled&&!blockedReason&&!c.archived&&!c.project_archived,connectionState,externalSchedule:external_schedule,app_url:appUrl({workspaceId:w,appId:c.id}),app_archived:c.archived||c.project_archived});
   }catch(e){if(![403,404].includes((e as any).status))throw e;}}
-  return {rows:visible,nextOffset:rows.length>20?v.offset+20:null};
+  // B2: read-only helpers installed with an app are shown under that app, never as entries of their own.
+  const helpers=(await this.db.query('SELECT f.app_id,c.name AS app_name,array_agg(f.name ORDER BY f.name) AS names FROM foundation_functions f JOIN workspace_components c ON c.id=f.app_id AND c.workspace_id=f.workspace_id WHERE f.workspace_id=$1 AND f.app_id IS NOT NULL AND f.retired_at IS NULL AND NOT c.archived AND ($2::uuid IS NULL OR f.app_id=$2) GROUP BY f.app_id,c.name ORDER BY c.name,f.app_id',[w,v.appId??null])).rows.map((h:any)=>({appId:h.app_id,appName:h.app_name,names:h.names}));
+  return {rows:visible,helpers,nextOffset:rows.length>20?v.offset+20:null};
  }
  async connector(a:Actor,w:string,assistant?:Assistant){
   await this.owner(a,w);const setup=await new AutomationService(this.db).setup(a,w,0,{assistant}),automations=[];
