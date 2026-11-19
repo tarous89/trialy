@@ -33,8 +33,10 @@ test('Workspace: exact setup, bounded maintenance, source preservation, reversib
  await assert.rejects(change({...componentInput,componentId:component.id,expectedVersion:0}),/changed/);
  const destination=await change({kind:'create_node',nodeKind:'project',name:'Conference'});
  await change({kind:'move_component',componentId:component.id,expectedVersion:1,projectId:destination.id});
- await change({kind:'restore_component',componentId:component.id,expectedVersion:2,revisionVersion:0});
- const restored=(await f.readComponent(a,w.id,component.id)).component;assert.equal(restored.source,componentInput.content.source);assert.equal(restored.project_id,destination.id);assert.equal(restored.version,3);
+ // A12: earlier versions are read-only history. There is no rollback operation; a correction is a new reviewed revision.
+ await assert.rejects(change({kind:'restore_component',componentId:component.id,expectedVersion:2,revisionVersion:0}));
+ await change({...componentInput,componentId:component.id,expectedVersion:2,projectId:destination.id});
+ const corrected=(await f.readComponent(a,w.id,component.id)).component;assert.equal(corrected.source,componentInput.content.source);assert.equal(corrected.project_id,destination.id);assert.equal(corrected.version,3);
  await change({kind:'archive_component',componentId:component.id,expectedVersion:3,archived:true});
  assert.equal((await f.componentHistory(a,w.id,component.id)).length,5);
  await assert.rejects(change({...componentInput,projectId:folder.id}),/Choose a project/);
