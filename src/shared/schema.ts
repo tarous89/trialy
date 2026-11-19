@@ -40,7 +40,6 @@ export const operationSchema = z.discriminatedUnion('kind', [
  z.object({kind:z.literal('set_field_context'),typeId:id,field:z.string().regex(/^[a-z][a-z0-9_]{0,63}$/),expectedVersion:z.number().int().min(0),expectedContextVersion:z.number().int().min(0),description:z.string().trim().max(2000)}).strict(),
  // Restore archived fields (all when omitted) and their table. Owner only; values were never removed.
  z.object({kind:z.literal('restore_archived_schema'),typeId:id,expectedVersion:z.number().int().min(0),fields:z.array(z.string().regex(/^[a-z][a-z0-9_]{0,63}$/)).min(1).max(200).optional()}).strict(),
- z.object({kind:z.literal('reverse_field_change'),changeId:id,expectedVersion:z.number().int().min(0),reason:z.string().trim().min(1).max(1000)}),
  z.object({kind:z.literal('request_review'),recordId:id,expectedVersion:z.number().int().min(0),reviewerId:id,note:z.string().trim().min(1).max(1000),dueOn:z.string().regex(/^\d{4}-\d{2}-\d{2}$/).nullable()}),
  z.object({kind:z.literal('accept_submission'),submissionId:id,typeId:id,data:values}),
  z.object({kind:z.literal('create_type'),concept:dataConceptSchema, name:z.string().min(1).max(100), fields:fieldsSchema}),
@@ -49,7 +48,6 @@ export const operationSchema = z.discriminatedUnion('kind', [
  z.object({kind:z.literal('update_record'), recordId:id, expectedVersion:z.number().int().min(0), data:values, reason:z.string().max(1000).optional()}),
  z.object({kind:z.literal('migrate_type'),typeId:id,expectedVersion:z.number().int().min(0),name:z.string().min(1).max(100),fields:fieldsSchema,mappings:z.record(z.string(),z.object({from:z.string(),conversion:z.enum(['copy','text','number','boolean'])})).default({}),reason:z.string().trim().min(1).max(1000)}),
  z.object({kind:z.literal('bulk_records'),changes:z.array(recordWriteSchema).min(1).max(200)}),
- z.object({kind:z.literal('restore_record'), recordId:id, sourceVersion:z.number().int().min(0), expectedVersion:z.number().int().min(0), expectedTypeVersion:z.number().int().min(0), reason:z.string().trim().min(1).max(1000)}),
  z.object({kind:z.literal('create_view'),name:z.string().trim().min(1).max(100),typeId:id,viewKind:viewKindSchema,config:viewConfigSchema}),
  z.object({kind:z.literal('update_view'),viewId:id,expectedVersion:z.number().int().min(0),name:z.string().trim().min(1).max(100),typeId:id,viewKind:viewKindSchema,config:viewConfigSchema}),
  z.object({kind:z.literal('set_workspace_policy'),expectedVersion:z.number().int().min(0),archived:z.boolean(),legalHold:z.boolean(),retentionUntil:z.string().regex(/^\d{4}-\d{2}-\d{2}$/).nullable(),reason:z.string().trim().min(1).max(1000)}),
@@ -57,12 +55,19 @@ export const operationSchema = z.discriminatedUnion('kind', [
  z.object({kind:z.literal('create_automation'), name:z.string().min(1).max(100), grantId:id, action:z.discriminatedUnion('kind',[z.object({kind:z.literal('create_record'),typeId:id,data:values}),z.object({kind:z.literal('remind_me')})]).optional(),intervalMinutes:z.number().int().min(60).max(43200),schedule:z.discriminatedUnion('kind',[z.object({kind:z.literal('daily'),time:z.string().regex(/^([01]\d|2[0-3]):[0-5]\d$/),timeZone:z.string().max(100).refine(v=>{try{new Intl.DateTimeFormat('en',{timeZone:v});return true;}catch{return false;}},'Choose a valid IANA time zone')}),z.object({kind:z.enum(['records.changed','documents.saved'])})]).optional(),conditions:z.object({typeId:id,dateField:z.string().max(64),viewId:id.optional(),daysAhead:z.number().int().min(0).max(90)}).optional()}),
  z.object({kind:z.literal('adopt_template'),template:z.string().min(1).max(100),mapping:z.record(z.string().max(100),id)}),
  z.object({kind:z.literal('upgrade_template'),template:z.string().min(1).max(100),expectedVersion:z.number().int().min(1)}),
+ z.object({kind:z.literal('install_template'), template:z.string().min(1).max(100)}),
+]);
+/**
+ * A10: records and earlier values are not restored from logs or history, so these are not public operations.
+ * The reversal engines stay for the app's own session Undo, which builds them on the server.
+ */
+export const reversalOperationSchema = z.discriminatedUnion('kind', [
+ z.object({kind:z.literal('reverse_field_change'),changeId:id,expectedVersion:z.number().int().min(0),reason:z.string().trim().min(1).max(1000)}),
  z.object({kind:z.literal('archive_created_record'),recordId:id,expectedVersion:z.literal(0),reason:z.string().trim().min(1).max(1000)}),
  z.object({kind:z.literal('restore_archived_creation'),archiveEventId:id,expectedVersion:z.number().int().min(1),reason:z.string().trim().min(1).max(1000)}),
- z.object({kind:z.literal('install_template'), template:z.string().min(1).max(100)}),
  z.object({kind:z.literal('reverse_field_changes'),changes:z.array(z.object({changeId:id,expectedVersion:z.number().int().min(0)})).min(1).max(200),reason:z.string().trim().min(1).max(1000)}),
 ]);
-export type Operation = z.infer<typeof operationSchema>;
+export type Operation = z.infer<typeof operationSchema> | z.infer<typeof reversalOperationSchema>;
 /** AI assistants are separate access principals. Absent means ChatGPT so existing tokens and tests keep their behaviour. */
 export type Assistant = 'chatgpt'|'claude';
 export const ASSISTANTS:readonly Assistant[] = ['chatgpt','claude'];

@@ -109,7 +109,6 @@ export class DataService {
   await assertRecordScope(this.db,policy,recordId);const fields=visibleFields(type.fields,policy,a);
   const revisions=(await this.db.query("SELECT version,snapshot,actor_id,created_at FROM revisions WHERE workspace_id=$1 AND object_id=$2 AND object_kind='record' ORDER BY version DESC LIMIT 26 OFFSET $3",[w,recordId,offset])).rows;
   return {recordId,typeId:r.type_id,currentVersion:r.version,typeVersion:type.version,fields,
-   canRestore:!['viewer','inspector'].includes(policy.role)&&fields.length===type.fields.length&&!['archived','superseded'].includes(r.state),
    offset,hasMore:revisions.length>25,revisions:revisions.slice(0,25).map(v=>({version:v.version,actorId:v.actor_id,createdAt:v.created_at,state:v.snapshot.state,data:projectData(v.snapshot.data??{},fields)}))};
  }
  async documentPermission(tx:Connection,a:Actor,w:string,documentId:string,version=false){

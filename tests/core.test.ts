@@ -105,28 +105,23 @@ test('Shared backend: access, committed history, original preservation and retri
   await s.setAi({...actor,origin:'human'},opened.body.result.structuredContent.result.workspaceId,false);
   const restricted=await invoke('open_workspace');assert.equal(restricted.body.result.structuredContent.result.workspaces.length,0);assert.equal(restricted.body.result.structuredContent.result.canCreateInitialWorkspace,false);
  });
- await t.test('history filters fields and restoration creates a reviewed revision without rewriting approvals',async()=>{
+ await t.test('history filters fields and is read-only; a correction is a normal edit that keeps earlier approvals',async()=>{
   const ai:Actor={...owner,origin:'ai'};
   const restricted=await s.recordHistory(ai,w.id,recordId);
-  assert.equal(restricted.canRestore,false);
+  assert.ok(!('canRestore' in restricted));
   assert.ok(restricted.revisions.every((v:any)=>!Object.hasOwn(v.data,'budget')));
   await assert.rejects(s.recordHistory(other,w.id,recordId),error('not_found'));
   const current=(await s.recordHistory(owner,w.id,recordId));
-  const op={kind:'restore_record',recordId,sourceVersion:0,expectedVersion:current.currentVersion,expectedTypeVersion:current.typeVersion,reason:'Correct testing change'};
-  await assert.rejects(s.preview(ai,w.id,op),error('restricted_restore'));
-  const pending=await s.preview(owner,w.id,op);assert.ok('data' in pending.summary);assert.equal(pending.summary.data.name,'Example CRO');
-  await s.discard(owner,pending.id);assert.equal((await s.recordHistory(owner,w.id,recordId)).currentVersion,current.currentVersion);
+  // A10: no operation restores an earlier version.
+  await assert.rejects(s.preview(owner,w.id,{kind:'restore_record',recordId,sourceVersion:0,expectedVersion:current.currentVersion,expectedTypeVersion:current.typeVersion,reason:'Correct testing change'}));
   const approved=await s.transition(owner,w.id,recordId,current.currentVersion,'approved','Approve exact current revision');
   const approvalCount=(await db.query('SELECT count(*) AS n FROM approvals WHERE record_id=$1',[recordId])).rows[0].n;
-  const restore=await s.preview(owner,w.id,{...op,expectedVersion:approved.version});
-  const restored=await s.commit(owner,restore.id,restore.digest);
-  assert.deepEqual(await s.commit(owner,restore.id,restore.digest),restored);
+  await save({kind:'update_record',recordId,expectedVersion:approved.version,data:{name:'Example CRO'}});
   const history=await s.recordHistory(owner,w.id,recordId);
-  assert.equal(history.currentVersion,approved.version+1);assert.equal(history.revisions[0].state,'in_review');
-  assert.equal(history.revisions[0].data.name,'Example CRO');assert.equal(history.revisions[0].data.budget,5000);
+  assert.equal(history.currentVersion,approved.version+1);assert.equal(history.revisions[0].data.name,'Example CRO');
   assert.equal(history.revisions.find((v:any)=>v.version===approved.version)!.state,'approved');
   assert.equal((await db.query('SELECT count(*) AS n FROM approvals WHERE record_id=$1',[recordId])).rows[0].n,approvalCount);
-  const stale=await s.preview(owner,w.id,{...op,expectedVersion:history.currentVersion});
+  const stale=await s.preview(owner,w.id,{kind:'update_record',recordId,expectedVersion:history.currentVersion,data:{name:'Stale edit'}});
   await save({kind:'update_record',recordId,expectedVersion:history.currentVersion,data:{name:'Concurrent edit'}});
   await assert.rejects(s.commit(owner,stale.id,stale.digest),error('stale_version'));
   const app=baseApp();addMcp(app,s,(req,_res,next)=>{req.actor=ai;next();});app.use(errors);

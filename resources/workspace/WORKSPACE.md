@@ -167,7 +167,7 @@ Default sourceAccess is workspace, requiring full field/document access because 
 
 ## Visible history and code execution bridge
 
-Use `list_field_changes` for per-field old/new values, actor, time and exact approval/grant. Logging begins with this update; older revisions remain in record history/Activity. `prepare_change` reverse_field_change requires changeId, expectedVersion and reason, then confirmation of the agreed action. It creates a new audited correction and never erases history. Later edits or required/derived fields can require an explicit correction instead. Schema changes and reversals never inherit standing record-write authority.
+Use `list_field_changes` for per-field old/new values, actor, time and exact approval/grant. Logging begins with this update; older revisions remain in record history/Activity. Field history is read-only: earlier values are never restored from logs or history. Correct a value with a normal reviewed edit, which adds a new audited change and never erases history. Schema changes never inherit standing record-write authority.
 
 For saved frontend-js components, tools.call('functions.invoke',{binding,input,requestKey}) stages up to three bound function invocations. These are queued atomically only after the render completes successfully; return status is pending_render_completion, not a completed result. Keep the UUID requestKey in interface state and use tools.call('functions.status',{requestKey}) on a later event to read that component run. Failed render or admission leaves no queued calls from that event. Draft interfaces cannot enqueue. Run output is temporary; saving any database proposal still follows the approval/grant rules above.
 

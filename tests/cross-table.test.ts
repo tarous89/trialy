@@ -28,7 +28,7 @@ test('Cross-table claims preserve originals, require exact human approval and ne
   assert.equal((await s.records(a,w.id,t1)).rows[0].version,0);assert.equal((await s.records(a,w.id,t2)).rows[0].data.label,'Example');
   await assert.rejects(f.preview(a,w.id,op),/already have/);
   await assert.rejects(f.preview(a,w.id,{...op,fieldPairs:[{sourceField:'count',preferredField:'name'}]}),/compatible/);
-  await assert.rejects(s.preview(a,w.id,{kind:'archive_created_record',recordId:r2,expectedVersion:0,reason:'Linked record'}),/linked work/);
+  await assert.rejects(s.prepareReversal(a,w.id,{kind:'archive_created_record',recordId:r2,expectedVersion:0,reason:'Linked record'}),/linked work/);
   assert.equal(maintenanceBatch.safeParse({requestKey:randomUUID(),scopeId:randomUUID(),expectedScopeVersion:0,sourceLabel:'Source',interpretation:'Match',links:[op]}).success,false);
   const code=new DataCapabilities(s,ai,w.id,scopeSchema.parse({capabilities:['entities.read'],typeIds:[t1],documents:false}));
   const identity=await code.invoke('entities.read',{typeId:t1,recordId:r1}) as any;assert.equal(identity.originals.length,1);assert.ok(!JSON.stringify(identity).includes('Example"'));

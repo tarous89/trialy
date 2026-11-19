@@ -29,9 +29,12 @@ test('Approval default, single-type standing permission, per-field evidence and 
   let history=(await s.fieldChanges(a,w.id)).changes;assert.equal(history.length,2);assert.equal(history[0].authorization.id,draft.id);assert.equal(history[0].authorization.kind,'approval');
   const p=await s.preview(ai,w.id,{kind:'update_record',recordId,expectedVersion:0,data:{name:'Revised'}});assert.equal(p.summary.fieldChanges[0].before,'Original');await assert.rejects(s.commit(ai,p.id,p.digest),/cannot approve/);await s.commit(a,p.id,p.digest);
   const delta=(await s.fieldChanges(a,w.id)).changes.find(c=>c.field_key==='name'&&c.record_version===1)!;
-  await save({kind:'reverse_field_change',changeId:delta.id,expectedVersion:1,reason:'Correct change'});
+  // A10: reversal is not a public operation. Only the server-built session Undo path prepares one.
+  await assert.rejects(s.preview(a,w.id,{kind:'reverse_field_change',changeId:delta.id,expectedVersion:1,reason:'Correct change'}));
+  const undo=async(op:any)=>{const p=await s.prepareReversal(a,w.id,op);return s.commit(a,p.id,p.digest);};
+  await undo({kind:'reverse_field_change',changeId:delta.id,expectedVersion:1,reason:'Correct change'});
   assert.equal((await s.records(a,w.id,type)).rows[0].data.name,'Original');history=(await s.fieldChanges(a,w.id)).changes;assert.ok(history.some(c=>c.authorization.reverses===delta.id));
-  await assert.rejects(s.preview(a,w.id,{kind:'reverse_field_change',changeId:delta.id,expectedVersion:2,reason:'Cannot overwrite later work'}),/Later changes/);
+  await assert.rejects(s.prepareReversal(a,w.id,{kind:'reverse_field_change',changeId:delta.id,expectedVersion:2,reason:'Cannot overwrite later work'}),/Later changes/);
   await save({kind:'update_record',recordId,expectedVersion:2,data:{secret:'Hidden'}});assert.ok(!(await s.fieldChanges(ai,w.id)).changes.some(c=>c.field_key==='secret'));
   await assert.rejects(db.query('DELETE FROM record_field_changes WHERE id=$1',[delta.id]),/append-only/);
   await assert.rejects(f.preview(a,w.id,{kind:'save_scope',scope:{...scope,autoWrite:true,expiresAt:new Date(Date.now()+86400000).toISOString(),bindings:[...scope.bindings,{typeId:randomUUID(),fields:['name']}]}}),/one data type/);
@@ -101,15 +104,15 @@ test('Selected reversal is atomic, groups fields per record, and retains filtere
   assert.equal((await s.fieldChanges(a,w.id,{...query,authorizationKind:'maintenance_grant'})).changes.length,0);
   assert.equal((await s.fieldChanges(a,w.id,{...query,since:'2100-01-01T00:00:00.000Z'})).changes.length,0);
   const operation={kind:'reverse_field_changes',changes:all.map(c=>({changeId:c.id,expectedVersion:c.record_version})),reason:'Undo reviewed batch'};
-  await assert.rejects(s.preview(ai,w.id,operation),/cannot be reversed/);
-  await assert.rejects(s.preview(a,w.id,{...operation,changes:[operation.changes[0],operation.changes[0]]}),/only once/);
-  const preview=await s.preview(a,w.id,operation);assert.equal(preview.summary.fieldChanges.length,4);
+  await assert.rejects(s.prepareReversal(ai,w.id,operation),/cannot be reversed/);
+  await assert.rejects(s.prepareReversal(a,w.id,{...operation,changes:[operation.changes[0],operation.changes[0]]}),/only once/);
+  const preview=await s.prepareReversal(a,w.id,operation);assert.equal(preview.summary.fieldChanges.length,4);
   await assert.rejects(s.commit(ai,preview.id,preview.digest),/cannot approve/);
   const undone=await s.commit(a,preview.id,preview.digest);assert.equal(undone.objects.length,2);assert.ok(undone.objects.every((o:any)=>o.version===2));
   assert.deepEqual(await s.commit(a,preview.id,preview.digest),undone);
   const records=(await s.records(a,w.id,typeId)).rows;assert.equal(records.find(r=>r.id===first).data.note,'Old');assert.equal(records.find(r=>r.id===second).data.name,'Second');
   const ledger=(await s.fieldChanges(a,w.id,{changeSetId:preview.id})).changes;assert.equal(ledger.length,4);assert.deepEqual(new Set(ledger[0].authorization.reverses),new Set(all.map(c=>c.id)));
-  const stale=await s.preview(a,w.id,{...operation,changes:ledger.map(c=>({changeId:c.id,expectedVersion:2}))});
+  const stale=await s.prepareReversal(a,w.id,{...operation,changes:ledger.map(c=>({changeId:c.id,expectedVersion:2}))});
   await save({kind:'update_record',recordId:second,expectedVersion:2,data:{name:'Later work'}});
   await assert.rejects(s.commit(a,stale.id,stale.digest),/Later changes/);
   assert.equal((await s.records(a,w.id,typeId)).rows.find(r=>r.id===first).version,2);
@@ -128,30 +131,32 @@ test('Creation archival preserves data, checks linked work, requires approval an
   const type=(await save({kind:'create_type',name:'New entries',fields:[{key:'a',name:'A',kind:'number'},{key:'b',name:'B',kind:'number'},{key:'total',name:'Total',kind:'number',formula:{operator:'sum',fields:['a','b']}}]})).objects[0].id;
   const record=(await save({kind:'create_record',typeId:type,data:{a:2,b:3}})).objects[0].id;
   const operation={kind:'archive_created_record',recordId:record,expectedVersion:0,reason:'Unwanted import'};
-  const preview=await s.preview(ai,w.id,operation);assert.equal(preview.summary.data.total,5);assert.equal(preview.summary.afterState,'archived');
+  await assert.rejects(s.preview(a,w.id,operation));
+  const undo=async(op:any)=>{const p=await s.prepareReversal(a,w.id,op);return s.commit(a,p.id,p.digest);};
+  const preview=await s.prepareReversal(ai,w.id,operation);assert.equal(preview.summary.data.total,5);assert.equal(preview.summary.afterState,'archived');
   await assert.rejects(s.commit(ai,preview.id,preview.digest),/cannot approve/);
   const archived=await s.commit(a,preview.id,preview.digest);assert.equal(archived.objects[0].state,'archived');assert.deepEqual(await s.commit(a,preview.id,preview.digest),archived);
   assert.equal((await s.records(a,w.id,type)).total,0);assert.equal((await s.aggregate(a,w.id,type)).totals.count,0);
   assert.equal((await s.records(a,w.id,type,{state:'archived'})).rows[0].data.total,5);assert.equal((await s.records(a,w.id,type,{state:'all'})).total,1);
-  const event=(await s.creationArchives(a,w.id)).events[0];assert.equal(event.after_value.authorization.changeSetId,preview.id);
-  await save({kind:'restore_archived_creation',archiveEventId:event.id,expectedVersion:1,reason:'Keep the entry'});
-  assert.equal((await s.records(a,w.id,type)).rows[0].data.total,5);assert.equal((await s.creationArchives(a,w.id)).events.length,2);
-  await assert.rejects(s.preview(a,w.id,{kind:'restore_archived_creation',archiveEventId:event.id,expectedVersion:2,reason:'Duplicate restore'}),/no longer/);
+  const archives=async()=>(await db.query("SELECT id,object_id AS record_id,after_value FROM audit_events WHERE workspace_id=$1 AND action IN ('record.creation_archived','record.creation_restored') ORDER BY event_sequence",[w.id])).rows;
+  const event=(await archives())[0];assert.equal(event.after_value.authorization.changeSetId,preview.id);
+  await undo({kind:'restore_archived_creation',archiveEventId:event.id,expectedVersion:1,reason:'Keep the entry'});
+  assert.equal((await s.records(a,w.id,type)).rows[0].data.total,5);assert.equal((await archives()).length,2);
+  await assert.rejects(s.prepareReversal(a,w.id,{kind:'restore_archived_creation',archiveEventId:event.id,expectedVersion:2,reason:'Duplicate restore'}),/no longer/);
   // Derived fields are recalculated when reversing an editable input.
   await save({kind:'update_record',recordId:record,expectedVersion:2,data:{a:7}});
   const change=(await s.fieldChanges(a,w.id,{recordId:record})).changes.find(c=>c.record_version===3&&c.field_key==='a');
-  await save({kind:'reverse_field_change',changeId:change.id,expectedVersion:3,reason:'Restore input'});assert.equal((await s.records(a,w.id,type)).rows[0].data.total,5);
+  await undo({kind:'reverse_field_change',changeId:change.id,expectedVersion:3,reason:'Restore input'});assert.equal((await s.records(a,w.id,type)).rows[0].data.total,5);
   // A new incoming relationship after preview must invalidate the save, even from a hidden table.
   const other=(await save({kind:'create_record',typeId:type,data:{a:1,b:1}})).objects[0].id;
   const references=(await save({kind:'create_type',name:'References',fields:[{key:'target',name:'Target',kind:'relationship',targetTypeId:type,ai:false}]})).objects[0].id;
-  const beforeLink=await s.preview(a,w.id,{...operation,recordId:other});
+  const beforeLink=await s.prepareReversal(a,w.id,{...operation,recordId:other});
   await save({kind:'create_record',typeId:references,data:{target:other}});
   await assert.rejects(s.commit(a,beforeLink.id,beforeLink.digest),/linked work/);assert.equal((await s.records(a,w.id,type)).total,2);
-  await assert.rejects(s.preview(ai,w.id,{...operation,recordId:other}),/linked work/);
+  await assert.rejects(s.prepareReversal(ai,w.id,{...operation,recordId:other}),/linked work/);
   const privateRecord=(await save({kind:'create_record',typeId:references,data:{}})).objects[0].id;
-  await assert.rejects(s.preview(ai,w.id,{...operation,recordId:privateRecord}),/every field/);
-  const protectedDraft=await s.preview(a,w.id,{...operation,recordId:privateRecord});await s.commit(a,protectedDraft.id,protectedDraft.digest);
-  assert.ok(!(await s.creationArchives(ai,w.id)).events.some(e=>e.record_id===privateRecord));
+  await assert.rejects(s.prepareReversal(ai,w.id,{...operation,recordId:privateRecord}),/every field/);
+  const protectedDraft=await s.prepareReversal(a,w.id,{...operation,recordId:privateRecord});await s.commit(a,protectedDraft.id,protectedDraft.digest);
   assert.equal((await s.exportWorkspace(a,w.id)).records.find((r:any)=>r.id===record).data.total,5);
   await assert.rejects(db.query('DELETE FROM audit_events WHERE id=$1',[event.id]),/append-only/);
  }finally{await pg.close();}
