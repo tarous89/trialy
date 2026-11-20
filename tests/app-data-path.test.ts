@@ -155,3 +155,28 @@ test('4.6 delete is an archive; Undo reverses your own edit, add and delete in t
   assert.equal(run.saved.rows[0].state,'archived');
  }finally{await db.close();}
 });
+
+test('4.4, 4.6 under the restricted database role: direct save, conflicts and Undo; another person sees no Undo entry',async()=>{
+ const {setDatabaseContext,databaseContext,withActor}=await import('../src/db/context.js');
+ const pg=new PGlite();
+ try{
+  for(const file of (await readdir('migrations')).filter(f=>f.endsWith('.sql')).sort())await pg.exec(await readFile('migrations/'+file,'utf8'));
+  await pg.exec(await readFile('ops/runtime-role.sql','utf8'));
+  const setup:Database={query:(q,v)=>pg.query(q,v) as any,transaction:fn=>pg.transaction(tx=>fn(tx as Connection)),close:async()=>{}};
+  const db:Database={query:(q,v)=>db.transaction(tx=>tx.query(q,v)),transaction:fn=>pg.transaction(async tx=>{await tx.exec(databaseContext().service==='worker'?'SET LOCAL ROLE trialy_worker':'SET LOCAL ROLE trialy_runtime');await setDatabaseContext(tx as Connection);return fn(tx as Connection);}),close:async()=>{}};
+  const owner:Actor={userId:randomUUID(),origin:'human'},other:Actor={userId:randomUUID(),origin:'human'};
+  for(const a of [owner,other])await setup.query('INSERT INTO users(id,subject,email,name) VALUES($1,$2,$3,$4)',[a.userId,a.userId,a.userId+'@example.invalid','P']);
+  const boot=new Service(setup),w=(await boot.createWorkspace(owner,'Restricted')).id;await boot.share(owner,w,other.userId,'editor',[],null,false);
+  const p=await boot.preview(owner,w,{kind:'create_type',name:'Items',fields:[{key:'name',name:'Name',kind:'text',required:true,ai:true},{key:'qty',name:'Qty',kind:'number',ai:true},{key:'team',name:'Team',kind:'text',ai:true}]});const typeId=(await boot.commit(owner,p.id,p.digest)).objects[0].id;
+  const f=new WorkspaceFoundation(db),as=<T>(a:Actor,fn:()=>Promise<T>)=>withActor(a,fn);
+  const content={name:'Items',format:'frontend-js',source:'return {html:"<p>Items</p>",state:null};',sourceAccess:'workspace',manifest:{version:1,scope:'workspace',fields:[{id:'name',typeId,field:'name',schemaVersion:0,kind:'text',mode:'write'},{id:'qty',typeId,field:'qty',schemaVersion:0,kind:'number',mode:'write'}]},bindings:[{typeId,fields:['name','qty']}]};
+  const appId=(await as(owner,async()=>{const d=await f.preview(owner,w,{kind:'save_component',projectId:null,content});return f.confirm(owner,w,d.id,d.digest);})).id;
+  const view=(await as(owner,()=>f.runFrontend(owner,w,{componentId:appId,expectedVersion:0}))).viewId;
+  const saved=await as(owner,()=>f.saveAppRecords(owner,w,{componentId:appId,expectedVersion:0,viewId:view,requestKey:randomUUID(),changes:[{kind:'create_record',typeId,data:{name:'Box',qty:1}}]}));
+  assert.equal(saved.rows[0].data.name,'Box');assert.ok(saved.undoId);
+  // The other person cannot see or use the owner's Undo entry, even with its id.
+  assert.equal((await as(other,()=>db.query('SELECT count(*)::int AS n FROM app_undo_entries',[]))).rows[0].n,0);
+  await assert.rejects(as(other,()=>f.undoAppChange(other,w,{componentId:appId,viewId:view,undoId:saved.undoId})));
+  const undone=await as(owner,()=>f.undoAppChange(owner,w,{componentId:appId,viewId:view,undoId:saved.undoId}));assert.equal(undone.rows[0].state,'archived');
+ }finally{await pg.close();}
+});

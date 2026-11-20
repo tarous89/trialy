@@ -10,6 +10,10 @@ These grants never override current app bindings, database restrictions, protect
 
 Brief and email-summary bindings are read-only by their execution contract. This is not a global ban on write-capable helpers or connectors: other function/actions may write using their existing exact approval or scoped grant. App access is the outer boundary, not a substitute for the reviewed action's scope. Connector/external effects retain their own operation and recipient authorization. Generated code cannot grant itself rights, and allowing app edits does not automatically authorize every helper or external operation.
 
+## Record edits inside apps save directly (session 4, 20 November 2026)
+
+Platform decisions A4, A6, D16 and D17 replace the review step for record edits made inside an app. A person's own click, edit or form in an app, and an assistant whose Data level is Edit (including through app commands), save record changes directly with `save_app_records`: one transaction, validated once, a receipt keyed by the request key, the audit entry `component.records_applied` with `direct:true` and authorization context `app_direct_edit`, and an Undo entry for that person's open app (`undo_app_change`, context `app_undo`, `reverses` the original request key). An edit to a value someone else changed first is refused (`stale_value`). Changes an app makes while opening, record changes carried by an exchange that sends something out, schema, access, layout and app code keep the review below.
+
 ## Default: propose, review, approve, save
 
 ChatGPT may extract, structure and reconcile information into a proposed change. An existing schema, approved task, previous save, same chat session or code execution grant is not permission to save further database changes.

@@ -450,9 +450,11 @@ export class Service extends DataService {
  /** D19: archiving (an app's delete) needs the whole record: every field visible and writable. Undo restores the earlier state. */
  private async stateChangeCheck(tx:Connection,a:Actor,w:string,c:Extract<RecordChange,{kind:'archive_record'|'restore_record'}>){
   const r=(await tx.query('SELECT * FROM records WHERE id=$1 AND workspace_id=$2',[c.recordId,w])).rows[0];if(!r)fail(404,'not_found','Record not found');
-  const {type,policy}=await typeAccess(tx,a,w,r.type_id,true);await assertRecordScope(tx,policy,r.id);
+  // "Whole record" means the person's own rights on the table, not the fields one app shows: an archive changes no value.
+  const {accessToolId:ignored,...person}=a;
+  const {type,policy}=await typeAccess(tx,person,w,r.type_id,true);await assertRecordScope(tx,policy,r.id);
   const editable=type.fields.filter((f:Field)=>!derived(f)).map((f:Field)=>f.key);
-  if(visibleFields(type.fields,policy,a).length!==type.fields.length||editable.some((k:string)=>!policy.write_fields.includes(k)))fail(403,'full_record_required','Deleting needs edit access to every field of the record');
+  if(visibleFields(type.fields,policy,person).length!==type.fields.length||editable.some((k:string)=>!policy.write_fields.includes(k)))fail(403,'full_record_required','Deleting needs edit access to every field of the record');
   if(r.version!==c.expectedVersion)fail(409,'stale_version','The record changed. Refresh and try again.');
   await assertUntracked(tx,r.type_id,{},r,true);
   if(c.kind==='archive_record'){
