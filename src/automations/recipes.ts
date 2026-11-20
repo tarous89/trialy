@@ -3,6 +3,7 @@ import {z} from 'zod';
 import type {Database} from '../db/database.js';
 import {withActor} from '../db/context.js';
 import {access} from '../domain/permissions.js';
+import {requireAssistantApps} from '../domain/assistant-levels.js';
 import {audit,checksum} from '../domain/evidence.js';
 import {requireCurrentAction} from '../domain/write-authorization.js';
 import {fail,id,type Actor} from '../shared/schema.js';
@@ -100,7 +101,7 @@ export async function recipeIntent(db:Database,a:Actor,w:string,c:any,recipe:Aut
 }
 
 export async function saveRecipeIntent(db:Database,a:Actor,w:string,appId:string,body:any){
- requireCurrentAction(a);const p=await owner(db,a,w),digest=recipeDigest(body),context=body.contextRecordId??'';
+ requireCurrentAction(a);const p=await owner(db,a,w),digest=recipeDigest(body),context=body.contextRecordId??'';requireAssistantApps(p,a,true);
  const prior=(await db.query('SELECT * FROM automation_recipe_setups WHERE workspace_id=$1 AND user_id=$2 AND app_id=$3 AND recipe_key=$4 AND context_key=$5 FOR UPDATE',[w,a.userId,appId,body.recipe.key,context])).rows[0];
  if(prior){requireAutomationOwner(a,prior.assistant);const live=await liveDefinition(db,prior);if(live||prior.status==='pending'&&prior.digest===digest)return {id:prior.id,status:live?'existing':prior.status,definitionId:live?prior.definition_id:null,definitionKind:prior.definition_kind};}
  const setupId=prior?.id??randomUUID();
@@ -114,6 +115,7 @@ export async function saveRecipeIntent(db:Database,a:Actor,w:string,appId:string
 
 export async function prepareAppRecipe(db:Database,a:Actor,w:string,input:unknown){
  if(!recipesEnabled())fail(409,'recipes_unavailable','App automation features are not enabled');
+ requireAssistantApps(await owner(db,a,w),a,true);
  const v=recipePreparation.parse(input),c=await app(db,a,w,v.appId),recipe=readRecipes(c.manifest).recipes.find(r=>r.key===v.key);
  if(!recipe)fail(404,'recipe_unavailable','This app feature is unavailable');
  const body={appId:c.id,...await recipeIntent(db,a,w,c,recipe,v.settings,v.contextRecordId)},reviewId=randomUUID(),digest=recipeDigest(body);

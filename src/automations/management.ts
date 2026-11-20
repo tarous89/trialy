@@ -8,6 +8,7 @@ import {requireCurrentAction,requireHuman} from '../domain/write-authorization.j
 import {checksum} from '../domain/evidence.js';
 import {chatServiceReview,checkServiceReview} from '../app-services/review.js';
 import {access} from '../domain/permissions.js';
+import {requireAssistantApps} from '../domain/assistant-levels.js';
 import {AppMonitoring} from '../app-services/monitoring.js';
 import {AppActions} from '../app-services/service.js';
 import {notificationRecipients} from '../app-services/notifications.js';
@@ -123,6 +124,8 @@ export class AutomationManagement{
  }
  async prepareControl(a:Actor,w:string,input:unknown){
   const change=automationControl.parse(input),automation=await this.read(a,w,change.kind,change.automationId);if(change.enabled)requireAutomationOwner(a,automation.owner);
+  // A4: switching an automation on is an app change; switching one off stays possible at any level.
+  if(change.enabled)requireAssistantApps(await access(this.db,a,w),a,true);
   if(automation.version!==change.expectedVersion)fail(409,'automation_changed','Reopen the current automation before changing it');
   const body={change,automation},reviewId=randomUUID(),digest=checksum(JSON.stringify(body));
   await this.db.query("INSERT INTO app_service_previews(id,workspace_id,user_id,kind,body,digest,assistant) VALUES($1,$2,$3,'automation_control',$4,$5,$6)",[reviewId,w,a.userId,JSON.stringify(body),digest,actorAssistant(a)]);

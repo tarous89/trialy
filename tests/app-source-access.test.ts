@@ -65,13 +65,18 @@ test('unchanged catalog code runs for anyone allowed to use the app; changing it
   const memberAi:Actor={...x.member,origin:'ai'};
   const out=await run(x,memberAi,saved.id,version);
   assert.match(out.html,/Alpha/);assert.doesNotMatch(out.html,/S3CRET/);
-  // Saving the same catalog code with only its configuration changed (as a layout review does) is not a code change.
-  const relabelled=await x.change(memberAi,{kind:'save_component',componentId:saved.id,expectedVersion:version,projectId:null,content:content(wrap(code,'Pipeline',x.typeId),x.typeId)});
+  // Saving the same catalog code with only its configuration changed (as a layout review does) is not a code change,
+  // but it is a settings change: only an owner of the app may make it (A3, R4).
+  const relabel={kind:'save_component',componentId:saved.id,expectedVersion:version,projectId:null,content:content(wrap(code,'Pipeline',x.typeId),x.typeId)};
+  await assert.rejects(()=>x.change(memberAi,relabel),/owner of this app/);
+  const relabelled=await x.change(x.owner,relabel);
   const v2=(await x.f.component(x.db,x.owner,x.w,relabelled.id)).version;
   // Changing the code itself is refused for a member's assistant without full access.
   await assert.rejects(()=>x.f.preview(memberAi,x.w,{kind:'save_component',componentId:saved.id,expectedVersion:v2,projectId:null,content:content(wrap(code+'\n// changed','Pipeline',x.typeId),x.typeId)}),/Changing an app's code needs full access/);
-  // The member themself has full access (nothing is hidden from them), so they can change it.
-  await x.change(x.member,{kind:'save_component',componentId:saved.id,expectedVersion:v2,projectId:null,content:content(wrap(code+'\n// changed','Pipeline',x.typeId),x.typeId)});
+  // The member themself sees every field, but changing an app's code is for its owners (A3).
+  const recode={kind:'save_component',componentId:saved.id,expectedVersion:v2,projectId:null,content:content(wrap(code+'\n// changed','Pipeline',x.typeId),x.typeId)};
+  await assert.rejects(()=>x.change(x.member,recode),/owner of this app/);
+  await x.change(x.owner,recode);
   // Once changed, it is custom code: the member's assistant can no longer open it.
   await assert.rejects(()=>x.f.component(x.db,memberAi,x.w,saved.id),/requires access to every workspace field/);
  }finally{await x.pg.close();}

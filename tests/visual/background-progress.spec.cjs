@@ -53,7 +53,7 @@ for(const embedded of [false,true]){
   await page.clock.install();const {root}=await open(page,embedded,true),gate=deferred();let checks=0;
   await intercept(page,async(route,op)=>{if(is(op,'access')){checks++;await gate.promise;await fail(route,embedded,403);return true;}});
   await tick(page);await expect.poll(()=>checks).toBe(1);await page.clock.runFor(250);await expect(bar(root)).toHaveCount(0);gate.release();
-  await expect(root.getByRole('heading',{name:'No app is available',exact:true})).toBeVisible();await expect(root.locator('iframe[title="Saved frontend code"]')).toHaveCount(0);
+  /* U3: on the web a person whose access was removed sees the no-access page; inside an assistant the app is simply gone. */await expect(root.getByRole('heading',{name:embedded?'No app is available':"You don't have access to this app.",exact:true})).toBeVisible();await expect(root.locator('iframe[title="Saved frontend code"]')).toHaveCount(0);
  });
 }
 

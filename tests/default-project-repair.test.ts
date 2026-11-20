@@ -15,6 +15,7 @@ test('legacy account receives one default project; archived projects and tool pl
  await pg.exec(await readFile('migrations/041_effective_access.sql','utf8'));
  // The current code reads the helper ownership columns of migration 078; this partial schema needs them too.
  await pg.exec('ALTER TABLE foundation_functions ADD COLUMN app_id uuid, ADD COLUMN retired_at timestamptz');
+ await pg.exec('CREATE TABLE assistant_limits(workspace_id uuid,user_id uuid,assistant text,data_level text,apps_level text)');
  // Current code reads the separate Claude switches added by migration 057; this legacy schema only needs the columns.
  await pg.exec("ALTER TABLE workspaces ADD COLUMN claude_enabled boolean NOT NULL DEFAULT false;ALTER TABLE workspace_access ADD COLUMN claude_enabled boolean NOT NULL DEFAULT false;");
  // Likewise the archive-first columns from migration 060.

@@ -7,6 +7,7 @@ import {fieldChangeQuerySchema,type FieldChangeQuery} from '../shared/schema.js'
 import {requireCurrentAction,requireHuman,setWriteAuthorization,type WriteAuthorization} from './write-authorization.js';
 import {DataService} from './data-service.js';
 import {checksum,audit,revision} from './evidence.js';
+import {columnRetired} from './legacy-restrictions.js';
 export {checksum,audit} from './evidence.js';
 import {templateDiff,adoptionDiff} from './template-upgrades.js';
 import {nextDaily} from '../shared/schedules.js';
@@ -15,6 +16,7 @@ import { randomUUID, createHash } from 'node:crypto';
 import type { Connection, Database } from '../db/database.js';
 import { operationSchema, reversalOperationSchema, viewFields, viewConfigSchema, fail, type Actor, type Field, type Operation, type RecordQuery } from '../shared/schema.js';
 import { access, typeAccess, visibleFields, projectData, folderAllowed } from './permissions.js';
+import {requireAssistantChange} from './assistant-levels.js';
 import {PostgresOriginalStore,type OriginalStore} from '../db/originals.js';
 import { templates, templateLinks } from './templates.js';
 import {assertUntracked} from './exchange-room-model.js';
@@ -95,6 +97,7 @@ export class Service extends DataService {
  }
  async validate(tx:Connection,a:Actor,w:string,op:Operation|FileOperation,draft?:{schemas:ReadonlyMap<string,Field[]>;ownTypeId?:string}) {
   const p=await access(tx,a,w,op.kind!=='set_workspace_policy');
+  requireAssistantChange(p,a,op.kind);
   if(op.kind==='database_changes'){
    const {type,policy}=await typeAccess(tx,a,w,op.typeId,true);
    if(!['human','ai'].includes(a.origin))fail(403,'human_required','Database editing requires a user action');if(op.deletions.length&&policy.role!=='owner')fail(403,'owner_required','Only the owner may delete records');
@@ -126,7 +129,9 @@ export class Service extends DataService {
    if(op.dueOn&&(Number.isNaN(Date.parse(op.dueOn))||new Date(op.dueOn).toISOString().slice(0,10)!==op.dueOn))fail(400,'invalid_date','Choose a valid due date');
   }
   if(op.kind==='accept_submission'){requireCurrentAction(a);if(p.role!=='owner')fail(403,'owner_required','A human owner must review external submissions');const submission=(await tx.query('SELECT f.id FROM form_submissions f LEFT JOIN submission_acceptances accepted ON accepted.submission_id=f.id WHERE f.id=$1 AND f.workspace_id=$2 AND f.type_id=$3 AND accepted.submission_id IS NULL',[op.submissionId,w,op.typeId])).rows[0];if(!submission)fail(409,'submission_unavailable','Submission is unavailable or already accepted');const linked=(await tx.query('SELECT l.project_id FROM external_links l JOIN form_submissions s ON s.link_id=l.id WHERE s.id=$1 AND s.workspace_id=$2',[op.submissionId,w])).rows[0];if(linked?.project_id)await activeProject(tx,a,w,linked.project_id);await this.validate(tx,a,w,{kind:'create_record',typeId:op.typeId,data:op.data});}
-  if(['create_type','update_type','install_template','create_view','update_view'].includes(op.kind)&&p.role!=='owner')fail(403,'owner_required','Only the owner may configure this workspace');
+  // A2: any team member may add a new table (for the app they are building); changing an existing table stays with organization owners. Guests add nothing.
+  if(op.kind==='create_type'&&p.role!=='owner'&&p.direct_data===false)fail(403,'owner_required','Only team members can add tables');
+  if(['update_type','install_template','create_view','update_view'].includes(op.kind)&&p.role!=='owner')fail(403,'owner_required','Only the owner may configure this workspace');
   if(op.kind==='restore_archived_schema'){
    if(p.role!=='owner')fail(403,'owner_required','Only the workspace owner can restore archived fields and tables');
    const t=(await tx.query('SELECT version,fields,archived_fields,archived_at,deleted_at FROM entity_types WHERE id=$1 AND workspace_id=$2',[op.typeId,w])).rows[0];
@@ -494,13 +499,17 @@ await audit(tx,a,p,'submission.accepted',op.submissionId,null,{recordId:result[0
   }
   await audit(tx,a,p,'tables.ai_access',w,{aiHiddenTypes:p.ai_hidden_types},{aiHiddenTypes:input.aiHiddenTypes});return {ok:true};
  });}
- async history(a:Actor,w:string,opts:{offset?:number;action?:string;actorId?:string}={}) {await this.inspectionAccess(this.db,a,w);const p=await access(this.db,a,w);if(a.origin!=='human'||!['owner','inspector'].includes(p.role)||!p.document_scope)fail(403,'owner_required','Audit is available to unrestricted human owners and inspectors');return (await this.db.query('SELECT * FROM audit_events WHERE workspace_id=$1 AND ($2::text IS NULL OR strpos(action,$2)>0) AND ($3::uuid IS NULL OR actor_id=$3) ORDER BY created_at DESC,id DESC LIMIT 200 OFFSET $4',[w,opts.action??null,opts.actorId??null,opts.offset??0])).rows;}
+ async history(a:Actor,w:string,opts:{offset?:number;action?:string;actorId?:string}={}) {await this.inspectionAccess(this.db,a,w);const p=await access(this.db,a,w);if(a.origin!=='human'||p.role!=='owner')fail(403,'owner_required','The organization log is available to organization owners');return (await this.db.query('SELECT * FROM audit_events WHERE workspace_id=$1 AND ($2::text IS NULL OR strpos(action,$2)>0) AND ($3::uuid IS NULL OR actor_id=$3) ORDER BY created_at DESC,id DESC LIMIT 200 OFFSET $4',[w,opts.action??null,opts.actorId??null,opts.offset??0])).rows;}
  async setAi(a:Actor,w:string,enabled:boolean) {return this.db.transaction(async tx=>{await tx.query('SELECT id FROM workspaces WHERE id=$1 FOR UPDATE',[w]);const p=await access(tx,a,w,enabled);if(a.origin!=='human'||p.role!=='owner')fail(403,'owner_required','Human owner required');await tx.query('UPDATE workspaces SET ai_enabled=$1,claude_enabled=$1,access_version=access_version+1 WHERE id=$2',[enabled,w]);await audit(tx,a,p,'workspace.ai_access',w,{enabled:p.ai_enabled},{enabled});return {enabled};});}
  async grant(a:Actor,w:string,action:string,destination:string,future:boolean) {return this.db.transaction(async tx=>{await tx.query('SELECT id FROM workspaces WHERE id=$1 FOR UPDATE',[w]);const p=await access(tx,a,w,true);if(a.origin!=='human')fail(403,'human_required','Human authorisation required');const id=randomUUID();await tx.query('INSERT INTO action_grants(id,workspace_id,user_id,action,destination,future) VALUES($1,$2,$3,$4,$5,$6)',[id,w,a.userId,action,destination,future]);await audit(tx,a,p,'permission.granted',id,null,{action,destination,future});return {id};});}
  async grants(a:Actor,w:string) {await access(this.db,a,w);return (await this.db.query('SELECT * FROM action_grants WHERE workspace_id=$1 AND user_id=$2 ORDER BY created_at DESC',[w,a.userId])).rows;}
  async revoke(a:Actor,w:string,id:string) {return this.db.transaction(async tx=>{await tx.query('SELECT id FROM workspaces WHERE id=$1 FOR UPDATE',[w]);const p=await access(tx,a,w);if(a.origin!=='human')fail(403,'human_required','Human authorisation required');const g=(await tx.query('UPDATE action_grants SET revoked_at=now() WHERE id=$1 AND workspace_id=$2 AND user_id=$3 RETURNING id',[id,w,a.userId])).rows[0];if(!g)fail(404,'not_found','Permission not found');await audit(tx,a,p,'permission.revoked',id,null,{revoked:true});return {id};});}
- async members(a:Actor,w:string){const p=await access(this.db,a,w);if(a.origin!=='human'||p.role!=='owner')fail(403,'owner_required','Human owner required');return (await this.db.query('SELECT a.*,u.name,u.email FROM workspace_access a JOIN users u ON u.id=a.user_id WHERE a.workspace_id=$1 AND u.subject NOT LIKE \'public-app|%\'',[w])).rows;}
- async share(a:Actor,w:string,userId:string,role:string,hiddenFields:string[],allowedTypes:string[]|null,ai:boolean){if(role==='inspector')ai=false;return this.db.transaction(async tx=>{
+ /** People with access to this workspace. Organization owners are listed too (organization_owner), with or without an access row. */
+ async members(a:Actor,w:string){const p=await access(this.db,a,w);if(a.origin!=='human'||p.role!=='owner')fail(403,'owner_required','Human owner required');
+  const rows=(await this.db.query("SELECT a.*,m.user_id AS member_id,m.role='owner' AS organization_owner,m.kind,u.name,u.email FROM memberships m JOIN users u ON u.id=m.user_id LEFT JOIN workspace_access a ON a.workspace_id=$1 AND a.user_id=m.user_id WHERE m.tenant_id=$2 AND u.subject NOT LIKE 'public-app|%' AND (m.role='owner' OR a.user_id IS NOT NULL) ORDER BY m.role<>'owner',u.name,u.id",[w,p.tenant_id])).rows;
+  return rows.map(({member_id,...r})=>r.organization_owner?{...r,workspace_id:w,user_id:member_id,role:'owner',hidden_fields:[],allowed_types:null,ai_enabled:true,claude_enabled:true,database_browse:true,direct_data:true,external_send:true}:r);}
+ /** hiddenFields is an older restriction (A2, D1): null keeps what the person has, a list may only leave some out. */
+ async share(a:Actor,w:string,userId:string,role:string,hiddenFields:string[]|null,allowedTypes:string[]|null,ai:boolean){if(role==='inspector')ai=false;return this.db.transaction(async tx=>{
   await tx.query('SELECT id FROM workspaces WHERE id=$1 FOR UPDATE',[w]);const p=await access(tx,a,w,true);if(a.origin!=='human'||p.role!=='owner')fail(403,'owner_required','Human owner required');
   if(userId===a.userId)fail(400,'self_share','Your owner role is managed at organisation level');
   if(!(await tx.query('SELECT id FROM users WHERE id=$1',[userId])).rows.length)fail(404,'not_found','Ask this colleague to sign in first and share their user ID');
@@ -508,8 +517,9 @@ await audit(tx,a,p,'submission.accepted',op.submissionId,null,{recordId:result[0
   if(allowedTypes){const types=(await tx.query('SELECT id FROM entity_types WHERE workspace_id=$1',[w])).rows;if(allowedTypes.some(id=>!types.some(t=>t.id===id)))fail(400,'invalid_type','A table is not in this workspace');}
   await tx.query("INSERT INTO memberships(tenant_id,user_id,role) VALUES($1,$2,'viewer') ON CONFLICT DO NOTHING",[p.tenant_id,userId]);
   const before=(await tx.query('SELECT * FROM workspace_access WHERE workspace_id=$1 AND user_id=$2',[w,userId])).rows[0]??null;
-  await tx.query('INSERT INTO workspace_access(workspace_id,user_id,role,hidden_fields,allowed_types,ai_enabled) VALUES($1,$2,$3,$4,$5,$6) ON CONFLICT(workspace_id,user_id) DO UPDATE SET role=excluded.role,hidden_fields=excluded.hidden_fields,allowed_types=excluded.allowed_types,ai_enabled=excluded.ai_enabled,claude_enabled=excluded.claude_enabled',[w,userId,role,json(hiddenFields),allowedTypes===null?null:json(allowedTypes),ai]);
-  await tx.query('UPDATE workspaces SET access_version=access_version+1 WHERE id=$1',[w]);await audit(tx,a,p,'access.changed',userId,before,{role,hiddenFields,allowedTypes,ai});return {userId,role};
+  const had:string[]=before?.hidden_fields??[],hidden=hiddenFields??had;if(hidden.some(k=>!had.includes(k)))columnRetired();
+  await tx.query('INSERT INTO workspace_access(workspace_id,user_id,role,hidden_fields,allowed_types,ai_enabled) VALUES($1,$2,$3,$4,$5,$6) ON CONFLICT(workspace_id,user_id) DO UPDATE SET role=excluded.role,hidden_fields=excluded.hidden_fields,allowed_types=excluded.allowed_types,ai_enabled=excluded.ai_enabled,claude_enabled=excluded.claude_enabled',[w,userId,role,json(hidden),allowedTypes===null?null:json(allowedTypes),ai]);
+  await tx.query('UPDATE workspaces SET access_version=access_version+1 WHERE id=$1',[w]);await audit(tx,a,p,'access.changed',userId,before,{role,hiddenFields:hidden,allowedTypes,ai});return {userId,role};
  });}
  async unshare(a:Actor,w:string,userId:string){return this.db.transaction(async tx=>{await tx.query('SELECT id FROM workspaces WHERE id=$1 FOR UPDATE',[w]);const p=await access(tx,a,w);if(a.origin!=='human'||p.role!=='owner')fail(403,'owner_required','Human owner required');const before=(await tx.query('DELETE FROM workspace_access WHERE workspace_id=$1 AND user_id=$2 RETURNING *',[w,userId])).rows[0];if(!before)fail(404,'not_found','Access not found');await tx.query('UPDATE workspaces SET access_version=access_version+1 WHERE id=$1',[w]);await audit(tx,a,p,'access.revoked',userId,before,null);return {userId};});}
  async transition(a:Actor,w:string,recordId:string,expectedVersion:number,state:'in_review'|'approved'|'archived',meaning:string){return this.db.transaction(async tx=>{
@@ -561,6 +571,8 @@ await audit(tx,a,p,'submission.accepted',op.submissionId,null,{recordId:result[0
   for(const table of ['document_controls','document_access','folder_access','acknowledgements','form_submissions','submission_acceptances','submission_file_acceptances','record_review_requests','record_review_decisions','inbox_reminders','template_installations','entity_types','records','saved_views','revisions','approvals','audit_events','automations','automation_runs'])result[table]=(await tx.query(`SELECT * FROM ${table} WHERE workspace_id=$1`,[w])).rows;
   for(const table of ['table_mappings','table_mapping_revocations','cross_table_links','record_facts','record_fact_retractions','project_records','record_field_changes','workspace_nodes','workspace_components','maintenance_scopes','workspace_receipts','identity_links','record_observations','foundation_functions','foundation_grants','foundation_schedules','foundation_receipts'])result[table]=(await tx.query(`SELECT * FROM ${table} WHERE workspace_id=$1`,[w])).rows;
   result.foundation_revisions=(await tx.query('SELECT r.* FROM foundation_revisions r JOIN foundation_functions f ON f.id=r.function_id WHERE f.workspace_id=$1',[w])).rows;
+  // A7: the organization-wide log is for organization owners. An inspector's copy keeps records and their history, without the log.
+  if(p.role!=='owner')result.audit_events=[];
   await audit(tx,a,p,'workspace.exported',w,null,{formatVersion:1,documents:documents.length});return result;
  });}
  async automations(a:Actor,w:string){await access(this.db,a,w);const rows=(await this.db.query('SELECT * FROM automations WHERE workspace_id=$1 AND owner_id=$2 ORDER BY created_at',[w,a.userId])).rows;const result=[];for(const r of rows){try{await requireWorkflow(this.db,a,w,r.id);}catch{continue;}if(r.conditions){try{await this.recordQuery(a,w,r.conditions.typeId,{viewId:r.conditions.viewId,dateField:r.conditions.dateField,dueBefore:'9999-12-31'});}catch{continue;}}if(r.action?.kind==='create_record'){try{const {type,policy}=await typeAccess(this.db,a,w,r.action.typeId);if(Object.keys(r.action.data).some(k=>!visibleFields(type.fields,policy,a).some(f=>f.key===k)))continue;}catch{continue;}}result.push(r);}return result;}

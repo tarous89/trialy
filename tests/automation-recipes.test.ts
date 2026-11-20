@@ -159,6 +159,8 @@ test('install approvals and optional reconciliation use real restricted roles',a
   await t.test('archiving and restoring an app cannot revive pending setup',async()=>{
    const copy=await install('Archive test',['weekly_notice']);
    await s.share(a,w,other.userId,'editor',[],null,false);await pg.query('UPDATE workspace_components SET created_by=$2 WHERE id=$1',[copy.receipt.appId,other.userId]);
+   // Archiving and restoring an app is for its owners (R3): make the teammate an owner of this copy.
+   await pg.query("INSERT INTO app_members(workspace_id,app_id,user_id,role,granted_by) VALUES($1,$2,$3,'owner',$4)",[w,copy.receipt.appId,other.userId,a.userId]);
    for(const archived of [true,false])await withActor(other,async()=>{const c=(await f.readComponent(other,w,copy.receipt.appId)).component,p=await f.preview(other,w,{kind:'archive_component',componentId:c.id,expectedVersion:c.version,archived});await f.confirm(other,w,p.id,p.digest);});
    await withDatabaseContext({service:'worker'},()=>reconcileRecipeSetups(db));
    assert.equal((await pg.query<any>('SELECT status FROM automation_recipe_setups WHERE app_id=$1',[copy.receipt.appId])).rows[0].status,'cancelled');

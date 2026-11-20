@@ -416,8 +416,8 @@ Updated at the end of every session.
 
 | Session | Status | Pull request | Shipped | Carried over |
 | --- | --- | --- | --- | --- |
-| 1 · Foundations and quick fixes | Built, 20 November 2026. In review. | [#196](https://github.com/tarous89/trialy/pull/196) | 1.1 to 1.9, with the changes listed under "Session 1 notes" | Listed under "Session 1 notes" |
-| 2 · Roles and access | Not started | | | |
+| 1 · Foundations and quick fixes | Shipped and live, 20 November 2026 (checked on the live platform after release). | [#196](https://github.com/tarous89/trialy/pull/196) | 1.1 to 1.9, with the changes listed under "Session 1 notes" | Listed under "Session 1 notes" |
+| 2 · Roles and access | Built 20 November 2026; in review | [#197](https://github.com/tarous89/trialy/pull/197) | 2.1 to 2.9, with the changes listed under "Session 2 notes" | Listed under "Session 2 notes" |
 | 3 · App lifecycle and installation | Not started | | | |
 | 4 · Data path and server speed | Not started | | | |
 | 5 · Browser runtime, style and guide | Not started | | | |
@@ -443,5 +443,30 @@ What changed against the scope as written:
 - **1.6 follow-up for 5.4.** An error now stays until dismissed, so on small screens it can cover a control in the bottom-right corner. Package 5.4 places messages full width above the safe area and must check this.
 - **1.8 sends samples from the web host only.** The embedded ChatGPT and Claude hosts need their own transport (package 5.8). No production baseline exists until this session is released and used; record the first real numbers in `docs/PERFORMANCE_MEASUREMENT.md` before session 4 changes the save path.
 - **1.7 leaves two things for later.** In-page code still gathers the richer view details, but they no longer leave the page. The plugin manifest's review test cases still list the open tools first; that changes with the plugin release (O3).
+
+- **1.8 had a gap, found and fixed in session 2.** The live service uses a restricted database login that was not allowed to write the speed table, so no speed numbers were stored between the session 1 release and the session 2 release. The permission and a test for it were added on 20 November 2026.
+
+### Session 2 notes
+
+How the roles are built (so later sessions do not redo it):
+
+- **App roles sit on top of the existing access rules.** Migration 081 records who owns each app, who granted which role and when (`app_members`), and the team default role (`team_default_role` on the app). The existing per-person access rules stay the thing that is enforced; granting a role writes the matching rule. `appRole` in `src/domain/app-roles.ts` and `trialy_security.app_role` in the database give the same answer. The grant rules (`R3`–`R5`) are checked in the application (`src/domain/app-sharing.ts`) and again in the database (`trialy_security.set_app_role`); a database guard stops anyone but an owner changing an app's code, team default or audience.
+- **Whoever creates an app owns it** (a database trigger, so every creation path is covered). Existing apps: the creator became Owner when still a team member (`D3`). The team default for existing apps is Editor, which reproduces today's access; existing restrictions (audience lists, per-person rules) keep working unchanged.
+- **Editors no longer change layout or settings of an app** (`A3`, `R4`). Before, any team member with edit rights could. Owners of the app and organization owners can.
+- **Sharing an app never opens tables.** A team member granted a role keeps their own table access; the person sharing is told which of the app's tables the recipient cannot see (`A5`). Guests keep the existing scoped sharing.
+- **Session 2 was built in two parts but ships as one release.** Part A: app roles, team default, several organization owners, access requests, member removal, billing limited to organization owners. Part B: table access without per-column settings (2.4), assistant permissions as Data and Apps levels (2.5), the Access view in three parts (2.7), logs by role (2.8). A person whose table access is view-only can be made Editor of an app, but still cannot change records in those tables (`R4`); the person sharing is told.
+- **Automations stay with their creator until session 6** (`T1`), because the database isolates automation rows per creator today.
+
+- **Assistant permissions (`A4`).** Migration 085: an organization maximum per assistant (four columns on the workspace) and a personal limit per person (`assistant_limits`). The lowest applies, on top of the older on/off switches, which stay. Record reads and writes are enforced in the database too; everything about Apps is enforced in the application. With Data = Blocked an assistant sees no tables at all, so it can only work on apps without table connections. Clicks a person makes inside an assistant count as the assistant's.
+- **Table access (`A2`, `D1`).** No screen offers a per-column permission. Existing column rules and hidden fields keep working and can only be loosened or lifted by an organization owner; every interface refuses new ones (`column_permissions_retired`). The "not for assistants" flag on a field is table design and is unchanged. Tables created by a catalog install or together with a new app follow the app role (migration 086); the rule only narrows. Tables an assistant creates one by one before saving a custom app are not marked yet: package 3.3 (installation popup) decides which tables are new for the app. Existing viewers and inspectors keep their organization-level role; it now reads as their default table access (`D2` is met without converting data).
+- **Logs (`A7`).** Inspectors no longer read or export the organization log. Earlier versions of an app are for its owners. The app log shows research runs and email batches only to the person who set them up until session 6 opens those rows to all owners of the app.
+
+Carried over, with the package that takes it:
+
+- **Billing on the organization (`A8`) — owner decision needed.** Billing records still sit on the person who pays; only the gate changed. Moving them touches payment records and has real risks (two owners who both pay, checkouts in flight, a paying owner who steps down). Not started.
+- **Stepping down as owner (`R1`) → 6.1 / 6.2 and 6.x external sharing.** Things a person set up as organization owner are tied to that person still being an owner: outside-sharing links and public forms stop; research automations stop; action automations keep running but nobody else can pause them. Member removal already switches automations off; demotion does not yet.
+- **Sharing outside the team by an app owner who is not an organization owner → 2.7 follow-up in 3.3.** The server allows it; the "Sharing & actions" screen is still shown to organization owners only.
+- **Embedded hosts (ChatGPT, Claude) → 5.4.** The no-access page, the "View only" header status and role changes exist on the website only; inside an assistant the People and roles list is read-only.
+- **Small items.** A pending access request is not cancelled when its requester is removed from the team (it is hidden). The Team tab is still shown to non-owners with an error. Messages that still say "the owner" or "account owner" were not reworded. `docs/ACCESS_CONTROL.md` still describes column editing.
 
 Environment note for later sessions: this build container cannot run the project's pinned browser for screenshots, so screenshot comparisons here are indicative only. The pull request's checks are the authority for them.

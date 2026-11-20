@@ -18,7 +18,11 @@ test('optional sections inherit app access and protect source, data, writes, rev
  // Independent Database permission remains intact, as disclosed by the access review.
  assert.equal((await s.records(b,w,secretType,{limit:10,offset:0})).rows.length,1);
  const config=readStandardConfig(op.content.source);config.tabs.reverse();config.tabs[0].name='Renamed private budget';await change({...op,componentId:app.id,expectedVersion:0,content:{...op.content,source:standardSource(config)}});
+ // A7: earlier versions are for the app's owners. An owner restricted from a section reads them without it.
+ await assert.rejects(f.componentHistory(b,w,app.id),/owner of this app/);
+ await db.query("INSERT INTO app_members(workspace_id,app_id,user_id,role) VALUES($1,$2,$3,'owner')",[w,app.id,b.userId]);
  assert.doesNotMatch(JSON.stringify(await f.componentHistory(b,w,app.id)),/Private budget label|Private example|Renamed private budget/);
+ await db.query('DELETE FROM app_members WHERE app_id=$1 AND user_id=$2',[app.id,b.userId]);
  const replacement=structuredClone(config);delete replacement.tabs[0].accessId;await assert.rejects(f.preview(a,w,{...op,componentId:app.id,expectedVersion:1,content:{...op.content,source:standardSource(replacement)}}),/restricted section/);
  const escape=structuredClone(config);escape.tabs.push({...escape.tabs[0],accessId:'budget_copy'});await assert.rejects(f.preview(a,w,{...op,componentId:app.id,expectedVersion:1,content:{...op.content,source:standardSource(escape)}}),/restricted data/);
  const current=await grid.read(a,w,b.userId);await grid.save(a,w,{expectedVersion:current.version,changes:[{subject:b.userId,kind:'app_section',resourceId:app.id,field:'records',read:true,write:false}]});await assert.rejects(f.preview(b,w,{kind:'apply_component_records',componentId:app.id,expectedVersion:1,changes:[{kind:'create_record',typeId:publicType,data:{name:'Read only'}}]}));

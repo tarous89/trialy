@@ -1,5 +1,5 @@
 import {test} from 'node:test';import assert from 'node:assert/strict';import {randomUUID} from 'node:crypto';import {readFile,readdir} from 'node:fs/promises';import {PGlite} from '@electric-sql/pglite';
-import type {Database,Connection} from '../src/db/database.js';import {Service} from '../src/domain/service.js';import {WorkspaceFoundation} from '../src/workspace/service.js';import {trackerOperation} from '../src/workspace/tracker-template.js';import {accountCatalog} from '../src/workspace/catalog.js';import {accountHome} from '../src/workspace/home.js';import {workspaceHome} from '../src/workspace/home.js';import {databasePage} from '../src/workspace/database-browser.js';
+import type {Database,Connection} from '../src/db/database.js';import {Service} from '../src/domain/service.js';import {WorkspaceFoundation} from '../src/workspace/service.js';import {trackerOperation} from '../src/workspace/tracker-template.js';import {accountCatalog} from '../src/workspace/catalog.js';import {accountHome} from '../src/workspace/home.js';import {workspaceHome} from '../src/workspace/home.js';import {databasePage} from '../src/workspace/database-browser.js';import {seedHiddenFields,retired} from './legacy-restrictions.js';
 test('app/plugin share the same default storage and tracker identities; database saves are permission-checked, atomic, reviewed and audited',async()=>{
  const pg=new PGlite();const db:Database={query:(q,v)=>pg.query(q,v) as any,transaction:f=>pg.transaction(tx=>f(tx as Connection)),close:()=>pg.close()};
  try{
@@ -50,7 +50,8 @@ test('app/plugin share the same default storage and tracker identities; database
  const contacts=(await save({kind:'create_type',name:'Contacts',fields:[{key:'company',name:'Company',kind:'relationship',targetTypeId:type,ai:true}]})).objects[0].id;await save({kind:'create_record',typeId:contacts,data:{company:a}});
  await assert.rejects(s.preview(owner,w.id,{kind:'database_changes',typeId:type,updates:[],deletions:[{recordId:a,expectedVersion:1}]}),/linked work/);
  const wrong=(await save({kind:'create_record',typeId:contacts,data:{company:c}})).objects[0].id;await assert.rejects(s.preview(owner,w.id,{kind:'database_changes',typeId:type,updates:[],deletions:[{recordId:wrong,expectedVersion:0}]}),/this table/);
- await s.share(owner,w.id,member.userId,'viewer',[type+':name'],[type],true);
+ // A2, D1: a hidden field can no longer be set; one that already exists (seeded) is still enforced.
+ await assert.rejects(s.share(owner,w.id,member.userId,'viewer',[type+':name'],[type],true),retired);await s.share(owner,w.id,member.userId,'viewer',[],[type],true);await seedHiddenFields(db,w.id,member.userId,[type+':name']);
  const restricted=await databasePage(db,member,w.id,{typeId:type});assert.equal(restricted.rows[0].data.name,undefined);
  const restrictedAI=await databasePage(db,{...member,origin:'ai'},w.id,{typeId:type});assert.equal(restrictedAI.rows[0].data.name,undefined);
  const deniedTable=await databasePage(db,member,w.id,{typeId:contacts});assert.equal(deniedTable.schemaOnly,true);assert.equal(deniedTable.rows.length,0);

@@ -10,6 +10,7 @@ import {WorkspaceFoundation} from '../src/workspace/service.js';
 import {workspaceHome} from '../src/workspace/home.js';
 import {AppSharing} from '../src/app-services/sharing.js';
 import {withActor} from '../src/db/context.js';
+import {seedHiddenFields,retired} from './legacy-restrictions.js';
 
 test('draft execution and review stay separate from published apps and public links',async()=>{
  const pg=new PGlite();let hold=false,entered!:()=>void,release!:()=>void;
@@ -105,13 +106,14 @@ test('open publications keep compatible reads and writes with current permission
   const publicWrite=await withActor(pc.a,()=>f.preview(pc.a,w.id,{kind:'apply_component_records',componentId:app.id,expectedVersion:0,viewId:publicLoaded.viewId,changes:[{kind:'update_record',recordId:row,expectedVersion:3,data:{note:'Still compatible'}}]}));
   await withActor(pc.a,()=>f.confirm(pc.a,w.id,publicWrite.id,publicWrite.digest));
   // Removing read permission is distinct from changing a schema or publishing code.
-  await s.share(owner,w.id,member.userId,'editor',['note'],null,true);
+  // A2, D1: a hidden field can no longer be set; one that already exists (seeded) is still enforced.
+  await assert.rejects(s.share(owner,w.id,member.userId,'editor',['note'],null,true),retired);await seedHiddenFields(db,w.id,member.userId,['note']);
   await assert.rejects(f.checkComponentAccess(member,w.id,app.id,memberLoaded.viewId),/access.*changed/);
   const partialOp=await trackerOperation(f,owner,w.id,{name:'Partial visibility',description:'Access changes during an open session',tabs:[{name:'Notes',typeId,columns:[{field:'note'}]}]}),partialApp=await publish({...partialOp,content:{...partialOp.content,sourceAccess:'bindings'}});
   const partial=await f.runFrontend(member,w.id,{componentId:partialApp.id,expectedVersion:0});
-  await s.share(owner,w.id,member.userId,'editor',[],null,true);
+  await s.share(owner,w.id,member.userId,'editor',[],null,true); // the owner lifts the hidden field
   await f.runFrontend(member,w.id,{componentId:partialApp.id,expectedVersion:0,viewId:partial.viewId});
-  await s.share(owner,w.id,member.userId,'editor',['note'],null,true);
+  await assert.rejects(s.share(owner,w.id,member.userId,'editor',['note'],null,true),retired);await seedHiddenFields(db,w.id,member.userId,['note']);
   await assert.rejects(f.checkComponentAccess(member,w.id,partialApp.id,partial.viewId),/access.*changed/);
   await sharing.revoke(owner,w.id,share.id);await assert.rejects(sharing.publicContext(token,true));
   await db.query("UPDATE app_runtime_views SET expires_at=now()-interval '1 second' WHERE id=$1",[loaded.viewId]);

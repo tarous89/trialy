@@ -20,7 +20,7 @@ import {appPublicUrl} from '../shared/public-url.js';
 import {automationTemplate} from './automation-template.js';
 import {Connectors} from '../connectors/service.js';
 import {withActor,setDatabaseContext} from '../db/context.js';
-import {rulesFor,denied,resourceGrant,assertRecordScope,assertWritable,toolPolicy} from '../domain/effective-access.js';
+import {rulesFor,denied,resourceGrant,assertRecordScope,assertWritable,toolPolicy,markAppTables} from '../domain/effective-access.js';
 import {standardTracker,renderStandard} from './standard-tracker.js';
 import {isDeepStrictEqual} from 'node:util';
 import {applyTrackerLayout,trackerOperation} from './tracker-template.js';
@@ -45,6 +45,8 @@ import {randomUUID} from 'node:crypto';
 import type {Database,Connection} from '../db/database.js';
 import {Service} from '../domain/service.js';
 import {access,typeAccess,visibleFields,projectData} from '../domain/permissions.js';
+import {requireAppOwner} from '../domain/app-roles.js';
+import {requireAssistantApps,requireAssistantChange,assistantNamesOnly,assistantDataBlocked,appNameOnly} from '../domain/assistant-levels.js';
 import {audit,revision,checksum} from '../domain/evidence.js';
 import {fail,failWith,type Actor} from '../shared/schema.js';
 import {maintenanceSchema,maintenanceBatch,workspaceOperation,type WorkspaceOperation} from './schema.js';
@@ -82,16 +84,18 @@ export class WorkspaceFoundation {
   const chain=await this.nodeAccess(tx,a,w,nodeId);let users=own.allowed_users??null,ai=own.ai_enabled??true;
   for(const n of chain){users=this.intersect(users,n.allowed_users);ai=ai&&n.ai_enabled;}return {users,ai};
  }
- async sharingMembers(a:Actor,w:string){const p=await this.policy(this.db,a,w);if(p.role!=='owner')fail(403,'owner_required','Only the workspace owner may change sharing');return (await this.db.query('SELECT u.id,u.name FROM users u JOIN memberships m ON m.user_id=u.id WHERE m.tenant_id=$1 AND u.subject NOT LIKE \'public-app|%\' ORDER BY u.name,u.id',[p.tenant_id])).rows;}
+ async sharingMembers(a:Actor,w:string){const p=await this.policy(this.db,a,w);if(p.role!=='owner'&&!(await this.db.query("SELECT 1 FROM app_members WHERE workspace_id=$1 AND user_id=$2 AND role='owner' LIMIT 1",[w,a.userId])).rows.length)fail(403,'owner_required','Only an owner may change sharing');return (await this.db.query('SELECT u.id,u.name FROM users u JOIN memberships m ON m.user_id=u.id WHERE m.tenant_id=$1 AND u.subject NOT LIKE \'public-app|%\' ORDER BY u.name,u.id',[p.tenant_id])).rows;}
  async nodes(a:Actor,w:string){const p=await access(this.db,a,w);let allowed:Set<string>|undefined;if(p.allowed_types!==null||p.hidden_fields.length){allowed=new Set();for(const c of await this.components(a,w)){for(const n of await this.nodeAccess(this.db,a,w,c.project_id))allowed.add(n.id);}}const nodes=[];for(const n of (await this.db.query('SELECT * FROM workspace_nodes WHERE workspace_id=$1 ORDER BY name,id',[w])).rows){if(allowed&&!allowed.has(n.id))continue;try{const chain=await this.nodeAccess(this.db,a,w,n.id);nodes.push({...n,effective_archived:chain.some(n=>n.archived)});}catch{}}return {workspaceId:w,workspaceFoundation:true,nodes};}
- async component(tx:Connection,a:Actor,w:string,id:string,validateBindings=true){
+ async component(tx:Connection,a:Actor,w:string,id:string,validateBindings=true,namesOnly=false){
   a={...a,accessToolId:id};
   const c=(await tx.query('SELECT * FROM workspace_components WHERE id=$1 AND workspace_id=$2',[id,w])).rows[0];
   if(!c||c.deleted_at)fail(404,'not_found','Component not found');
   if(c.source_access!=='bindings')await this.componentSourcePolicy(tx,a,w,c.source);
-  const p=await access(tx,a,w);const chain=await this.nodeAccess(tx,a,w,c.project_id);
+  const p=await access(tx,a,w);if(!namesOnly)requireAssistantApps(p,a,false);const chain=await this.nodeAccess(tx,a,w,c.project_id);
   if((p.role!=='owner'&&c.allowed_users!==null&&!c.allowed_users.includes(a.userId))||(a.origin==='ai'&&!c.ai_enabled))fail(404,'not_found','Component not found');
-  await toolPolicy(tx,a,p,id);if(validateBindings&&!standardTracker(c.source))await this.componentBindings(tx,a,w,c.archived?await this.availableBindings(tx,w,c.bindings):c.bindings,c.archived);await this.componentAssets(tx,a,w,c.assets);return {...c,project_archived:chain.some(n=>n.archived)};
+  const {role:app_role}=await toolPolicy(tx,a,p,id);if(validateBindings&&!standardTracker(c.source))await this.componentBindings(tx,a,w,c.archived?await this.availableBindings(tx,w,c.bindings):c.bindings,c.archived);if(!namesOnly)await this.componentAssets(tx,a,w,c.assets);
+  // app_role: the acting person's role on this app (owner, editor or viewer); the interface uses it to offer only what the server will accept.
+  return {...c,project_archived:chain.some(n=>n.archived),app_role};
  }
  private async runtimeComponent(tx:Connection,a:Actor,w:string,id:string,expectedVersion:number|undefined,viewId?:string){
   const latest=await this.component(tx,a,w,id,!viewId);
@@ -160,7 +164,8 @@ export class WorkspaceFoundation {
  async components(a:Actor,w:string,projectId?:string){
   await access(this.db,a,w);if(projectId)await this.nodeAccess(this.db,a,w,projectId);
   const rows=(await this.db.query('SELECT * FROM workspace_components WHERE workspace_id=$1 AND deleted_at IS NULL ORDER BY name,id',[w])).rows;
-  const p=await access(this.db,a,w),result=[];for(const c of rows){if(projectId&&c.project_id!==projectId)continue;try{const checked=await this.component(this.db,a,w,c.id);const {source,...metadata}=projectAppSections(p,a,checked);result.push(metadata);}catch{}}
+  // A4: an assistant with Data or Apps Blocked still sees which apps exist, by name only.
+  const p=await access(this.db,a,w),names=assistantNamesOnly(p,a),result=[];for(const c of rows){if(projectId&&c.project_id!==projectId)continue;try{const checked=await this.component(this.db,a,w,c.id,!assistantDataBlocked(p,a),names);const {source,...metadata}=projectAppSections(p,a,checked);result.push(names?appNameOnly(metadata):metadata);}catch{}}
   return result;
  }
  async toolTables(a:Actor,w:string,componentId:string):Promise<any>{
@@ -450,7 +455,7 @@ export class WorkspaceFoundation {
  }
  async prepareRenderedTracker(a:Actor,w:string,input:any){
   return this.db.transaction(async tx=>{
-   await access(tx,a,w);await tx.query('SELECT id FROM workspaces WHERE id=$1 FOR UPDATE',[w]);
+   requireAssistantApps(await access(tx,a,w),a,true);await tx.query('SELECT id FROM workspaces WHERE id=$1 FOR UPDATE',[w]);
    const f=new WorkspaceFoundation(adapter(tx)),operation=workspaceOperation.parse(input);
    if(!['create_tracker','save_component'].includes(operation.kind))fail(400,'app_operation','Choose an app preparation operation');
    const op=operation as Extract<WorkspaceOperation,{kind:'create_tracker'|'save_component'}>,key=op.preparation?.requestKey,fingerprint=preparationFingerprint(op),replace=op.preparation?.replacesPreviewId;
@@ -493,7 +498,7 @@ export class WorkspaceFoundation {
  }
  async beginAppUpdate(a:Actor,w:string,componentId:string,expectedVersion:number){
   return this.db.transaction(async tx=>{
-   await tx.query('SELECT id FROM workspaces WHERE id=$1 FOR UPDATE',[w]);
+   await tx.query('SELECT id FROM workspaces WHERE id=$1 FOR UPDATE',[w]);requireAssistantApps(await access(tx,a,w),a,true);
    const f=new WorkspaceFoundation(adapter(tx)),saved=await f.readComponentForUpdate(a,w,componentId);
    if(saved.component.version!==expectedVersion)fail(409,'stale_version','App changed; read its current version');
    await tx.query("DELETE FROM workspace_previews WHERE workspace_id=$1 AND user_id=$2 AND body->'operation'->>'componentId'=$3 AND body->'operation'->>'kind' IN ('save_component','create_tracker')",[w,a.userId,componentId]);
@@ -513,7 +518,7 @@ export class WorkspaceFoundation {
  }
  async finalizeAppPreview(a:Actor,w:string,previewId:string,digest:string){
   return this.db.transaction(async tx=>{
-   await tx.query('SELECT id FROM workspaces WHERE id=$1 FOR UPDATE',[w]);await access(tx,a,w);
+   await tx.query('SELECT id FROM workspaces WHERE id=$1 FOR UPDATE',[w]);requireAssistantApps(await access(tx,a,w),a,true);
    const f=new WorkspaceFoundation(adapter(tx)),row=(await tx.query('SELECT * FROM workspace_previews WHERE id=$1 AND workspace_id=$2 AND user_id=$3 AND expires_at>now()',[previewId,w,a.userId])).rows[0];
    if(!row||row.digest!==digest)fail(409,'preview_changed','Preview changed or unavailable');
    if(!['create_tracker','save_component'].includes(row.body.operation.kind))fail(400,'app_operation','Only app previews can be finalized');
@@ -529,7 +534,7 @@ export class WorkspaceFoundation {
   });
  }
  async resolveTrackerPreview(a:Actor,w:string,previewId:string):Promise<any>{
-  await access(this.db,a,w);
+  requireAssistantApps(await access(this.db,a,w),a,false);
   const unavailable=(status='unavailable')=>({workspaceId:w,screen:'tracker-unavailable',previewStatus:status,message:status==='expired'?'This unsaved preview has expired. Open your saved apps or create a new preview.':'This preview is no longer available. Open your saved apps or create a new preview.'});
   const receipt=(await this.db.query('SELECT result FROM workspace_receipts WHERE id=$1 AND workspace_id=$2 AND user_id=$3',[previewId,w,a.userId])).rows[0];
   if(receipt?.result?.id){
@@ -579,6 +584,8 @@ export class WorkspaceFoundation {
  }
  async componentHistory(a:Actor,w:string,id:string){
   const current=await this.component(this.db,a,w,id),p=await access(this.db,a,w);
+  // A7: earlier versions are part of the app's own log, which is for its owners.
+  await requireAppOwner(this.db,a,p,id,'Only an owner of this app can see its earlier versions');
   const rows=(await this.db.query("SELECT * FROM revisions WHERE workspace_id=$1 AND object_id=$2 AND object_kind='workspace_component' ORDER BY version DESC",[w,id])).rows;
   const result=[];for(const r of rows){try{const snapshot=projectAppSections(p,a,{...r.snapshot,id},current);if(snapshot.source_access!=='bindings')await this.componentSourcePolicy(this.db,a,w,snapshot.source);await this.nodeAccess(this.db,a,w,snapshot.project_id);await this.componentBindings(this.db,{...a,accessToolId:id},w,snapshot.bindings);await this.componentAssets(this.db,a,w,snapshot.assets);result.push({...r,snapshot});}catch{}}return result;
  }
@@ -764,6 +771,8 @@ export class WorkspaceFoundation {
  }
  private async validate(tx:Connection,a:Actor,w:string,op:WorkspaceOperation){
   if(op.kind==='apply_component_records'||op.kind==='edit_component_record')a={...a,accessToolId:op.componentId};
+  // A4: an assistant changes apps only with Apps = Edit and anything else only with Data = Edit.
+  if(a.origin==='ai')requireAssistantChange(await access(tx,a,w),a,op.kind);
   if(!['apply_component_records','edit_component_record'].includes(op.kind)){const p=await access(tx,a,w);if(p.direct_data===false&&p.role!=='owner')fail(403,'manage_required','App data access does not allow structure or access changes');}
   if(op.kind==='apply_component_records'||op.kind==='edit_component_record'||(op.kind==='save_component'&&op.content.sourceAccess==='bindings'))await access(tx,a,w,true);else await this.policy(tx,a,w,true);
   if((op.kind==='save_component'||op.kind==='create_tracker')&&op.reuseOrigin){
@@ -805,7 +814,9 @@ export class WorkspaceFoundation {
    if(op.kind!=='save_component'||op.content.sourceAccess!=='bindings')await this.componentSourcePolicy(tx,a,w,op.kind==='save_component'?op.content.source:undefined,op.kind==='save_component');
    else if((await access(tx,a,w,true)).role!=='owner')fail(403,'owner_required','Only an owner can approve source sharing with a restricted data audience');
    if((op.kind==='save_component'||op.kind==='move_component')&&op.projectId){const project=(await this.activeNode(tx,a,w,op.projectId))[0];if(project.kind!=='project')fail(400,'project_required','Choose a project');}
-   if(op.componentId){const c=await this.component(tx,a,w,op.componentId);if(c.project_archived)fail(409,'project_archived','Restore the project before editing components');if(c.version!==op.expectedVersion)fail(409,'stale_version','Component changed');}
+   if(op.componentId){const c=await this.component(tx,a,w,op.componentId);if(c.project_archived)fail(409,'project_archived','Restore the project before editing components');if(c.version!==op.expectedVersion)fail(409,'stale_version','Component changed');
+    // A3, R4: changing, moving or archiving an existing app is for its owners.
+    await requireAppOwner(tx,a,await access(tx,a,w,true),op.componentId,'Only an owner of this app can change, move or archive it');}
    if(op.kind==='archive_component'&&!op.archived)await this.restoreRights(tx,a,w,(await this.component(tx,a,w,op.componentId,false)).bindings);
    if(op.kind==='move_component'&&(await this.component(tx,a,w,op.componentId)).manifest?.scope==='project')fail(400,'use_tool_move','Use move_tool to organize this app without changing its data scope');
    if(op.kind==='save_component'&&!op.componentId&&op.expectedVersion!==undefined)fail(400,'invalid_version','New components have no expected version');
@@ -860,7 +871,7 @@ export class WorkspaceFoundation {
    const spec=this.parseInterface(c);if(!spec.blocks.some(b=>b.kind==='table'&&b.editable&&b.typeId===record.type_id&&b.fields.includes(op.field))||!record.fields.some((f:any)=>f.key===op.field&&!derived(f)))fail(403,'field_scope','This field is not editable in this interface');
   }
   if(op.kind==='set_project_access'||op.kind==='set_component_access'){
-   const p=await this.policy(tx,a,w,true);if(p.role!=='owner')fail(403,'owner_required','Only the workspace owner may change sharing');
+   const p=await this.policy(tx,a,w,true);if(op.kind==='set_component_access')await requireAppOwner(tx,a,p,op.componentId,'Only an owner of this app may change who can open it');else if(p.role!=='owner')fail(403,'owner_required','Only the workspace owner may change sharing');
    const target=op.kind==='set_project_access'?await this.node(tx,w,op.nodeId):(await tx.query('SELECT * FROM workspace_components WHERE id=$1 AND workspace_id=$2',[op.componentId,w])).rows[0];
    if(!target||target.version!==op.expectedVersion)fail(409,'stale_version','Sharing target changed');
    const members=(await tx.query('SELECT user_id FROM memberships WHERE tenant_id=$1',[p.tenant_id])).rows;
@@ -950,7 +961,10 @@ export class WorkspaceFoundation {
    if(op.content.manifest?.functions!==undefined){const manifest=retainHelperManifest(op.content.manifest,built.content.manifest);if(manifest.automationRoles)manifest.automationRoles=Object.fromEntries(Object.entries(manifest.automationRoles).map(([role,id])=>[role,ids.get(id as string)??id]));built.content.manifest=manifest;}
    const previous=op.componentId?await this.component(tx,a,w,op.componentId):null;
    const operation=workspaceOperation.parse({...built,catalogOrigin:op.catalogOrigin,reuseOrigin:op.reuseOrigin,designOrigin:op.designOrigin,...(previous?{componentId:previous.id,expectedVersion:op.expectedVersion,content:{...built.content,manifest:retainHelperManifest(previous.manifest,built.content.manifest),sourceAccess:previous.source_access,assets:previous.assets??[],execution:previous.execution??[]}}:{})});
-   await this.validate(tx,a,w,operation);return this.apply(tx,a,w,p,operation,authorization);
+   await this.validate(tx,a,w,operation);const built_app=await this.apply(tx,a,w,p,operation,authorization);
+   // A2: tables created together with a new app are the app's own and follow each person's role on it.
+   if(!previous&&built_app?.id)await markAppTables(tx,w,built_app.id,[...ids.values()]);
+   return built_app;
   }
   if(op.kind==='link_cross_table_identity'||op.kind==='unlink_cross_table_identity'){
    const review=await this.crossTableReview(tx,a,w,op),linkId=op.kind==='unlink_cross_table_identity'?op.linkId:randomUUID(),version=op.kind==='unlink_cross_table_identity'?op.expectedVersion+1:0;

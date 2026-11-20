@@ -7,11 +7,16 @@ import {fail} from '../shared/schema.js';
 
 // Only deterministic permission/schema lookups. Never cache records, counts,
 // audit events, pending previews, or anything across requests/actors.
+const MEMBER_ROLE='(SELECT m.role FROM app_members m WHERE m.app_id=workspace_components.id AND m.user_id=$3) AS member_role';
 const eligible=(sql:string)=>{
  const q=sql.replace(/\s+/g,' ').trim();
  return /^SELECT w\.\*, m\.role AS tenant_role,.* FROM workspaces w JOIN memberships m .* WHERE w\.id=\$1$/.test(q)
   || /^SELECT \* FROM (workspace_components|workspace_nodes|entity_types) WHERE id=\$1 AND workspace_id=\$2$/.test(q)
-  || q==='SELECT id,project_id,allowed_users,ai_enabled,source_access,bindings,manifest FROM workspace_components WHERE id=$1 AND workspace_id=$2'
+  // The app permission lookup (toolPolicy in src/domain/effective-access.ts), with and without saved source.
+  || q===`SELECT id,project_id,allowed_users,ai_enabled,source_access,bindings,manifest,team_default_role,${MEMBER_ROLE} FROM workspace_components WHERE id=$1 AND workspace_id=$2`
+  || q===`SELECT *,${MEMBER_ROLE} FROM workspace_components WHERE id=$1 AND workspace_id=$2`
+  || q==='SELECT trialy_security.app_role($1,$2) AS role'
+  || q==='SELECT data_level,apps_level FROM assistant_limits WHERE workspace_id=$1 AND user_id=$2 AND assistant=$3'
   || q==='SELECT fields FROM entity_types WHERE workspace_id=$1'
   || q==='SELECT fields FROM entity_types WHERE id=$1 AND workspace_id=$2'
   || q==='SELECT allowed_users,ai_enabled FROM document_access WHERE workspace_id=$1 UNION ALL SELECT allowed_users,ai_enabled FROM folder_access WHERE workspace_id=$1';

@@ -33,3 +33,17 @@ test('speed samples are bucketed, summarized against the targets, and carry no i
   assert.deepEqual(columns,['bucket_ms','day','host','metric','mode','samples','width']);
  }finally{await pg.close();}
 });
+
+// The deployed service connects with the restricted role; a table it cannot write to records nothing.
+test('the restricted runtime role can record speed samples',async()=>{
+ const pg=new PGlite();
+ try{
+  for(const file of (await readdir('migrations')).filter(f=>f.endsWith('.sql')).sort())await pg.exec(await readFile('migrations/'+file,'utf8'));
+  await pg.exec(await readFile('ops/runtime-role.sql','utf8'));
+  const db:Database={query:(q,v)=>db.transaction(tx=>tx.query(q,v)),transaction:fn=>pg.transaction(async tx=>{await tx.exec('SET LOCAL ROLE trialy_runtime');return fn(tx as Connection);}),close:async()=>{}};
+  const sample={metric:'open',ms:900,host:'web',width:'desktop',mode:'server'};
+  assert.deepEqual(await recordUxTiming(db,{samples:[sample]}),{recorded:1});
+  assert.deepEqual(await recordUxTiming(db,{samples:[sample]}),{recorded:1});
+  assert.equal(Number((await pg.query<{samples:string}>('SELECT sum(samples) AS samples FROM ux_timing_daily')).rows[0].samples),2);
+ }finally{await pg.close();}
+});

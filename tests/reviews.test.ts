@@ -8,6 +8,7 @@ import {baseApp,addApi,errors} from '../src/server/app.js';
 import {Service} from '../src/domain/service.js';
 import {runAutomation} from '../src/worker/automations.js';
 import type {Database,Connection} from '../src/db/database.js';
+import {seedHiddenFields,retired} from './legacy-restrictions.js';
 test('routed reviews enforce reviewer and exact version; reminders consume grants once',async()=>{
  const pg=new PGlite();for(const f of (await readdir('migrations')).filter(f=>f.endsWith('.sql')).sort())await pg.exec(await readFile('migrations/'+f,'utf8'));
  const db:Database={query:(q,v)=>pg.query(q,v) as any,transaction:fn=>pg.transaction(tx=>fn(tx as Connection)),close:()=>pg.close()},s=new Service(db),owner={userId:randomUUID(),origin:'human' as const},reviewer={userId:randomUUID(),origin:'human' as const};
@@ -22,7 +23,8 @@ test('routed reviews enforce reviewer and exact version; reminders consume grant
  const second=await route(2);await save({kind:'update_record',recordId:record.id,expectedVersion:3,data:{name:'Changed after routing'}});assert.equal((await decide(second.requestId,'approved')).status,409);await assert.rejects(s.transition(reviewer,w.id,record.id,4,'approved','Stale request'));
  actor=owner;assert.equal((await decide(second.requestId,'cancelled')).status,200);const third=await route(4);actor=reviewer;const approved=await decide(third.requestId,'approved');assert.equal(approved.status,200,approved.text);assert.deepEqual((await decide(third.requestId,'approved')).body,approved.body);
  await assert.rejects(db.query('DELETE FROM record_review_decisions'));
- await s.share(owner,w.id,reviewer.userId,'viewer',['name'],null,false);assert.deepEqual((await request(app).get(root+'/inbox')).body.reviews,[]);
+ // A2, D1: a hidden field can no longer be set; one that already exists (seeded) is still enforced.
+ await assert.rejects(s.share(owner,w.id,reviewer.userId,'viewer',['name'],null,false),retired);await s.share(owner,w.id,reviewer.userId,'viewer',[],null,false);await seedHiddenFields(db,w.id,reviewer.userId,['name']);assert.deepEqual((await request(app).get(root+'/inbox')).body.reviews,[]);
  actor=owner;const grant=await s.grant(owner,w.id,'reminders.create',w.id,false);const automation=(await save({kind:'create_automation',name:'My reminder',grantId:grant.id,intervalMinutes:60,action:{kind:'remind_me'}})).objects[0]!;
  await runAutomation(db);const reminders=(await request(app).get(root+'/inbox')).body.reminders;assert.equal(reminders.length,1);assert.equal(reminders[0].run.summary.title,'My reminder');await runAutomation(db);assert.equal((await db.query('SELECT * FROM inbox_reminders')).rows.length,1);
  const read=await request(app).post(root+'/inbox/'+reminders[0].id+'/read').send({});assert.equal(read.status,200);assert.ok((await request(app).get(root+'/inbox')).body.reminders[0].read_at);

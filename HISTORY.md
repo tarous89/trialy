@@ -1,3 +1,18 @@
+## 20 November 2026 — Platform decisions, session 2: roles and access
+
+Second of seven build sessions for the [platform decisions of 19 November](docs/scopes/PLATFORM_DECISIONS_IMPLEMENTATION_2026-11-19.md). Decision codes refer to the [snapshot](docs/scopes/PLATFORM_DECISIONS_SNAPSHOT_2026-11-19.md).
+
+- **App Owner, Editor, Viewer (R2–R5, A1, A3).** Migration 081 records who owns each app and who granted which role (`app_members`), adds a team default role per app, and makes whoever creates an app its first owner (existing apps: the creator). Organization owners own every app. Changing an app's code, layout, settings, audience or sharing, archiving it and applying a catalog update are for the app's owners; editors change records, viewers read. The grant rules (owner: any role; editor: Editor or Viewer; viewer: Viewer; lowering and removing: owners) are checked in `src/domain/app-sharing.ts` and again in the database (`trialy_security.set_app_role`, a guard on app rows). The app's Access view has a "People and roles" panel.
+- **Several organization owners (R1).** Owners promote a team member and demote an owner (or themselves); an organization never has fewer than one owner. `src/domain/organization.ts`, Settings → Team.
+- **Billing for organization owners (A8).** The subscription endpoints and tab are refused or hidden for people who own no organization. Billing records stay on the paying person; moving them to the organization is an open owner decision.
+- **Access requests and access messages (A5, U3).** A team member can ask for View or Edit on an app (migration 083). Everyone who may grant that role gets an email; the first answer counts. The web shows one "You don't have access to this app." page with the request control, and a quiet "View only" status in the header.
+- **Removing a team member (A11).** One database function (migration 082) ends membership, access and personal rules across the organization, moves the person's app Owner roles to the owner who removes them, and switches their automations off with a reason.
+- **Assistant permissions (A4).** Each assistant has a Data level and an Apps level (Edit, View only, Blocked): an organization maximum and a personal limit each person sets under Settings → Account → Connections (migration 085). The lowest applies. Record reads and writes are also enforced in the database.
+- **Logs by role (A7).** The organization log is for organization owners (inspectors no longer read it). Each app has its own log for its owners (`read_app_log`), with record values shown only as the reader's current table access allows. Earlier app versions are for owners.
+- **An app's own tables (A2).** Tables created by a catalog install or together with a new app are marked as the app's (migration 086): no role on the app blocks the table, Viewer reads only. The rule only narrows. Any team member may add a new table; changing existing tables stays with organization owners.
+- **Fix from session 1.** The restricted database login could not write the speed table, so no speed numbers were stored after the session 1 release. Permission and test added.
+- **Guidance 1.3.35** describes app roles and assistant permission levels.
+
 ## 20 November 2026 — Platform decisions, session 1: foundations and quick fixes
 
 First of seven build sessions for the [platform decisions of 19 November](docs/scopes/PLATFORM_DECISIONS_IMPLEMENTATION_2026-11-19.md). Decision codes refer to the [snapshot](docs/scopes/PLATFORM_DECISIONS_SNAPSHOT_2026-11-19.md).

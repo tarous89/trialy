@@ -2,6 +2,7 @@ import {sectionFields} from './app-sections.js';
 import {z} from 'zod';
 import type {Connection} from '../db/database.js';
 import {fail,id,assistantOf,isAssistant,type Actor,type Field} from '../shared/schema.js';
+import {assistantLevels} from './assistant-levels.js';
 
 export const accessRuleSchema=z.object({shareId:id.optional(),subject:z.union([id,z.literal('chatgpt'),z.literal('claude')]),kind:z.enum(['project','tool','table','column','database','workflow','connection','app_section']),resourceId:id,field:z.string().max(64).optional(),read:z.enum(['inherit','allow','deny']).default('inherit'),write:z.enum(['inherit','allow','deny']).default('inherit'),bindings:z.array(z.object({toolId:id.optional(),typeId:id,fields:z.array(z.string()),writable:z.array(z.string()),projectId:id.nullable()})).optional()}).strict();
 export type AccessRule=z.infer<typeof accessRuleSchema>;
@@ -21,24 +22,40 @@ export function resourceGrant(p:any,a:Actor,kind:'project'|'tool',resourceId:str
 }
 /** Context is constructed by the server after resolving the saved tool. Never accepted from generated code. */
 /** Columns a permission decision needs. Saved source is large and only section rules read it. */
-export const TOOL_POLICY_QUERY='SELECT id,project_id,allowed_users,ai_enabled,source_access,bindings,manifest FROM workspace_components WHERE id=$1 AND workspace_id=$2';
+/** member_role is the acting person's recorded app role (migration 081); only 'owner' changes a decision. */
+const MEMBER_ROLE='(SELECT m.role FROM app_members m WHERE m.app_id=workspace_components.id AND m.user_id=$3) AS member_role';
+export const TOOL_POLICY_QUERY=`SELECT id,project_id,allowed_users,ai_enabled,source_access,bindings,manifest,team_default_role,${MEMBER_ROLE} FROM workspace_components WHERE id=$1 AND workspace_id=$2`;
+export type AppRole='owner'|'editor'|'viewer';
+/** The person's role on the app a table was added for (A2); null when they cannot open that app. */
+export const APP_TABLE_ROLE='SELECT trialy_security.app_role($1,$2) AS role';
+/** Mark tables created together with an app as that app's own. Tables already owned by an app are left alone. */
+export async function markAppTables(db:Connection,w:string,appId:string,typeIds:string[]){if(typeIds.length)await db.query('UPDATE entity_types SET origin_app_id=$1 WHERE workspace_id=$2 AND id=ANY($3::uuid[]) AND origin_app_id IS NULL',[appId,w,typeIds]);}
 export async function toolPolicy(db:Connection,a:Actor,p:any,toolId:string,withSource=false){
  // Section restrictions are derived from saved source; every other decision uses the columns above.
  const sections=withSource||(p.permission_rules??[]).some((r:any)=>r.kind==='app_section'&&r.resourceId===toolId);
- const c=(await db.query(sections?'SELECT * FROM workspace_components WHERE id=$1 AND workspace_id=$2':TOOL_POLICY_QUERY,[toolId,p.id])).rows[0];if(!c)fail(404,'not_found','App unavailable');
+ const c=(await db.query(sections?`SELECT *,${MEMBER_ROLE} FROM workspace_components WHERE id=$1 AND workspace_id=$2`:TOOL_POLICY_QUERY,[toolId,p.id,a.userId])).rows[0];if(!c)fail(404,'not_found','App unavailable');
  const parents:string[]=[];let current=c.project_id;
  while(current){if(parents.includes(current))fail(409,'folder_cycle','Invalid project hierarchy');parents.push(current);const n=(await db.query('SELECT * FROM workspace_nodes WHERE id=$1 AND workspace_id=$2',[current,p.id])).rows[0];if(!n||(p.role!=='owner'&&n.allowed_users!==null&&!n.allowed_users.includes(a.userId))||(a.origin==='ai'&&!n.ai_enabled))fail(403,'tool_access','Project access is restricted');current=n.parent_id;}
  if((p.role!=='owner'&&c.allowed_users!==null&&!c.allowed_users.includes(a.userId))||(a.origin==='ai'&&!c.ai_enabled))fail(403,'tool_access','App access is restricted');
  const grant=resourceGrant(p,a,'tool',c.id,parents);if(!grant.read)fail(403,'tool_access','You do not have access to this app');
  // Legacy source may contain copied values; only reviewed bound resources support scoped sharing.
  if(p.direct_data===false&&c.source_access!=='bindings')fail(403,'tool_source_scope','This app needs a reviewed connected-data version before sharing');
+ // A1: team members nobody set a role for receive the app's team default; an owner or an explicit grant is never capped.
+ const owns=p.role==='owner'||c.member_role==='owner';
+ if(!owns&&!grant.rules.some(r=>r.subject===a.userId&&r.read==='allow')){if(c.team_default_role==='none')fail(403,'tool_access','You do not have access to this app');if(c.team_default_role==='viewer')grant.write=false;}
  const scopes=grant.rules.filter(r=>r.subject===a.userId&&r.read==='allow').flatMap(r=>r.bindings??[]);
- return {c,grant,scopes};
+ const role:AppRole=owns?'owner':grant.write?'editor':'viewer';
+ return {c,grant,scopes,role};
 }
 export async function applyTypePolicy(db:Connection,a:Actor,p:any,type:any){
  const owner=p.role==='owner',legacy=owner||(p.direct_data!==false&&(!p.allowed_types||p.allowed_types.includes(type.id)));
- if(a.origin==='ai'&&p.ai_hidden_types?.includes(type.id))return {...p,typeId:type.id,read_fields:[],write_fields:[],scope_project:null};
+ // A4: an assistant with Data = Blocked sees no table; with View only it reads and changes nothing.
+ const dataLevel=a.origin==='ai'?(await assistantLevels(db,a,p)).data:'edit';
+ if(a.origin==='ai'&&(dataLevel==='blocked'||p.ai_hidden_types?.includes(type.id)))return {...p,typeId:type.id,read_fields:[],write_fields:[],scope_project:null};
  if(!owner&&p.database_browse===false&&!a.accessToolId)return {...p,typeId:type.id,read_fields:[],write_fields:[],scope_project:null};
+ // A2: an app's own table follows the person's role on that app: no role, no table; Viewer reads only. Guests keep their scoped sharing.
+ let appViewOnly=false;
+ if(!owner&&type.origin_app_id&&p.direct_data!==false){const role=(await db.query(APP_TABLE_ROLE,[type.origin_app_id,a.userId])).rows[0]?.role;if(!role)return {...p,typeId:type.id,read_fields:[],write_fields:[],scope_project:null};appViewOnly=role==='viewer';}
  const tool=a.accessToolId?await toolPolicy(db,a,p,a.accessToolId):null;
  const bound=tool?.c.bindings.find((b:any)=>b.typeId===type.id);
  const source=tool?.scopes.filter(s=>s.typeId===type.id&&(!s.toolId||s.toolId===tool.c.id)&&(s.projectId===null||s.projectId===tool.c.project_id&&tool.c.manifest?.scope==='project'))??[];
@@ -51,12 +68,12 @@ export async function applyTypePolicy(db:Connection,a:Actor,p:any,type:any){
   if(!canRead||sectionRead&&!sectionRead.includes(f.key))continue;read.push(f.key);
   const baseWrite=(legacy&&!['viewer','inspector'].includes(p.role))||rules.some(r=>r.subject===a.userId&&r.write==='allow');
   const toolWrite=!!tool?.grant.write&&(owner||source.some(s=>s.writable.includes(f.key))||baseWrite)&&(!tool.c.manifest||tool.c.manifest.fields.some((m:any)=>m.typeId===type.id&&m.field===f.key&&m.mode==='write'));
-  if((!sectionWrite||sectionWrite.includes(f.key))&&p.role!=='inspector'&&(tool?toolWrite:p.role!=='viewer'&&baseWrite)&&!denied(rules,'write'))write.push(f.key);
+  if(!appViewOnly&&(!sectionWrite||sectionWrite.includes(f.key))&&p.role!=='inspector'&&(tool?toolWrite:p.role!=='viewer'&&baseWrite)&&!denied(rules,'write'))write.push(f.key);
  }
  // Tool context always limits records to its declared project, even for an owner.
  const scopeProject=tool?.c.manifest?.scope==='project'?tool.c.project_id:null;
  if(tool?.c.manifest?.scope==='project'&&!scopeProject)fail(403,'project_scope','Project data scope is unavailable');
- const allowed_types=tool?tool.c.bindings.map((b:any)=>b.typeId).filter((t:string)=>!denied(dataRules(p,a,t),'read')&&!(a.origin==='ai'&&p.ai_hidden_types?.includes(t))):p.allowed_types;return {...p,allowed_types,typeId:type.id,read_fields:read,write_fields:write,scope_project:scopeProject??null};
+ const allowed_types=tool?tool.c.bindings.map((b:any)=>b.typeId).filter((t:string)=>!denied(dataRules(p,a,t),'read')&&!(a.origin==='ai'&&p.ai_hidden_types?.includes(t))):p.allowed_types;return {...p,allowed_types,typeId:type.id,read_fields:read,write_fields:dataLevel==='edit'?write:[],scope_project:scopeProject??null};
 }
 export async function assertRecordScope(db:Connection,p:any,recordId:string){if(p.scope_project&&!(await db.query('SELECT 1 FROM project_records WHERE workspace_id=$1 AND project_id=$2 AND record_id=$3 AND revoked_at IS NULL',[p.id,p.scope_project,recordId])).rows.length)fail(404,'not_found','Record is outside the permitted scope');}
 export function assertWritable(p:any,keys:string[]){if(keys.some(k=>!p.write_fields?.includes(k)))fail(403,'field_read_only','Editing is restricted for one or more fields');}

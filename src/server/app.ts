@@ -9,6 +9,7 @@ import {appPublicUrl,oauthPublicUrl} from '../shared/public-url.js';
 import {createRequestMetrics,metricSummary,withRequestMetrics} from '../db/metrics.js';
 import {withReadBatch} from '../db/database.js';
 import {AccessGrid} from '../domain/access-grid.js';
+import {AssistantLevelSettings} from '../domain/assistant-levels.js';
 import {AccessManagement} from '../domain/access-management.js';
 import {accountCatalog} from '../workspace/catalog.js';
 import {accountHome} from '../workspace/home.js';
@@ -26,6 +27,8 @@ import { z, ZodError } from 'zod';
 import { randomUUID } from 'node:crypto';
 import { AppError, id, recordQuerySchema, fieldChangeQuerySchema } from '../shared/schema.js';
 import { Service } from '../domain/service.js';
+import {MemberRemoval} from '../domain/member-removal.js';
+import {Organization} from '../domain/organization.js';
 import {inspectionHtml} from '../domain/inspection.js';
 import { templates } from '../domain/templates.js';
 /** requestsPerMinute: the per-address request limit. Production uses the default; only the browser-test fixture, whose
@@ -68,6 +71,9 @@ export function addApi(app:express.Express,s:Service,human:RequestHandler) {
  app.get('/api/workspaces/:workspaceId/access-grid/reviews/:reviewId',async(req,res)=>res.json(await new AccessGrid(s.db).draft(req.actor!,id.parse(req.params.workspaceId),id.parse(req.params.reviewId))));
  app.get('/api/workspaces/:workspaceId/access-grid',async(req,res)=>res.json(await new AccessGrid(s.db).read(req.actor!,id.parse(req.params.workspaceId),z.string().optional().parse(req.query.subject))));
  app.post('/api/workspaces/:workspaceId/access-grid',async(req,res)=>res.json(await new AccessGrid(s.db).save(req.actor!,id.parse(req.params.workspaceId),req.body)));
+ app.get('/api/workspaces/:workspaceId/assistant-levels',async(req,res)=>res.json(await new AssistantLevelSettings(s.db).read(req.actor!,id.parse(req.params.workspaceId))));
+ app.post('/api/workspaces/:workspaceId/assistant-levels/organization',async(req,res)=>res.json(await new AssistantLevelSettings(s.db).setMaximum(req.actor!,id.parse(req.params.workspaceId),req.body)));
+ app.post('/api/workspaces/:workspaceId/assistant-levels/mine',async(req,res)=>res.json(await new AssistantLevelSettings(s.db).setMine(req.actor!,id.parse(req.params.workspaceId),req.body)));
  app.get('/api/account/home/revision',async(req,res)=>res.json(await homeRevision(s.db,req.actor!)));
  app.post('/api/account/home',async(req,res)=>withResponseCancellation(res,async signal=>res.json(await accountHome(s.db,req.actor!,req.body,signal))));
  // The same read by GET, so the website can start it alongside the account check. No effects.
@@ -113,8 +119,11 @@ export function addApi(app:express.Express,s:Service,human:RequestHandler) {
  app.get('/api/workspaces/:workspaceId/access-rules',async(req,res)=>res.json(await s.accessRules(req.actor!,String(req.params.workspaceId))));
  app.post('/api/workspaces/:workspaceId/access-rules',async(req,res)=>{const input=z.object({expectedVersion:z.number().int().min(0),aiHiddenTypes:z.array(id).max(500),folder:z.object({name:z.string().min(1).max(100),allowedUsers:z.array(id).max(500).nullable(),ai:z.boolean()}).optional(),document:z.object({documentId:id,allowedUsers:z.array(id).max(500).nullable(),ai:z.boolean(),expectedVersion:z.number().int().min(-1)}).optional()}).parse(req.body);res.json(await s.setAccessRules(req.actor!,String(req.params.workspaceId),input));});
  app.get('/api/workspaces/:workspaceId/members',async(req,res)=>res.json(await s.members(req.actor!,String(req.params.workspaceId))));
- app.post('/api/workspaces/:workspaceId/members',async(req,res)=>{const p=z.object({userId:id,role:z.enum(['editor','viewer','inspector']),hiddenFields:z.array(z.string().max(160)).max(10000),allowedTypes:z.array(id).nullable(),ai:z.boolean()}).parse(req.body);res.json(await s.share(req.actor!,String(req.params.workspaceId),p.userId,p.role,p.hiddenFields,p.allowedTypes,p.ai));});
- app.delete('/api/workspaces/:workspaceId/members/:userId',async(req,res)=>res.json(await s.unshare(req.actor!,String(req.params.workspaceId),id.parse(req.params.userId))));
+ app.post('/api/workspaces/:workspaceId/members',async(req,res)=>{const p=z.object({userId:id,role:z.enum(['editor','viewer','inspector']),hiddenFields:z.array(z.string().max(160)).max(10000).optional(),allowedTypes:z.array(id).nullable(),ai:z.boolean()}).parse(req.body);res.json(await s.share(req.actor!,String(req.params.workspaceId),p.userId,p.role,p.hiddenFields??null,p.allowedTypes,p.ai));});
+ // A11: removing a team member takes them out of the organization; the preview says what will happen first.
+ app.get('/api/workspaces/:workspaceId/members/:userId/removal',async(req,res)=>res.json(await new MemberRemoval(s.db).preview(req.actor!,id.parse(req.params.workspaceId),id.parse(req.params.userId))));
+ app.delete('/api/workspaces/:workspaceId/members/:userId',async(req,res)=>res.json(await new MemberRemoval(s.db).remove(req.actor!,id.parse(req.params.workspaceId),id.parse(req.params.userId))));
+ app.post('/api/workspaces/:workspaceId/members/:userId/organization-role',async(req,res)=>res.json(await new Organization(s.db).setOwner(req.actor!,id.parse(req.params.workspaceId),id.parse(req.params.userId),z.object({role:z.enum(['owner','member'])}).strict().parse(req.body).role)));
  app.post('/api/workspaces/:workspaceId/records/:recordId/state',async(req,res)=>{const p=z.object({expectedVersion:z.number().int().min(0),state:z.enum(['in_review','approved','archived']),meaning:z.string().min(1).max(1000)}).parse(req.body);res.json(await s.transition(req.actor!,String(req.params.workspaceId),id.parse(req.params.recordId),p.expectedVersion,p.state,p.meaning));});
  app.get('/api/workspaces/:workspaceId/export',async(req,res)=>{const data=await s.exportWorkspace(req.actor!,String(req.params.workspaceId));if(req.query.format==='html'){res.set('Content-Disposition','attachment; filename="trialagents-inspection.html"');res.type('html').send(inspectionHtml(data));}else{res.set('Content-Disposition','attachment; filename="trialagents-workspace-export.json"');res.json(data);}});
  app.get('/api/workspaces/:workspaceId/automations',async(req,res)=>res.json(await s.automations(req.actor!,String(req.params.workspaceId))));
