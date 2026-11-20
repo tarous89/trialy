@@ -171,7 +171,7 @@ test('Folder archival retains contents and invalidates attached execution withou
   const s=new Service(db),f=new WorkspaceFoundation(db),engine=new Foundation(db),w=await s.createWorkspace(a,'Projects');await s.setAi(a,w.id,true);
   const confirm=async(op:any)=>{const p=await f.preview(a,w.id,op);return f.confirm(a,w.id,p.id,p.digest);};
   const tp=await s.preview(a,w.id,{kind:'create_type',name:'Entries',fields:[{key:'name',name:'Name',kind:'text'}]});const typeId=(await s.commit(a,tp.id,tp.digest)).objects[0].id;
-  const folder=await confirm({kind:'create_node',nodeKind:'folder',name:'Folder'}),project=await confirm({kind:'create_node',nodeKind:'project',name:'Project',parentId:folder.id});
+  const project=await confirm({kind:'create_node',nodeKind:'project',name:'Project'}),folder=project;
   const fp=await engine.prepareFunction(a,w.id,{name:'Echo',source:'return input;',scope:{capabilities:[],typeIds:[],documents:false},inputContract:{type:'any'},outputContract:{type:'any'}});const fn=await engine.saveFunction(a,w.id,fp.id,fp.digest);
   const component=await confirm({kind:'save_component',projectId:project.id,content:{name:'Runner',format:'frontend-js',source:'return {html:"<p>Retained</p>"};',execution:[{name:'echo',revisionId:fn.revisionId}]}});
   const scope=await confirm({kind:'save_scope',scope:{projectId:project.id,purpose:'Track entries',inclusionCriteria:'Chosen entries',sourcePolicy:'User input',basis:'tracking',bindings:[{typeId,fields:['name']}],allowCreate:true,allowUpdate:true,autoWrite:true,expiresAt:new Date(Date.now()+86400000).toISOString()}});
@@ -190,7 +190,7 @@ test('Folder archival retains contents and invalidates attached execution withou
   assert.equal((await engine.schedules(a,w.id)).find(x=>x.id===schedule.id).paused,true);
   await assert.rejects(engine.run(ai,w.id,queued.id),/Component changed/);
   await assert.rejects(f.runFrontend(ai,w.id,{componentId:component.id,expectedVersion:1}),(e:any)=>e.code==='component_archived');
-  await assert.rejects(f.preview(a,w.id,{kind:'move_node',nodeId:project.id,expectedVersion:0,parentId:null}),/Restore/);
+  await assert.rejects(f.preview(a,w.id,{kind:'rename_node',nodeId:project.id,expectedVersion:1,name:'Renamed'}),/Restore/);
   await confirm({...op,expectedVersion:1,archived:false,reason:'Reopen organization'});
   assert.equal((await f.nodes(a,w.id)).nodes.find(n=>n.id===project.id).effective_archived,false);
   assert.deepEqual((await f.component(db,a,w.id,component.id)).execution,[]);

@@ -69,14 +69,14 @@ export class WorkspaceFoundation {
   if(p.allowed_types!==null||p.hidden_fields.length)fail(403,'workspace_scope','Workspace organization currently requires full workspace access');
   return p;
  }
- async node(tx:Connection,w:string,id:string){const r=(await tx.query('SELECT * FROM workspace_nodes WHERE id=$1 AND workspace_id=$2',[id,w])).rows[0];if(!r)fail(404,'not_found','Project or folder not found');return r;}
+ async node(tx:Connection,w:string,id:string){const r=(await tx.query('SELECT * FROM workspace_nodes WHERE id=$1 AND workspace_id=$2',[id,w])).rows[0];if(!r)fail(404,'not_found','Project not found');return r;}
  async nodeAccess(tx:Connection,a:Actor,w:string,id:string){
   const p=await access(tx,a,w);let current:string|null=id;const chain:any[]=[];
   while(current){if(denied(rulesFor(p,a).filter(r=>r.kind==='project'&&r.resourceId===current),'read'))fail(404,'not_found','Project unavailable');const n=await this.node(tx,w,current);if(chain.some(v=>v.id===n.id))fail(409,'folder_cycle','Invalid folder hierarchy');
    if((p.role!=='owner'&&n.allowed_users!==null&&!n.allowed_users.includes(a.userId))||(a.origin==='ai'&&!n.ai_enabled))fail(404,'not_found','Project or folder not found');chain.push(n);current=n.parent_id;}
   return chain;
  }
- async activeNode(tx:Connection,a:Actor,w:string,id:string){const chain=await this.nodeAccess(tx,a,w,id);if(chain.some(n=>n.archived))fail(409,'project_archived','Restore the archived project or folder before continuing');return chain;}
+ async activeNode(tx:Connection,a:Actor,w:string,id:string){const chain=await this.nodeAccess(tx,a,w,id);if(chain.some(n=>n.archived))fail(409,'project_archived','Restore the archived project before continuing');return chain;}
  private intersect(left:string[]|null,right:string[]|null){return left===null?right:right===null?left:left.filter(id=>right.includes(id));}
  private async moveRestrictions(tx:Connection,a:Actor,w:string,nodeId:string,own:any){
   const chain=await this.nodeAccess(tx,a,w,nodeId);let users=own.allowed_users??null,ai=own.ai_enabled??true;
@@ -582,10 +582,6 @@ export class WorkspaceFoundation {
   const rows=(await this.db.query("SELECT * FROM revisions WHERE workspace_id=$1 AND object_id=$2 AND object_kind='workspace_component' ORDER BY version DESC",[w,id])).rows;
   const result=[];for(const r of rows){try{const snapshot=projectAppSections(p,a,{...r.snapshot,id},current);if(snapshot.source_access!=='bindings')await this.componentSourcePolicy(this.db,a,w,snapshot.source);await this.nodeAccess(this.db,a,w,snapshot.project_id);await this.componentBindings(this.db,{...a,accessToolId:id},w,snapshot.bindings);await this.componentAssets(this.db,a,w,snapshot.assets);result.push({...r,snapshot});}catch{}}return result;
  }
- private async parent(tx:Connection,w:string,parentId:string|null,nodeId?:string){
-  const visited=new Set<string>(nodeId?[nodeId]:[]);let id=parentId;
-  while(id){if(visited.has(id))fail(409,'folder_cycle','A folder cannot contain itself');visited.add(id);const n=await this.node(tx,w,id);if(n.kind!=='folder')fail(400,'invalid_parent','Choose a folder as the destination');id=n.parent_id;}
- }
  async record(tx:Connection,a:Actor,w:string,id:string,write=false,full=false){
   const r=(await tx.query('SELECT * FROM records WHERE id=$1 AND workspace_id=$2',[id,w])).rows[0];if(!r)fail(404,'not_found','Record not found');
   const {type,policy}=await typeAccess(tx,a,w,r.type_id,write);const fields=visibleFields(type.fields,policy,a);await assertRecordScope(tx,policy,id);
@@ -639,8 +635,10 @@ export class WorkspaceFoundation {
   return {projectId:project.id,projectName:project.name,records,action:'link',retains:'Records are shared references, not copies. Project sharing does not grant additional access to record data.'};
  }
  private async nodeArchive(tx:Connection,a:Actor,w:string,op:Extract<WorkspaceOperation,{kind:'archive_node'}>){
-  const policy=await this.policy(tx,a,w,true);if(policy.role!=='owner')fail(403,'owner_required','Only the workspace owner may archive a project or folder');
+  const policy=await this.policy(tx,a,w,true);if(policy.role!=='owner')fail(403,'owner_required','Only the workspace owner may archive a project');
   const chain=await this.nodeAccess(tx,a,w,op.nodeId),node=chain[0];
+  // I1: folders are no longer part of the hierarchy. Existing ones stay as archived history.
+  if(node.kind!=='project')fail(409,'folders_removed','Folders are no longer used. Projects sit at the top level.');
   if(node.version!==op.expectedVersion||node.archived===op.archived)fail(409,'stale_version','Project state changed; prepare again');
   if(chain.slice(1).some(n=>n.archived))fail(409,'project_archived','Restore the parent folder first');
   const nodes=(await tx.query(`WITH RECURSIVE tree AS (SELECT * FROM workspace_nodes WHERE workspace_id=$1 AND id=$2 UNION ALL SELECT n.* FROM workspace_nodes n JOIN tree t ON n.parent_id=t.id WHERE n.workspace_id=$1) SELECT id,name,kind,version,archived FROM tree ORDER BY id LIMIT 1001`,[w,node.id])).rows;
@@ -797,12 +795,12 @@ export class WorkspaceFoundation {
   if(op.kind==='archive_node')await this.nodeArchive(tx,a,w,op);
   if(op.kind==='copy_component')await this.componentCopy(tx,a,w,op);
   if(op.kind==='apply_maintenance'){const scope=await this.scope(tx,a,w,op.batch.scopeId);if(scope.revoked_at||scope.version!==op.batch.expectedScopeVersion)fail(409,'scope_changed','Maintenance scope changed');if(scope.schema_stamp!==await this.scopeStamp(tx,{...a,origin:'ai'},w,maintenanceSchema.parse(scope.body)))fail(409,'schema_changed','Scope requires renewed review');}
-  if(op.kind==='create_node'){await this.parent(tx,w,op.parentId);if(op.parentId)await this.activeNode(tx,a,w,op.parentId);if(op.initialAccess){
+  if(op.kind==='create_node'){if(op.initialAccess){
    await tx.query('SELECT id FROM workspaces WHERE id=$1 FOR UPDATE',[w]);const policy=await this.policy(tx,a,w,true);if(policy.role!=='owner')fail(403,'owner_required','Only the workspace owner may set project access');if(policy.access_version!==op.initialAccess.expectedVersion)fail(409,'access_changed','Workspace access changed. Reopen project setup.');
    const members=(await tx.query('SELECT m.user_id,m.role FROM memberships m LEFT JOIN workspace_access wa ON wa.user_id=m.user_id AND wa.workspace_id=$1 WHERE m.tenant_id=$2 AND (m.role=\'owner\' OR wa.user_id IS NOT NULL)',[w,policy.tenant_id])).rows;
    for(const rule of op.initialAccess.rules){if(rule.subject==='chatgpt'||rule.subject==='claude')continue;const member=members.find(m=>m.user_id===rule.subject);if(!member)fail(400,'invalid_user','Choose a workspace member');if(member.role==='owner')fail(400,'owner_access','Owners retain full access');}
   }}
-  if(op.kind==='move_node'||op.kind==='rename_node'){const n=(await this.activeNode(tx,a,w,op.nodeId))[0];if(n.version!==op.expectedVersion)fail(409,'stale_version','Project or folder changed');if(op.kind==='move_node'){await this.parent(tx,w,op.parentId,op.nodeId);if(op.parentId)await this.activeNode(tx,a,w,op.parentId);}}
+  if(op.kind==='rename_node'){const n=(await this.activeNode(tx,a,w,op.nodeId))[0];if(n.version!==op.expectedVersion)fail(409,'stale_version','Project changed');}
   if(op.kind==='save_component'||op.kind==='move_component'||op.kind==='archive_component'){
    if(op.kind!=='save_component'||op.content.sourceAccess!=='bindings')await this.componentSourcePolicy(tx,a,w,op.kind==='save_component'?op.content.source:undefined,op.kind==='save_component');
    else if((await access(tx,a,w,true)).role!=='owner')fail(403,'owner_required','Only an owner can approve source sharing with a restricted data audience');
@@ -1042,7 +1040,7 @@ export class WorkspaceFoundation {
    before=(await tx.query(`SELECT * FROM ${table} WHERE id=$1 AND workspace_id=$2`,[objectId,w])).rows[0];version=before.version+1;after={...before,allowed_users:op.allowedUsers,ai_enabled:op.ai,version};
    await tx.query(`UPDATE ${table} SET allowed_users=$1,ai_enabled=$2,version=$3 WHERE id=$4`,[op.allowedUsers===null?null:J(op.allowedUsers),op.ai,version,objectId]);
   }
-  else if(op.kind==='move_node'||op.kind==='rename_node'){objectId=op.nodeId;before=await this.node(tx,w,objectId);version=before.version+1;after={...before,version,...(op.kind==='move_node'?{parent_id:op.parentId}:{name:op.name,...(op.description!==undefined?{description:op.description}:{})})};const keep=op.kind==='move_node'?await this.moveRestrictions(tx,a,w,objectId,before):{users:before.allowed_users,ai:before.ai_enabled};after={...after,allowed_users:keep.users,ai_enabled:keep.ai};await tx.query('UPDATE workspace_nodes SET name=$1,parent_id=$2,version=$3,allowed_users=$5,ai_enabled=$6,description=$7 WHERE id=$4',[after.name,after.parent_id,version,objectId,keep.users===null?null:J(keep.users),keep.ai,after.description??'']);}
+  else if(op.kind==='rename_node'){objectId=op.nodeId;before=await this.node(tx,w,objectId);version=before.version+1;after={...before,version,name:op.name,...(op.description!==undefined?{description:op.description}:{})};await tx.query('UPDATE workspace_nodes SET name=$1,version=$2,description=$4 WHERE id=$3',[after.name,version,objectId,after.description??'']);}
   else if(op.kind==='save_component'||op.kind==='move_component'||op.kind==='archive_component'){
    if(op.componentId){objectId=op.componentId;before=await this.component(tx,a,w,objectId);version=before.version+1;}
    if(op.kind==='save_component')after={...before,id:objectId,workspace_id:w,project_id:op.projectId,...op.content,source_access:op.content.sourceAccess,catalogOrigin:op.catalogOrigin,reuseOrigin:op.reuseOrigin,designOrigin:op.designOrigin,resource_kind:op.content.resourceKind??before?.resource_kind??'generic',manifest:op.content.manifest===undefined?(before?.manifest??null):op.content.manifest,version,archived:before?.archived??false};
