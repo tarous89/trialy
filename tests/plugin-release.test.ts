@@ -5,7 +5,7 @@ import {createHash} from 'node:crypto';
 import express from 'express';
 import request from 'supertest';
 import {readTrackerDesign} from '../src/server/tracker-design.js';
-import {readWorkspaceGuide, guideSections} from '../src/server/workspace-guidance.js';
+import {readWorkspaceGuide, guideSections, serverInstructions, claudeServerInstructions} from '../src/server/workspace-guidance.js';
 import {addMcp} from '../src/server/mcp.js';
 import {Service} from '../src/domain/service.js';
 import type {Database} from '../src/db/database.js';
@@ -55,6 +55,22 @@ test('focused workflow guides cover every canonical section with complete pagina
   }
   await assert.rejects(readWorkspaceGuide({topic: '../../.env'}));
   await assert.rejects(readWorkspaceGuide({topic: 'apps', offset: 99999999}));
+});
+
+test('display guidance opens the extension once after the first response and makes links optional', async () => {
+  const surfaces: Record<string, string> = {
+    serverInstructions, claudeServerInstructions,
+    startGuide: (await readWorkspaceGuide({topic: 'start'})).text,
+    claudeSkill: await read('plugin/claude/trialagents-platform/skills/trialagents/SKILL.md'),
+    chatgptSkill: await read('plugin/trialy/skills/trialy-workspace/SKILL.md'),
+  };
+  for (const [name, text] of Object.entries(surfaces)) {
+    assert.match(text, /once[^.]{0,80}after your first response to a TrialAgents request/i, name);
+    assert.match(text, /concise inline snippet, or give a direct link/, name);
+    assert.match(text, /never opens or replaces the extension/, name);
+    assert.match(text, /respect current access/, name);
+    assert.doesNotMatch(text, /before anything else|first call `?open_|End every reply|Every reply about TrialAgents|always link|at the start of each user-initiated/i, name);
+  }
 });
 
 test('portable package retains identity, prompts, branding and two focused skills without templates', async () => {

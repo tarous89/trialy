@@ -1,5 +1,7 @@
 const {test,expect}=require('./test.cjs');
 const base='http://127.0.0.1:4179';
+// The automatic hint carries only the view or tab name, app id and workspace id.
+const onlyIdentifiers=view=>Object.keys(view).every(key=>['view','workspaceId','appId'].includes(key));
 async function currentView(page){return page.evaluate(()=>{const text=window.modelContextUpdates?.at(-1)?.content[0].text;return text?JSON.parse(text.slice(text.indexOf('\n')+1)):null;});}
 for(const width of [1440,390])test(`Embedded sidebar, native gallery and context at ${width}px`,async({page})=>{
  await page.setViewportSize({width,height:1000});await page.request.post(base+'/fixture/reset-starters');
@@ -23,7 +25,7 @@ for(const width of [1440,390])test(`Embedded sidebar, native gallery and context
  await card.getByRole('button',{name:'Preview',exact:true}).click();const modal=root.getByRole('dialog',{name:'Runway preview'});
  await expect(root.frameLocator('iframe[title="Runway interactive preview"]').getByRole('heading',{name:'Runway',exact:true})).toBeVisible();
  await expect(modal.locator('iframe')).toHaveAttribute('sandbox','allow-scripts');await expect(modal.locator('iframe')).toHaveAttribute('srcdoc',/connect-src 'none'/);
- await expect.poll(()=>currentView(page)).toMatchObject({view:'templates',templateId:expect.any(String)});
+ await expect.poll(()=>currentView(page)).toMatchObject({view:'templates'});expect(onlyIdentifiers(await currentView(page))).toBe(true);
  await modal.getByRole('button',{name:'Fullscreen preview'}).click();await expect(modal).toHaveClass(/is-expanded/);expect((await modal.boundingBox()).width).toBe(width);
  await page.screenshot({path:`/tmp/embedded-gallery-${width}.png`});
  await page.route('**/fixture/tool',async route=>{if(['install_app_template','confirm_data_access'].includes(route.request().postDataJSON().name))await new Promise(r=>setTimeout(r,550));await route.continue();});
@@ -42,8 +44,8 @@ for(const width of [1440,390])test(`Embedded sidebar, native gallery and context
  await root.getByRole('button',{name:'Apps',exact:true}).click();await root.getByRole('button',{name:'New',exact:true}).click();await root.getByRole('menuitem',{name:'App',exact:true}).click();await expect(root.getByRole('heading',{name:'App templates',exact:true})).toBeVisible();
  const draft=await(await page.request.get(base+'/fixture/app-draft')).json();expect(draft.screen,JSON.stringify(draft).slice(0,1000)).toBe('tracker-preview');await page.evaluate(r=>window.deliver(r),draft);
  const app=root.frameLocator('iframe[title="Saved frontend code"]');await expect(app.getByRole('heading',{name:'Embedded draft',exact:true})).toBeVisible();
- await expect(toggle).toHaveAttribute('aria-expanded','false');await expect.poll(()=>currentView(page)).toMatchObject({view:'app',route:'/'});
- await app.getByRole('link',{name:'Details',exact:true}).click();await expect(app.getByRole('heading',{name:'Draft details',exact:true})).toBeVisible();await expect.poll(()=>currentView(page)).toMatchObject({view:'app',route:'/details'});
+ await expect(toggle).toHaveAttribute('aria-expanded','false');await expect.poll(()=>currentView(page)).toMatchObject({view:'app',appId:expect.any(String)});expect(onlyIdentifiers(await currentView(page))).toBe(true);
+ await app.getByRole('link',{name:'Details',exact:true}).click();await expect(app.getByRole('heading',{name:'Draft details',exact:true})).toBeVisible();await page.waitForTimeout(400);expect(await currentView(page)).toMatchObject({view:'app'});expect(onlyIdentifiers(await currentView(page))).toBe(true);expect(await page.evaluate(()=>JSON.stringify(window.modelContextUpdates))).not.toMatch(/route|Embedded draft/);
  await toggle.click();await expect(toggle).toHaveCSS('color','rgb(126, 224, 183)');await root.getByRole('button',{name:'Apps',exact:true}).click();await expect(toggle).toHaveAttribute('aria-expanded','true');await expect.poll(()=>currentView(page)).toMatchObject({view:'home'});
  if(width<760)await toggle.click();await page.screenshot({path:`/tmp/embedded-shell-${width}.png`});
 });
@@ -52,7 +54,7 @@ test('embedded navigation works when the host does not support view context',asy
  await page.evaluate(workspaceId=>window.deliver({screen:'home',workspaceId,viewerId:'fixture',workspaces:[],types:[]}),f.workspaceId);
  const root=page.frameLocator('#app');await root.getByRole('link',{name:'Browse app templates'}).click();await expect(root.getByRole('heading',{name:'App templates',exact:true})).toBeVisible();expect(await page.evaluate(()=>window.modelContextUpdates)).toBeUndefined();
 });
-test('database columns and access selection update host context without record or draft text',async({page})=>{
+test('database and access selections send only the view name to the host',async({page})=>{
  const f=await(await page.request.get(base+'/fixture/apps')).json(),tableId='21000000-0000-4000-8000-000000000011',recordId='21000000-0000-4000-8000-000000000012';
  const fields=[{key:'name',name:'Company name',kind:'text',readable:true,writable:true}],table={id:tableId,workspaceId:f.workspaceId,name:'Context companies',fields};
  await page.route('**/fixture/tool',route=>{const {name}=route.request().postDataJSON();let result;
@@ -64,16 +66,16 @@ test('database columns and access selection update host context without record o
  await page.goto(base+'/?apps=1');await page.waitForFunction(()=>window.hostReady);await page.evaluate(workspaceId=>window.deliver({screen:'home',workspaceId,viewerId:'fixture',workspaces:[],types:[]}),f.workspaceId);
  const root=page.frameLocator('#app');await root.getByRole('button',{name:'Database',exact:true}).click();await expect(root.getByRole('heading',{name:'Context companies',exact:true})).toBeVisible();
  await root.locator('.ty-db-tree-row').locator('..').getByRole('button',{name:'Company name',exact:true}).click();
- await expect.poll(()=>currentView(page)).toMatchObject({view:'database',tableId,field:'name',fields:[{key:'name',name:'Company name'}]});
+ await expect.poll(()=>currentView(page)).toEqual({view:'database',workspaceId:f.workspaceId});await page.waitForTimeout(400);expect(await currentView(page)).toEqual({view:'database',workspaceId:f.workspaceId});
  await root.getByRole('switch',{name:'Allow edits'}).check();await root.getByRole('button',{name:'Edit Company name in row '+recordId}).click();await root.locator('.ty-db-editor textarea').fill('PRIVATE DRAFT TEXT');
- await expect.poll(()=>currentView(page)).toMatchObject({editing:true,hasUnsavedChanges:true});expect(await page.evaluate(()=>JSON.stringify(window.modelContextUpdates))).not.toMatch(/PRIVATE RECORD VALUE|PRIVATE DRAFT TEXT/);
+ await expect(root.locator('.ty-db-editor textarea')).toHaveValue('PRIVATE DRAFT TEXT');await page.waitForTimeout(400);expect(await currentView(page)).toEqual({view:'database',workspaceId:f.workspaceId});expect(await page.evaluate(()=>JSON.stringify(window.modelContextUpdates))).not.toMatch(/PRIVATE RECORD VALUE|PRIVATE DRAFT TEXT|Company name|editing|hasUnsavedChanges|tableId|fields/);
  await root.getByRole('button',{name:'Ignore changes',exact:true}).click();await root.getByRole('button',{name:'Access',exact:true}).click();
- await expect.poll(()=>currentView(page)).toMatchObject({view:'access-control',subjectId:expect.any(String)});
- expect(await currentView(page)).not.toHaveProperty('tableId');
- await root.getByRole('button',{name:'Apps',exact:true}).click();await expect.poll(()=>currentView(page)).toMatchObject({view:'home'});expect(await currentView(page)).not.toHaveProperty('subjectId');
+ await expect.poll(()=>currentView(page)).toMatchObject({view:'access-control'});
+ await page.waitForTimeout(400);expect(onlyIdentifiers(await currentView(page))).toBe(true);
+ await root.getByRole('button',{name:'Apps',exact:true}).click();await expect.poll(()=>currentView(page)).toMatchObject({view:'home'});expect(onlyIdentifiers(await currentView(page))).toBe(true);
 });
-test('standard tracker section updates are visible to the host',async({page})=>{
+test('standard tracker section changes send no section or table to the host',async({page})=>{
  const initial=await(await page.request.get(base+'/fixture/initial')).json();await page.goto(base+'/?apps=1');await page.waitForFunction(()=>window.hostReady);await page.evaluate(r=>window.deliver(r),initial);
  const frame=page.frameLocator('#app').frameLocator('iframe[title="Saved frontend code"]');await frame.getByRole('button',{name:'Contacts',exact:true}).click();
- await expect.poll(()=>currentView(page)).toMatchObject({view:'app',appId:initial.component.id,section:'Contacts',tableId:expect.any(String)});
+ await expect(frame.getByRole('button',{name:'Contacts',exact:true})).toBeVisible();await expect.poll(()=>currentView(page)).toMatchObject({view:'app',appId:initial.component.id});await page.waitForTimeout(400);expect(onlyIdentifiers(await currentView(page))).toBe(true);expect(await page.evaluate(()=>JSON.stringify(window.modelContextUpdates))).not.toMatch(/Contacts|section|tableId/);
 });

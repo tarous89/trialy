@@ -125,7 +125,7 @@ function Workspace(){
  const contextView=view==='tracker'||(view==='home'&&homeAppActive)?'app':view;
  const details=Object.values(viewDetails).filter(d=>d.view===contextView||(['app','database'].includes(contextView)&&d.view==='access-control'));
  const detail=Object.assign({},...details.map(d=>Object.fromEntries(Object.entries(d).filter(([,v])=>v!==undefined))));
- const contextText=viewContextText({view:contextView,workspaceId:state.workspaceId,...(view==='tracker'?{appId:openedTracker?.id??trackerPreview?.id,appName:openedTracker?.name,appVersion:openedTracker?.version,route:trackerRoute.path}:{}),...detail});
+ const contextText=viewContextText({view:contextView,workspaceId:state.workspaceId,...(view==='tracker'?{appId:openedTracker?.id??trackerPreview?.id}:{}),...detail});
  const publishView=React.useMemo(()=>createViewContextPublisher(async text=>{await bridge.updateModelContext({content:[{type:'text',text}]});}),[]);
  useEffect(()=>{if(!ready||!bridge.getHostCapabilities()?.updateModelContext?.text)return;const timer=setTimeout(()=>publishView(contextText),250);return()=>clearTimeout(timer);},[ready,contextText,publishView]);
  const openApp=()=>{void bridge.openLink({url:platform.origin+(state.workspaceId?'/?workspaceId='+encodeURIComponent(state.workspaceId):'')});};

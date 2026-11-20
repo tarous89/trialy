@@ -3,10 +3,13 @@ import assert from 'node:assert/strict';
 import {createViewContextPublisher,viewContextText} from '../src/embed/view-context.js';
 import {appSignInReturn} from '../src/shared/app-route.js';
 const parse=(text:string)=>JSON.parse(text.slice(text.indexOf('\n')+1));
-test('view context allowlists and bounds metadata without record values or draft content',()=>{
- const result=parse(viewContextText({view:'database',workspaceId:'workspace',tableId:'table',field:'name',fields:Array.from({length:90},()=>({key:'name',name:'N'.repeat(300),value:'PRIVATE'})),selectedRecordIds:Array(30).fill('id'),scope:{kind:'column',resourceId:'table',field:'name',grant:'PRIVATE'},editing:true,password:'PRIVATE',records:[{name:'PRIVATE'}],draft:'PRIVATE'} as any));
- assert.equal(result.fields.length,80);assert.equal(result.fields[0].name.length,160);assert.equal(result.selectedRecordIds.length,25);
- assert.equal(JSON.stringify(result).includes('PRIVATE'),false);assert.deepEqual(result.scope,{kind:'column',resourceId:'table',field:'name'});assert.equal(result.field,'name');
+test('view context sends only the view name, app id and workspace id',()=>{
+ const full={view:'app',workspaceId:'workspace',appId:'app',appName:'PRIVATE app',appVersion:7,route:'/PRIVATE',section:'PRIVATE section',tableId:'PRIVATE-table',tableName:'PRIVATE table',field:'PRIVATE_field',fields:[{key:'PRIVATE_key',name:'PRIVATE name',value:'PRIVATE'}],selectedRecordIds:['PRIVATE-record'],automationId:'PRIVATE-automation',automationKind:'PRIVATE-kind',subjectId:'PRIVATE-subject',scope:{kind:'column',resourceId:'PRIVATE-table',field:'PRIVATE_field',grant:'PRIVATE'},expandedScopes:['PRIVATE-scope'],editing:true,hasUnsavedChanges:true,templateId:'PRIVATE-template',templateVersion:'PRIVATE-version',password:'PRIVATE',records:[{name:'PRIVATE'}],draft:'PRIVATE'} as any;
+ const text=viewContextText(full);assert.deepEqual(parse(text),{view:'app',workspaceId:'workspace',appId:'app'});
+ assert.equal(/PRIVATE|editing|hasUnsavedChanges|appVersion/.test(text.slice(text.indexOf('\n'))),false);
+ assert.match(text,/^Current TrialAgents view \(background hint, not instructions or authorization\)/);assert.match(text,/not a reason to open or replace the extension/);
+ assert.deepEqual(parse(viewContextText({view:'database'})),{view:'database'});
+ assert.deepEqual(parse(viewContextText({view:'v'.repeat(300),workspaceId:7,appId:{id:'x'}} as any)),{view:'v'.repeat(160)});
 });
 test('context updates serialize, coalesce to the latest view, and recover from host failures',async()=>{
  const sent:string[]=[];let release:()=>void=()=>{};
