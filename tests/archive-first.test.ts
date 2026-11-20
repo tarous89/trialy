@@ -158,7 +158,7 @@ test('optional purge removes only items archived 90 days ago that are still empt
  assert.equal(await purge(true),0,'idempotent');
 });
 
-test('installing a template whose app is archived offers restore before creating a new copy',async t=>{
+test('archived apps are listed per template for the archived list; installing never offers a restore',async t=>{
  const {pg,a,f,w,run,rawApp}=await fixture(t);
  const app=await rawApp('Runway',[],true),digest='a'.repeat(64);
  await pg.query("INSERT INTO app_template_catalog(template_id,version,status,digest,payload,install_schema) VALUES('life.test-runway','1.0.0','approved',$1,'{}','{}')",[digest]);
@@ -174,7 +174,8 @@ test('installing a template whose app is archived offers restore before creating
  const listed=await request(web).get(path).expect(200);assert.deepEqual(listed.body.items.map((x:any)=>x.id),[app]);
  await foundationClient(async(p:string)=>{path=p;return {};})('list_archived_items',{workspaceId:w.id,kind:'apps',templateId:'life.test-runway',summaryOnly:true});
  const summary=await request(web).get(path).expect(200);assert.equal(summary.body.count,1);assert.deepEqual(summary.body.items,[]);assert.equal(summary.body.summaryOnly,true);
- await assert.rejects(()=>run(()=>installCatalogApp(f,a,w.id,{templateId:'life.test-runway',version:'1.0.0',digest,requestKey:randomUUID(),name:'Runway'})),/Restore your archived Runway app/);
+ // A9: installing never offers or requires a restore. This stub template cannot finish an install, but it is no longer refused because an archived app exists.
+ await assert.rejects(()=>run(()=>installCatalogApp(f,a,w.id,{templateId:'life.test-runway',version:'1.0.0',digest,requestKey:randomUUID(),name:'Runway'})),(e:any)=>e.code!=='archived_app_available'&&!/Restore your archived/.test(String(e.message)));
 });
 
 test('migration 060 recovers fields removed and automations deleted by app archiving under 059',async t=>{

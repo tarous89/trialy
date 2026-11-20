@@ -120,7 +120,6 @@ test('rule 9 modularity with the real installer: alone, with Runway (reuse, neve
   await change(w2.id,{kind:'archive_component',componentId:programs.appId,expectedVersion:await v(programs.appId),archived:true});
   assert.deepEqual((await pg.query<any>('SELECT id,fields,archived_fields FROM entity_types WHERE workspace_id=$1 ORDER BY id',[w2.id])).rows,fieldsBefore,'archiving keeps every field');
   const listed=await archivedItems(f,actor,w2.id,{kind:'apps'});assert.ok(listed.items.some((i:any)=>i.id===programs.appId),'listed for the owner under Show archived');
-  await assert.rejects(()=>install(w2.id,P,'Programs'),/Restore your archived Programs app/);
   await change(w2.id,{kind:'archive_component',componentId:programs.appId,expectedVersion:await v(programs.appId),archived:false});
   assert.deepEqual((await pg.query<any>('SELECT id,fields,archived_fields FROM entity_types WHERE workspace_id=$1 ORDER BY id',[w2.id])).rows,fieldsBefore,'restoring keeps every field');
   const j=(await pg.query<any>('SELECT paused,deleted_at FROM app_actions WHERE id=$1',[action])).rows[0];assert.deepEqual([j.paused,j.deleted_at],[true,null],'automation back switched off');

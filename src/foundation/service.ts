@@ -49,7 +49,7 @@ export class Foundation {
   requireCurrentAction(a);const body=functionSchema.parse(input);if(!body.scope.appId||body.functionId||body.planningOnly)fail(400,'app_function','Use a new executable app-scoped read-only helper');
   const p=await access(this.db,a,w,true);for(const typeId of body.scope.typeIds){if(!bindings.some(b=>b.typeId===typeId))fail(403,'function_binding','Helper table must be bound to this app');await typeAccess(this.db,a,w,typeId);}
   const functionId=randomUUID(),revisionId=randomUUID(),digest=checksum(J({body,runtime:RUNTIME}));
-  await this.db.query('INSERT INTO foundation_functions(id,workspace_id,user_id,name) VALUES($1,$2,$3,$4)',[functionId,w,a.userId,body.name]);
+  await this.db.query('INSERT INTO foundation_functions(id,workspace_id,user_id,name,app_id) VALUES($1,$2,$3,$4,$5)',[functionId,w,a.userId,body.name,body.scope.appId]);
   await this.db.query('INSERT INTO foundation_revisions(id,function_id,version,body,digest,runtime) VALUES($1,$2,0,$3,$4,$5)',[revisionId,functionId,J(body),digest,RUNTIME]);
   await audit(this.db,a,p,'function.saved',functionId,null,{functionId,revisionId,version:0,digest,appId:body.scope.appId});return {functionId,revisionId};
  }
@@ -119,7 +119,7 @@ export class Foundation {
  });}
  async discardFunction(a:Actor,w:string,previewId:string){await this.policy(a,w);await this.db.query('DELETE FROM foundation_previews WHERE id=$1 AND workspace_id=$2 AND user_id=$3',[previewId,w,a.userId]);return {id:previewId,discarded:true};}
  private async ownedFunction(a:Actor,w:string,functionId:string){await requireWorkflow(this.db,ai(a),w,functionId,true);const f=(await this.db.query('SELECT * FROM foundation_functions WHERE id=$1 AND workspace_id=$2 AND user_id=$3',[functionId,w,a.userId])).rows[0];if(!f)fail(404,'not_found','Function not found');return f;}
- async functions(a:Actor,w:string){await this.policy(a,w);const rows=(await this.db.query('SELECT f.*,r.id AS revision_id,r.digest,r.runtime FROM foundation_functions f JOIN foundation_revisions r ON r.function_id=f.id AND r.version=f.version WHERE f.workspace_id=$1 AND f.user_id=$2 ORDER BY f.created_at DESC',[w,a.userId])).rows;const result=[];for(const row of rows){try{await requireWorkflow(this.db,ai(a),w,row.id);result.push(row);}catch(e){if((e as any).status!==403)throw e;}}return result;}
+ async functions(a:Actor,w:string){await this.policy(a,w);const rows=(await this.db.query('SELECT f.*,r.id AS revision_id,r.digest,r.runtime FROM foundation_functions f JOIN foundation_revisions r ON r.function_id=f.id AND r.version=f.version WHERE f.workspace_id=$1 AND f.user_id=$2 AND f.retired_at IS NULL ORDER BY f.created_at DESC',[w,a.userId])).rows;const result=[];for(const row of rows){try{await requireWorkflow(this.db,ai(a),w,row.id);result.push(row);}catch(e){if((e as any).status!==403)throw e;}}return result;}
  async revision(a:Actor,w:string,revisionId:string){await this.policy(a,w);const r=(await this.db.query('SELECT r.* FROM foundation_revisions r JOIN foundation_functions f ON f.id=r.function_id WHERE r.id=$1 AND f.workspace_id=$2 AND f.user_id=$3',[revisionId,w,a.userId])).rows[0];if(!r)fail(404,'not_found','Revision not found');await requireWorkflow(this.db,ai(a),w,r.function_id);await (r.body.planningOnly?this.validatePlanScope(a,w,r.body.scope):this.validateScope(a,w,r.body.scope));return r;}
  async saveFunction(a:Actor,w:string,previewId:string,digest:string){
   requireCurrentAction(a);

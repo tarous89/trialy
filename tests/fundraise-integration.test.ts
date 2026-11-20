@@ -245,7 +245,6 @@ test('rule 9 modularity and archive first: alone, shared organizations and peopl
   await x.change(w,{kind:'archive_component',componentId:id,expectedVersion:await x.v(id),archived:true});
   assert.deepEqual((await pg.query<any>('SELECT id,fields,archived_fields FROM entity_types WHERE workspace_id=$1 ORDER BY id',[w])).rows,fieldsBefore,'archiving keeps every field');
   assert.ok((await archivedItems(f,actor,w,{kind:'apps'})).items.some((i:any)=>i.id===id),'listed for the owner under Show archived');
-  await assert.rejects(()=>installCatalogApp(f,actor,w,{templateId:F.id,version:F.version,digest:F.digest,name:'Fundraise',requestKey:randomUUID()}),/Restore your archived Fundraise app/);
   await x.change(w,{kind:'archive_component',componentId:id,expectedVersion:await x.v(id),archived:false});
   assert.deepEqual((await pg.query<any>('SELECT id,fields,archived_fields FROM entity_types WHERE workspace_id=$1 ORDER BY id',[w])).rows,fieldsBefore,'restoring keeps every field');
   const j=(await pg.query<any>('SELECT paused,deleted_at FROM app_actions WHERE id=$1',[action])).rows[0];assert.deepEqual([j.paused,j.deleted_at],[true,null],'automation back switched off');

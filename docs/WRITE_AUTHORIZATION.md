@@ -36,6 +36,8 @@ History and previews obey current human/AI field and record permissions, includi
 
 ## Reverse safely
 
+> **Superseded on 19 November 2026 (decision A10).** Records and earlier values are no longer restored from logs or history: `reverse_field_change(s)`, `archive_created_record`, `restore_archived_creation` and `restore_record` are not public operations, and the history screens are read-only. The reversal engines described below remain in the code only for an app's own session Undo, which the server builds itself (scope package 4.6). Read the rest of this section as a description of those engines, not of a user-facing feature.
+
 Offer Reverse change for a field or selected change set, with a preview and explicit approval. Reversal creates a new audited change referencing the original and its authorization; it never removes history. If later edits, formulas or relationships make reversal unsafe, show the conflict and require a reviewed correction rather than overwriting newer work. Reversing a creation with dependants must preserve references or use an appropriate reviewed archival/correction operation. Database reversal cannot recall a sent email or undo other external effects.
 
 ## Lean acceptance checks

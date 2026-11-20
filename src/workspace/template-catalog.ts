@@ -1,6 +1,5 @@
 import {validateAppFunctions} from './app-functions-schema.js';
 import {validateRecipeDeclarations} from '../automations/recipes-schema.js';
-import {archivedTemplateApps} from './archive.js';
 import {requireCurrentAction} from '../domain/write-authorization.js';
 import {randomUUID,createHash} from 'node:crypto';
 import {readFile,readdir} from 'node:fs/promises';
@@ -50,7 +49,7 @@ export async function installCatalogApp(f:WorkspaceFoundation,a:Actor,w:string,i
   if(!row)fail(404,'not_found','Template unavailable');
   if(row.digest!==v.digest)fail(409,'template_changed','Reload the template catalog');
   // Restoring an archived app from this template is offered before creating a new one.
-  if(!v.createNew){const archived=await archivedTemplateApps(tx,a,w,v.templateId);if(archived.length)fail(409,'archived_app_available',`Restore your archived ${archived[0].name} app, or choose to install a new copy.`);}
+  // A9: installing never offers a restore. Archived apps are restored only from the archived apps list.
   const map:any={},bindings:any[]=[],fields:any[]=[],roles:any[]=[];
   const usedNames=new Set((await tx.query('SELECT name FROM entity_types WHERE workspace_id=$1',[w])).rows.map(r=>r.name));
   // Reuse, never copy (modular apps rule 1): shareable roles connect to an existing compatible table by default.
@@ -59,7 +58,7 @@ export async function installCatalogApp(f:WorkspaceFoundation,a:Actor,w:string,i
   for(const [role,def] of Object.entries(row.install_schema) as [string,any][]){
    const s=shared.find(x=>x.role===role),choice=v.sharedTables?.[role];let reuse:any=null;
    if(s&&choice&&choice!=='new'){reuse=s.candidates.find((c:any)=>c.typeId===choice);if(!reuse)fail(409,'shared_table_unavailable','That existing table can no longer be reused. Reload and choose again.');}
-   // "Install a new copy" without an explicit choice starts fresh (rule 8); the Use dialog always sends the choice.
+   // A new copy without an explicit choice starts fresh (rule 8); the Use dialog always sends the choice.
    else if(s&&choice===undefined&&!v.createNew){if(s.candidates.length===1)reuse=s.candidates[0];else if(s.candidates.length>1&&!def.optional)fail(409,'shared_table_choice',`Choose which existing ${def.name} table to use, or choose separate data.`);}
    if(reuse){
     let type=(await tx.query('SELECT * FROM entity_types WHERE id=$1 AND workspace_id=$2',[reuse.typeId,w])).rows[0];

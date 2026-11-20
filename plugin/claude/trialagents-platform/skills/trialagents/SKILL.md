@@ -16,14 +16,16 @@ This skill covers using the workspace and building apps. It routes work: the Tri
 - Where Claude shows interactive MCP Apps (web, desktop, mobile), `open_workspace`, `open_app` and `finalize_app_preview` display the app. Where it does not (for example Claude Code), describe the result and the exact finalized preview in text, and ask the user before confirming a save.
 - Server guides may mention ChatGPT-only steps such as refreshing the ChatGPT extension, Work chat or the ChatGPT runner. Ignore those in Claude.
 
-## Open first, always link
+## Display
 
-- **First TrialAgents request in a conversation:** before anything else, display it. Call `open_app` when the user named a saved app, otherwise `open_workspace`. Then answer.
-- **Every reply about TrialAgents ends with a link** to open it in the browser, on its own line, for example `[Open in TrialAgents](https://platform.trialagents.com/?workspaceId=<workspaceId>)`. Use `openUrl` from `open_workspace` when present; for a specific app use `https://platform.trialagents.com/apps/<appId>?workspaceId=<workspaceId>`. Never invent IDs; if none is known yet, link https://platform.trialagents.com.
+- **Once per conversation, automatically:** open the extension after your first response to a TrialAgents request, so it shows what that response is about. Call `open_app` for the relevant saved app, otherwise `open_workspace`.
+- **Later TrialAgents requests:** choose one display that fits the ask: open the relevant workspace or app for interaction, show a concise inline snippet, or give a direct link.
+- A later data lookup or background context hint never opens or replaces the extension. Always open a view the user explicitly asks for. Snippets and links respect current access.
+- **Direct links:** use `openUrl` from `open_workspace` when present; for a specific app use `https://platform.trialagents.com/apps/<appId>?workspaceId=<workspaceId>`, for example `[Open in TrialAgents](https://platform.trialagents.com/?workspaceId=<workspaceId>)`. Never invent IDs; if none is known yet, link https://platform.trialagents.com.
 
 ## Workflow
 
-1. Open first as above; later requests in the same conversation reopen only when the user asks or a different app is needed. Routine reads stay quiet. Account connection and data permission are separate states.
+1. Follow the display rule above. Routine reads stay quiet. Account connection and data permission are separate states.
 2. Read the relevant `read_workspace_guide` topic and follow `nextOffset` to the end of that topic. Read only the guides and authorized records the task needs:
    - `start`: account, display, branding and recovery.
    - `apps`: discovery, creation, reuse, revisions, finalization and full-table queries. For creating an app or changing its design, first read [app building](references/app-building.md).

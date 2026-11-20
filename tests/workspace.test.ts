@@ -16,10 +16,13 @@ test('Workspace: exact setup, bounded maintenance, source preservation, reversib
  const w=await s.createWorkspace(a,'Workspace'),outside=await s.createWorkspace(other,'Other');await s.setAi(a,w.id,true);
  const save=async(op:any)=>{const p=await s.preview(a,w.id,op);return s.commit(a,p.id,p.digest);};
  const change=async(op:any)=>{const p=await f.preview(ai,w.id,op);return f.confirm(a,w.id,p.id,p.digest);};
- const draft=await f.preview(ai,w.id,{kind:'create_node',nodeKind:'folder',name:'Research'});assert.equal((await f.nodes(ai,w.id)).nodes.length,0);
+ // I1: projects are the top-level organizing unit. Folders, nesting and moves are not operations.
+ await assert.rejects(f.preview(ai,w.id,{kind:'create_node',nodeKind:'folder',name:'Research'}));
+ const draft=await f.preview(ai,w.id,{kind:'create_node',nodeKind:'project',name:'Research'});assert.equal((await f.nodes(ai,w.id)).nodes.length,0);
  const folder=await f.confirm(a,w.id,draft.id,draft.digest);assert.deepEqual(await f.confirm(a,w.id,draft.id,draft.digest),folder);
- const project=await change({kind:'create_node',nodeKind:'project',name:'Partner engagement',parentId:folder.id});
- await assert.rejects(change({kind:'move_node',nodeId:folder.id,expectedVersion:0,parentId:folder.id}),/itself/);
+ await assert.rejects(f.preview(ai,w.id,{kind:'create_node',nodeKind:'project',name:'Nested',parentId:folder.id}));
+ const project=await change({kind:'create_node',nodeKind:'project',name:'Partner engagement'});
+ await assert.rejects(change({kind:'move_node',nodeId:project.id,expectedVersion:0,parentId:folder.id}));
  await assert.rejects(f.nodes(other,w.id));await assert.rejects(f.preview(a,outside.id,{kind:'create_node',nodeKind:'project',name:'No'}));
  const table=(await save({kind:'create_type',name:'Organizations',fields:[{key:'name',name:'Name',kind:'text',ai:true},{key:'address',name:'Address',kind:'text',ai:true}]})).objects[0].id;
  // Component previews are durable drafts; saving source never executes it.
@@ -33,11 +36,12 @@ test('Workspace: exact setup, bounded maintenance, source preservation, reversib
  await assert.rejects(change({...componentInput,componentId:component.id,expectedVersion:0}),/changed/);
  const destination=await change({kind:'create_node',nodeKind:'project',name:'Conference'});
  await change({kind:'move_component',componentId:component.id,expectedVersion:1,projectId:destination.id});
- await change({kind:'restore_component',componentId:component.id,expectedVersion:2,revisionVersion:0});
- const restored=(await f.readComponent(a,w.id,component.id)).component;assert.equal(restored.source,componentInput.content.source);assert.equal(restored.project_id,destination.id);assert.equal(restored.version,3);
+ // A12: earlier versions are read-only history. There is no rollback operation; a correction is a new reviewed revision.
+ await assert.rejects(change({kind:'restore_component',componentId:component.id,expectedVersion:2,revisionVersion:0}));
+ await change({...componentInput,componentId:component.id,expectedVersion:2,projectId:destination.id});
+ const corrected=(await f.readComponent(a,w.id,component.id)).component;assert.equal(corrected.source,componentInput.content.source);assert.equal(corrected.project_id,destination.id);assert.equal(corrected.version,3);
  await change({kind:'archive_component',componentId:component.id,expectedVersion:3,archived:true});
  assert.equal((await f.componentHistory(a,w.id,component.id)).length,5);
- await assert.rejects(change({...componentInput,projectId:folder.id}),/Choose a project/);
  await assert.rejects(change({...componentInput,content:{...componentInput.content,format:'json',source:'not JSON'}}),/valid JSON/);
  const body={autoWrite:true,expiresAt:new Date(Date.now()+86400000).toISOString(),projectId:project.id,purpose:'CRO outreach',inclusionCriteria:'CROs involved in this project',sourcePolicy:'Information supplied in authorized project work',basis:'tracking',bindings:[{typeId:table,fields:['name']}],allowCreate:true,allowUpdate:true,allowIdentityLinks:true,maxChanges:5};
  const scope=await change({kind:'save_scope',scope:body});
@@ -85,7 +89,7 @@ test('Project access: inherited restrictions, sticky moves, stale approval, AI r
  for(const a of [owner,member])await db.query('INSERT INTO users(id,subject,email,name) VALUES($1,$2,$3,$4)',[a.userId,a.userId,'test@example.invalid','Test']);
  const w=await s.createWorkspace(owner,'Access');await s.setAi(owner,w.id,true);await s.share(owner,w.id,member.userId,'editor',[],null,true);
  const change=async(op:any)=>{const p=await f.preview(owner,w.id,op);return f.confirm(owner,w.id,p.id,p.digest);};
- const folder=await change({kind:'create_node',nodeKind:'folder',name:'Restricted'}),project=await change({kind:'create_node',nodeKind:'project',name:'Project',parentId:folder.id}),publicProject=await change({kind:'create_node',nodeKind:'project',name:'Public'});
+ const project=await change({kind:'create_node',nodeKind:'project',name:'Restricted'}),folder=project,publicProject=await change({kind:'create_node',nodeKind:'project',name:'Public'});
  const c=await change({kind:'save_component',projectId:project.id,content:{name:'Saved',format:'text',source:'Sensitive content'}});
  assert.equal((await f.components(member,w.id)).length,1);
  const stale=await f.preview(member,w.id,{kind:'rename_node',nodeId:publicProject.id,expectedVersion:0,name:'Changed'});
@@ -95,8 +99,6 @@ test('Project access: inherited restrictions, sticky moves, stale approval, AI r
  await assert.rejects(f.preview(member,w.id,{kind:'set_project_access',nodeId:publicProject.id,expectedVersion:0,allowedUsers:null,ai:true}),/owner/);
  await change({kind:'move_component',componentId:c.id,expectedVersion:0,projectId:publicProject.id});
  await assert.rejects(f.readComponent(member,w.id,c.id));await assert.rejects(f.readComponent(ai,w.id,c.id));
- await change({kind:'move_node',nodeId:project.id,expectedVersion:0,parentId:null});
- assert.equal((await f.nodes(member,w.id)).nodes.length,1);
  await change({kind:'set_component_access',componentId:c.id,expectedVersion:1,allowedUsers:[member.userId],ai:true});
  assert.equal((await f.readComponent(member,w.id,c.id)).component.id,c.id);
  assert.equal((await f.componentHistory(member,w.id,c.id)).length,2); // old restricted-project source revision is hidden

@@ -1,3 +1,21 @@
+## 20 November 2026 — Platform decisions, session 1: foundations and quick fixes
+
+First of seven build sessions for the [platform decisions of 19 November](docs/scopes/PLATFORM_DECISIONS_IMPLEMENTATION_2026-11-19.md). Decision codes refer to the [snapshot](docs/scopes/PLATFORM_DECISIONS_SNAPSHOT_2026-11-19.md).
+
+- **Helpers are part of their app (B2, T1).** Migration 078 records the owning app on each helper installed with an app, backfills it, and retires helpers an app no longer uses. Apps (Home) no longer lists them; Automations lists them under their app. The install retry key survives a reload.
+- **No rollback of app versions (A12).** `restore_component` and the "Review recovery" button are removed. Earlier versions stay readable.
+- **No restore from logs or history (A10).** `restore_record`, `reverse_field_change(s)`, `archive_created_record` and `restore_archived_creation` are no longer public operations; their buttons, the `list_creation_archives` tool and its route are gone. History stays append-only and readable. The reversal engines remain behind an internal entry for the app session Undo of package 4.6.
+- **No restore offer during install (A9).** The template gallery and the installer no longer offer or require restoring an archived app. A reviewed app save that binds archived fields again still restores them as part of that review (owner only).
+- **Projects without folders (I1).** Migration 079 moves every project to the top level and copies down the people, assistant access, archive state and per-subject rules it inherited. Folder rows stay as archived history. Folders, nesting and project moves are no longer operations.
+- **One platform message (U1, U2, G2).** `SystemNotice` shows one message at a time, bottom right: info and success close after five seconds, an error stays until dismissed and yields only to a newer error. `PlatformChrome` is the shared service for the message, the app name in the platform header and the approval-footer space.
+- **Minimal assistant context and display rule (A14, A15).** The automatic hint to the assistant carries only the view, workspace ID and app ID. Server instructions, the workspace guide, tool descriptions and both plugin skills say: open TrialAgents once per conversation after the first response, then choose between opening, a short snippet or a link.
+- **Speed measurement (P1, P10, B1).** The app runtime times opening, interactions and saves and sends anonymous samples to daily histograms (migration 080); `npm run ux:report` compares them with the targets. The slow-load timer counts only time the tab is visible.
+- **Spike (P4).** See [the frame-engine spike](docs/scopes/platform-decisions-2026-11-19/7-frame-engine-spike.md).
+
+Template guidance 1.3.34 (install never offers a restore). Tests: `tests/home-archived-helpers.test.ts`, `tests/projects-without-folders.test.ts`, `tests/notice-slot.test.ts`, `tests/ux-timing.test.ts`, and updated `core`, `workspace`, `write-authorization`, `archive-first`, `plugin-release`, `embedded-view-context` and the catalog integration tests.
+
+Not verified here: behaviour inside the real ChatGPT and Claude hosts, and production speed numbers (none exist until this is released and used). Installed plugins keep the earlier wording until new plugin versions are published.
+
 ## 18 November 2026 — Update an installed catalog app to its newer version
 
 An installed catalog app keeps the code it was installed with, so the batched-read releases reached only new installs. The app's Settings menu on the website now offers **Update to version X** to the owner and editors when a newer approved version of the same app exists and nothing but the template code would change (same tables and fields, options, defaults and helpers; unchanged saved code). The update is the ordinary reviewed app save: configuration and bindings lines are kept, the code behind them is replaced, and the catalog origin is recorded. Changed code is never replaced. Details and limits: [APP_PUBLICATION.md](docs/APP_PUBLICATION.md#updating-an-installed-catalog-app).

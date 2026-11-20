@@ -76,7 +76,7 @@ Until items 1–6 ship, templates follow the rules manually: reuse via the insta
 
 | Object | "Remove" does | Restore | Permanent deletion |
 |---|---|---|---|
-| App | Archive (already `archive_component`) | `restore_component`, with its tabs, bindings and automations (disabled) | Owner, from the archived list, after confirming what stays |
+| App | Archive (already `archive_component`) | Restore (`archive_component` with `archived:false`), with its tabs, bindings and automations (disabled) | Owner, from the archived list, after confirming what stays |
 | Tab | Unbind; data stays | Re-add the tab: same role keys reconnect | Not applicable |
 | Automation | Disable / archive with the app (no standalone delete, as today) | Restored **disabled**; owner re-enables after review | Not offered |
 | Field | **Archive** when no live or archived app, view, link, scope, function, connector, automation or cross-table link uses it | Automatic when an app binds it again (inside that app's reviewed save) | Empty + unused + archived ≥ 90 days → automatic purge allowed; otherwise owner action |
@@ -94,14 +94,14 @@ Same pattern on **Apps**, **Automations** and **Database** (tables, and fields o
 - **Restore:** brings back the item with its links; automations come back **disabled**. Restoring an automation archived together with its app happens by restoring the app. A name clash adds "(restored)". If something the item depends on was permanently deleted, restore says exactly what is unavailable and proceeds only after the user confirms.
 - **Delete:** a confirmation lists what will be removed and what stays (e.g. "Deleting this app keeps its 3 tables and 412 records in Database"). For fields and tables, Delete is **enabled only when the item is empty and unused**; otherwise it is disabled with a one-line reason (e.g. "Contains 58 values" or "Used by archived app Runway"). Items scheduled for automatic purge show "Deletes automatically on 12 Feb 2027" in the same light text.
 - **Assistants:** Claude and ChatGPT may list archived items for an authorized owner and prepare a restore for review. Permanent deletion is always a human action in the platform, never an assistant action.
-- **Templates:** installing a template whose app is archived first offers "Restore your archived Runway app" before creating a new one.
+- **Templates:** installing a template always creates a new app. Archived apps are restored only from the archived apps list (decision A9, 19 November 2026).
 - **Logs:** archive, restore, permanent delete and automatic purge are recorded in Logs and the audit trail.
 
 ### Review of PR #117 (migration 059, `src/workspace/app-cleanup.ts`)
 
 PR #117 retires automations whose data bindings were removed and, in the same app save, **removes unused empty fields** from schemas (an all-empty schema becomes an invisible table identity). Its dependency check (`trialy_security.unused_app_fields`) is thorough — it looks at every owner's records including archived rows, other apps, derived fields, views, links, scopes, functions, connectors and automations — and should be kept. Three behaviours conflict with this design and should be amended:
 
-1. **Cleanup also runs on `archive_component`.** Archiving ("deleting") an app immediately removes the empty fields only it used, so a later `restore_component` points at fields that no longer exist. Archive must stay fully reversible.
+1. **Cleanup also runs on `archive_component`.** Archiving ("deleting") an app immediately removes the empty fields only it used, so a later restore of the app points at fields that no longer exist. Archive must stay fully reversible.
 2. **Archived apps do not protect fields** (the check only counts `NOT c.archived` components). Bindings of archived apps must count as in use until the app is permanently deleted.
 3. **Automations of archived apps are soft-deleted** (`deleted_at` set on monitors/actions) rather than suspended, so they cannot be restored with the app. They should be disabled and marked suspended-by-archive, then restored disabled.
 

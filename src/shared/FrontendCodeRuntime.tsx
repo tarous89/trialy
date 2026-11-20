@@ -1,4 +1,6 @@
 import {withWorkspaceActivity} from './WorkspaceActivity.js';
+import {UxTimer} from './ux-timing.js';
+import {usePlatformChrome} from './PlatformChrome.js';
 import {SavedRefreshNotice,savedViewUnavailable,type SavedRefreshPhase} from './SavedRefreshNotice.js';
 import type {WorkspaceRequestOptions} from './workspace-request.js';
 import {useWorkspaceView} from './WorkspaceView.js';
@@ -24,6 +26,11 @@ export function FrontendCodeRuntime({active=true,component,previewId,initialOutp
  const platformRef=useRef(platform);platformRef.current=platform;
  const [connectorReviews,setConnectorReviews]=useState<any[]>([]),[customDirty,setCustomDirty]=useState(false);
  const embedded=React.useContext(EmbeddedNavigation);
+ const chrome=usePlatformChrome();
+ // P10: time opening, each interaction and each save as the person experiences them.
+ const ux=useRef<UxTimer|null>(null),opened=useRef<number|null>(performance.now()),interaction=useRef<number|null>(null);
+ if(!ux.current)ux.current=new UxTimer(platform.reportUx,platform.uxHost??'web');
+ useEffect(()=>()=>ux.current?.flush(),[]);
  const frame=useRef<HTMLIFrameElement>(null),output=useRef<any>(null),state=useRef<any>(null),busyRef=useRef(false),channel=useRef(crypto.randomUUID()),live=useRef(true),current=useRef(component);
  const [recordReview,setRecordReview]=useState<any>(null);
  const [detailsOpen,setDetailsOpen]=useState(false),[standard,setStandard]=useState(false),[ready,setReady]=useState(false),[height,setHeight]=useState(620),[adding,setAdding]=useState(component?.resource_kind==='form'),[footer,setFooter]=useState<any>(null);
@@ -155,7 +162,7 @@ export function FrontendCodeRuntime({active=true,component,previewId,initialOutp
  async function completeSave(){
   cancelPrefetch();
   const receipt=saveReceipt.current,p=receipt.proposal;
-  if(!receipt.saved){await call(receipt.deletion?'commit_change':'confirm_workspace_change',{previewId:p.id,digest:p.digest,confirmed:true});receipt.saved=true;}
+  if(!receipt.saved){const started=performance.now();await call(receipt.deletion?'commit_change':'confirm_workspace_change',{previewId:p.id,digest:p.digest,confirmed:true});receipt.saved=true;ux.current?.record('save',performance.now()-started);}
   if(!live.current)return false;
   if(saveReceipt.current!==receipt){setSavedPhase('unavailable');return false;}
   // Acknowledged writes are complete. Freeze the retained view until an
@@ -202,17 +209,20 @@ export function FrontendCodeRuntime({active=true,component,previewId,initialOutp
    else if(e.data.kind==='trialy.dirty'){if(e.data.dirty)navigationRef.current?.setDirty(true);setCustomDirty(!!e.data.dirty);}
    else if(e.data.kind==='trialy.approve'&&output.current?.tracker&&['bound-batch','tracker:create','save-layout'].includes(e.data.action))approvedAction.current=e.data.action;
    else if(e.data.kind==='trialy.notice')setError(e.data.message);
-   else if(e.data.kind==='trialy.rendered')onRendered?.();
+   else if(e.data.kind==='trialy.rendered'){const now=performance.now();if(opened.current!==null){ux.current?.record('open',now-opened.current);opened.current=null;}else if(interaction.current!==null)ux.current?.record('interaction',now-interaction.current);interaction.current=null;onRendered?.();}
    else if(e.data.kind==='trialy.footer')setFooter(e.data.footer);
    else if(e.data.kind==='trialy.state'){const old=state.current,next=e.data.state;state.current=next;if(old?.tab!==next?.tab||old?.settings!==next?.settings)setViewRevision(n=>n+1);setDetailsOpen(!!next?.detail);if(output.current&&(old?.tab!==next?.tab||JSON.stringify(old?.offsets)!==JSON.stringify(next?.offsets)||JSON.stringify(old?.filters)!==JSON.stringify(next?.filters))){cancelPrefetch();prefetch({...output.current,state:next});}}
    else if(e.data.kind==='trialy.resize'&&!output.current?.tracker&&Number.isFinite(e.data.height))setHeight(Math.max(200,Math.min(20000,e.data.height)));
-   else if(e.data.kind==='trialy.event'&&!proposal){state.current=e.data.state??state.current;void run(e.data.event);}
+   else if(e.data.kind==='trialy.event'&&!proposal){state.current=e.data.state??state.current;interaction.current=performance.now();void run(e.data.event);}
   }
  };window.addEventListener('message',receive);return()=>window.removeEventListener('message',receive);},[proposal]);
  useEffect(()=>{if(!detailsOpen)return;const previous=document.body.style.overflow;document.body.style.overflow='hidden';return()=>{document.body.style.overflow=previous;};},[detailsOpen]);
  useEffect(()=>{const banner=updateBanner.current,workspace=banner?.closest<HTMLElement>('.ty-workspace');if(!banner||!workspace)return;const resize=()=>{workspace.style.setProperty('--ty-update-space',Math.ceil(banner.getBoundingClientRect().height+16)+'px');if(standard&&frame.current)setHeight(Math.max(200,window.innerHeight-frame.current.getBoundingClientRect().top));};resize();const observer=new ResizeObserver(resize);observer.observe(banner);return()=>{observer.disconnect();workspace.style.removeProperty('--ty-update-space');};},[publishedUpdate,standard]);
  useEffect(()=>{if(!standard||!frame.current)return;const size=()=>{const top=frame.current?.getBoundingClientRect().top??72,workspace=frame.current?.closest<HTMLElement>('.ty-workspace'),review=workspace?.querySelector<HTMLElement>('.ty-preview-approval:not([hidden] *)'),bottom=review?review.getBoundingClientRect().top:window.innerHeight;setHeight(Math.max(200,bottom-top));};size();window.addEventListener('resize',size);const observer=new ResizeObserver(size);observer.observe(document.documentElement);return()=>{window.removeEventListener('resize',size);observer.disconnect();};},[standard,frameUrl,ready,adding,publishedUpdate,savedPhase]);
- useEffect(()=>{if(!frameUrl||ready)return;const timer=setTimeout(()=>setLoadFailed(true),8000);return()=>clearTimeout(timer);},[frameUrl,ready]);
+ // B1: only time the user can see counts towards a slow load, so a background tab no longer ends in "Retry loading".
+ useEffect(()=>{if(!frameUrl||ready)return;let timer:ReturnType<typeof setTimeout>|undefined;const arm=()=>{clearTimeout(timer);if(document.visibilityState!=='hidden')timer=setTimeout(()=>setLoadFailed(true),8000);};arm();document.addEventListener('visibilitychange',arm);return()=>{clearTimeout(timer);document.removeEventListener('visibilitychange',arm);};},[frameUrl,ready]);
+ // G2: the app's name lives in the platform header.
+ useEffect(()=>{const name=component?.name??null;chrome.setAppName(name);return()=>chrome.setAppName(null);},[component?.name,chrome.setAppName]);
  const retryLoad=()=>{if(saveReceipt.current?.saved){void retrySaved();return;}setLoadFailed(false);if(frameUrl&&!ready&&frame.current){frame.current.src=frameUrl;}else void (current.current?loadPublished():run());};
  if(loadFailed&&!ready&&!frameUrl)return <><SavedRefreshNotice phase={savedPhase}/><AppUnavailable onHome={onHome} onRetry={savedPhase==='unavailable'?undefined:retryLoad} reason={savedPhase==='unavailable'?'missing':schemaChanged?'schema':'load'}/></>;
  return <section className={`ty-tracker-surface ${standard?'ty-tracker--standard':''} ${detailsOpen?'ty-tracker--details':''}`} aria-label={platform.enabled?"App":"Tracker"}>{integration&&current.current&&<IntegrationDialog call={call} appId={current.current.id} role={integration.role} onClose={()=>setIntegration(null)} onChanged={()=>void loadPublished()}/>}

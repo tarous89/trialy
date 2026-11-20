@@ -35,6 +35,8 @@ test('failed cell commit retains the draft and retries its exact proposal',async
  await app.getByRole('button',{name:'Edit Company',exact:true}).first().click();
  await app.getByRole('textbox',{name:'Company',exact:true}).fill('Retained failed edit');await app.getByRole('textbox',{name:'Company',exact:true}).press('Enter');
  await expect(host.getByRole('button',{name:'Retry save',exact:true})).toBeVisible();await expect(app.getByText('Retained failed edit',{exact:true})).toBeVisible();
+ // U2: an error message stays until the person dismisses it.
+ await host.getByRole('button',{name:'Dismiss error'}).click();
  await host.getByRole('button',{name:'Retry save',exact:true}).click();await expect(host.getByRole('button',{name:'Retry save',exact:true})).toHaveCount(0);
  expect(attempts).toHaveLength(2);expect(attempts[1].previewId).toBe(attempts[0].previewId);expect(attempts[1].digest).toBe(attempts[0].digest);
  await app.getByRole('button',{name:'Edit Company',exact:true}).first().click();await app.getByRole('textbox',{name:'Company',exact:true}).fill(originalName);await app.getByRole('textbox',{name:'Company',exact:true}).press('Enter');await expect.poll(()=>attempts.length).toBe(3);await expect(app.getByText(originalName,{exact:true})).toBeVisible();

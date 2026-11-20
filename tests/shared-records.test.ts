@@ -25,7 +25,7 @@ test('Shared project records and contextual candidates preserve sources, approva
   const preview=await f.preview(ai,w.id,link);assert.equal(preview.projectLinks?.records[0].id,recordId);await assert.rejects(f.confirm(ai,w.id,preview.id,preview.digest),/cannot approve/);
   const first=await f.confirm(a,w.id,preview.id,preview.digest);await confirm({...link,projectId:p2.id});
   assert.equal((await s.records(a,w.id,typeId)).total,1);assert.equal((await f.projectRecords(ai,w.id,p1.id)).records[0].record.data.private,undefined);
-  await assert.rejects(s.preview(a,w.id,{kind:'archive_created_record',recordId,expectedVersion:0,reason:'Already linked'}),/linked work/);
+  await assert.rejects(s.prepareReversal(a,w.id,{kind:'archive_created_record',recordId,expectedVersion:0,reason:'Already linked'}),/linked work/);
   const factOp={kind:'record_fact',recordId,expectedVersion:0,field:'organization',value:'Alternative',sourceLabel:'User-provided conference list',rationale:'Possible updated affiliation'};
   const candidate=await confirm(factOp);assert.equal((await s.records(a,w.id,typeId)).rows[0].data.organization,'Original');
   const contextual=await confirm({...factOp,value:'Historical affiliation',projectId:p2.id,validUntil:'2024-12-31T00:00:00Z'});

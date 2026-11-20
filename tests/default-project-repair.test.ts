@@ -13,6 +13,8 @@ test('legacy account receives one default project; archived projects and tool pl
  const db:Database={query:(q,v)=>pg.query(q,v) as any,transaction:f=>pg.transaction(tx=>f(tx as Connection)),close:()=>pg.close()},a={userId:randomUUID(),origin:'human' as const};
  await db.query('INSERT INTO users(id,subject,email,name) VALUES($1,$2,$3,$4)',[a.userId,a.userId,'old@example.invalid','Old account']);
  await pg.exec(await readFile('migrations/041_effective_access.sql','utf8'));
+ // The current code reads the helper ownership columns of migration 078; this partial schema needs them too.
+ await pg.exec('ALTER TABLE foundation_functions ADD COLUMN app_id uuid, ADD COLUMN retired_at timestamptz');
  // Current code reads the separate Claude switches added by migration 057; this legacy schema only needs the columns.
  await pg.exec("ALTER TABLE workspaces ADD COLUMN claude_enabled boolean NOT NULL DEFAULT false;ALTER TABLE workspace_access ADD COLUMN claude_enabled boolean NOT NULL DEFAULT false;");
  // Likewise the archive-first columns from migration 060.

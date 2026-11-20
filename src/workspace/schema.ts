@@ -45,8 +45,7 @@ const appProvenance={
 };
 export const workspaceOperation=z.discriminatedUnion('kind',[
  ...exchangeOperations,
- z.object({kind:z.literal('create_node'),nodeKind:z.enum(['folder','project']),name:z.string().trim().min(1).max(100),description:z.string().trim().max(2000).default(''),parentId:id.nullable().default(null),initialAccess:z.object({expectedVersion:z.number().int().min(0),rules:z.array(z.object({subject:z.union([id,z.literal('chatgpt'),z.literal('claude')]),read:z.boolean(),write:z.boolean()}).strict().refine(v=>v.read||!v.write,{message:'Editing requires viewing'})).max(1000)}).strict().optional()}).strict(),
- z.object({kind:z.literal('move_node'),nodeId:id,expectedVersion:z.number().int().min(0),parentId:id.nullable()}).strict(),
+ z.object({kind:z.literal('create_node'),nodeKind:z.literal('project'),name:z.string().trim().min(1).max(100),description:z.string().trim().max(2000).default(''),parentId:z.null().default(null),initialAccess:z.object({expectedVersion:z.number().int().min(0),rules:z.array(z.object({subject:z.union([id,z.literal('chatgpt'),z.literal('claude')]),read:z.boolean(),write:z.boolean()}).strict().refine(v=>v.read||!v.write,{message:'Editing requires viewing'})).max(1000)}).strict().optional()}).strict(),
  z.object({kind:z.literal('rename_node'),nodeId:id,expectedVersion:z.number().int().min(0),name:z.string().trim().min(1).max(100),description:z.string().trim().max(2000).optional()}).strict(),
  z.object({kind:z.literal('save_scope'),scope:maintenanceSchema,scopeId:id.optional(),expectedVersion:z.number().int().min(0).optional()}).strict(),
  identityLinkSchema,
@@ -72,7 +71,6 @@ export const workspaceOperation=z.discriminatedUnion('kind',[
  z.object({kind:z.literal('set_project_access'),nodeId:id,expectedVersion:z.number().int().min(0),allowedUsers:z.array(id).max(500).nullable(),ai:z.boolean()}).strict(),
  z.object({kind:z.literal('set_component_access'),componentId:id,expectedVersion:z.number().int().min(0),allowedUsers:z.array(id).max(500).nullable(),ai:z.boolean()}).strict(),
  z.object({kind:z.literal('apply_maintenance'),batch:maintenanceBatch}).strict(),
- z.object({kind:z.literal('restore_component'),componentId:id,expectedVersion:z.number().int().min(0),revisionVersion:z.number().int().min(0)}).strict(),
  z.object({kind:z.literal('archive_node'),nodeId:id,expectedVersion:z.number().int().min(0),archived:z.boolean(),reason:z.string().trim().min(1).max(1000)}).strict(),
  z.object({kind:z.literal('link_project_records'),projectId:id,expectedProjectVersion:z.number().int().min(0),records:z.array(z.object({recordId:id,expectedVersion:z.number().int().min(0)}).strict()).min(1).max(200),reason:text}).strict(),
  z.object({kind:z.literal('unlink_project_record'),linkId:id,expectedVersion:z.number().int().min(0),reason:text}).strict(),

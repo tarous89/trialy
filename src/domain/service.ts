@@ -13,7 +13,7 @@ import {nextDaily} from '../shared/schedules.js';
 import {calculate,formulaOrder,editableData,derived} from '../shared/formulas.js';
 import { randomUUID, createHash } from 'node:crypto';
 import type { Connection, Database } from '../db/database.js';
-import { operationSchema, viewFields, viewConfigSchema, fail, type Actor, type Field, type Operation, type RecordQuery } from '../shared/schema.js';
+import { operationSchema, reversalOperationSchema, viewFields, viewConfigSchema, fail, type Actor, type Field, type Operation, type RecordQuery } from '../shared/schema.js';
 import { access, typeAccess, visibleFields, projectData, folderAllowed } from './permissions.js';
 import {PostgresOriginalStore,type OriginalStore} from '../db/originals.js';
 import { templates, templateLinks } from './templates.js';
@@ -49,20 +49,6 @@ export class Service extends DataService {
    const id=randomUUID();await tx.query('INSERT INTO workspaces(id,tenant_id,name,ai_enabled) VALUES($1,$2,$3,$4)',[id,tenantId,name,true]);
    await audit(tx,a,{id,tenant_id:tenantId},'workspace.created',id,null,{name,ai_enabled:true});return {id,name};
   });
- }
- private async restoreData(tx:Connection,a:Actor,w:string,op:Extract<Operation,{kind:'restore_record'}>) {
-  const r=(await tx.query('SELECT * FROM records WHERE id=$1 AND workspace_id=$2',[op.recordId,w])).rows[0];
-  if(!r)fail(404,'not_found','Record not found');
-  const {type,policy}=await typeAccess(tx,a,w,r.type_id,true);
-  if(r.version!==op.expectedVersion||type.version!==op.expectedTypeVersion)fail(409,'stale_version','Record or fields changed. Refresh and preview again.');
-  if(['archived','superseded'].includes(r.state))fail(409,'controlled_record','Archived records cannot be restored here');
-  if(visibleFields(type.fields,policy,a).length!==type.fields.length)fail(403,'restricted_restore','Restoring requires access to every current field');
-  if(op.sourceVersion>=r.version)fail(400,'invalid_revision','Choose an earlier version');
-  const source=(await tx.query("SELECT snapshot FROM revisions WHERE workspace_id=$1 AND object_id=$2 AND object_kind='record' AND version=$3",[w,op.recordId,op.sourceVersion])).rows[0];
-  if(!source)fail(404,'not_found','Version not found');
-  const data=Object.fromEntries(type.fields.filter((f:Field)=>!derived(f)).map((f:Field)=>[f.key,source.snapshot.data[f.key]??null]));
-  await this.validateData(tx,a,w,type,policy,data,false,op.recordId);
-  return {data,state:r.state==='approved'?'in_review':r.state};
  }
  private async migrationData(tx:Connection,a:Actor,w:string,op:Extract<Operation,{kind:'migrate_type'}>){
   const {type,policy}=await typeAccess(tx,a,w,op.typeId,true);if(a.origin!=='human'||policy.role!=='owner')fail(403,'owner_required','Field migrations require the human owner');
@@ -183,7 +169,6 @@ export class Service extends DataService {
   if(op.kind==='reverse_field_change'||op.kind==='reverse_field_changes')await this.reverseBatch(tx,a,w,op);
   if(op.kind==='update_type'){const {type}=await typeAccess(tx,a,w,op.typeId,true);if(a.origin==='ai'&&type.fields.some((f:Field)=>!f.ai))fail(403,'restricted_configuration','Edit tables containing model-restricted fields in the standalone application');if(type.version!==op.expectedVersion)fail(409,'stale_version','Table changed; preview again');if(type.fields.some((f:Field)=>op.fields.some(n=>n.key===f.key&&(n.description??'')!==(f.description??''))))fail(409,'context_change','Change existing descriptions with set_field_context before editing the schema');const populated=Number((await tx.query('SELECT count(*) AS n FROM records WHERE type_id=$1 AND workspace_id=$2',[op.typeId,w])).rows[0].n)>0;if(populated){for(const old of type.fields){const next=op.fields.find(f=>f.key===old.key);if(!next||next.kind!==old.kind||json([next.formula?.operator,next.formula?.fields])!==json([old.formula?.operator,old.formula?.fields])||json(next.options)!==json(old.options)||next.targetTypeId!==old.targetTypeId||!!next.multiple!==!!old.multiple||!!next.computed!==!!old.computed||!!next.lookup!==!!old.lookup||(!old.required&&next.required))fail(409,'migration_required','Existing data requires an explicit field migration; use an optional new field instead');}if(op.fields.some(f=>(f.required||f.formula)&&!type.fields.some((old:Field)=>old.key===f.key)))fail(409,'migration_required','New fields on populated tables must be optional');}}
   if(op.kind==='bulk_records'){for(const change of op.changes)await this.validate(tx,a,w,change);}
-  if(op.kind==='restore_record')await this.restoreData(tx,a,w,op);
   if(op.kind==='update_type'){for(const f of op.fields.filter(f=>f.unique)){const rows=(await tx.query("SELECT 1 FROM records WHERE workspace_id=$1 AND type_id=$2 AND data->$3::text IS NOT NULL AND data->$3::text NOT IN ('null'::jsonb,'\"\"'::jsonb) GROUP BY data->$3::text HAVING count(*)>1 LIMIT 1",[w,op.typeId,f.key])).rows;if(rows.length)fail(409,'duplicate_value','Existing values must be unique before enabling this rule');}}
   if(op.kind==='create_record'){const t=await typeAccess(tx,a,w,op.typeId,true);await assertUntracked(tx,op.typeId,op.data);await this.validateData(tx,a,w,t.type,t.policy,op.data);}
   if(op.kind==='update_record'){const r=(await tx.query('SELECT * FROM records WHERE id=$1 AND workspace_id=$2',[op.recordId,w])).rows[0];if(!r)fail(404,'not_found','Record not found');const t=await typeAccess(tx,a,w,r.type_id,true);if(r.version!==op.expectedVersion)fail(409,'stale_version','The record changed. Refresh and preview again.');if(['archived','superseded'].includes(r.state))fail(409,'controlled_record','Controlled record requires a new reviewed revision; direct editing is disabled');await assertUntracked(tx,r.type_id,op.data,r);await this.validateData(tx,a,w,t.type,t.policy,op.data,true,op.recordId);}
@@ -218,11 +203,11 @@ export class Service extends DataService {
   if(op.kind==='database_changes')return (await Promise.all(op.updates.map(c=>this.fieldDiff(tx,a,w,c)))).flat();
   if(op.kind==='bulk_records')return (await Promise.all(op.changes.map(c=>this.fieldDiff(tx,a,w,c)))).flat();
   if(op.kind==='reverse_field_change'||op.kind==='reverse_field_changes'){const records=await this.reverseBatch(tx,a,w,op);return (await Promise.all(records.map(async r=>{const {type,policy}=await typeAccess(tx,a,w,r.record.type_id);return visibleFields(type.fields,policy,a).filter(f=>Object.hasOwn(r.record.data,f.key)!==Object.hasOwn(r.data,f.key)||json(r.record.data[f.key])!==json(r.data[f.key])).map(f=>({typeId:r.record.type_id,recordId:r.record.id,field:f.key,label:f.name,derived:!!derived(f),beforePresent:Object.hasOwn(r.record.data,f.key),before:r.record.data[f.key]??null,afterPresent:Object.hasOwn(r.data,f.key),after:r.data[f.key]??null}));}))).flat();}
-  if(op.kind!=='create_record'&&op.kind!=='update_record'&&op.kind!=='restore_record')return [];
+  if(op.kind!=='create_record'&&op.kind!=='update_record')return [];
   const record=op.kind==='create_record'?null:(await tx.query('SELECT * FROM records WHERE id=$1 AND workspace_id=$2',[op.recordId,w])).rows[0];
   const typeId=op.kind==='create_record'?op.typeId:record.type_id;
   const {type,policy}=await typeAccess(tx,a,w,typeId);const fields=visibleFields(type.fields,policy,a);
-  const before=record?.data??{},input=op.kind==='restore_record'?(await this.restoreData(tx,a,w,op)).data:op.data,after=calculate(type.fields,{...before,...input});
+  const before=record?.data??{},input=op.data,after=calculate(type.fields,{...before,...input});
   return fields.filter(f=>Object.hasOwn(before,f.key)!==Object.hasOwn(after,f.key)||json(before[f.key])!==json(after[f.key])).map(f=>({typeId,recordId:record?.id??null,field:f.key,label:f.name,derived:!!derived(f),beforePresent:Object.hasOwn(before,f.key),before:before[f.key]??null,afterPresent:Object.hasOwn(after,f.key),after:after[f.key]??null}));
  }
  async pendingChanges(a:Actor,w:string){
@@ -262,12 +247,6 @@ export class Service extends DataService {
   }
   return {record,typeName:type.name,beforeState:record.state,afterState:op.kind==='archive_created_record'?'archived':'draft',archiveEventId:event?.id??null};
  }
- async creationArchives(a:Actor,w:string,offset=0){
-  await access(this.db,a,w);if(!Number.isInteger(offset)||offset<0)fail(400,'invalid_offset','Invalid page');
-  const rows=(await this.db.query(`SELECT e.id,e.object_id AS record_id,e.actor_id,e.created_at,e.reason,e.action,e.before_value,e.after_value,r.type_id,r.version AS current_version,r.state AS current_state FROM audit_events e JOIN records r ON r.id=e.object_id AND r.workspace_id=e.workspace_id WHERE e.workspace_id=$1 AND e.action IN ('record.creation_archived','record.creation_restored') ORDER BY e.created_at DESC,e.id DESC LIMIT 25 OFFSET $2`,[w,offset])).rows;
-  const events=[];for(const row of rows){try{const {type,policy}=await typeAccess(this.db,a,w,row.type_id);if(visibleFields(type.fields,policy,a).length!==type.fields.length)continue;events.push({...row,typeName:type.name});}catch{}}
-  return {events,nextOffset:rows.length===25?offset+25:null};
- }
  private async reverseBatch(tx:Connection,a:Actor,w:string,op:Extract<Operation,{kind:'reverse_field_change'|'reverse_field_changes'}>){
   const entries=op.kind==='reverse_field_change'?[op]:op.changes;
   if(new Set(entries.map(e=>e.changeId)).size!==entries.length)fail(400,'duplicate_change','Select each change only once');
@@ -296,6 +275,8 @@ export class Service extends DataService {
   return {changes:visible,nextOffset:rows.length===25?offset+25:null};
  }
  async preview(a:Actor,w:string,input:unknown) {const op=operationSchema.parse(input);return this.prepare(a,w,op);}
+ /** Internal (A10): reversal previews are built by the server for an app's own session Undo. No tool, route or history screen reaches this. */
+ async prepareReversal(a:Actor,w:string,input:unknown) {return this.prepare(a,w,reversalOperationSchema.parse(input));}
  async previewFile(a:Actor,w:string,input:{filename:string;mime:string;bytes:Buffer;ai:boolean;documentId?:string;expectedVersion?:number;submissionFileId?:string}) {
   if(!input.bytes.length||input.bytes.length>this.maxFileBytes)fail(413,'file_size','File is empty or exceeds the upload limit');
   if(input.filename.length>250||input.mime.length>150)fail(400,'file_metadata','File metadata is too long');
@@ -304,7 +285,7 @@ export class Service extends DataService {
  private async prepare(a:Actor,w:string,op:Operation|FileOperation) {
   const schemaFingerprint=['create_type','update_type','migrate_type','create_view','update_view','create_record','update_record','bulk_records','database_changes','accept_submission','upgrade_template','adopt_template','reverse_field_change','reverse_field_changes','archive_created_record','restore_archived_creation','restore_archived_schema'].includes(op.kind)?checksum(json((await this.db.query('SELECT id,version FROM entity_types WHERE workspace_id=$1 ORDER BY id',[w])).rows)):undefined;
   await this.validate(this.db,a,w,op);await this.sweep();
-  let summary:any=op.kind==='restore_record'?{...op,...await this.restoreData(this.db,a,w,op)}:op.kind==='save_document'?{...op,bytes:undefined,byteSize:op.bytes.length,checksum:checksum(op.bytes)}:op;
+  let summary:any=op.kind==='save_document'?{...op,bytes:undefined,byteSize:op.bytes.length,checksum:checksum(op.bytes)}:op;
   if(op.kind==='restore_archived_schema'){const t=(await this.db.query('SELECT name,archived_fields,archived_at FROM entity_types WHERE id=$1',[op.typeId])).rows[0];summary={...op,tableName:t.name,tableArchived:!!t.archived_at,fields:archivedFieldsOf(t).filter(x=>!op.fields||op.fields.includes(x.field.key)).map(x=>({key:x.field.key,name:x.field.name})),retains:'Record values were never removed. Restored fields return to Database, pickers and exports.'};}
   if(op.kind==='set_field_context'){const {type}=await typeAccess(this.db,a,w,op.typeId);summary={...op,columnName:type.fields.find((f:Field)=>f.key===op.field)?.name,before:type.fields.find((f:Field)=>f.key===op.field)?.description??'',after:op.description};}
   if(op.kind==='create_record'||op.kind==='update_record'||op.kind==='accept_submission'){
@@ -475,11 +456,6 @@ await audit(tx,a,p,'submission.accepted',op.submissionId,null,{recordId:result[0
     await tx.query('UPDATE records SET data=$1,version=$2,updated_at=now() WHERE id=$3',[json(data),version,record.id]);
     await revision(tx,a,w,record.id,'record',version,{data,state:record.state});await audit(tx,a,p,'record.reversed',record.id,{data:record.data},{data,changeIds},op.reason);objects.push({id:record.id,kind:'record',version});
    }return objects;
-  }
-  if(op.kind==='restore_record'){
-   const restored=await this.restoreData(tx,a,w,op);
-   const result=await this.apply(tx,a,w,{kind:'update_record',recordId:op.recordId,expectedVersion:op.expectedVersion,data:restored.data,reason:op.reason},p);
-   await audit(tx,a,p,'record.restored',op.recordId,{version:op.expectedVersion},{sourceVersion:op.sourceVersion,version:op.expectedVersion+1},op.reason);return result;
   }
   if(op.kind==='create_automation'){const id=randomUUID();await tx.query('INSERT INTO automations(id,workspace_id,owner_id,grant_id,name,interval_minutes,next_run,conditions,schedule,event_cursor,action) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,(SELECT coalesce(max(event_sequence),0) FROM audit_events WHERE workspace_id=$2),$10)',[id,w,a.userId,op.grantId,op.name,op.intervalMinutes,op.schedule?.kind==='daily'?nextDaily(op.schedule,new Date()):new Date(),json(op.conditions??null),json(op.schedule??null),json(op.action??null)]);await revision(tx,a,w,id,'automation',0,op);await audit(tx,a,p,'automation.created',id,null,op);return [{id,kind:'automation',version:0}];}
   if(op.kind==='update_view'){

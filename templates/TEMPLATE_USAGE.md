@@ -1,6 +1,6 @@
 # Using TrialAgents templates and optional tasks
 
-Version: 1.3.33
+Version: 1.3.34
 
 ## Running and changing app code (1.3.32)
 
@@ -76,7 +76,7 @@ Nothing a user created is removed as a side effect ([modular apps §6](../docs/p
 - **Deleting an app archives it.** Tables, records, fields and history stay. Its automations are paused and come back **switched off** when the app is restored (`prepare_workspace_change` with `archive_component` and `archived:false`); an owner re-enables them after review. Never enable them as part of a restore.
 - **Removing a tab or binding unbinds it.** Fields and tables that nothing else uses (including archived apps) and that hold no values are archived, not removed. Re-adding the tab with the same table IDs and field keys reconnects them: the reviewed app save restores them (workspace owner only, because it changes the shared schema).
 - **Archived items are hidden by default** from search, totals, charts, exports, pickers and list tools. Do not treat them as active data or recreate them under new names. An authorized owner can ask for them with `list_archived_items` (apps, automations, tables, or a table's fields); restore fields or a table with `prepare_change` `restore_archived_schema`.
-- **Templates:** before installing a template, check `list_archived_items` with `kind:"apps"` and the `templateId`. If an archived app from that template exists, offer "Restore your archived app" first; install a new copy only if the user chooses it.
+- **Templates:** installing a template always creates a new app and never offers a restore. An archived app is restored only from the archived apps list on Apps (`list_archived_items` with `kind:"apps"`), by someone allowed to restore it.
 - **Permanent deletion is a human action** by the workspace owner on the TrialAgents website, only for archived items that are empty and unused (an optional automatic purge may remove such fields and tables after 90 days). Assistants never delete permanently and never present deletion as available to themselves.
 
 ## Role-based connections and existing data
