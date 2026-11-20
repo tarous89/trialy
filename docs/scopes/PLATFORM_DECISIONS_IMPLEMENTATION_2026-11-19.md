@@ -444,4 +444,17 @@ What changed against the scope as written:
 - **1.8 sends samples from the web host only.** The embedded ChatGPT and Claude hosts need their own transport (package 5.8). No production baseline exists until this session is released and used; record the first real numbers in `docs/PERFORMANCE_MEASUREMENT.md` before session 4 changes the save path.
 - **1.7 leaves two things for later.** In-page code still gathers the richer view details, but they no longer leave the page. The plugin manifest's review test cases still list the open tools first; that changes with the plugin release (O3).
 
+- **1.8 had a gap, found and fixed in session 2.** The live service uses a restricted database login that was not allowed to write the speed table, so no speed numbers were stored between the session 1 release and the session 2 release. The permission and a test for it were added on 20 November 2026.
+
+### Session 2 notes
+
+How the roles are built (so later sessions do not redo it):
+
+- **App roles sit on top of the existing access rules.** Migration 081 records who owns each app, who granted which role and when (`app_members`), and the team default role (`team_default_role` on the app). The existing per-person access rules stay the thing that is enforced; granting a role writes the matching rule. `appRole` in `src/domain/app-roles.ts` and `trialy_security.app_role` in the database give the same answer. The grant rules (`R3`–`R5`) are checked in the application (`src/domain/app-sharing.ts`) and again in the database (`trialy_security.set_app_role`); a database guard stops anyone but an owner changing an app's code, team default or audience.
+- **Whoever creates an app owns it** (a database trigger, so every creation path is covered). Existing apps: the creator became Owner when still a team member (`D3`). The team default for existing apps is Editor, which reproduces today's access; existing restrictions (audience lists, per-person rules) keep working unchanged.
+- **Editors no longer change layout or settings of an app** (`A3`, `R4`). Before, any team member with edit rights could. Owners of the app and organization owners can.
+- **Sharing an app never opens tables.** A team member granted a role keeps their own table access; the person sharing is told which of the app's tables the recipient cannot see (`A5`). Guests keep the existing scoped sharing.
+- **Session 2 is delivered in two parts.** Part A: app roles, team default, several organization owners, access requests, member removal, billing limited to organization owners. Part B: table access without per-column settings (2.4), assistant permissions as Data and Apps levels (2.5), the rebuilt Access tab (2.7), logs by role (2.8). Until 2.4 lands, a person who is view-only in the organization cannot be made Editor of an app.
+- **Automations stay with their creator until session 6** (`T1`), because the database isolates automation rows per creator today.
+
 Environment note for later sessions: this build container cannot run the project's pinned browser for screenshots, so screenshot comparisons here are indicative only. The pull request's checks are the authority for them.

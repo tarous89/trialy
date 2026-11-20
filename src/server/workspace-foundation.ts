@@ -10,6 +10,7 @@ import {standardTracker} from '../workspace/standard-tracker.js';
 import {prepareToolLayout,toolLayoutRequest} from '../workspace/tool-layout.js';
 import {AccessGrid,gridBatch} from '../domain/access-grid.js';
 import {AccessManagement,accessUpdate} from '../domain/access-management.js';
+import {AppRoles} from '../domain/app-sharing.js';
 import {accountCatalog,accountCatalogRequest} from '../workspace/catalog.js';
 import {accountHome} from '../workspace/home.js';
 import {trackerSetup,trackerOperation} from '../workspace/tracker-template.js';
@@ -118,6 +119,7 @@ export function addWorkspaceMcp(server:McpServer,f:WorkspaceFoundation,a:Actor,s
  register('read_access_directory','List only the owned and shared workspaces available to this connected user.',{},true,()=>new AccessGrid(f.db).directory(a),true);
  register('read_access_grid','Read effective view/edit permissions for projects, apps, database columns and workflows. Shared resources show only the current user’s access.',{workspaceId:id,subject:z.union([id,z.literal('all'),z.literal('chatgpt'),z.literal('claude')]).optional()},true,v=>new AccessGrid(f.db).read(a,v.workspaceId,v.subject),true);
  register('save_access_grid','Prepare grouped access changes for confirmation in the signed-in owner session. Does not save permissions from an AI call.',{workspaceId:id,batch:gridBatch},false,async v=>{const review=await new AccessGrid(f.db).prepare(a,v.workspaceId,v.batch);const url=new URL(appPublicUrl());url.searchParams.set('tab','access-control');url.searchParams.set('workspaceId',v.workspaceId);url.searchParams.set('accessReview',review.reviewId);return {reviewUrl:url.toString(),saved:false};},true);
+ register('read_app_members','List the people who can use one app with their role (Owner, Editor, Viewer), who granted it and when, and the team default role. Roles are changed only by a signed-in person in TrialAgents.',{workspaceId:id,appId:id},true,v=>new AppRoles(f.db).members(a,v.workspaceId,v.appId),true);
  register('read_effective_access','Review people and connections with effective resource permissions. The server enforces permissions independently of generated apps.',{workspaceId:id},true,v=>new AccessManagement(f.db).overview(a,v.workspaceId),true);
  register('explain_effective_access','Explain table and column access, including source apps and record scope.',{workspaceId:id,subject:z.union([id,z.literal('chatgpt'),z.literal('claude')])},true,v=>new AccessManagement(f.db).explain(a,v.workspaceId,v.subject),true);
  register('update_effective_access','Prepare an access change for explicit confirmation in the authenticated owner session. Never grants access from an AI call.',{workspaceId:id,change:accessUpdate},false,async v=>{const overview=await new AccessManagement(f.db).overview(a,v.workspaceId);if(!overview.canManage)throw Error('Only the account owner may manage access');const url=new URL(appPublicUrl());url.searchParams.set('tab','access-control');url.searchParams.set('workspaceId',v.workspaceId);url.searchParams.set('accessDraft',JSON.stringify(v.change));return {reviewUrl:url.toString(),saved:false};},true);

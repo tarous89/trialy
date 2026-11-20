@@ -92,7 +92,9 @@ export class WorkspaceFoundation {
   if(c.source_access!=='bindings')await this.componentSourcePolicy(tx,a,w,c.source);
   const p=await access(tx,a,w);const chain=await this.nodeAccess(tx,a,w,c.project_id);
   if((p.role!=='owner'&&c.allowed_users!==null&&!c.allowed_users.includes(a.userId))||(a.origin==='ai'&&!c.ai_enabled))fail(404,'not_found','Component not found');
-  await toolPolicy(tx,a,p,id);if(validateBindings&&!standardTracker(c.source))await this.componentBindings(tx,a,w,c.archived?await this.availableBindings(tx,w,c.bindings):c.bindings,c.archived);await this.componentAssets(tx,a,w,c.assets);return {...c,project_archived:chain.some(n=>n.archived)};
+  const {role:app_role}=await toolPolicy(tx,a,p,id);if(validateBindings&&!standardTracker(c.source))await this.componentBindings(tx,a,w,c.archived?await this.availableBindings(tx,w,c.bindings):c.bindings,c.archived);await this.componentAssets(tx,a,w,c.assets);
+  // app_role: the acting person's role on this app (owner, editor or viewer); the interface uses it to offer only what the server will accept.
+  return {...c,project_archived:chain.some(n=>n.archived),app_role};
  }
  private async runtimeComponent(tx:Connection,a:Actor,w:string,id:string,expectedVersion:number|undefined,viewId?:string){
   const latest=await this.component(tx,a,w,id,!viewId);
