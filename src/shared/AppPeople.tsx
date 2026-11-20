@@ -15,9 +15,12 @@ export const grantedWhen=(at:string|Date)=>new Intl.DateTimeFormat(undefined,{da
  * Inside an assistant the list is read-only; roles are changed by a signed-in person in TrialAgents.
  */
 export function AppPeople({call,appId,readOnly=false,onManage}:{call:Call;appId:string;readOnly?:boolean;onManage?:()=>void}){
- const [data,setData]=useState<any>(null),[error,setError]=useState(''),[busy,setBusy]=useState(false),[asking,setAsking]=useState<{person:any;role:Role}|null>(null);
+ const [data,setData]=useState<any>(null),[error,setError]=useState(''),[busy,setBusy]=useState(false),[asking,setAsking]=useState<{person:any;role:Role}|null>(null),[requests,setRequests]=useState<any[]>([]);
  const chrome=usePlatformChrome(),seq=useRef(0);
- async function load(){const mine=++seq.current;try{const value=await call('read_app_members',{appId});if(mine===seq.current){setData(value);setError('');}}catch(e){if(mine===seq.current)setError((e as Error).message);}}
+ async function load(){const mine=++seq.current;try{const value=await call('read_app_members',{appId});if(mine===seq.current){setData(value);setError('');}}catch(e){if(mine===seq.current)setError((e as Error).message);}
+  // Open access requests this person may answer (A5). Not available inside an assistant; the list simply stays empty there.
+  if(!readOnly)try{const open=await call('read_app_access_requests',{appId});if(mine===seq.current)setRequests(open.requests??[]);}catch{if(mine===seq.current)setRequests([]);}}
+ async function answer(r:any,approve:boolean){setBusy(true);try{const done=await call('decide_app_access_request',{appId,requestId:r.id,approve});chrome.notify(done.alreadyHandled?{kind:'info',message:`Already answered${done.decidedBy?' by '+done.decidedBy:''}`}:{kind:'success',message:approve?`${r.name} is now ${LABEL[r.role as Role]}`:`Request from ${r.name} declined`});await load();}catch(e){chrome.notify({kind:'error',message:(e as Error).message});}finally{setBusy(false);}}
  useEffect(()=>{setData(null);void load();return()=>{seq.current++;};},[appId]);
  async function apply(person:any,role:Role){
   setAsking(null);setBusy(true);
@@ -39,6 +42,7 @@ export function AppPeople({call,appId,readOnly=false,onManage}:{call:Call;appId:
  const people=[...data.people].sort((a:any,b:any)=>RANK[b.role as Role]-RANK[a.role as Role]||a.name.localeCompare(b.name));
  return <section className="ty-app-people" aria-label="People and roles" aria-busy={busy}>
   <div className="ty-app-people-head"><h3>People and roles</h3><span className={'ty-role ty-role--'+data.role}>You: {LABEL[data.role as Role]}</span></div>
+  {requests.length>0&&<ul className="ty-app-people-list ty-app-people-requests" aria-label="Access requests">{requests.map((r:any)=><li key={r.id}><span className="ty-app-people-name"><b>{r.name} asks to {r.role==='editor'?'edit':'view'} this app</b>{r.note&&<small>{r.note}</small>}</span><span className="ty-actions">{r.canDecline&&<button type="button" className="ty-button" disabled={busy} onClick={()=>void answer(r,false)}>Decline</button>}{r.canApprove&&<button type="button" className="ty-button ty-button--primary" disabled={busy} onClick={()=>void answer(r,true)}>Approve</button>}</span></li>)}</ul>}
   {owner&&<label className="ty-app-people-default"><span><b>Team default</b><small>The role team members have when nobody set one for them. Guests never get it.</small></span>
    <select aria-label="Team default role" value={data.teamDefault} disabled={!canChange||busy} onChange={e=>void teamDefault(e.target.value)}><option value="editor">Editor</option><option value="viewer">Viewer</option><option value="none">No access</option></select></label>}
   <ul className="ty-app-people-list">{people.map((p:any)=>{const choices=options(p),fixed=!canChange||p.self||p.organizationOwner||!choices.length;

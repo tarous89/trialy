@@ -77,6 +77,8 @@ export function foundationClient(api:(path:string,method?:string,body?:unknown,o
  read_app_members:[`/api/workspaces/${v.workspaceId}/apps/${v.appId}/members`],
  set_app_role:[`/api/workspaces/${v.workspaceId}/apps/${v.appId}/members`,'POST',{userId:v.userId,role:v.role}],
  set_app_team_default:[`/api/workspaces/${v.workspaceId}/apps/${v.appId}/team-default`,'POST',{role:v.role}],
+ read_app_access_requests:[`/api/workspaces/${v.workspaceId}/apps/${v.appId}/access-requests`],
+ decide_app_access_request:[`/api/workspaces/${v.workspaceId}/apps/${v.appId}/access-requests/${v.requestId}`,'POST',{approve:v.approve}],
  save_access_grid:[`/api/workspaces/${v.workspaceId}/access-grid`,'POST',v.batch],
  list_tool_tables:[`${o}/components/${v.componentId}/tables`],
  tool_reference_options:[`${o}/components/${v.componentId}/references/${v.typeId}/${encodeURIComponent(v.field)}?q=${encodeURIComponent(v.query??'')}&offset=${v.offset??0}`],
