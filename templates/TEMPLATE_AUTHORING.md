@@ -1,6 +1,6 @@
 # TrialAgents template authoring standard
 
-Version: 1.3.33
+Version: 1.3.34
 
 ## Who can run and change app code (1.3.32)
 

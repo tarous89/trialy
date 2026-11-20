@@ -23,7 +23,7 @@ test('Extension never flashes legacy tabs while account metadata is slow or fail
  expect(await frame.evaluate(()=>window.sawLegacyTabs)).toBe(false);
 });
 
-for(const embedded of [true,false])test(`Move feedback floats without layout shift and expires within 3 seconds (${embedded?'extension':'platform'})`,async({page})=>{
+for(const embedded of [true,false])test(`Move feedback floats without layout shift and closes after 5 seconds (${embedded?'extension':'platform'})`,async({page})=>{
  await page.setViewportSize({width:1100,height:850});await page.clock.install();
  let resource={...card};const home=()=>({projects:[project],resources:[resource],total:1});
  await page.route('**/api/account/home',route=>route.fulfill({json:home()}));
@@ -40,13 +40,13 @@ for(const embedded of [true,false])test(`Move feedback floats without layout shi
  await expect(root.locator('.ty-resource--app')).toHaveCount(1);
  const heading=root.getByRole('heading',{name:'Apps',exact:true}),before=await heading.boundingBox();
  // install() still advances with wall time. Freeze before creating the notice so
- // CI/browser assertion time cannot consume part of its three-second lifetime.
+ // CI/browser assertion time cannot consume part of its five-second lifetime (decision U2).
  await page.clock.pauseAt(new Date(await page.evaluate(()=>Date.now())+10000));
  await root.getByRole('button',{name:'Actions for Feedback test app'}).click();await root.getByRole('menuitem',{name:'Move to',exact:true}).click();await root.getByRole('menuitem',{name:'Research project',exact:true}).click();
  const notice=root.getByRole('status').filter({hasText:'Moved to Research project'});await expect(notice).toBeVisible();
  expect((await heading.boundingBox()).y).toBe(before.y);await expect(root.locator('.ty-system-notices')).toHaveCSS('position','fixed');
  const box=await notice.boundingBox();expect(box.x).toBeGreaterThan(600);expect(box.y+box.height).toBeGreaterThan(800);
- await page.clock.fastForward(2800);await expect(notice).toBeVisible();await page.clock.fastForward(200);await expect(notice).toHaveCount(0);
+ await page.clock.fastForward(4800);await expect(notice).toBeVisible();await page.clock.fastForward(200);await expect(notice).toHaveCount(0);
  expect((await heading.boundingBox()).y).toBe(before.y);
  const app=root.locator('.ty-resource--app');await app.hover();
  await expect(app).toHaveScreenshot(`hover-border-${embedded?'extension':'platform'}.png`);
