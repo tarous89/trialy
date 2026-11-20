@@ -416,8 +416,8 @@ Updated at the end of every session.
 
 | Session | Status | Pull request | Shipped | Carried over |
 | --- | --- | --- | --- | --- |
-| 1 · Foundations and quick fixes | Built, 20 November 2026. In review. | [#196](https://github.com/tarous89/trialy/pull/196) | 1.1 to 1.9, with the changes listed under "Session 1 notes" | Listed under "Session 1 notes" |
-| 2 · Roles and access | Not started | | | |
+| 1 · Foundations and quick fixes | Shipped and live, 20 November 2026 (checked on the live platform after release). | [#196](https://github.com/tarous89/trialy/pull/196) | 1.1 to 1.9, with the changes listed under "Session 1 notes" | Listed under "Session 1 notes" |
+| 2 · Roles and access | In progress since 20 November 2026 | | | |
 | 3 · App lifecycle and installation | Not started | | | |
 | 4 · Data path and server speed | Not started | | | |
 | 5 · Browser runtime, style and guide | Not started | | | |
