@@ -13,6 +13,8 @@ test('flattening folders keeps each inherited restriction and leaves folders as 
  try{
   const files=(await readdir('migrations')).filter(f=>f.endsWith('.sql')).sort(),at=files.indexOf('079_projects_without_folders.sql');assert.ok(at>0);
   for(const file of files.slice(0,at))await pg.exec(await readFile('migrations/'+file,'utf8'));
+  // The current application reads personal assistant limits with every access check (migration 085). A stand-in table lets it build the old state; it is dropped before the later migrations run.
+  await pg.exec('CREATE TABLE assistant_limits(workspace_id uuid,user_id uuid,assistant text,data_level text,apps_level text)');
   const db:Database={query:(q,v)=>pg.query(q,v) as any,transaction:fn=>pg.transaction(tx=>fn(tx as Connection)),close:async()=>{}};
   const owner={userId:randomUUID(),origin:'human' as const},member={userId:randomUUID(),origin:'human' as const},other={userId:randomUUID(),origin:'human' as const};
   for(const u of [owner,member,other])await db.query('INSERT INTO users(id,subject,email,name) VALUES($1,$2,$3,$4)',[u.userId,u.userId,u.userId+'@example.invalid','User']);
@@ -30,6 +32,7 @@ test('flattening folders keeps each inherited restriction and leaves folders as 
   const rules=[{subject:other.userId,kind:'project',resourceId:outer,read:'deny',write:'inherit'},{subject:other.userId,kind:'project',resourceId:nested,read:'allow',write:'allow'},{subject:member.userId,kind:'project',resourceId:inner,read:'allow',write:'deny'},{subject:member.userId,kind:'project',resourceId:top,read:'allow',write:'inherit'}];
   await db.query('UPDATE workspaces SET permission_rules=$2 WHERE id=$1',[w.id,JSON.stringify(rules)]);
   const version=(await db.query('SELECT access_version FROM workspaces WHERE id=$1',[w.id])).rows[0].access_version;
+  await pg.exec('DROP TABLE assistant_limits');
   for(const file of files.slice(at))await pg.exec(await readFile('migrations/'+file,'utf8'));
   const row=async(id:string)=>(await db.query('SELECT * FROM workspace_nodes WHERE id=$1',[id])).rows[0];
   for(const id of [nested,open,sleeping,top])assert.equal((await row(id)).parent_id,null);
