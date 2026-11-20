@@ -136,3 +136,41 @@ test('3.4 (A4, I2): approving a change that affects access, connections or autom
   });
  }finally{await db.close();}
 });
+
+test('A13 (3.6): dependency warnings for app and schema changes',async t=>{
+ const {db,s,f,w,owner,ai,table}=await setup();
+ try{
+  const items=await table('Items'),notes=await table('Notes');
+  const first=await f.preview(owner,w.id,{kind:'save_component',content:app('Tracker',[items,notes])});
+  const saved=await f.confirm(owner,w.id,first.id,first.digest);
+  // An automation of this app is triggered by Notes (inserted directly: only its configuration matters here).
+  const automation=randomUUID();
+  await db.query("INSERT INTO app_actions(id,workspace_id,user_id,app_id,config,approved_by) VALUES($1,$2,$3,$4,$5,$3)",[automation,w.id,owner.userId,saved.id,JSON.stringify({name:'Weekly notes digest',trigger:{kind:'record_created',typeId:notes}})]);
+  const version=async()=>(await db.query('SELECT version FROM workspace_components WHERE id=$1',[saved.id])).rows[0].version;
+
+  await t.test('a change that affects nothing returns no report',async()=>{
+   const p=await f.preview(ai,w.id,{kind:'save_component',componentId:saved.id,expectedVersion:await version(),content:{...app('Tracker',[items,notes]),source:'return {html:"<h1>v2</h1>"};'}});
+   assert.equal('dependencies' in p,false);await f.discard(ai,w.id,p.id);
+  });
+  await t.test('removing a table an automation relies on is reported to the assistant, then refused at save',async()=>{
+   const p=await f.preview(ai,w.id,{kind:'save_component',componentId:saved.id,expectedVersion:await version(),content:app('Tracker',[items])});
+   assert.deepEqual(p.dependencies.map((d:any)=>[d.kind,d.id,d.name,d.breaking]),[['automation',automation,'Weekly notes digest',true]]);
+   assert.match(p.dependencySummary,/Weekly notes digest/);assert.ok(p.dependencyNote);
+   const ready=await f.finalizeAppPreview(ai,w.id,p.id,p.digest);
+   await assert.rejects(f.confirm(owner,w.id,ready.preview.id,ready.preview.digest),(e:any)=>e.code==='dependency_breaks'&&JSON.parse(e.message).dependencies[0].id===automation);
+   // Once the automation is resolved (here: deleted), the same change saves.
+   await db.query('UPDATE app_actions SET paused=true,deleted_at=now() WHERE id=$1',[automation]);
+   assert.ok((await f.confirm(owner,w.id,ready.preview.id,ready.preview.digest)).id);
+  });
+  await t.test('a schema change reports the apps that show the field, and is refused if that changed since it was prepared',async()=>{
+   const type=(await db.query('SELECT version,fields FROM entity_types WHERE id=$1',[items])).rows[0];
+   const change={kind:'update_type',typeId:items,expectedVersion:type.version,name:'Items',fields:[{key:'title',name:'Title',kind:'text',ai:true}]};
+   const p=await s.preview(owner,w.id,change);
+   const summary=(await db.query('SELECT summary FROM data_previews WHERE id=$1',[p.id])).rows[0].summary;
+   assert.deepEqual(summary.dependencies.map((d:any)=>[d.kind,d.name,d.breaking]),[['app','Tracker',true]]);
+   // Another app starts showing the field before the change is saved: the person must see the new report first.
+   const other=await f.preview(owner,w.id,{kind:'save_component',content:app('Second',[items])});await f.confirm(owner,w.id,other.id,other.digest);
+   await assert.rejects(s.commit(owner,p.id,p.digest),(e:any)=>e.code==='dependencies_changed');
+  });
+ }finally{await db.close();}
+});
