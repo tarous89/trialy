@@ -1,4 +1,5 @@
 import {withResponseCancellation} from './response-cancellation.js';
+import {recordUxTiming} from './ux-timing.js';
 import {homeRevision} from '../workspace/home-revision.js';
 import {CLAUDE_MCP_PATH} from './local-oauth.js';
 import {addSubscription} from './subscription.js';
@@ -71,6 +72,8 @@ export function addApi(app:express.Express,s:Service,human:RequestHandler) {
  app.post('/api/account/home',async(req,res)=>withResponseCancellation(res,async signal=>res.json(await accountHome(s.db,req.actor!,req.body,signal))));
  // The same read by GET, so the website can start it alongside the account check. No effects.
  app.get('/api/account/home',async(req,res)=>withResponseCancellation(res,async signal=>{const q=z.object({offset:z.coerce.number().int().min(0).optional(),limit:z.coerce.number().int().min(1).max(100).optional(),query:z.string().max(200).optional(),projectId:z.string().max(100).optional(),kind:z.string().max(20).optional(),sort:z.string().max(20).optional()}).strict().parse(req.query);res.set('Cache-Control','no-store').json(await accountHome(s.db,req.actor!,q,signal));}));
+ // P10: anonymous speed samples from signed-in sessions. Counted into daily histograms; nothing else is stored.
+ app.post('/api/telemetry/ux',rateLimit({windowMs:60000,limit:30}),async(req,res)=>res.json(await recordUxTiming(s.db,req.body)));
  app.post('/api/support',rateLimit({windowMs:3600000,limit:10}),async(req,res)=>{const input=z.object({subject:z.string().trim().min(1).max(160),message:z.string().trim().min(1).max(5000)}).strict().parse(req.body);const requestId=randomUUID();await s.db.query('INSERT INTO support_requests(id,user_id,subject,message) VALUES($1,$2,$3,$4)',[requestId,req.actor!.userId,input.subject,input.message]);res.status(201).json({id:requestId});});
  app.get('/api/me',async(req,res)=>{const u=(await s.db.query('SELECT id,name,email,first_name,last_name FROM users WHERE id=$1',[req.actor!.userId])).rows[0];res.json({user:u,csrf:req.session?.csrf,workspaces:await s.workspaces(req.actor!)});});
  app.post('/api/workspaces',async(req,res)=>res.status(201).json(await s.createWorkspace(req.actor!,z.string().trim().min(1).max(100).parse(req.body.name))));

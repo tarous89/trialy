@@ -242,3 +242,26 @@ Implemented 18 November 2026 as a patch release of every switched-on catalog app
 | Each of the eight radars | 22 | 4 |
 
 The number of reads is the same in both columns; each read is still checked and counted against the app's budget. Screens and state are identical in both modes on the demo data, on a 350-row table and with a restricted table. These are call counts on fictional records with no database: the server-side saving per call is the batched permission lookup measured above, and production timings remain unmeasured. Installed copies of earlier versions are unchanged.
+
+## Experienced speed: targets and real-usage measurement (decisions P1 and P10, 20 November 2026)
+
+**Targets (P1).** A click or tap gets a visible response within 0.1 s. Changing screens, filtering and sorting finish within 1 s. An app's main content is visible within about 2.5 s on a normal phone connection. An edit is saved within 1 s. In code: `UX_TARGET_MS` and `UX_TAP_TARGET_MS` in `src/shared/ux-timing-schema.ts`.
+
+**What is measured.** The app runtime (`src/shared/FrontendCodeRuntime.tsx`) times three things as the person experiences them:
+
+| Metric | From | To | Target |
+| --- | --- | --- | --- |
+| `open` | the app screen mounts | its first content is painted | 2.5 s |
+| `interaction` | a click, tap or change inside the app | the screen has responded | 1 s (0.1 s once interaction runs in the browser, package 5.1) |
+| `save` | an edit is confirmed | the server confirms the save | 1 s |
+
+Each sample carries the time, the host (`web`, `chatgpt`, `claude`, `public`), a width class (`phone` up to 480 px, `panel` up to 900 px, `desktop`) and the runtime mode (`server` today, `browser` from package 5.1). It carries no user, organization, app, record or content identifier, and the server rejects any extra field.
+
+**Where it goes.** Samples are batched (at most every five seconds) and sent quietly to `POST /api/telemetry/ux`, which adds them to daily histograms in `ux_timing_daily` (migration 080). Buckets end at 50, 100, 200, 500, 1000, 2500, 5000, 10000 and 60000 ms. A failed send is dropped; measurement never shows an error or delays the app.
+
+**Reading it.** `npm run ux:report -- 14` prints, per metric, host, width and mode, the sample count, the median and the 75th and 95th percentile (as bucket upper bounds) and whether the 75th percentile meets the target. The 75th percentile is the pass mark, as is usual for experienced-speed targets.
+
+**Limits today.**
+- Only the web host sends samples. ChatGPT and Claude need a transport inside the embedded hosts; that is part of package 5.8. Phones are covered through the web host's `phone` width class.
+- `interaction` currently includes the server round trip of every click, because apps still run on the server. It is the baseline the browser runtime (session 5) is measured against.
+- **No production baseline exists yet.** The first real numbers appear after this change is released and used. Record them here, with the date and sample counts, before session 4 starts changing the save path. Lab numbers from this repository's synthetic fixtures are not a substitute and are not recorded as a baseline.
