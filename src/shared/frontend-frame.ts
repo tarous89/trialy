@@ -8,7 +8,7 @@ export const FRAME_SCRIPT=String.raw`(()=>{'use strict';
  const renderTracker=function(config,theme,input,tools){${trackerRenderer}};
  const host=window.parent,root=document.getElementById('surface'),sheet=document.getElementById('appearance');
  let channel=null,model=null,uiState=null,controls=[],connected=false,detailScroll=0;
- let pending=Object.create(null),original=Object.create(null),savingCell=false,inflight=Object.create(null),failed=[],failedMessage='';
+ let pending=Object.create(null),original=Object.create(null),savingCell=false,inflight=Object.create(null),failed=[],failedMessage='',held=[];
  document.documentElement.classList.add('trialy-responsive-toolbar');
  let optionsOpen=false,optionsTab=null,toolbarObserver=null;
  function setOptionsOpen(open,focus=false){
@@ -155,6 +155,8 @@ export const FRAME_SCRIPT=String.raw`(()=>{'use strict';
   }catch{return false;}
  }
  function dispatch(event){
+  // P5 (4.5): while a cell edit saves, other actions wait for the saved screen and then run; nothing is dropped.
+  if(savingCell&&Object.keys(inflight).length&&event.action!=='bound-batch'){if(held.length<20)held.push(event);return;}
   if((Object.keys(pending).length||uiState?.newRow)&&['tracker:add','tracker:layout','settings'].includes(event.action)){post('trialy.notice',{message:'Save or cancel your current changes first.'});return;}
   if(local(event))return;
   if(Object.keys(pending).length&&!['bound-batch'].includes(event.action)){post('trialy.notice',{message:'Save or ignore your current edits before this action.'});return;}
@@ -185,6 +187,7 @@ export const FRAME_SCRIPT=String.raw`(()=>{'use strict';
   // P5 (4.5): edits made while the previous save ran are kept (their record may have a new version) and saved next.
   if(carried.length&&model?.saved){for(const [k,val] of carried){const now=Object.keys(original).find(x=>prefix(x)===prefix(k));if(!now)continue;pending[now]=val;for(const el of cells(now)){if(el.type==='checkbox')el.checked=val;else el.value=val;el.style.background='#e5f6e9';}}if(Object.keys(pending).length){footer();setTimeout(commitCell,0);}}
   post('trialy.rendered');
+  const waiting=held;held=[];for(const e of waiting)dispatch(e);
  });
  function send(kind,target){
   const trigger=target.closest('[data-action]');if(!trigger||!channel)return;const action=trigger.getAttribute('data-action');if(!action||action.length>200)return;

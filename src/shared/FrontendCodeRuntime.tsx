@@ -28,6 +28,9 @@ type Call=(name:string,args:Record<string,unknown>,options?:WorkspaceRequestOpti
  */
 let knownFrameUrl='';
 const remembered=new Map<string,{output:any;at:number}>(),REMEMBER_MS=120000;
+/** P5 (4.4): one save key per explicit action. Retrying the same action reuses it, so a save whose response was lost is never made twice. */
+const actionKeys=new WeakMap<object,string>();
+const actionKey=(event:any)=>{let key=actionKeys.get(event);if(!key){key=crypto.randomUUID();actionKeys.set(event,key);}return key;};
 const rememberKey=(c:any)=>c?.id&&c.workspace_id?c.workspace_id+':'+c.id+':'+c.version:null;
 function rememberOutput(c:any,output:any){const key=rememberKey(c);if(!key||!output||output.proposal||output.temporary)return;remembered.delete(key);remembered.set(key,{output,at:Date.now()});while(remembered.size>8)remembered.delete(remembered.keys().next().value!);}
 function recall(c:any){const key=rememberKey(c),hit=key?remembered.get(key):undefined;if(!hit)return null;if(Date.now()-hit.at>REMEMBER_MS){remembered.delete(key!);return null;}return hit.output;}
@@ -146,7 +149,7 @@ export function FrontendCodeRuntime({active=true,component,previewId,initialOutp
     const merged=mergeTrackerSnapshot(output.current,next);output.current=merged;state.current=merged.state;send();prefetch(merged);
     return;
    }
-   const request:any={...(previewId?{previewId}:viewRequest(c)),state:state.current,event,...(navigationRef.current?{route:navigationRef.current.route}:{})};
+   const request:any={...(previewId?{previewId}:viewRequest(c)),...(!previewId&&['click','change','submit'].includes(event.kind)&&!navigationRead(event)?{requestKey:actionKey(event)}:{}),state:state.current,event,...(navigationRef.current?{route:navigationRef.current.route}:{})};
    let result;
    try{result=await readFrontend(request);}catch(e){
     // Renew only navigation reads. Never replay a write or discard a local draft.
@@ -175,7 +178,7 @@ export function FrontendCodeRuntime({active=true,component,previewId,initialOutp
    frame.current?.contentWindow?.postMessage({kind:'trialy.save-failed',channel:channel.current,message:(e as Error).message||'Not saved'},'*');send();
    setError((e as any)?.code==='stale_value'?'Someone changed this value first. The newer value is shown; your edit was not saved.':((e as Error).message||'Your edit could not be saved. The earlier value is back.'));
    if((e as any)?.code==='stale_value'||(e as any)?.code==='stale_version')void run({kind:'open'});
-  }else actionError(e);}}finally{busyRef.current=false;onBusyChange?.(false);if(live.current){setBusy(false);frame.current?.contentWindow?.postMessage({kind:'trialy.save-idle',channel:channel.current,blocked:!!saveReceipt.current||!!proposal},'*');if(eventQueue.current.length&&!blocked.current)void run(eventQueue.current.shift());}}
+  }else{actionError(e);const code=(e as any)?.code,status=(e as any)?.status;if(current.current&&['click','change','submit'].includes(event.kind)&&(!status||status>=500||code==='temporary'))setRetryEvent(event);}}}finally{busyRef.current=false;onBusyChange?.(false);if(live.current){setBusy(false);frame.current?.contentWindow?.postMessage({kind:'trialy.save-idle',channel:channel.current,blocked:!!saveReceipt.current||!!proposal},'*');if(eventQueue.current.length&&!blocked.current)void run(eventQueue.current.shift());}}
  }
  /** G8 (4.6): the standard tracker offers Undo for the last add, duplicate or delete, while the app stays open. */
  async function undoLast(){
@@ -265,7 +268,7 @@ export function FrontendCodeRuntime({active=true,component,previewId,initialOutp
  return <section className={`ty-tracker-surface ${standard?'ty-tracker--standard':''} ${detailsOpen?'ty-tracker--details':''}`} aria-label={platform.enabled?"App":"Tracker"}>{integration&&current.current&&<IntegrationDialog call={call} appId={current.current.id} role={integration.role} onClose={()=>setIntegration(null)} onChanged={()=>void loadPublished()}/>}
  {upload&&current.current&&<DocumentUploadDialog call={call} onClose={()=>setUpload(null)} onSaved={(versionId)=>{const context=upload.context;setUpload(null);void run({kind:'change',action:'document:uploaded'+(context?':'+context:''),value:versionId,form:{}});}}/>}
  {schemaChanged&&ready&&<div role="status">The saved app is still here. Its connected fields changed and need review.</div>}
- {error&&<SystemNotice error message={error} onDismiss={()=>setError('')}/>}{undo&&standard&&<div className="ty-undo" role="status"><span>{undo.label}</span><button type="button" className="ty-button" disabled={busy} onClick={()=>void undoLast()}>Undo</button><button type="button" className="ty-undo-dismiss" aria-label="Dismiss" onClick={()=>setUndo(null)}>×</button></div>}{retryEvent&&<div className="ty-actions"><button className="ty-button" disabled={busy} onClick={()=>{if(retryEvent.action==='bound-batch')approvedAction.current='bound-batch';void run(retryEvent);}}>{retryEvent.action==='bound-batch'?'Retry save':'Retry loading'}</button></div>}{saveReceipt.current&&!saveReceipt.current.saved&&!busy&&<div className="ty-runtime-recovery"><button onClick={()=>void retrySaved()}>Retry save</button></div>}
+ {error&&<SystemNotice error message={error} onDismiss={()=>setError('')}/>}{undo&&standard&&<div className="ty-undo" role="status"><span>{undo.label}</span><button type="button" className="ty-button" disabled={busy} onClick={()=>void undoLast()}>Undo</button><button type="button" className="ty-undo-dismiss" aria-label="Dismiss" onClick={()=>setUndo(null)}>×</button></div>}{retryEvent&&<div className="ty-actions"><button className="ty-button" disabled={busy} onClick={()=>{if(retryEvent.action==='bound-batch')approvedAction.current='bound-batch';void run(retryEvent);}}>{retryEvent.action==='bound-batch'||!navigationRead(retryEvent)?'Retry':'Retry loading'}</button></div>}{saveReceipt.current&&!saveReceipt.current.saved&&!busy&&<div className="ty-runtime-recovery"><button onClick={()=>void retrySaved()}>Retry save</button></div>}
  {!adding&&<SavedRefreshNotice phase={savedPhase} onRetry={()=>void retrySaved()}/>}
  {publishedUpdate&&<div ref={updateBanner} className="ty-app-update" role="status"><span>This app has been updated. Refresh when you’re ready.</span><button disabled={busy} onClick={()=>saveReceipt.current?.saved?void retrySaved(true):localEditsRef.current?setConfirmUpdate(true):void loadPublished()}>Refresh to latest version</button></div>}
  {confirmUpdate&&<div className="ty-content-overlay"><section className="ty-confirm-dialog" role="alertdialog" aria-modal="true" aria-label="Load published update"><h2>Discard your unsaved edits?</h2><p>Your local edits will be discarded when the published update loads.</p><button onClick={()=>setConfirmUpdate(false)}>Keep editing</button><button disabled={busy} onClick={()=>void loadPublished()}>Discard edits and load update</button></section></div>}

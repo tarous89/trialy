@@ -44,11 +44,14 @@ for(const surface of ['standalone','extension','public'])test(`Open ${surface} a
  const focus=()=>root.locator('.ty-workspace').evaluate(()=>window.dispatchEvent(new Event('focus')));await focus();
  await expect(root.getByRole('status')).toContainText('This app has been updated');await expect(frame.getByLabel('Value',{exact:true})).toHaveValue('Compatible update');
  const banner=await root.locator('.ty-app-update').boundingBox(),app=await root.locator('iframe[title="Saved frontend code"]').boundingBox();expect(banner.y+banner.height).toBeLessThanOrEqual(app.y);
- // If the save commits but its response is lost, retry the same receipt.
- const confirmEndpoint='**/organization/previews/*/confirm';let interrupted=false;
- if(surface==='standalone')await page.route(confirmEndpoint,async route=>{if(interrupted)return route.continue();interrupted=true;await route.fetch();return route.fulfill({status:503,contentType:'application/json',body:JSON.stringify({error:'temporary',message:'The save response was interrupted.'})});});
- await frame.getByRole('button',{name:'Save value'}).click();await root.getByRole('dialog',{name:'Review app changes'}).getByRole('button',{name:'Save changes',exact:true}).click();
- if(surface==='standalone'){await expect(root.getByRole('alert')).toContainText('interrupted');await expect(frame.getByRole('heading',{name:'Loaded version'})).toBeVisible();await root.getByRole('button',{name:'Dismiss error'}).click();await expect(root.getByRole('alert')).toHaveCount(0);await expect(root.getByRole('button',{name:'Retry save',exact:true})).toBeVisible();await root.getByRole('button',{name:'Retry save',exact:true}).click();await expect(frame.getByLabel('Value',{exact:true})).toHaveAttribute('value','Compatible update');await expect(root.getByRole('button',{name:'Retry save',exact:true})).toHaveCount(0);await expect(root.getByRole('alert')).toHaveCount(0);await page.unroute(confirmEndpoint);const rows=await (await page.request.get(base+`/api/workspaces/${f.workspaceId}/types/${f.typeId}/records`)).json();expect(rows.rows[0].version).toBe(1);}
+ // P5, D16 (4.4): the save is direct. If it commits but its response is lost, Retry reuses its key and never saves twice.
+ const runEndpoint=surface==='extension'?'**/fixture/tool':surface==='public'?'**/public-app/call':'**/organization/frontend/run';let interrupted=false;
+ const isSave=route=>{const body=route.request().postDataJSON(),request=body?.request??body?.args?.request??body?.arguments?.request??body;return request?.event?.kind!=='open'&&!!request?.requestKey;};
+ await page.route(runEndpoint,async route=>{if(interrupted||!isSave(route))return route.continue();interrupted=true;await route.fetch();const error={status:503,code:'temporary'};return route.fulfill({status:surface==='extension'?200:503,contentType:'application/json',body:JSON.stringify(surface==='extension'?{isError:true,structuredContent:{error},content:[{type:'text',text:'The save response was interrupted.'}]}:{error:'temporary',message:'The save response was interrupted.'})});});
+ await frame.getByRole('button',{name:'Save value'}).click();await expect(root.getByRole('dialog',{name:'Review app changes'})).toHaveCount(0);
+ await expect(root.getByRole('alert')).toContainText('interrupted');await root.getByRole('button',{name:'Dismiss error'}).click();
+ await root.getByRole('button',{name:'Retry',exact:true}).click();await expect(root.getByRole('button',{name:'Retry',exact:true})).toHaveCount(0);await expect(root.getByRole('alert')).toHaveCount(0);await page.unroute(runEndpoint);
+ {const rows=await (await page.request.get(base+`/api/workspaces/${f.workspaceId}/types/${f.typeId}/records`)).json();expect(rows.rows[0].version,'saved once').toBe(1);expect(rows.rows[0].data.value??Object.values(rows.rows[0].data).includes('Compatible update')).toBeTruthy();}
 
  await expect(root.getByRole('dialog')).toHaveCount(0);await expect(root.locator('[data-save-status]')).toHaveCount(0);await expect(frame.getByRole('heading',{name:'Loaded version'})).toBeVisible();await expect(frame.getByLabel('Value',{exact:true})).toHaveValue('Compatible update');
  expect((await page.request.post(base+'/fixture/publication/'+f.appId+'/schema')).ok()).toBe(true);await focus();
@@ -76,20 +79,18 @@ test('Standard tracker keeps inline edits and saves on the loaded version after 
  await expect.poll(async()=>{const rows=await (await page.request.get(base+`/api/workspaces/${f.workspaceId}/types/${f.typeId}/records`)).json();return rows.rows[0].data.name;}).toBe('Inline value kept');await page.screenshot({path:'/tmp/trialy-update-standard-mobile.png'});
 });
 
-for(const embedded of [false,true])test(`Acknowledged save stays saved if reload fails in ${embedded?'extension':'standalone'}`,async({page})=>{
+// P5, B3 (4.4): a save made inside an app is one request that saves and returns the saved screen; there is no separate reload to fail.
+for(const embedded of [false,true])test(`A save in the app is one request and shows the saved value in ${embedded?'extension':'standalone'}`,async({page})=>{
  const f=await (await page.request.post(base+'/fixture/publication')).json();
  const call=async(name,args)=>{const r=await (await page.request.post(base+'/fixture/tool',{data:{name,arguments:args}})).json();expect(r.isError,JSON.stringify(r)).not.toBe(true);return r.structuredContent.result;};
  await page.goto(base+(embedded?'/?apps=1':`/apps/${f.appId}?workspaceId=${f.workspaceId}&source=component`));
  if(embedded){await page.waitForFunction(()=>window.hostReady);await page.evaluate(r=>window.deliver(r),await (await page.request.get(base+'/fixture/app-display?appId='+f.appId)).json());}
  const root=embedded?page.frameLocator('#app'):page,frame=root.frameLocator('iframe[title="Saved frontend code"]');
  await expect(frame.getByRole('heading',{name:'Loaded version'})).toBeVisible();
- let committed=false,reloadFailed=false;
- const fail=route=>{reloadFailed=true;return route.fulfill({status:embedded?200:503,json:embedded?{isError:true,structuredContent:{error:{status:503,code:'temporary'}},content:[{type:'text',text:'Reload sentinel'}]}:{error:'temporary',message:'Reload sentinel'}});};
- const confirm=async route=>{const response=await route.fetch();committed=true;await route.fulfill({response});};
- if(embedded)await page.route('**/fixture/tool',route=>{const body=route.request().postDataJSON();if(['confirm_workspace_change','approve_workspace_change'].includes(body.name))return confirm(route);if(committed&&body.name==='run_component_frontend')return fail(route);return route.continue();});
- else{await page.route('**/organization/previews/*/confirm',confirm);await page.route('**/organization/frontend/run',route=>committed?fail(route):route.continue());}
- await frame.getByLabel('Value',{exact:true}).fill('Saved value survives failed refresh');await frame.getByRole('button',{name:'Save value'}).click();await root.getByRole('dialog',{name:'Review app changes'}).getByRole('button',{name:'Save changes',exact:true}).click();
- await expect.poll(()=>reloadFailed).toBe(true);await expect(root.getByRole('dialog')).toHaveCount(0);await expect(root.locator('.ty-action-footer')).toHaveCount(0);await expect(root.getByRole('alert')).toHaveCount(0);await expect(root.locator('[data-save-status]')).toHaveAttribute('data-save-status','failed');await expect(root.getByRole('button',{name:'Reload saved data',exact:true})).toBeVisible();await expect(frame.getByLabel('Value',{exact:true})).toHaveValue('Saved value survives failed refresh');
- const rows=await (await page.request.get(base+`/api/workspaces/${f.workspaceId}/types/${f.typeId}/records`)).json();expect(rows.rows[0].version).toBe(1);
- await page.unrouteAll();const current=await call('read_project_component',{componentId:f.appId});const removal=await call('prepare_workspace_change',{operation:{kind:'archive_component',componentId:f.appId,expectedVersion:current.component.version,archived:true}});await call('confirm_workspace_change',{previewId:removal.id,digest:removal.digest});
+ let runs=0,confirms=0;page.on('request',r=>{const path=new URL(r.url()).pathname;let body={};try{body=r.postDataJSON()??{};}catch{}if(path.endsWith('/frontend/run')||body.name==='run_component_frontend')runs++;if(/\/previews\/[^/]+\/confirm$/.test(path)||['confirm_workspace_change','approve_workspace_change'].includes(body.name))confirms++;});
+ await frame.getByLabel('Value',{exact:true}).fill('Saved in one request');await frame.getByRole('button',{name:'Save value'}).click();
+ await expect.poll(async()=>(await (await page.request.get(base+`/api/workspaces/${f.workspaceId}/types/${f.typeId}/records`)).json()).rows[0].version).toBe(1);
+ await expect(frame.getByLabel('Value',{exact:true})).toHaveValue('Saved in one request');await expect(root.getByRole('dialog')).toHaveCount(0);await expect(root.locator('.ty-action-footer')).toHaveCount(0);await expect(root.locator('[data-save-status]')).toHaveCount(0);
+ expect(runs).toBe(1);expect(confirms).toBe(0);
+ const current=await call('read_project_component',{componentId:f.appId});const removal=await call('prepare_workspace_change',{operation:{kind:'archive_component',componentId:f.appId,expectedVersion:current.component.version,archived:true}});await call('confirm_workspace_change',{previewId:removal.id,digest:removal.digest});
 });

@@ -115,7 +115,7 @@ test('AI revisions keep saved app usable and expose Save only after finalization
 
 for(const embedded of [false,true])test(`Slow app frames stay mounted and recover in ${embedded?'extension':'standalone'}`,async({page})=>{
  const f=await (await page.request.get(base+'/fixture/apps')).json();let release;const gate=new Promise(resolve=>release=resolve);
- await page.route('**/frontend/frame',async route=>{await gate;await route.continue();});
+ await page.route('**/frontend/frame*',async route=>{await gate;await route.continue();});
  await openPlatform(page,base+(embedded?'/?apps=1':f.url),{waitUntil:'domcontentloaded'});
  if(embedded){await page.waitForFunction(()=>window.hostReady);await page.evaluate(r=>window.deliver(r),await (await page.request.get(base+'/fixture/app-display?appId='+f.appId)).json());}
  const root=embedded?page.frameLocator('#app'):page;
