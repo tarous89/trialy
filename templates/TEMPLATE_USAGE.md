@@ -1,6 +1,6 @@
 # Using TrialAgents templates and optional tasks
 
-Version: 1.3.34
+Version: 1.3.35
 
 ## Running and changing app code (1.3.32)
 
