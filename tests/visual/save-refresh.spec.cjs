@@ -35,7 +35,7 @@ for(const host of ['web','embedded','public']){
  });
  test(`Access removed before a save: nothing is saved and the app is removed (${host})`,async({page})=>{
   const f=await(await page.request.post(base+'/fixture/publication')).json(),{root,frame}=await open(page,host,f);
-  await intercept(page,async(route,op)=>{if(op.name==='run_component_frontend'&&op.args?.request?.event?.kind==='submit'){await fail(route,403,'forbidden');return true;}});
+  await intercept(page,async(route,op)=>{if(op.name==='run_component_frontend'&&op.args?.request?.requestKey){await fail(route,403,'forbidden');return true;}});
   await saveValue(root,frame,'Never saved');await expect(root.getByRole('alert')).toBeVisible();expect(await version(page,f)).toBe(0);
  });
 }
