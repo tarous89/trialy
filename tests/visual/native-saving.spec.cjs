@@ -6,9 +6,11 @@ for(const width of [1440,390])test(`tracker commits cell edits without injected 
  await page.evaluate(result=>window.deliver(result),await(await page.request.get(base+'/fixture/initial')).json());
  const host=page.frameLocator('#app'),app=host.frameLocator('iframe[title="Saved frontend code"]');
  await app.getByRole('button',{name:'Companies',exact:true}).click();
- await expect(host.locator('.ty-action-footer,.ty-preview-approval')).toHaveCount(0);
+ await expect(host.locator('.ty-action-footer')).toHaveCount(0);
+ // A6: the platform footer may list other pending app changes, but offers no Save for ordinary cell edits.
+ await expect(host.locator('.ty-preview-approval').getByRole('button',{name:/^(Save|Publish|Approve)/})).toHaveCount(0);
  await expect(host.getByRole('button',{name:'Save edits',exact:true})).toHaveCount(0);
- let confirms=0;page.on('request',r=>{if(r.url().endsWith('/fixture/tool')&&r.postDataJSON()?.name==='confirm_workspace_change')confirms++;});
+ let confirms=0;page.on('request',r=>{if(r.url().endsWith('/fixture/tool')&&['confirm_workspace_change','approve_workspace_change'].includes(r.postDataJSON()?.name))confirms++;});
  const originalName=await app.getByRole('button',{name:'Edit Company',exact:true}).first().innerText();
  await app.getByRole('button',{name:'Edit Company',exact:true}).first().click();
  const name='Native save '+width+' '+Date.now();
@@ -30,7 +32,7 @@ test('failed cell commit retains the draft and retries its exact proposal',async
  const host=page.frameLocator('#app'),app=host.frameLocator('iframe[title="Saved frontend code"]');
  await app.getByRole('button',{name:'Companies',exact:true}).click();
  let failed=false;const attempts=[];
- await page.route('**/fixture/tool',route=>{const b=route.request().postDataJSON();if(b.name==='confirm_workspace_change'){attempts.push(b.arguments);if(!failed){failed=true;return route.fulfill({json:{isError:true,content:[{type:'text',text:'Temporary save failure'}],structuredContent:{error:{status:503,code:'temporary'}}}});}}return route.continue();});
+ await page.route('**/fixture/tool',route=>{const b=route.request().postDataJSON();if(['confirm_workspace_change','approve_workspace_change'].includes(b.name)){attempts.push(b.arguments);if(!failed){failed=true;return route.fulfill({json:{isError:true,content:[{type:'text',text:'Temporary save failure'}],structuredContent:{error:{status:503,code:'temporary'}}}});}}return route.continue();});
  const originalName=await app.getByRole('button',{name:'Edit Company',exact:true}).first().innerText();
  await app.getByRole('button',{name:'Edit Company',exact:true}).first().click();
  await app.getByRole('textbox',{name:'Company',exact:true}).fill('Retained failed edit');await app.getByRole('textbox',{name:'Company',exact:true}).press('Enter');
@@ -45,7 +47,7 @@ test('failed cell commit retains the draft and retries its exact proposal',async
 test('failed preparation keeps a visible retry without a Save footer',async({page})=>{
  await page.goto(base);await page.waitForFunction(()=>window.hostReady);await page.evaluate(result=>window.deliver(result),await(await page.request.get(base+'/fixture/initial')).json());
  const host=page.frameLocator('#app'),app=host.frameLocator('iframe[title="Saved frontend code"]');await app.getByRole('button',{name:'Companies',exact:true}).click();
- let fail=true,commits=0;await page.route('**/fixture/tool',route=>{const b=route.request().postDataJSON();if(b.name==='confirm_workspace_change')commits++;if(fail&&b.name==='run_component_frontend'&&b.arguments.request.event?.action==='bound-batch'){fail=false;return route.fulfill({json:{isError:true,content:[{type:'text',text:'Preparation unavailable'}],structuredContent:{error:{status:503,code:'temporary'}}}});}return route.continue();});
+ let fail=true,commits=0;await page.route('**/fixture/tool',route=>{const b=route.request().postDataJSON();if(['confirm_workspace_change','approve_workspace_change'].includes(b.name))commits++;if(fail&&b.name==='run_component_frontend'&&b.arguments.request.event?.action==='bound-batch'){fail=false;return route.fulfill({json:{isError:true,content:[{type:'text',text:'Preparation unavailable'}],structuredContent:{error:{status:503,code:'temporary'}}}});}return route.continue();});
  const originalName=await app.getByRole('button',{name:'Edit Company',exact:true}).first().innerText();await app.getByRole('button',{name:'Edit Company',exact:true}).first().click();await app.getByRole('textbox',{name:'Company',exact:true}).fill('Retry prepared edit');await app.getByRole('textbox',{name:'Company',exact:true}).press('Enter');
  await expect(host.getByRole('button',{name:'Retry save',exact:true})).toBeVisible();await expect(app.getByText('Retry prepared edit',{exact:true})).toBeVisible();await host.getByRole('button',{name:'Retry save',exact:true}).click();await expect.poll(()=>commits).toBe(1);await expect(app.locator('#surface')).not.toHaveAttribute('inert');await expect(host.getByRole('button',{name:'Retry save',exact:true})).toHaveCount(0);
  await app.getByRole('button',{name:'Edit Company',exact:true}).first().click();await app.getByRole('textbox',{name:'Company',exact:true}).fill(originalName);await app.getByRole('textbox',{name:'Company',exact:true}).press('Enter');await expect.poll(()=>commits).toBe(2);

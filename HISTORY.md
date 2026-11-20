@@ -1,3 +1,18 @@
+## 20 November 2026 — Platform decisions, session 3: app lifecycle and installation
+
+Third of seven build sessions for the [platform decisions of 19 November](docs/scopes/PLATFORM_DECISIONS_IMPLEMENTATION_2026-11-19.md). Decision codes refer to the [snapshot](docs/scopes/PLATFORM_DECISIONS_SNAPSHOT_2026-11-19.md).
+
+- **Pending app changes last until resolved (A6, B1, D9, D10).** Migration 087 records on each pending app change who prepared it (person or assistant), the app, the kind (new app, revision, assistant change) and the version it was prepared against. App changes no longer expire. One pending change per app and person: a second preparation is refused with the existing change's ID and digest, and `begin_app_update` keeps the change under review. A change whose app or access moved is shown as "needs preparing again" and can only be discarded. Opening an app returns its pending change; `list_pending_app_changes` lists them.
+- **One approval footer (A6, D11).** `PendingChangesFooter` in the shared shell, on the website, in a standalone app and inside ChatGPT and Claude: Save / Discard for a new app, Publish / Discard for a revision, Approve / Decline for an assistant's change. Other pending changes stay listed with Open and Discard. The inline revision block, the first-save footer and the standalone review dialog are gone. An assistant can no longer confirm its own app change; the person approves in the footer (the view-only `approve_workspace_change` tool).
+- **One installation popup (I2, I3, A1, G9).** App name and purpose, then Project and team access (Editor by default), Table connections and Optional automations; one Install, one Cancel. Every new app goes through it: a new app without the reviewed choices is refused (`installation_required`), and `install_app_template` without the popup is refused.
+- **Popup again on impact (A4, I2).** Approving a change that adds or removes table connections, changes who can read the app's code, or adds or removes automations opens the popup with only those sections.
+- **Table connections (I4, I5).** Each table shows its source and Read or Read/write use. A table another app uses is read-only unless the installer allows writing. Archived or unavailable sources show as unavailable. Any suggested table can be replaced by a new empty one; tables the installer created for the app become the app's own.
+- **Dependency warnings (A13).** Migration 088: preparing an app or table change that removes something an automation, app, view or outside link relies on returns `dependencies` with the effect. An app change that would break an automation is refused at save; a table change is refused if its dependencies changed since preparation. This replaces the silent retirement of automations on app save; the trigger remains as a safety net.
+- **Owner-only settings and platform links (U4, U5, A3).** Layout and feature-setting proposals from inside an app are for its owners. Apps link to `platform:access`, `platform:logs` and `platform:automations`; Logs has an app deep link.
+- **Guidance 1.3.36** and the workspace guide describe the footer, the popup, one pending change per app, dependency reports and platform links.
+
+Tests: `tests/pending-app-changes.test.ts`, `tests/installation-popup.test.ts`, `tests/platform-links.test.ts`, and updated catalog, data-access, dependency-cleanup, automation and browser tests.
+
 ## 20 November 2026 — Platform decisions, session 2: roles and access
 
 Second of seven build sessions for the [platform decisions of 19 November](docs/scopes/PLATFORM_DECISIONS_IMPLEMENTATION_2026-11-19.md). Decision codes refer to the [snapshot](docs/scopes/PLATFORM_DECISIONS_SNAPSHOT_2026-11-19.md).

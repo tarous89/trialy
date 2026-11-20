@@ -50,9 +50,12 @@ test('full-table ordering, filtering, searching, exact review and draft finaliza
   const ready=await f.finalizeAppPreview(ai,w.id,draft.preview.id,draft.preview.digest);
   assert.equal(ready.preview.reviewState,'ready');assert.notEqual(ready.preview.digest,draft.preview.digest);
   await assert.rejects(f.confirm(human,w.id,draft.preview.id,draft.preview.digest),/unavailable/);
-  await f.beginAppUpdate(ai,w.id,saved.id,0);
-  await assert.rejects(f.confirm(human,w.id,ready.preview.id,ready.preview.digest),/unavailable/);
-  const draft2=await f.prepareRenderedTracker(ai,w.id,input);
+  // A6, D9: starting an update keeps the change already waiting for review; the assistant revises that one.
+  const update:any=await f.beginAppUpdate(ai,w.id,saved.id,0);assert.equal(update.pendingChange.previewId,ready.preview.id);
+  // The same content again is a retry: it returns the change under review, never a second one.
+  const again:any=await f.prepareRenderedTracker(ai,w.id,input);assert.equal(again.requestReused,true);assert.equal((again.preview??again).id,ready.preview.id);
+  const draft2=await f.prepareRenderedTracker(ai,w.id,{...input,preparation:{...(input as any).preparation,replacesPreviewId:ready.preview.id,expectedDigest:ready.preview.digest}});
+  assert.equal(draft2.preview.id,ready.preview.id,'the revision keeps the identity of the change under review');
   const ready2=await f.finalizeAppPreview(ai,w.id,draft2.preview.id,draft2.preview.digest);
   const repeat=await f.finalizeAppPreview(ai,w.id,ready2.preview.id,ready2.preview.digest);assert.equal(repeat.preview.digest,ready2.preview.digest);
   const receipt=await f.confirm(human,w.id,ready2.preview.id,ready2.preview.digest);assert.equal(receipt.id,saved.id);

@@ -1,6 +1,15 @@
 # TrialAgents template authoring standard
 
-Version: 1.3.35
+Version: 1.3.36
+
+## Approval footer, installation popup and dependencies (1.3.36)
+
+- The platform shows every pending app change in one approval footer: Save / Discard for a new app, Publish / Discard for a revision, Approve / Decline for an assistant's change. Apps never draw their own first-save prompt or approval bar. Keep content clear of the footer.
+- An assistant prepares app changes but cannot approve them; the person does, in the footer. `confirm_workspace_change` refuses app changes from an assistant.
+- Saving a new app opens the installation popup: project, team access (Editor by default), table connections and optional automations. Each existing table shows its source and Read or Read/write use; a table another app uses is read-only unless the installer allows writing, and any suggested table can be replaced with a new empty one. Approving a change that affects access, table connections or automations shows the popup again with only those sections.
+- One pending change per app: revise it with `replacesPreviewId` and `expectedDigest`. A change whose app moved is shown as needing preparation and cannot be approved.
+- Preparation returns `dependencies` when another app, view, link or automation relies on what the change removes; a change that would break an automation cannot be saved.
+- Link to the platform's Access, Logs and Automations pages with `platform:access`, `platform:logs` and `platform:automations`. Only an owner of the app changes its layout and feature settings.
 
 ## Who can run and change app code (1.3.35)
 
@@ -289,7 +298,7 @@ Use the current design kit and canonical theme components. Preserve a coherent p
 
 Keep one primary vertical scroll; avoid nested page scrolls and horizontal overflow. Keep headers, sidebars and action areas aligned, responsive and clear of host safe areas. Test narrow, tablet and desktop layouts. All controls need accessible names, keyboard access and valid empty, populated and long-content states.
 
-The native first-save action belongs only to an app that has never been saved. Saved-app revisions use the existing review controls, without claiming the app is unsaved. Deliberate record/layout edits retain their own approval controls. Generated templates must not invent global save prompts, loading-error banners, retry buttons or platform navigation.
+The platform's approval footer owns saving and approving app changes: Save for an app that has never been saved, Publish or Approve for revisions, without claiming a saved app is unsaved. Deliberate record/layout edits retain their own approval controls. Generated templates must not invent global save prompts, loading-error banners, retry buttons or platform navigation.
 
 Keep a loaded published app visible during ChatGPT edits and during failed loads. Publication may offer the platform's subtle optional refresh notice; it never forces a reload. If no authorized usable view exists, use the shared “No app is available” state and Return to Apps in the same surface. Access revocation must still clear protected data. Failed writes preserve inputs and are never represented as successful.
 

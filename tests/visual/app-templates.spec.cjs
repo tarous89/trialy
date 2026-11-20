@@ -15,6 +15,6 @@ test('Catalog starter apps render and respond inside the extension',async({page}
   }else{
    await app.getByLabel('Define the objective').check();await app.getByRole('button',{name:'Update progress',exact:true}).click();await expect(app.getByRole('heading',{name:'1 / 3',exact:true})).toBeVisible();await expect(app.getByLabel('Define the objective')).toBeChecked();
   }
-  await root.getByRole('button',{name:'Discard app',exact:true}).click();await expect(root.getByRole('heading',{name:'Apps',exact:true})).toBeVisible();
+  await root.getByRole('button',{name:'Discard',exact:true}).click();await expect(root.getByRole('heading',{name:'Apps',exact:true})).toBeVisible();
  }
 });

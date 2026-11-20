@@ -65,12 +65,16 @@ export function PendingChangesProvider({children,call,workspaceId,onOpen}:{child
  */
 export async function approveWithReview(call:(name:string,args:any)=>Promise<any>,preview:{id:string;digest:string},ask:(kind:'app'|'change',step:any)=>Promise<any|null>){
  const send=(installation?:any)=>call('approve_workspace_change',{previewId:preview.id,digest:preview.digest,confirmed:true,...(installation?{installation}:{})});
+ const review=async(kind:'app'|'change',step:any)=>{const choices=await ask(kind,step);if(!choices)return null;const receipt=await send({...choices,stepDigest:step.digest});pendingChanged();return receipt;};
+ // Read what the popup must show first, so one approval is sent, with the reviewed choices when there are any.
+ let step:any;try{step=await call('read_app_installation',{previewId:preview.id});}catch{step=undefined;}
+ if(step&&step.impact===undefined&&step.project)return review('app',step);
+ if(step?.impact)return review('change',step.impact);
  try{return await send();}catch(e){
+  // The app or its tables changed between the read and the approval: show what the server now requires.
   if((e as any)?.code!=='installation_required')throw e;
-  let step:any;try{step=JSON.parse((e as Error).message).step;}catch{throw e;}
-  const kind=step?.kind==='change'?'change':'app';
-  const choices=await ask(kind,step);if(!choices)return null;
-  const receipt=await send({...choices,stepDigest:step.digest});pendingChanged();return receipt;
+  let required:any;try{required=JSON.parse((e as Error).message).step;}catch{throw e;}
+  return review(required?.kind==='change'?'change':'app',required);
  }
 }
 /** The provider's approval: the view's way to approve an app change, with the popup when needed. */
@@ -94,7 +98,8 @@ export function useFooterReview(review:FooterReview|null){
 export function PendingChangesFooter(){
  const value=useContext(Context);
  const footer=useRef<HTMLElement>(null),[busy,setBusy]=useState(false),[error,setError]=useState(''),[list,setList]=useState(false);
- const review=value?.review??null,others=(value?.changes??[]).filter(c=>c.previewId!==review?.previewId);
+ // A change the assistant is still preparing is not ready for anyone to review; it appears once it is finalized.
+ const review=value?.review??null,others=(value?.changes??[]).filter(c=>c.previewId!==review?.previewId&&c.status!=='preparing');
  const shown=!!review||others.length>0;
  useLayoutEffect(()=>{
   const element=footer.current,workspace=element?.closest<HTMLElement>('.ty-workspace');
