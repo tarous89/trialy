@@ -1,6 +1,7 @@
 import type {Express} from 'express';
 import type {Service} from '../domain/service.js';
 import {fail} from '../shared/schema.js';
+import {ownsAnOrganization} from '../domain/organization.js';
 import {appPublicUrl} from '../shared/public-url.js';
 export async function stripe(path:string,body?:Record<string,string>,key?:string){
  if(!process.env.STRIPE_SECRET_KEY)fail(503,'subscription_unavailable','Subscriptions are temporarily unavailable. Please contact support.');
@@ -18,6 +19,8 @@ export function addSubscription(app:Express,s:Service){
   if(active&&!subscription.cancel_at_period_end&&!subscription.cancel_at){try{const invoice=await stripe('/invoices/create_preview',{subscription:u.stripe_subscription_id});upcomingPayment={amount:invoice.amount_due,currency:invoice.currency,date:invoice.next_payment_attempt??invoice.due_date??item?.current_period_end??null};}catch{paymentUnavailable=true;}}
   return {plan:active?'team':'personal',status:subscription.status,price,upcomingPayment,paymentUnavailable};
  }
+ // A8: billing is for organization owners. Payment details still belong to the person, so owning any organization is enough.
+ app.use('/api/account/subscription',async(req,_res,next)=>{if(req.actor!.origin!=='human'||!await ownsAnOrganization(s.db,req.actor!.userId))fail(403,'owner_required','Only organization owners can manage billing');next();});
  app.get('/api/account/subscription',async(req,res)=>{const u=await user(req.actor!.userId);res.json({...await current(u),checkoutAvailable:!!process.env.STRIPE_SECRET_KEY});});
  app.post('/api/account/subscription/checkout',async(req,res)=>{const result=await s.db.transaction(async tx=>{const u=(await tx.query('SELECT id,email,stripe_customer_id,stripe_subscription_id,stripe_checkout_id FROM users WHERE id=$1 FOR UPDATE',[req.actor!.userId])).rows[0];if(u.stripe_subscription_id){const sub=await stripe('/subscriptions/'+encodeURIComponent(u.stripe_subscription_id));if(!['canceled','incomplete_expired'].includes(sub.status))fail(409,'already_subscribed','Manage your existing subscription instead.');}
   if(u.stripe_checkout_id){const previous=await stripe('/checkout/sessions/'+encodeURIComponent(u.stripe_checkout_id));if(previous.status==='open')return {url:previous.url};if(previous.status==='complete')fail(409,'checkout_complete','Refresh Subscription to see your updated plan.');}

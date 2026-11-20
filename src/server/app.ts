@@ -27,6 +27,7 @@ import { randomUUID } from 'node:crypto';
 import { AppError, id, recordQuerySchema, fieldChangeQuerySchema } from '../shared/schema.js';
 import { Service } from '../domain/service.js';
 import {MemberRemoval} from '../domain/member-removal.js';
+import {Organization} from '../domain/organization.js';
 import {inspectionHtml} from '../domain/inspection.js';
 import { templates } from '../domain/templates.js';
 /** requestsPerMinute: the per-address request limit. Production uses the default; only the browser-test fixture, whose
@@ -118,6 +119,7 @@ export function addApi(app:express.Express,s:Service,human:RequestHandler) {
  // A11: removing a team member takes them out of the organization; the preview says what will happen first.
  app.get('/api/workspaces/:workspaceId/members/:userId/removal',async(req,res)=>res.json(await new MemberRemoval(s.db).preview(req.actor!,id.parse(req.params.workspaceId),id.parse(req.params.userId))));
  app.delete('/api/workspaces/:workspaceId/members/:userId',async(req,res)=>res.json(await new MemberRemoval(s.db).remove(req.actor!,id.parse(req.params.workspaceId),id.parse(req.params.userId))));
+ app.post('/api/workspaces/:workspaceId/members/:userId/organization-role',async(req,res)=>res.json(await new Organization(s.db).setOwner(req.actor!,id.parse(req.params.workspaceId),id.parse(req.params.userId),z.object({role:z.enum(['owner','member'])}).strict().parse(req.body).role)));
  app.post('/api/workspaces/:workspaceId/records/:recordId/state',async(req,res)=>{const p=z.object({expectedVersion:z.number().int().min(0),state:z.enum(['in_review','approved','archived']),meaning:z.string().min(1).max(1000)}).parse(req.body);res.json(await s.transition(req.actor!,String(req.params.workspaceId),id.parse(req.params.recordId),p.expectedVersion,p.state,p.meaning));});
  app.get('/api/workspaces/:workspaceId/export',async(req,res)=>{const data=await s.exportWorkspace(req.actor!,String(req.params.workspaceId));if(req.query.format==='html'){res.set('Content-Disposition','attachment; filename="trialagents-inspection.html"');res.type('html').send(inspectionHtml(data));}else{res.set('Content-Disposition','attachment; filename="trialagents-workspace-export.json"');res.json(data);}});
  app.get('/api/workspaces/:workspaceId/automations',async(req,res)=>res.json(await s.automations(req.actor!,String(req.params.workspaceId))));
