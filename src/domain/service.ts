@@ -7,6 +7,7 @@ import {fieldChangeQuerySchema,type FieldChangeQuery} from '../shared/schema.js'
 import {requireCurrentAction,requireHuman,setWriteAuthorization,type WriteAuthorization} from './write-authorization.js';
 import {DataService} from './data-service.js';
 import {checksum,audit,revision} from './evidence.js';
+import {columnRetired} from './legacy-restrictions.js';
 export {checksum,audit} from './evidence.js';
 import {templateDiff,adoptionDiff} from './template-upgrades.js';
 import {nextDaily} from '../shared/schedules.js';
@@ -507,7 +508,8 @@ await audit(tx,a,p,'submission.accepted',op.submissionId,null,{recordId:result[0
  async members(a:Actor,w:string){const p=await access(this.db,a,w);if(a.origin!=='human'||p.role!=='owner')fail(403,'owner_required','Human owner required');
   const rows=(await this.db.query("SELECT a.*,m.user_id AS member_id,m.role='owner' AS organization_owner,m.kind,u.name,u.email FROM memberships m JOIN users u ON u.id=m.user_id LEFT JOIN workspace_access a ON a.workspace_id=$1 AND a.user_id=m.user_id WHERE m.tenant_id=$2 AND u.subject NOT LIKE 'public-app|%' AND (m.role='owner' OR a.user_id IS NOT NULL) ORDER BY m.role<>'owner',u.name,u.id",[w,p.tenant_id])).rows;
   return rows.map(({member_id,...r})=>r.organization_owner?{...r,workspace_id:w,user_id:member_id,role:'owner',hidden_fields:[],allowed_types:null,ai_enabled:true,claude_enabled:true,database_browse:true,direct_data:true,external_send:true}:r);}
- async share(a:Actor,w:string,userId:string,role:string,hiddenFields:string[],allowedTypes:string[]|null,ai:boolean){if(role==='inspector')ai=false;return this.db.transaction(async tx=>{
+ /** hiddenFields is an older restriction (A2, D1): null keeps what the person has, a list may only leave some out. */
+ async share(a:Actor,w:string,userId:string,role:string,hiddenFields:string[]|null,allowedTypes:string[]|null,ai:boolean){if(role==='inspector')ai=false;return this.db.transaction(async tx=>{
   await tx.query('SELECT id FROM workspaces WHERE id=$1 FOR UPDATE',[w]);const p=await access(tx,a,w,true);if(a.origin!=='human'||p.role!=='owner')fail(403,'owner_required','Human owner required');
   if(userId===a.userId)fail(400,'self_share','Your owner role is managed at organisation level');
   if(!(await tx.query('SELECT id FROM users WHERE id=$1',[userId])).rows.length)fail(404,'not_found','Ask this colleague to sign in first and share their user ID');
@@ -515,8 +517,9 @@ await audit(tx,a,p,'submission.accepted',op.submissionId,null,{recordId:result[0
   if(allowedTypes){const types=(await tx.query('SELECT id FROM entity_types WHERE workspace_id=$1',[w])).rows;if(allowedTypes.some(id=>!types.some(t=>t.id===id)))fail(400,'invalid_type','A table is not in this workspace');}
   await tx.query("INSERT INTO memberships(tenant_id,user_id,role) VALUES($1,$2,'viewer') ON CONFLICT DO NOTHING",[p.tenant_id,userId]);
   const before=(await tx.query('SELECT * FROM workspace_access WHERE workspace_id=$1 AND user_id=$2',[w,userId])).rows[0]??null;
-  await tx.query('INSERT INTO workspace_access(workspace_id,user_id,role,hidden_fields,allowed_types,ai_enabled) VALUES($1,$2,$3,$4,$5,$6) ON CONFLICT(workspace_id,user_id) DO UPDATE SET role=excluded.role,hidden_fields=excluded.hidden_fields,allowed_types=excluded.allowed_types,ai_enabled=excluded.ai_enabled,claude_enabled=excluded.claude_enabled',[w,userId,role,json(hiddenFields),allowedTypes===null?null:json(allowedTypes),ai]);
-  await tx.query('UPDATE workspaces SET access_version=access_version+1 WHERE id=$1',[w]);await audit(tx,a,p,'access.changed',userId,before,{role,hiddenFields,allowedTypes,ai});return {userId,role};
+  const had:string[]=before?.hidden_fields??[],hidden=hiddenFields??had;if(hidden.some(k=>!had.includes(k)))columnRetired();
+  await tx.query('INSERT INTO workspace_access(workspace_id,user_id,role,hidden_fields,allowed_types,ai_enabled) VALUES($1,$2,$3,$4,$5,$6) ON CONFLICT(workspace_id,user_id) DO UPDATE SET role=excluded.role,hidden_fields=excluded.hidden_fields,allowed_types=excluded.allowed_types,ai_enabled=excluded.ai_enabled,claude_enabled=excluded.claude_enabled',[w,userId,role,json(hidden),allowedTypes===null?null:json(allowedTypes),ai]);
+  await tx.query('UPDATE workspaces SET access_version=access_version+1 WHERE id=$1',[w]);await audit(tx,a,p,'access.changed',userId,before,{role,hiddenFields:hidden,allowedTypes,ai});return {userId,role};
  });}
  async unshare(a:Actor,w:string,userId:string){return this.db.transaction(async tx=>{await tx.query('SELECT id FROM workspaces WHERE id=$1 FOR UPDATE',[w]);const p=await access(tx,a,w);if(a.origin!=='human'||p.role!=='owner')fail(403,'owner_required','Human owner required');const before=(await tx.query('DELETE FROM workspace_access WHERE workspace_id=$1 AND user_id=$2 RETURNING *',[w,userId])).rows[0];if(!before)fail(404,'not_found','Access not found');await tx.query('UPDATE workspaces SET access_version=access_version+1 WHERE id=$1',[w]);await audit(tx,a,p,'access.revoked',userId,before,null);return {userId};});}
  async transition(a:Actor,w:string,recordId:string,expectedVersion:number,state:'in_review'|'approved'|'archived',meaning:string){return this.db.transaction(async tx=>{

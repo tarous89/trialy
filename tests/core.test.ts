@@ -13,6 +13,7 @@ import { Service } from '../src/domain/service.js';
 import { runAutomation } from '../src/worker/automations.js';
 import { runOne } from '../src/worker/processor.js';
 import { AppError, type Actor } from '../src/shared/schema.js';
+import {seedHiddenFields,retired} from './legacy-restrictions.js';
 const error=(code:string)=>(e:unknown)=>e instanceof AppError&&e.code===code;
 test('Shared backend: access, committed history, original preservation and retrieval',async t=>{
  const pg=new PGlite();for(const f of (await readdir('migrations')).filter(f=>f.endsWith('.sql')).sort())await pg.exec(await readFile('migrations/'+f,'utf8'));
@@ -63,7 +64,9 @@ test('Shared backend: access, committed history, original preservation and retri
   const again=await s.preview(other,w2.id,{kind:'install_template',template:'rfp-oversight'});await assert.rejects(s.commit(other,again.id,again.digest));assert.equal((await s.types(other,w2.id)).length,9);
  });
  await t.test('scoped colleague access, reviewed revisions, schedules and export',async()=>{
-  await s.share(owner,w.id,other.userId,'viewer',['budget'],[typeId],true);
+  // A2, D1: a hidden field can no longer be set; one that already exists (seeded) is still enforced.
+  await assert.rejects(s.share(owner,w.id,other.userId,'viewer',['budget'],[typeId],true),retired);await assert.rejects(s.types(other,w.id),error('not_found'));
+  await s.share(owner,w.id,other.userId,'viewer',[],[typeId],true);await seedHiddenFields(db,w.id,other.userId,['budget']);
   assert.equal((await s.records(other,w.id,typeId)).rows[0].data.budget,undefined);
   await assert.rejects(s.preview(other,w.id,{kind:'create_record',typeId,data:{name:'No'}}),error('forbidden'));
   await s.unshare(owner,w.id,other.userId);await assert.rejects(s.types(other,w.id),error('not_found'));

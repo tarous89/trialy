@@ -27,10 +27,10 @@ for(const width of [1440,390])test(`Overview and actual tool settings at ${width
  const accessCalls=async()=>(await(await page.request.get('http://127.0.0.1:4179/fixture/calls')).json()).filter(x=>x==='read_access_grid').length;
  const beforeAccess=await accessCalls();
  await embed.getByRole('tab',{name:'Access control',exact:true}).click();
- await expect(embed.getByRole('heading',{name:'Owner & team access'})).toBeVisible();
+ await expect(embed.getByRole('heading',{name:'Table access',exact:true})).toBeVisible();
  await expect(embed.getByRole('button',{name:'Save changes',exact:true})).toBeVisible();
  await expect(embed.getByRole('button',{name:'Save changes',exact:true})).toBeDisabled();
- await expect(embed.getByRole('heading',{name:'Tab permissions',exact:true})).toBeVisible();
+ await expect(embed.getByRole('heading',{name:'Column permissions',exact:true})).toHaveCount(0);
  await expect(embed.getByRole('combobox',{name:'Company permission',exact:true})).toBeVisible();
  await expect.poll(accessCalls).toBe(beforeAccess+1);
  await page.screenshot({path:`test-results/access-${width}.png`,fullPage:true});

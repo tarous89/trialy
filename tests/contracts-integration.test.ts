@@ -7,6 +7,7 @@ import {appIntegrations,readIntegration,chooseIntegrationSource} from '../src/wo
 import {readCatalogInstallation,installCatalogApp} from '../src/workspace/template-catalog.js';
 import {archivedItems} from '../src/workspace/archive.js';
 import {AccessGrid} from '../src/domain/access-grid.js';
+import {seedColumnRule,retired} from './legacy-restrictions.js';
 import {runOne} from '../src/worker/processor.js';
 import {prepareToolLayout} from '../src/workspace/tool-layout.js';
 import {readCustomLayout} from '../src/shared/custom-layout.js';
@@ -207,14 +208,16 @@ test('acceptance 3: Claude and ChatGPT each propose terms and obligations with q
   const rv=await x.run(w,app,{},{kind:'click',action:'review:'+cAg.id});const rvt=text(rv.html);
   assert.match(rvt,/survive for five \(5\) years after expiry\.” \(p\. 2\) Quote found on page 2/);assert.match(rvt,/governed by the laws of Denmark\.” \(p\. 3\) Quote found on page 3/);assert.match(rvt,/within thirty \(30\) days of a written request\.” \(p\. 3\) Quote found on page 3/);
   assert.match(text((await x.run(w,app,{},{kind:'click',action:'review:'+gAg.id})).html),/within seventy-two \(72\) hours\.” \(p\. 1\) Found, but on page 2/);
-  // An assistant cannot verify once the owner adds the documented column rules (Database → column, deny Claude and ChatGPT writes).
+  // An assistant cannot verify in an organization that added the 1.0.0 column rules (deny Claude and ChatGPT writes) before per-column permissions were retired (A2, D1).
   const obBefore=(await x.rows(map['contracts.obligations'].typeId)).find((r:any)=>r.data.agreement_id===cAg.id).id;
   // Without the rule the platform would let the assistant prepare it (the human review is then the only barrier): the preview is discarded unused.
   const loose=await claude('prepare_change',{workspaceId:w,operation:{kind:'update_record',recordId:obBefore,expectedVersion:0,data:{verified:true}}});await claude('discard_preview',{previewId:loose.id});
   const grid=new AccessGrid(x.db),rules=['verified'].map(field=>({kind:'column',resourceId:map['contracts.obligations'].typeId,field})).concat(['extraction_status','verified_by','verified_on'].map(field=>({kind:'column',resourceId:map['contracts.terms'].typeId,field})));
   const access=async()=>(await pg.query<any>('SELECT access_version FROM workspaces WHERE id=$1',[w])).rows[0]?.access_version;
   const version=(await grid.read(actor,w)).version??await access();
-  await grid.save(actor,w,{expectedVersion:version,changes:rules.flatMap(r=>(['claude','chatgpt'] as const).map(subject=>({subject,...r,read:true,write:false})))});
+  // The rules can no longer be added through Access; where they already exist they keep working. Seeded the way the grid stored them.
+  await assert.rejects(grid.save(actor,w,{expectedVersion:version,changes:rules.flatMap(r=>(['claude','chatgpt'] as const).map(subject=>({subject,...r,read:true,write:false})))}),retired);
+  for(const r of rules)for(const subject of ['claude','chatgpt'])await seedColumnRule(pg,w,{subject,resourceId:r.resourceId,field:r.field,read:'inherit',write:'deny'});
   const obId=(await x.rows(map['contracts.obligations'].typeId)).find((r:any)=>r.data.agreement_id===cAg.id).id;
   for(const ask of [claude,chatgpt]){const e=await ask('prepare_change',{workspaceId:w,operation:{kind:'update_record',recordId:obId,expectedVersion:0,data:{verified:true}}}).then(()=>null,(err:any)=>err);assert.match(String(e?.message),/Editing is restricted for one or more fields/);}
   // A person verifies in the app: named, dated, one reviewed batch.

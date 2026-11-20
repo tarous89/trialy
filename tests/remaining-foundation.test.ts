@@ -8,6 +8,7 @@ import {Service} from '../src/domain/service.js';
 import {WorkspaceFoundation} from '../src/workspace/service.js';
 import {operationalStatus} from '../src/domain/operations.js';
 import type {Actor} from '../src/shared/schema.js';
+import {seedHiddenFields,retired} from './legacy-restrictions.js';
 test('Task setup, project relationships, exact alias correction, collection consent and scoped generated interfaces',async()=>{
  const pg=new PGlite();try{
   for(const file of (await readdir('migrations')).filter(f=>f.endsWith('.sql')).sort())await pg.exec(await readFile('migrations/'+file,'utf8'));
@@ -47,8 +48,8 @@ test('Task setup, project relationships, exact alias correction, collection cons
   const componentPreview=await f.preview(a,w.id,{kind:'save_component',projectId:project.id,content});const component=await f.confirm(a,w.id,componentPreview.id,componentPreview.digest);assert.equal((await f.readComponent(editor,w.id,component.id)).component.source_access,'bindings');assert.equal((await f.nodes(editor,w.id)).nodes.length,1);
   await assert.rejects(f.preview(editor,w.id,{kind:'save_component',projectId:project.id,content}),/Only an owner/);
   const run=await f.runFrontend(editor,w.id,{componentId:component.id,expectedVersion:0,event:{kind:'click',action:'edit'}});assert.ok(run.proposal);await f.confirm(editor,w.id,run.proposal.id,run.proposal.digest);assert.ok((await s.records(editor,w.id,configured.typeId)).rows.some(r=>r.data.name==='Human correction'));
-  // New field restriction blocks even owner-approved source access when a required binding is hidden.
-  await s.share(a,w.id,editor.userId,'editor',['name'],[configured.typeId],true);await assert.rejects(f.readComponent(editor,w.id,component.id),/unavailable/);
+  // An older hidden field blocks even owner-approved source access when a required binding is hidden. It can no longer be set (A2, D1), so it is seeded.
+  await assert.rejects(s.share(a,w.id,editor.userId,'editor',['name'],[configured.typeId],true),retired);await f.readComponent(editor,w.id,component.id);await seedHiddenFields(db,w.id,editor.userId,['name']);await assert.rejects(f.readComponent(editor,w.id,component.id),/unavailable/);
   const filePreview=await s.previewFile(a,w.id,{filename:'source.txt',mime:'text/plain',bytes:Buffer.from('Saved source'),ai:true});const file=(await s.commit(a,filePreview.id,filePreview.digest)).objects[0] as any;
   await db.query("UPDATE extractions SET status='ready',text_content='Saved source' WHERE version_id=$1",[file.versionId]);
   const fileComponent=await approve({kind:'save_component',projectId:project.id,content:{name:'Attached text',format:'frontend-js',sourceAccess:'bindings',assets:[{name:'source',versionId:file.versionId}],source:"const source=tools.call('files.text',{name:'source'});return {html:'<p>'+source.text+'</p>'};"}});

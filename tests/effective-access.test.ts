@@ -1,6 +1,6 @@
 import {withActor,setDatabaseContext} from '../src/db/context.js';
 import {test} from 'node:test';import assert from 'node:assert/strict';import {PGlite} from '@electric-sql/pglite';import {readFile,readdir} from 'node:fs/promises';import {randomUUID} from 'node:crypto';
-import {Service} from '../src/domain/service.js';import {WorkspaceFoundation} from '../src/workspace/service.js';import {AccessManagement} from '../src/domain/access-management.js';import type {Actor} from '../src/shared/schema.js';import type {Database,Connection} from '../src/db/database.js';
+import {Service} from '../src/domain/service.js';import {WorkspaceFoundation} from '../src/workspace/service.js';import {AccessManagement} from '../src/domain/access-management.js';import type {Actor} from '../src/shared/schema.js';import type {Database,Connection} from '../src/db/database.js';import {seedColumnRule,retired} from './legacy-restrictions.js';
 test('effective grants: tool edits, source transparency, restrictions, ChatGPT inheritance and revocation',async()=>{
  const pg=new PGlite();for(const path of (await readdir('migrations')).filter(p=>p.endsWith('.sql')).sort())await pg.exec(await readFile('migrations/'+path,'utf8'));
  const db:Database={query:(q,v)=>pg.query(q,v) as any,transaction:f=>pg.transaction(tx=>f(tx as Connection)),close:()=>pg.close()};try{
@@ -31,10 +31,13 @@ test('effective grants: tool edits, source transparency, restrictions, ChatGPT i
  await update(sarah.userId,{role:'editor',chatgpt:true});
  const proposal=await f.runFrontend(sarah,w.id,{componentId:tool.id,expectedVersion:0,event:{kind:'change',action:`bound:status:${record}:0`,value:'Contacted'}});assert.ok(proposal.proposal);await f.confirm(sarah,w.id,proposal.proposal.id,proposal.proposal.digest);assert.equal((await s.records(owner,w.id,table)).rows.find((r:any)=>r.id===record)?.data.status,'Contacted');const otherRead:any=await f.runFrontend(sarah,w.id,{componentId:otherTool.id,expectedVersion:0});assert.equal(otherRead.controls.find((r:any)=>r.action.includes(record))?.value,'Contacted');
  const pending=await f.preview(sarah,w.id,{kind:'apply_component_records',componentId:tool.id,expectedVersion:0,changes:[{kind:'update_record',recordId:record,expectedVersion:1,data:{status:'Must not save'}}]});
- await update(sarah.userId,{rule:{kind:'column',resourceId:table,field:'status',read:'inherit',write:'deny'}});
+ // A2, D1: a column restriction can no longer be created; one that already exists (seeded) is enforced exactly as before.
+ await assert.rejects(update(sarah.userId,{rule:{kind:'column',resourceId:table,field:'status',read:'inherit',write:'deny'}}),retired);assert.equal((await permissions.explain(owner,w.id,sarah.userId)).tables[0].fields.find((x:any)=>x.key==='status').write,true);
+ await seedColumnRule(db,w.id,{subject:sarah.userId,resourceId:table,field:'status',read:'inherit',write:'deny'});
  await assert.rejects(f.confirm(sarah,w.id,pending.id,pending.digest));const otherBlocked:any=await f.runFrontend(sarah,w.id,{componentId:otherTool.id,expectedVersion:0});assert.equal(otherBlocked.controls[0].editable,false);
  for(const actor of [sarah,{...sarah,origin:'ai' as const}]){const read:any=await f.runFrontend(actor,w.id,{componentId:tool.id,expectedVersion:0});assert.equal(read.controls[0].editable,false);await assert.rejects(f.preview(actor,w.id,{kind:'apply_component_records',componentId:tool.id,expectedVersion:0,changes:[{kind:'update_record',recordId:record,expectedVersion:1,data:{status:'Bypass'}}]}));}
- await update(sarah.userId,{rule:{kind:'column',resourceId:table,field:'status',read:'deny',write:'deny'}});await assert.rejects(f.runFrontend(sarah,w.id,{componentId:tool.id,expectedVersion:0}),/unavailable/); // arbitrary saved source fails closed when its bindings become restricted
+ await assert.rejects(update(sarah.userId,{rule:{kind:'column',resourceId:table,field:'status',read:'deny',write:'deny'}}),retired); // view only cannot be tightened to hidden either
+ await seedColumnRule(db,w.id,{subject:sarah.userId,resourceId:table,field:'status',read:'deny',write:'deny'});await assert.rejects(f.runFrontend(sarah,w.id,{componentId:tool.id,expectedVersion:0}),/unavailable/); // arbitrary saved source fails closed when its bindings become restricted
  await assert.rejects(permissions.update({...owner,origin:'ai'},w.id,{expectedVersion:0,subject:sarah.userId,databaseBrowse:true}),/signed-in/);
  await assert.rejects(permissions.update(sarah,w.id,{expectedVersion:0,subject:sarah.userId,databaseBrowse:true}),/owner/);
  await update(sarah.userId,{rule:{kind:'tool',resourceId:tool.id,read:'inherit',write:'inherit'}});await assert.rejects(f.runFrontend(sarah,w.id,{componentId:tool.id,expectedVersion:0}));

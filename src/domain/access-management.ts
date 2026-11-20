@@ -5,6 +5,7 @@ import type {Database,Connection} from '../db/database.js';
 import {access,typeAccess,visibleFields} from './permissions.js';
 import {accessRuleSchema,applyTypePolicy,resourceGrant,assistantEnabled,type AccessRule} from './effective-access.js';
 import {audit} from './evidence.js';
+import {assertColumnLoosens,hiddenKeys,hiddenFieldsOf,liftHiddenField} from './legacy-restrictions.js';
 import {fail,id,assistantOf,isAssistant,ASSISTANTS,ASSISTANT_NAMES,type Actor,type Assistant} from '../shared/schema.js';
 /** Connections shown to this actor: both on the web, only its own assistant inside an assistant (ChatGPT sees exactly what it saw before). */
 export function visibleAssistants(a:Actor):Assistant[]{return a.origin==='ai'?[assistantOf(a)]:[...ASSISTANTS];}
@@ -35,6 +36,9 @@ export class AccessManagement{
   }
   return {tables:result,databaseBrowse:p.role==='owner'||p.database_browse,version:p.access_version};
  }
+ /** D1 check for callers that only prepare a change for a person to confirm later: refuses a new or tighter column restriction now. */
+ async assertOffered(a:Actor,w:string,input:unknown){const v=accessUpdate.parse(input);if(v.rule?.kind!=='column')return;const r=v.rule,p=await access(this.db,a,w);
+  assertColumnLoosens(r,(p.permission_rules??[]).find((x:AccessRule)=>x.subject===v.subject&&x.kind==='column'&&x.resourceId===r.resourceId&&x.field===r.field),hiddenKeys(await hiddenFieldsOf(this.db,w,v.subject),r.resourceId,r.field).length>0);}
  async update(a:Actor,w:string,input:unknown){const v=accessUpdate.parse(input);if(a.origin!=='human')fail(403,'human_required','Save access changes in your signed-in owner session');
   return this.db.transaction(async tx=>{
    await tx.query('SELECT id FROM workspaces WHERE id=$1 FOR UPDATE',[w]);const p=await access(tx,a,w);if(p.role!=='owner')fail(403,'owner_required','Only the account owner can change access');if(p.access_version!==v.expectedVersion)fail(409,'access_changed','Access changed. Refresh before saving.');
@@ -42,12 +46,16 @@ export class AccessManagement{
     const m=(await tx.query('SELECT role FROM memberships WHERE tenant_id=$1 AND user_id=$2',[p.tenant_id,v.subject])).rows[0];if(!m)fail(404,'not_found','Person not found');if(m.role==='owner')fail(400,'owner_access','Owner access is managed at account level');
     if(!(await tx.query('SELECT 1 FROM workspace_access WHERE workspace_id=$1 AND user_id=$2',[w,v.subject])).rows.length)fail(404,'not_found','Share this account with the colleague first');
    }
-   const rules:AccessRule[]=[...(p.permission_rules??[])];let changed:any=null;
-   if(v.rule){const r:AccessRule={...v.rule,subject:v.subject};
+   const rules:AccessRule[]=[...(p.permission_rules??[])];let changed:any=null,lifted:any=null;
+   if(v.rule){const r:AccessRule={...v.rule,subject:v.subject},i=rules.findIndex(x=>x.subject===r.subject&&x.kind===r.kind&&x.resourceId===r.resourceId&&x.field===r.field);
     if(r.kind==='database'||r.kind==='connection'){if(r.resourceId!==w)fail(404,'not_found','Database unavailable');}
     else if(r.kind==='app_section'){const c=(await tx.query('SELECT * FROM workspace_components WHERE workspace_id=$1 AND id=$2',[w,r.resourceId])).rows[0];if(!c||!appSections(c).some((s:any)=>s.id===r.field))fail(404,'section_unavailable','This app has no such registered section');if(r.read==='allow'||r.write==='allow')fail(400,'section_inheritance','Sections inherit app permissions and can only add restrictions');}
     else if(r.kind==='workflow'){const workflow=(await tx.query('SELECT user_id AS creator FROM foundation_functions WHERE workspace_id=$1 AND id=$2 UNION ALL SELECT owner_id FROM automations WHERE workspace_id=$1 AND id=$2',[w,r.resourceId])).rows[0];if(!workflow)fail(404,'not_found','Workflow unavailable');if((r.read==='allow'||r.write==='allow')&&workflow.creator!==v.subject)fail(403,'private_workflow','Workflows remain private to their creator');}
-    else if(r.kind==='table'||r.kind==='column'){const t=(await tx.query('SELECT fields FROM entity_types WHERE workspace_id=$1 AND id=$2',[w,r.resourceId])).rows[0];if(!t||(r.kind==='column'&&!t.fields.some((f:any)=>f.key===r.field)))fail(404,'not_found','Table or column unavailable');}
+    else if(r.kind==='table'||r.kind==='column'){const t=(await tx.query('SELECT fields FROM entity_types WHERE workspace_id=$1 AND id=$2',[w,r.resourceId])).rows[0],hidden=r.kind==='column'&&hiddenKeys(await hiddenFieldsOf(tx,w,v.subject),r.resourceId,r.field).length>0;
+     // An older restriction can be lifted even after its column was archived.
+     if(!t||(r.kind==='column'&&i<0&&!hidden&&!t.fields.some((f:any)=>f.key===r.field)))fail(404,'not_found','Table or column unavailable');
+     // A2, D1: per-column permissions are retired. An existing one can be lifted, never added or tightened.
+     if(r.kind==='column'){assertColumnLoosens(r,rules[i],hidden);if(hidden&&r.read!=='deny')lifted=await liftHiddenField(tx,w,v.subject,r.resourceId,r.field!);}}
     else {
      const table=r.kind==='project'?'workspace_nodes':'workspace_components';if(!(await tx.query(`SELECT id FROM ${table} WHERE workspace_id=$1 AND id=$2`,[w,r.resourceId])).rows.length)fail(404,'not_found','Resource unavailable');
      if(r.read==='allow'&&!isAssistant(r.subject)){
@@ -58,13 +66,13 @@ export class AccessManagement{
     }
     if(isAssistant(v.subject)&&(r.read==='allow'||r.write==='allow'))fail(400,'connection_inheritance','Connections inherit user grants. They can only add restrictions.');
     if(r.kind==='connection'&&r.field!==undefined&&(r.field!=='claude'||isAssistant(v.subject)))fail(400,'invalid_connection','Unknown connection');
-    const i=rules.findIndex(x=>x.subject===r.subject&&x.kind===r.kind&&x.resourceId===r.resourceId&&x.field===r.field);if(i>=0)rules.splice(i,1);if(r.read!=='inherit'||r.write!=='inherit')rules.push(r);changed=r;
+    if(i>=0)rules.splice(i,1);if(r.read!=='inherit'||r.write!=='inherit')rules.push(r);changed=r;
    }
    if(v.subject==='chatgpt'){if(v.chatgpt!==undefined)await tx.query('UPDATE workspaces SET ai_enabled=$2 WHERE id=$1',[w,v.chatgpt]);}
    else if(v.subject==='claude'){if(v.claude!==undefined)await tx.query('UPDATE workspaces SET claude_enabled=$2 WHERE id=$1',[w,v.claude]);}
    else await tx.query(`UPDATE workspace_access SET role=COALESCE($6,role),database_browse=COALESCE($3,database_browse),direct_data=COALESCE($4,direct_data),ai_enabled=CASE WHEN COALESCE($6,role)='inspector' THEN false ELSE COALESCE($5,ai_enabled) END,claude_enabled=CASE WHEN COALESCE($6,role)='inspector' THEN false ELSE COALESCE($7,claude_enabled) END,external_send=CASE WHEN COALESCE($6,role)='inspector' THEN false ELSE COALESCE($8,external_send) END WHERE workspace_id=$1 AND user_id=$2`,[w,v.subject,v.databaseBrowse??null,v.directData??null,v.chatgpt??null,v.role??null,v.claude??null,v.externalSend??null]);
    await tx.query('UPDATE workspaces SET permission_rules=$2,access_version=access_version+1 WHERE id=$1',[w,JSON.stringify(rules)]);
-   await audit(tx,a,p,'access.policy_changed',w,{version:p.access_version,rules:p.permission_rules},{...v,rule:changed,version:p.access_version+1});return {saved:true,version:p.access_version+1};
+   await audit(tx,a,p,'access.policy_changed',w,{version:p.access_version,rules:p.permission_rules},{...v,rule:changed,...(lifted?{hiddenFields:lifted.after}:{}),version:p.access_version+1});return {saved:true,version:p.access_version+1};
   });
  }
 }

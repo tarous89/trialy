@@ -10,6 +10,7 @@ import {Foundation} from '../src/foundation/service.js';
 import {workspaceHome,accountHome} from '../src/workspace/home.js';
 import {activityPage,activityDetails} from '../src/workspace/activity.js';
 import type {Actor} from '../src/shared/schema.js';
+import {seedHiddenFields,retired} from './legacy-restrictions.js';
 test('Home and activity honor current access; conversation saves are exact, idempotent and not worker approval',async()=>{
  const pg=new PGlite();try{
  for(const f of (await readdir('migrations')).filter(f=>f.endsWith('.sql')).sort())await pg.exec(await readFile('migrations/'+f,'utf8'));
@@ -44,7 +45,8 @@ test('Home and activity honor current access; conversation saves are exact, idem
  const recordEvent=(await activityPage(db,owner,w.id,{eventId:createdEvent.id})).rows[0];assert.deepEqual(recordEvent.changed_fields,['Name']);assert.equal(recordEvent.authorized_by,'Synthetic owner');assert.equal(recordEvent.authorization_kind,'approval');assert.equal(recordEvent.has_change_values,true);
  const eventDetails=await activityDetails(db,owner,w.id,createdEvent.id);assert.equal(eventDetails.changes[0].before.text,'Not set');assert.equal(eventDetails.changes[0].after.text,'private payload sentinel');
  await assert.rejects(activityDetails(db,stranger,w.id,createdEvent.id));
- await s.share(owner,w.id,stranger.userId,'viewer',['name'],[type],false);const restrictedRows=await activityPage(db,stranger,w.id,{eventId:createdEvent.id});assert.ok(!JSON.stringify(restrictedRows).includes('private payload sentinel'));if(restrictedRows.rows.length)assert.deepEqual(restrictedRows.rows[0].changed_fields,[]);await assert.rejects(activityDetails(db,stranger,w.id,createdEvent.id));
+ // A2, D1: a hidden field can no longer be set; one that already exists (seeded) is still enforced.
+ await assert.rejects(s.share(owner,w.id,stranger.userId,'viewer',['name'],[type],false),retired);await s.share(owner,w.id,stranger.userId,'viewer',[],[type],false);await seedHiddenFields(db,w.id,stranger.userId,['name']);const restrictedRows=await activityPage(db,stranger,w.id,{eventId:createdEvent.id});assert.ok(!JSON.stringify(restrictedRows).includes('private payload sentinel'));if(restrictedRows.rows.length)assert.deepEqual(restrictedRows.rows[0].changed_fields,[]);await assert.rejects(activityDetails(db,stranger,w.id,createdEvent.id));
  const all=await activityPage(db,owner,w.id,{limit:200});assert.ok(!JSON.stringify(all).includes('private payload sentinel'));
  const first=await activityPage(db,owner,w.id,{limit:1});assert.equal(first.nextOffset,1);assert.equal(first.total,all.rows.length);let offset:number|null=0;const ids:string[]=[];do{const page=await activityPage(db,owner,w.id,{limit:1,offset,before:first.before});ids.push(...page.rows.map(r=>r.id));offset=page.nextOffset;}while(offset!==null);assert.equal(ids.length,new Set(ids).size);assert.equal(ids.length,all.rows.length);
  const restricted=await f.preview(owner,w.id,{kind:'set_project_access',nodeId:project.id,expectedVersion:0,allowedUsers:[owner.userId],ai:false});await f.confirm(owner,w.id,restricted.id,restricted.digest);
