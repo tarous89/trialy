@@ -416,7 +416,7 @@ Updated at the end of every session.
 
 | Session | Status | Pull request | Shipped | Carried over |
 | --- | --- | --- | --- | --- |
-| 1 · Foundations and quick fixes | Not started | | | |
+| 1 · Foundations and quick fixes | Built, 20 November 2026. In review. | See the pull request for branch `ccr-df272190-za925q` | 1.1 to 1.9, with the changes listed under "Session 1 notes" | Listed under "Session 1 notes" |
 | 2 · Roles and access | Not started | | | |
 | 3 · App lifecycle and installation | Not started | | | |
 | 4 · Data path and server speed | Not started | | | |
@@ -424,4 +424,24 @@ Updated at the end of every session.
 | 6 · Automations and external sharing | Not started | | | |
 | 7 · Catalog rebuild | Not started | | | |
 
-**Spike result (package 1.9):** not yet run.
+**Spike result (package 1.9):** run on 20 November 2026; full write-up in [7-frame-engine-spike.md](platform-decisions-2026-11-19/7-frame-engine-spike.md).
+
+- **Viable.** The server's engine (QuickJS) runs inside the sandboxed app frame once the frame's policy allows WebAssembly, and gives output identical to the server for the three largest apps.
+- **Fast enough for screen changes.** With the engine kept alive, a screen change takes 11 to 26 ms on a desktop-class machine and 39 to 108 ms at four times slower (a mid-range phone stand-in), against a 1 s target. The 0.1 s tap target is met by the render itself on faster devices; on slow phones the two largest apps sit at the line, so the frame should acknowledge the tap before rendering (to build in 5.1).
+- **One open risk: Claude.** The web platform and ChatGPT load the frame from our origin, so only our own policy matters. Claude inlines the frame, which inherits Claude's policy; if that policy refuses WebAssembly, Claude stays on server mode (default D21). This could not be tested here and must be checked in the real host at the start of session 5.
+- **Not measured:** real ChatGPT and Claude hosts, real phones, Safari and Firefox.
+- **Cost:** the frame document grows by about 0.7 MB before compression (about 0.25 MB compressed).
+
+### Session 1 notes
+
+What changed against the scope as written:
+
+- **1.4 was narrower than written.** The scope said saving an app restored archived tables and fields silently. It does not: it is a reviewed, owner-only step listed in the save's review. That stays. What was removed is the restore offer in the install flow and the server refusal behind it.
+- **1.5 adds no sidebar entry.** Projects are already navigable from the Apps page (project groups, New → Project, project settings), so a separate Projects item in the sidebar was not added. The legacy "Projects & maintenance" screen lost its folder and move controls.
+- **1.6 kept the existing "app updated" bar.** It already sits in the header area on the web. The app name now shows in the platform header. Creating the app frame before the first result moves to package 4.7, where the frame is also served as a cached file.
+- **1.6 covers the shared message component.** Its eleven uses now follow the one-message rule. About 85 inline alerts inside individual platform pages and the banners drawn by catalog apps are not converted; they move with packages 5.4 (shell) and 7.3 (catalog rebuild).
+- **1.6 follow-up for 5.4.** An error now stays until dismissed, so on small screens it can cover a control in the bottom-right corner. Package 5.4 places messages full width above the safe area and must check this.
+- **1.8 sends samples from the web host only.** The embedded ChatGPT and Claude hosts need their own transport (package 5.8). No production baseline exists until this session is released and used; record the first real numbers in `docs/PERFORMANCE_MEASUREMENT.md` before session 4 changes the save path.
+- **1.7 leaves two things for later.** In-page code still gathers the richer view details, but they no longer leave the page. The plugin manifest's review test cases still list the open tools first; that changes with the plugin release (O3).
+
+Environment note for later sessions: this build container cannot run the project's pinned browser for screenshots, so screenshot comparisons here are indicative only. The pull request's checks are the authority for them.
