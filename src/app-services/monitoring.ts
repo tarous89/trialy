@@ -5,6 +5,7 @@ import {randomUUID} from 'node:crypto';
 import type {Database,Connection} from '../db/database.js';
 import {withActor} from '../db/context.js';
 import {access,typeAccess,visibleFields} from '../domain/permissions.js';
+import {requireAssistantApps} from '../domain/assistant-levels.js';
 import {assertWritable} from '../domain/effective-access.js';
 import {audit,checksum} from '../domain/evidence.js';
 import {requireHuman,requireCurrentAction} from '../domain/write-authorization.js';
@@ -59,7 +60,7 @@ export class AppMonitoring {
   return withActor(exec,()=>this.validate(exec,w,prepared.config,true,prepared.grants));
  }
  async prepare(a:Actor,w:string,input:unknown){
-  const body=monitoringChange.parse(input);await this.owner(a,w);
+  const body=monitoringChange.parse(input);requireAssistantApps(await this.owner(a,w),a,true);
   const current=body.monitorId?await this.row(a,w,body.monitorId):null;if(current)requireAutomationOwner(a,ownedBy(current));
   const runner=await this.runnerOf(w,a,body.config);if(runner)requireRunnerOwner(a,runner);
   const exec=asOwner(a,runner?ownedBy(runner)??'chatgpt':current?ownedBy(current):actorAssistant(a));
@@ -74,7 +75,7 @@ export class AppMonitoring {
  }
  async confirm(a:Actor,w:string,reviewId:string,digest:string,review?:string){requireCurrentAction(a);return this.db.transaction(async tx=>{
   await tx.query('SELECT id FROM workspaces WHERE id=$1 FOR UPDATE',[w]);const s=new AppMonitoring(adapter(tx)),p=await s.owner(a,w),r=(await tx.query("SELECT * FROM app_service_previews WHERE id=$1 AND workspace_id=$2 AND user_id=$3 AND kind='monitoring' AND expires_at>now() FOR UPDATE",[reviewId,w,a.userId])).rows[0];
-  if(!r||r.digest!==digest)fail(409,'review_changed','Monitoring review unavailable or changed');checkServiceReview(a,w,r,review);if(r.consumed_at)return r.result;
+  requireAssistantApps(p,a,true);if(!r||r.digest!==digest)fail(409,'review_changed','Monitoring review unavailable or changed');checkServiceReview(a,w,r,review);if(r.consumed_at)return r.result;
   const v=monitoringChange.parse(r.body.change),current=v.monitorId?await s.row(a,w,v.monitorId):null,runner=await s.runnerOf(w,a,v.config);if(current)requireAutomationOwner(a,ownedBy(current));if(runner)requireRunnerOwner(a,runner);
   // Research belongs to its runner's assistant; other monitors keep their owner or take the preparing assistant.
   const owner:Assistant|null=runner?ownedBy(runner)??'chatgpt':current?ownedBy(current):ownedBy(r)??actorAssistant(a),exec=asOwner(a,owner);

@@ -6,6 +6,7 @@ import {z} from 'zod';
 import type {Database,Connection} from '../db/database.js';
 import {audit} from '../domain/evidence.js';
 import {access} from '../domain/permissions.js';
+import {requireAssistantApps} from '../domain/assistant-levels.js';
 import {AccessGrid,rowKey} from '../domain/access-grid.js';
 import {AccessManagement} from '../domain/access-management.js';
 import {requireCurrentAction} from '../domain/write-authorization.js';
@@ -69,6 +70,7 @@ function validate(step:any,choices:Record<string,string>){
 
 /** An assistant prepares the step with proposed choices; only the user confirms it in the review view. */
 export async function prepareDataAccess(f:WorkspaceFoundation,a:Actor,w:string,input:unknown){
+ requireAssistantApps(await access(f.db,a,w),a,true);
  const v=prepareInput.parse(input),step=await dataAccessStep(f,a,w,{install:v.install});validate(step,v.connections);
  if(a.origin==='ai'&&Object.keys(v.connections).length)await f.db.query('INSERT INTO workspace_previews(id,workspace_id,user_id,body,digest) VALUES(gen_random_uuid(),$1,$2,$3,$4)',[w,a.userId,JSON.stringify({operation:{kind:'data_access_step'},proposal:v.connections}),step.digest]);
  return {...step,tables:step.tables.map((t:any)=>v.connections[t.role]?{...t,choice:v.connections[t.role]}:t),confirmation:'Shown to the user when they add the app. Assistants cannot confirm it.'};

@@ -184,3 +184,9 @@
 .ty-app-people select{width:auto;min-width:118px;min-height:36px;margin:0;flex:none}.ty-app-people-help{margin:0;color:#58665e;font-size:13px}
 .ty-role{flex:none;padding:3px 10px;border-radius:999px;font-size:12px;font-weight:600;background:#eef1ef;color:#3d4a43;white-space:nowrap}.ty-role--owner{background:#e3efe8;color:#1d5a3c}.ty-role--none{background:#f6eceb;color:#8a3a31}
 @media(max-width:600px){.ty-app-people{padding:12px}.ty-app-people-default{flex-direction:column;align-items:stretch}.ty-app-people-list li{flex-wrap:wrap}}
+/* A4: what ChatGPT and Claude may do, for Data and for Apps. */
+.ty-assistant-levels{display:grid;gap:10px;width:100%;margin:0 0 16px;color:#1f2a24;font-size:14px}.ty-assistant-levels h3{margin:0;font-size:15px}.ty-assistant-levels-help{margin:0;color:#58665e;font-size:13px}
+.ty-assistant-levels-grid{display:grid}.ty-assistant-levels-grid [role=row]{display:grid;grid-template-columns:minmax(96px,1fr) minmax(128px,1fr) minmax(128px,1fr);align-items:start;gap:12px;padding:10px 0;border-top:1px solid #eef1ef}
+.ty-assistant-levels-grid [role=columnheader]{color:#58665e;font-size:12px;font-weight:600}.ty-assistant-levels-grid [role=cell]{display:grid;gap:4px;justify-items:start;min-width:0}
+.ty-assistant-levels select{width:auto;min-width:118px;min-height:36px;margin:0}.ty-assistant-levels small{color:#58665e;font-size:12px;font-weight:400}
+@media(max-width:600px){.ty-assistant-levels-grid [role=row]{grid-template-columns:1fr 1fr}.ty-assistant-levels-grid [role=row]>:first-child{grid-column:1/-1}.ty-assistant-levels-grid [role=row]:first-child>:first-child{display:none}}

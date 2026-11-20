@@ -3,6 +3,7 @@ import {DerivedReader} from './derived-fields.js';
 import type {Connection,Database} from '../db/database.js';
 import {PostgresOriginalStore,type OriginalStore} from '../db/originals.js';
 import {access,typeAccess,visibleFields,projectData,folderAllowed} from './permissions.js';
+import {requireAssistantData} from './assistant-levels.js';
 import {viewFields,viewConfigSchema,fail,type Actor,type Field,type RecordQuery} from '../shared/schema.js';
 import {checksum} from './evidence.js';
 const json=JSON.stringify;
@@ -117,7 +118,7 @@ export class DataService {
   const control=(await tx.query(`SELECT folder FROM document_controls WHERE workspace_id=$1 AND document_id=${version?'(SELECT document_id FROM document_versions WHERE id::text=$2 AND workspace_id=$1)':'$2::uuid'}`,[w,documentId])).rows[0];const folders=(await tx.query('SELECT * FROM folder_access WHERE workspace_id=$1',[w])).rows;if(!folderAllowed(control?.folder??'',folders,a,p.role))fail(404,'not_found','Document not found');
  }
  async documents(a:Actor,w:string) {
-  const p=await access(this.db,a,w);if(!p.document_scope)fail(403,'restricted_documents','Document access for restricted views is not enabled');
+  const p=await access(this.db,a,w);requireAssistantData(p,a,false);if(!p.document_scope)fail(403,'restricted_documents','Document access for restricted views is not enabled');
   const rows=(await this.db.query(`SELECT d.*,e.status AS extraction_status,c.linked_record_id AS control_record_id,c.reviewer_id,c.expires_on,c.folder,c.status AS review_status,c.reviewed_version_id,c.version AS control_version FROM document_versions d JOIN extractions e ON e.version_id=d.id LEFT JOIN document_controls c ON c.document_id=d.document_id AND ($2=false OR ((SELECT latest.ai_enabled FROM document_versions latest WHERE latest.document_id=d.document_id ORDER BY latest.version DESC LIMIT 1)=true AND (c.reviewed_version_id IS NULL OR EXISTS(SELECT 1 FROM document_versions reviewed WHERE reviewed.id=c.reviewed_version_id AND reviewed.ai_enabled=true)))) WHERE d.workspace_id=$1 ${a.origin==='ai'?'AND d.ai_enabled=true':''} ORDER BY d.created_at DESC`,[w,a.origin==='ai'])).rows;
   const rules=(await this.db.query('SELECT * FROM document_access WHERE workspace_id=$1',[w])).rows;
   const folders=(await this.db.query('SELECT * FROM folder_access WHERE workspace_id=$1',[w])).rows,controls=(await this.db.query('SELECT document_id,folder FROM document_controls WHERE workspace_id=$1',[w])).rows;

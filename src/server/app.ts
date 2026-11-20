@@ -9,6 +9,7 @@ import {appPublicUrl,oauthPublicUrl} from '../shared/public-url.js';
 import {createRequestMetrics,metricSummary,withRequestMetrics} from '../db/metrics.js';
 import {withReadBatch} from '../db/database.js';
 import {AccessGrid} from '../domain/access-grid.js';
+import {AssistantLevelSettings} from '../domain/assistant-levels.js';
 import {AccessManagement} from '../domain/access-management.js';
 import {accountCatalog} from '../workspace/catalog.js';
 import {accountHome} from '../workspace/home.js';
@@ -70,6 +71,9 @@ export function addApi(app:express.Express,s:Service,human:RequestHandler) {
  app.get('/api/workspaces/:workspaceId/access-grid/reviews/:reviewId',async(req,res)=>res.json(await new AccessGrid(s.db).draft(req.actor!,id.parse(req.params.workspaceId),id.parse(req.params.reviewId))));
  app.get('/api/workspaces/:workspaceId/access-grid',async(req,res)=>res.json(await new AccessGrid(s.db).read(req.actor!,id.parse(req.params.workspaceId),z.string().optional().parse(req.query.subject))));
  app.post('/api/workspaces/:workspaceId/access-grid',async(req,res)=>res.json(await new AccessGrid(s.db).save(req.actor!,id.parse(req.params.workspaceId),req.body)));
+ app.get('/api/workspaces/:workspaceId/assistant-levels',async(req,res)=>res.json(await new AssistantLevelSettings(s.db).read(req.actor!,id.parse(req.params.workspaceId))));
+ app.post('/api/workspaces/:workspaceId/assistant-levels/organization',async(req,res)=>res.json(await new AssistantLevelSettings(s.db).setMaximum(req.actor!,id.parse(req.params.workspaceId),req.body)));
+ app.post('/api/workspaces/:workspaceId/assistant-levels/mine',async(req,res)=>res.json(await new AssistantLevelSettings(s.db).setMine(req.actor!,id.parse(req.params.workspaceId),req.body)));
  app.get('/api/account/home/revision',async(req,res)=>res.json(await homeRevision(s.db,req.actor!)));
  app.post('/api/account/home',async(req,res)=>withResponseCancellation(res,async signal=>res.json(await accountHome(s.db,req.actor!,req.body,signal))));
  // The same read by GET, so the website can start it alongside the account check. No effects.

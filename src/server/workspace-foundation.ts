@@ -12,6 +12,7 @@ import {AccessGrid,gridBatch} from '../domain/access-grid.js';
 import {AccessManagement,accessUpdate} from '../domain/access-management.js';
 import {AppRoles} from '../domain/app-sharing.js';
 import {AppLogs,appLogQuery} from '../domain/app-log.js';
+import {AssistantLevelSettings} from '../domain/assistant-levels.js';
 import {accountCatalog,accountCatalogRequest} from '../workspace/catalog.js';
 import {accountHome} from '../workspace/home.js';
 import {trackerSetup,trackerOperation} from '../workspace/tracker-template.js';
@@ -119,6 +120,7 @@ export function addWorkspaceMcp(server:McpServer,f:WorkspaceFoundation,a:Actor,s
  register('resolve_tracker_preview','Resolve a preview under the current account; recover an already saved app or return an explicit unavailable state.',{workspaceId:id,previewId:id},true,v=>f.resolveTrackerPreview(a,v.workspaceId,v.previewId),true);
  register('read_access_directory','List only the owned and shared workspaces available to this connected user.',{},true,()=>new AccessGrid(f.db).directory(a),true);
  register('read_access_grid','Read effective view/edit permissions for projects, apps, database columns and workflows. Shared resources show only the current user’s access.',{workspaceId:id,subject:z.union([id,z.literal('all'),z.literal('chatgpt'),z.literal('claude')]).optional()},true,v=>new AccessGrid(f.db).read(a,v.workspaceId,v.subject),true);
+ register('read_assistant_levels','Read what ChatGPT and Claude may do in this workspace: Data and Apps, each Edit, View only or Blocked. Shows the organization maximum, your own limit and the level that applies. Levels are changed only by a signed-in person in TrialAgents.',{workspaceId:id},true,v=>new AssistantLevelSettings(f.db).read(a,v.workspaceId),true);
  register('save_access_grid','Prepare grouped access changes for confirmation in the signed-in owner session. Does not save permissions from an AI call.',{workspaceId:id,batch:gridBatch},false,async v=>{const review=await new AccessGrid(f.db).prepare(a,v.workspaceId,v.batch);const url=new URL(appPublicUrl());url.searchParams.set('tab','access-control');url.searchParams.set('workspaceId',v.workspaceId);url.searchParams.set('accessReview',review.reviewId);return {reviewUrl:url.toString(),saved:false};},true);
  register('read_app_members','List the people who can use one app with their role (Owner, Editor, Viewer), who granted it and when, and the team default role. Roles are changed only by a signed-in person in TrialAgents.',{workspaceId:id,appId:id},true,v=>new AppRoles(f.db).members(a,v.workspaceId,v.appId),true);
  register('read_app_log','Read the activity of one app, newest first: saves, access changes, records changed from inside the app and automation runs. Only an owner of the app can read it. Record values follow the reader\'s current table permissions. Read-only: nothing can be restored from it.',{workspaceId:id,appId:id,...appLogQuery.shape},true,({workspaceId,appId,...v})=>new AppLogs(f.db).appLog(a,workspaceId,appId,v),true);

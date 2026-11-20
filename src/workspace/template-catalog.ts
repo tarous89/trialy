@@ -7,6 +7,7 @@ import {z} from 'zod';
 import type {Database,Connection} from '../db/database.js';
 import {typeAccess} from '../domain/permissions.js';
 import {markAppTables} from '../domain/effective-access.js';
+import {requireAssistantApps} from '../domain/assistant-levels.js';
 import {fail,type Actor} from '../shared/schema.js';
 import {Service} from '../domain/service.js';
 import {WorkspaceFoundation} from './service.js';
@@ -42,7 +43,7 @@ export async function installCatalogApp(f:WorkspaceFoundation,a:Actor,w:string,i
   await tx.query('SELECT pg_advisory_xact_lock(hashtext($1))',[a.userId+':'+w+':'+v.requestKey]);
   const db:Database={query:tx.query.bind(tx),transaction:fn=>fn(tx),close:async()=>{}};
   const scoped=new WorkspaceFoundation(db),service=new Service(db);
-  await scoped.policy(tx,a,w,true);
+  requireAssistantApps(await scoped.policy(tx,a,w,true),a,true);
   // Scope receipt lookup to actor/workspace; a retry never creates duplicate tables.
   const prior=(await tx.query("SELECT result FROM workspace_receipts WHERE workspace_id=$1 AND user_id=$2 AND result->>'templateRequestKey'=$3",[w,a.userId,v.requestKey])).rows[0];
   if(prior){if(prior.result.templateId!==v.templateId||prior.result.templateVersion!==v.version||prior.result.templateDigest!==v.digest||prior.result.name!==v.name)fail(409,'receipt_conflict','Request differs from its saved installation');return prior.result;}

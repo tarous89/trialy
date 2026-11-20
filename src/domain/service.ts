@@ -15,6 +15,7 @@ import { randomUUID, createHash } from 'node:crypto';
 import type { Connection, Database } from '../db/database.js';
 import { operationSchema, reversalOperationSchema, viewFields, viewConfigSchema, fail, type Actor, type Field, type Operation, type RecordQuery } from '../shared/schema.js';
 import { access, typeAccess, visibleFields, projectData, folderAllowed } from './permissions.js';
+import {requireAssistantChange} from './assistant-levels.js';
 import {PostgresOriginalStore,type OriginalStore} from '../db/originals.js';
 import { templates, templateLinks } from './templates.js';
 import {assertUntracked} from './exchange-room-model.js';
@@ -95,6 +96,7 @@ export class Service extends DataService {
  }
  async validate(tx:Connection,a:Actor,w:string,op:Operation|FileOperation,draft?:{schemas:ReadonlyMap<string,Field[]>;ownTypeId?:string}) {
   const p=await access(tx,a,w,op.kind!=='set_workspace_policy');
+  requireAssistantChange(p,a,op.kind);
   if(op.kind==='database_changes'){
    const {type,policy}=await typeAccess(tx,a,w,op.typeId,true);
    if(!['human','ai'].includes(a.origin))fail(403,'human_required','Database editing requires a user action');if(op.deletions.length&&policy.role!=='owner')fail(403,'owner_required','Only the owner may delete records');

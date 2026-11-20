@@ -9,6 +9,7 @@ import {z} from 'zod';
 import type {Database,Connection} from '../db/database.js';
 import {Service,audit,checksum} from '../domain/service.js';
 import {access,typeAccess,visibleFields} from '../domain/permissions.js';
+import {requireAssistantApps} from '../domain/assistant-levels.js';
 import {fail,id,type Actor,recordWriteSchema} from '../shared/schema.js';
 import {programSchema,functionSchema,scopeSchema,invokeSchema,scheduleSchema,checkContract,capabilityNames,foundationOperationSchema,type Scope} from './schema.js';
 import {RUNTIME} from './runtime.js';
@@ -90,7 +91,7 @@ export class Foundation {
  async runs(a:Actor,w:string){await this.policy(a,w);return (await this.db.query('SELECT r.id,r.revision_id,r.status,r.created_at,r.finished_at,r.expires_at,r.diagnostic,r.proposal_digest,EXISTS(SELECT 1 FROM foundation_receipts c WHERE c.id=r.id) AS committed FROM foundation_runs r WHERE r.workspace_id=$1 AND r.user_id=$2 ORDER BY r.created_at DESC LIMIT 100',[w,a.userId])).rows;}
  async cancel(a:Actor,w:string,runId:string){await this.policy(a,w);await this.db.query("UPDATE foundation_runs SET cancel_requested=true,status='cancelled',finished_at=now() WHERE id=$1 AND workspace_id=$2 AND user_id=$3 AND status IN ('queued','running')",[runId,w,a.userId]);return {id:runId};}
  async prepareFunction(a:Actor,w:string,input:unknown){
-  const body=functionSchema.parse(input);await this.policy(a,w,true);await (body.planningOnly?this.validatePlanScope(a,w,body.scope):this.validateScope(a,w,body.scope));
+  const body=functionSchema.parse(input);requireAssistantApps(await this.policy(a,w,true),a,true);await (body.planningOnly?this.validatePlanScope(a,w,body.scope):this.validateScope(a,w,body.scope));
   if(body.functionId)await this.ownedFunction(a,w,body.functionId);
   if(Number((await this.db.query('SELECT count(*) AS n FROM foundation_previews WHERE user_id=$1 AND expires_at>now()',[a.userId])).rows[0].n)>=50)fail(429,'preview_limit','At most 50 pending function previews');
   const preview={id:randomUUID(),workspaceId:w,digest:checksum(J({body,runtime:RUNTIME})),body,runtime:RUNTIME,temporary:true};

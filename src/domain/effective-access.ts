@@ -2,6 +2,7 @@ import {sectionFields} from './app-sections.js';
 import {z} from 'zod';
 import type {Connection} from '../db/database.js';
 import {fail,id,assistantOf,isAssistant,type Actor,type Field} from '../shared/schema.js';
+import {assistantLevels} from './assistant-levels.js';
 
 export const accessRuleSchema=z.object({shareId:id.optional(),subject:z.union([id,z.literal('chatgpt'),z.literal('claude')]),kind:z.enum(['project','tool','table','column','database','workflow','connection','app_section']),resourceId:id,field:z.string().max(64).optional(),read:z.enum(['inherit','allow','deny']).default('inherit'),write:z.enum(['inherit','allow','deny']).default('inherit'),bindings:z.array(z.object({toolId:id.optional(),typeId:id,fields:z.array(z.string()),writable:z.array(z.string()),projectId:id.nullable()})).optional()}).strict();
 export type AccessRule=z.infer<typeof accessRuleSchema>;
@@ -48,7 +49,9 @@ export async function toolPolicy(db:Connection,a:Actor,p:any,toolId:string,withS
 }
 export async function applyTypePolicy(db:Connection,a:Actor,p:any,type:any){
  const owner=p.role==='owner',legacy=owner||(p.direct_data!==false&&(!p.allowed_types||p.allowed_types.includes(type.id)));
- if(a.origin==='ai'&&p.ai_hidden_types?.includes(type.id))return {...p,typeId:type.id,read_fields:[],write_fields:[],scope_project:null};
+ // A4: an assistant with Data = Blocked sees no table; with View only it reads and changes nothing.
+ const dataLevel=a.origin==='ai'?(await assistantLevels(db,a,p)).data:'edit';
+ if(a.origin==='ai'&&(dataLevel==='blocked'||p.ai_hidden_types?.includes(type.id)))return {...p,typeId:type.id,read_fields:[],write_fields:[],scope_project:null};
  if(!owner&&p.database_browse===false&&!a.accessToolId)return {...p,typeId:type.id,read_fields:[],write_fields:[],scope_project:null};
  // A2: an app's own table follows the person's role on that app: no role, no table; Viewer reads only. Guests keep their scoped sharing.
  let appViewOnly=false;
@@ -70,7 +73,7 @@ export async function applyTypePolicy(db:Connection,a:Actor,p:any,type:any){
  // Tool context always limits records to its declared project, even for an owner.
  const scopeProject=tool?.c.manifest?.scope==='project'?tool.c.project_id:null;
  if(tool?.c.manifest?.scope==='project'&&!scopeProject)fail(403,'project_scope','Project data scope is unavailable');
- const allowed_types=tool?tool.c.bindings.map((b:any)=>b.typeId).filter((t:string)=>!denied(dataRules(p,a,t),'read')&&!(a.origin==='ai'&&p.ai_hidden_types?.includes(t))):p.allowed_types;return {...p,allowed_types,typeId:type.id,read_fields:read,write_fields:write,scope_project:scopeProject??null};
+ const allowed_types=tool?tool.c.bindings.map((b:any)=>b.typeId).filter((t:string)=>!denied(dataRules(p,a,t),'read')&&!(a.origin==='ai'&&p.ai_hidden_types?.includes(t))):p.allowed_types;return {...p,allowed_types,typeId:type.id,read_fields:read,write_fields:dataLevel==='edit'?write:[],scope_project:scopeProject??null};
 }
 export async function assertRecordScope(db:Connection,p:any,recordId:string){if(p.scope_project&&!(await db.query('SELECT 1 FROM project_records WHERE workspace_id=$1 AND project_id=$2 AND record_id=$3 AND revoked_at IS NULL',[p.id,p.scope_project,recordId])).rows.length)fail(404,'not_found','Record is outside the permitted scope');}
 export function assertWritable(p:any,keys:string[]){if(keys.some(k=>!p.write_fields?.includes(k)))fail(403,'field_read_only','Editing is restricted for one or more fields');}
