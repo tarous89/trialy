@@ -11,7 +11,7 @@ const lower=(a:Level,b:Level):Level=>RANK[a]<RANK[b]?a:b;
 /** Loads the levels once and saves one change at a time; the result is said in the platform message. */
 function useAssistantLevels(call:Call,save:'set_assistant_maximum'|'set_my_assistant_limit',saved:(assistant:string,area:string,level:Level)=>string){
  const [data,setData]=useState<any>(null),[error,setError]=useState(''),[busy,setBusy]=useState(false),chrome=usePlatformChrome(),seq=useRef(0);
- useEffect(()=>{const mine=++seq.current;call('read_assistant_levels').then(v=>{if(mine===seq.current)setData(v);}).catch(e=>{if(mine===seq.current)setError((e as Error).message);});return()=>{seq.current++;};},[]);
+ useEffect(()=>{const mine=++seq.current;call('read_assistant_levels').then(v=>{if(mine!==seq.current)return;/* An answer in an unexpected shape (an older server, a host without this call) must not take the page down. */if(Array.isArray(v?.assistants))setData(v);else setData({unavailable:true});}).catch(e=>{if(mine===seq.current)setError((e as Error).message);});return()=>{seq.current++;};},[]);
  async function change(assistant:any,current:Record<Area,Level>,area:Area,level:Level){
   setBusy(true);
   try{setData(await call(save,{assistant:assistant.id,...current,[area]:level}));chrome.notify({kind:'success',message:saved(assistant.name,AREAS.find(a=>a.id===area)!.name,level)});}
@@ -34,6 +34,7 @@ function Grid({title,help,busy,children}:{title:string;help:string;busy:boolean;
  */
 export function AssistantMaximums({call}:{call:Call}){
  const {data,error,busy,change}=useAssistantLevels(call,'set_assistant_maximum',(assistant,area,level)=>`${assistant} is now ${LABEL[level]} for ${area.toLowerCase()} for everyone`);
+ if(data?.unavailable)return null;
  if(error)return <section className="ty-assistant-levels" aria-label="Assistants"><p role="alert">{error}</p></section>;
  if(!data)return <section className="ty-assistant-levels" aria-label="Assistants"><p role="status">Loading assistants…</p></section>;
  return <Grid title="Assistants" help="The most ChatGPT and Claude can do for anyone in your organization. Each person can set a tighter limit for themself under Connections." busy={busy}>
@@ -49,6 +50,7 @@ export function AssistantMaximums({call}:{call:Call}){
  */
 export function MyAssistantLimits({call,connected}:{call:Call;connected?:string[]}){
  const {data,error,busy,change}=useAssistantLevels(call,'set_my_assistant_limit',(assistant,area,level)=>`${assistant} is now ${LABEL[level]} for ${area.toLowerCase()} when it works for you`);
+ if(data?.unavailable)return null;
  if(error)return <section className="ty-assistant-levels" aria-label="Your assistants"><p role="alert">{error}</p></section>;
  if(!data)return <section className="ty-assistant-levels" aria-label="Your assistants"><p role="status">Loading assistants…</p></section>;
  const older=data.assistants.some((x:any)=>AREAS.some(a=>RANK[x.effective[a.id] as Level]<RANK[lower(x.mine[a.id],x.maximum[a.id])]));
