@@ -200,6 +200,8 @@ test('existing assistant switches become levels',async()=>{
  try{
   const files=(await readdir('migrations')).filter(f=>f.endsWith('.sql')).sort(),at=files.indexOf('085_assistant_levels.sql');assert.ok(at>0);
   for(const file of files.slice(0,at))await pg.exec(await readFile('migrations/'+file,'utf8'));
+  // The current application reads personal limits with every access check. A stand-in table lets it set up the old state; it is dropped before the migration under test runs.
+  await pg.exec('CREATE TABLE assistant_limits(workspace_id uuid,user_id uuid,assistant text,data_level text,apps_level text)');
   const db:Database={query:(q,v)=>pg.query(q,v) as any,transaction:fn=>pg.transaction(tx=>fn(tx as Connection)),close:async()=>{}};
   const person=():Actor=>({userId:randomUUID(),origin:'human'}),owner=person(),second=person(),ann=person(),ben=person(),cat=person();
   for(const u of [owner,second,ann,ben,cat])await db.query('INSERT INTO users(id,subject,email,name) VALUES($1,$2,$3,$4)',[u.userId,u.userId,u.userId+'@example.invalid','User']);
@@ -215,6 +217,7 @@ test('existing assistant switches become levels',async()=>{
    {subject:cat.userId,kind:'connection',resourceId:open,field:'claude',read:'deny',write:'inherit'},
    {subject:ann.userId,kind:'table',resourceId:open,read:'deny',write:'inherit'}];
   await db.query('UPDATE workspaces SET permission_rules=$2 WHERE id=$1',[open,JSON.stringify(rules)]);
+  await pg.exec('DROP TABLE assistant_limits');
   for(const file of files.slice(at))await pg.exec(await readFile('migrations/'+file,'utf8'));
 
   const space=async(id:string)=>(await db.query('SELECT chatgpt_data_level,chatgpt_apps_level,claude_data_level,claude_apps_level,ai_enabled,claude_enabled,permission_rules FROM workspaces WHERE id=$1',[id])).rows[0];

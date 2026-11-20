@@ -28,7 +28,8 @@ function legacyLevel(p:any,a:Actor):AssistantLevel{const rules=rulesFor(p,a).fil
 export async function assistantLevels(db:Connection,a:Actor,p:any):Promise<AssistantLevels>{
  if(a.origin!=='ai')return {...FULL,assistant:null,userId:a.userId,organization:FULL,personal:FULL};
  const x=assistantOf(a),known=p.assistant_levels as AssistantLevels|undefined;if(known&&known.assistant===x&&known.userId===a.userId)return known;
- const organization=maximumOf(p,x),row=(await db.query('SELECT data_level,apps_level FROM assistant_limits WHERE workspace_id=$1 AND user_id=$2 AND assistant=$3',[p.id,a.userId,x])).rows[0];
+ // The person's own limits arrive with the access lookup (permissions.ts); the separate read is only for callers that built their policy another way.
+ const organization=maximumOf(p,x),row=p.assistant_limits!==undefined&&p.access_user_id===a.userId?p.assistant_limits?.[x]:(await db.query('SELECT data_level,apps_level FROM assistant_limits WHERE workspace_id=$1 AND user_id=$2 AND assistant=$3',[p.id,a.userId,x])).rows[0];
  const personal:AssistantAreas={data:level(row?.data_level),apps:level(row?.apps_level)};
  return {data:lowestLevel(organization.data,personal.data),apps:lowestLevel(organization.apps,personal.apps),assistant:x,userId:a.userId,organization,personal};
 }
