@@ -186,7 +186,9 @@ export async function changeImpact(f:WorkspaceFoundation,db:Connection,a:Actor,w
   text:sourceAccess==='bindings'?'People who can read the app’s connected tables will also see the app’s full saved code.':'Only people with full access to the organization’s data will be able to open the app.'}:null;
  const was=automationKeys({manifest:prev.manifest,execution:prev.execution}),now=automationKeys(op.kind==='save_component'?op.content:{manifest:op.content?.manifest,execution:prev.execution});
  const automations={added:[...now].filter(([k])=>!was.has(k)).map(([,v])=>v),removed:[...was].filter(([k])=>!now.has(k)).map(([,v])=>v)};
- if(!added.size&&!removedTables.length&&!accessChange&&!automations.added.length&&!automations.removed.length)return null;
+ // Only what needs a decision opens the popup: a new connection, a change of who can read the app, a new automation.
+ // Removals need none (what relies on them is checked separately, 3.6); they are listed when the popup opens anyway.
+ if(!added.size&&!accessChange&&!automations.added.length)return null;
  const tables=added.size?await connectionRows(f,db,a,w,op,added):[];
  const identity={app:op.componentId,version:op.expectedVersion,access:accessChange,tables:tables.map(t=>[t.typeId,t.status,t.options,t.choice]),removed,automations};
  return {kind:'change',app:{name:op.content?.name??prev.name},access:accessChange,tables,removedTables,automations,

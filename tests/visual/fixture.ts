@@ -81,6 +81,10 @@ export async function fixture(){
  // A6: pending app changes are durable, so one test's unresolved change would show in the next test's footer.
  // Each test starts from the fixture's own pending changes only, as a fresh account would.
  const fixturePending=(await db.query("SELECT id FROM workspace_previews WHERE change_class<>'other'")).rows.map((r:any)=>r.id);
+ // The fixture's own standing previews are setup data that tests open by URL, not someone's unresolved work, so they
+ // are left out of the footer's list. Tests that exercise the footer create their own pending changes.
+ const listPending=WorkspaceFoundation.prototype.pendingAppChanges;
+ WorkspaceFoundation.prototype.pendingAppChanges=async function(this:WorkspaceFoundation,...args:Parameters<typeof listPending>){const r=await listPending.apply(this,args);return {...r,changes:r.changes.filter((c:any)=>!fixturePending.includes(c.previewId))};};
  app.post('/fixture/reset-pending',async(_req,res)=>{await db.query("DELETE FROM workspace_previews WHERE change_class<>'other' AND NOT (id=ANY($1::uuid[]))",[fixturePending]);res.json({ok:true});});
  return {base,component,w,f,actor,close:async()=>{server.closeAllConnections();await new Promise<void>(r=>server.close(()=>r()));await db.close();}};
 }

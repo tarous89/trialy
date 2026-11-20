@@ -127,6 +127,13 @@ test('3.4 (A4, I2): approving a change that affects access, connections or autom
    const c=(await f.readComponent(owner,w.id,saved.id)).component;assert.equal(c.manifest.fields.find((m:any)=>m.typeId===notes).mode,'read');
    assert.ok((await db.query("SELECT 1 FROM audit_events WHERE action='app.change_reviewed' AND object_id=$1",[saved.id])).rows.length);
   });
+  await t.test('removing a connection needs no decision and is approved directly (what relies on it is checked by 3.6)',async()=>{
+   const p=await prepare(app('Board',[items]));
+   assert.equal((await f.appInstallation(owner,w.id,p.id)).impact,null);
+   assert.ok((await approve(p)).id);
+   const back=await prepare(app('Board',[items,notes]));const {impact}=await f.appInstallation(owner,w.id,back.id);
+   assert.ok((await approve(back,{stepDigest:impact.digest,connections:{[notes]:'read'}})).id);
+  });
   await t.test('opening the app to people who can read its tables is an access change',async()=>{
    const p=await prepare({...app('Board',[items,notes]),sourceAccess:'workspace'});
    const {impact}=await f.appInstallation(owner,w.id,p.id);
