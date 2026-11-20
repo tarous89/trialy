@@ -106,3 +106,6 @@ GRANT SELECT,INSERT ON exchange_questions,exchange_answers,exchange_tracked_tabl
 -- through trialy_security.exchange_unsubscribe, so the runtime role reads them and never writes them directly.
 GRANT SELECT,INSERT ON exchange_ask_responses TO trialy_runtime;
 GRANT SELECT ON exchange_unsubscribes TO trialy_runtime;
+
+-- Speed histograms (migration 080): anonymous counters, added to and never deleted by the runtime role.
+GRANT INSERT,UPDATE ON ux_timing_daily TO trialy_runtime;
