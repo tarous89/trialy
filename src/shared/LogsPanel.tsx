@@ -4,8 +4,9 @@ import {Button,SearchField,Select} from './ui/Controls.js';
 import {Icon} from './ui/Icon.js';
 type Call=(name:string,args:any)=>Promise<any>;
 const defaults={query:'',category:'all',outcome:'all',actorId:'',projectId:'',appId:'',resourceId:'',since:'',until:''};
-export function LogsPanel({workspaceId,call,onDownload}:{workspaceId:string;call:Call;onDownload?:(name:string,text:string)=>Promise<void>}){
- const [filters,setFilters]=useState(defaults),[offset,setOffset]=useState(0),[page,setPage]=useState<any>(null),[error,setError]=useState(''),[busy,setBusy]=useState(false),[exporting,setExporting]=useState(false),[refresh,setRefresh]=useState(0),[moreFilters,setMoreFilters]=useState(false);
+/** U4: initialAppId opens the log with one app selected (platform:logs, or ?tab=logs&appId=). */
+export function LogsPanel({workspaceId,call,onDownload,initialAppId}:{workspaceId:string;call:Call;onDownload?:(name:string,text:string)=>Promise<void>;initialAppId?:string}){
+ const [filters,setFilters]=useState(()=>({...defaults,appId:initialAppId??''})),[offset,setOffset]=useState(0),[page,setPage]=useState<any>(null),[error,setError]=useState(''),[busy,setBusy]=useState(false),[exporting,setExporting]=useState(false),[refresh,setRefresh]=useState(0),[moreFilters,setMoreFilters]=useState(false);
  const previousSearch=useRef('');
  const snapshot=useRef<string|undefined>(undefined);
  const args=()=>({...Object.fromEntries(Object.entries(filters).filter(([,v])=>v!=='')),...(filters.since?{since:new Date(filters.since).toISOString()}:{}),...(filters.until?{until:new Date(filters.until+'T23:59:59.999').toISOString()}:{}),workspaceId});

@@ -1,6 +1,6 @@
 # Implementation scope for the platform decisions of 19 November 2026
 
-**Status:** scope only. Nothing in this document is built yet.
+**Status:** being built. Sessions 1 and 2 are merged; session 3 is in review. See the progress table (section 9).
 **Decisions:** [snapshot with codes](PLATFORM_DECISIONS_SNAPSHOT_2026-11-19.md) (72 records: 69 in scope, 3 backlog or draft).
 **Evidence:** six code reviews in [`platform-decisions-2026-11-19/`](platform-decisions-2026-11-19/), read at commit `376f29d`. They hold the file and line references for every item below.
 **How to cite:** decisions by code (`R3`, `A6`, `P5`); work packages by number (`2.3` = session 2, package 3).
@@ -417,8 +417,8 @@ Updated at the end of every session.
 | Session | Status | Pull request | Shipped | Carried over |
 | --- | --- | --- | --- | --- |
 | 1 · Foundations and quick fixes | Shipped and live, 20 November 2026 (checked on the live platform after release). | [#196](https://github.com/tarous89/trialy/pull/196) | 1.1 to 1.9, with the changes listed under "Session 1 notes" | Listed under "Session 1 notes" |
-| 2 · Roles and access | Built 20 November 2026; in review | [#197](https://github.com/tarous89/trialy/pull/197) | 2.1 to 2.9, with the changes listed under "Session 2 notes" | Listed under "Session 2 notes" |
-| 3 · App lifecycle and installation | Not started | | | |
+| 2 · Roles and access | Built and merged, 20 November 2026 | [#197](https://github.com/tarous89/trialy/pull/197) | 2.1 to 2.9, with the changes listed under "Session 2 notes" | Listed under "Session 2 notes" |
+| 3 · App lifecycle and installation | Built 20 November 2026; in review | [#198](https://github.com/tarous89/trialy/pull/198) | 3.1 to 3.7, with the changes listed under "Session 3 notes" | Listed under "Session 3 notes" |
 | 4 · Data path and server speed | Not started | | | |
 | 5 · Browser runtime, style and guide | Not started | | | |
 | 6 · Automations and external sharing | Not started | | | |
@@ -470,3 +470,30 @@ Carried over, with the package that takes it:
 - **Small items.** A pending access request is not cancelled when its requester is removed from the team (it is hidden). The Team tab is still shown to non-owners with an error. Messages that still say "the owner" or "account owner" were not reworded. `docs/ACCESS_CONTROL.md` still describes column editing.
 
 Environment note for later sessions: this build container cannot run the project's pinned browser for screenshots, so screenshot comparisons here are indicative only. The pull request's checks are the authority for them.
+
+### Session 3 notes
+
+How it is built (so later sessions do not redo it):
+
+- **Pending changes (3.1).** Migration 087 adds origin, assistant, app, kind (`change_class`: new, revision, assistant), review group and base version to `workspace_previews`, filled by a trigger from the preview body, so every path that writes a preview is covered and the runtime role keeps insert/delete-only rights. "No expiry" is the date 9999-12-31, so existing `expires_at>now()` checks keep working. "Needs preparing again" is computed when a change is read (app version moved, app archived, or the app's access stamp changed), never stored. The access stamp for an app change now covers only the app, its project, its tables, the rules on them and its roles; changes elsewhere in the organization no longer invalidate it.
+- **One review per app (D9).** All pending changes to one app by one person form one review: a second preparation is refused (`pending_change_exists`, with the existing ID and digest), the same content again is a retry that returns the existing change, and `begin_app_update` keeps a change under review. Unfinished drafts are still replaced.
+- **Footer (3.2).** `src/shared/PendingChanges.tsx`: a provider in each host reads `list_pending_app_changes` (on open, focus and after every save or discard) and the shell renders the footer. The page that shows a change registers it as the on-screen review; only that one can be approved, so nothing is approved blind. Every other pending change is listed with Open and Discard. Teammates never see someone else's pending change.
+- **Who approves (D11).** `confirm_workspace_change` refuses app changes from an assistant, however it is asked. Inside ChatGPT and Claude the person approves through `approve_workspace_change`, a tool visible to the TrialAgents view only (the same host-enforced visibility the existing install and data-access tools rely on); the embedded view sends all of its own Save clicks through it. In a host that cannot show the view (Claude Code), the person approves on the website.
+- **Installation popup (3.3).** `src/workspace/installation.ts` builds the popup for any new app; the catalog uses its own step (`data-access.ts`), which now also shows the project and team default and is always shown. The requirement is enforced at every entry point a person or assistant reaches (the website's confirm route, the view's approval tool, `confirm_workspace_change`): a new app without the reviewed choices returns `installation_required` with the popup's content. Internal callers that showed their own popup (the catalog installer) pass none. The view reads the popup's content first (`read_app_installation`) and sends one approval with the choices.
+- **Tables new for an app (from session 2).** A table the installer created (per the audit log), used by no other app, is offered as the app's own and marked with `origin_app_id` on install. The rule only narrows access.
+- **Impact (3.4).** `changeImpact` compares the app before and after. The popup opens only for what needs a decision: a new table connection, a change of who may read the app's code (`sourceAccess`), or a new helper, function, recommended automation or automation feature. Removals need no decision (what relies on them is checked by 3.6); they are listed when the popup opens for another reason.
+- **Connections (3.5).** Read-only use of a table the app would write narrows the app's reviewed field contract (manifest fields set to read), which the platform already enforces on every write. Apps without a field contract, and trackers built from tabs, offer their tables as Read/write only. "Create new" makes an empty table with the same fields and rebinds the app (a tracker gets a draft table instead).
+- **Dependencies (3.6).** `trialy_security.dependency_report` (migration 088) is a definer function because automation rows are isolated per creator; it answers only for a signed-in person with workspace access. App changes: this app's automations that read, are triggered by or run what is removed (breaking), and apps that read a role this app stops writing (warning). Table changes: apps showing the fields (breaking), saved views and outside links (warnings), automations (breaking). Names of apps the caller cannot open are hidden. The database trigger that retires automations stays as a safety net for paths other than a reviewed save.
+- **Settings and links (3.7).** Layout and feature-setting proposals are refused for anyone but an owner before anything is prepared (the save itself was already owner-only since session 2). The link contract is `platform:access` (the app's own Access panel), `platform:logs` and `platform:automations` (those pages with the app selected, on the website and inside the extension). No other `platform:` link exists.
+
+Carried over, with the package that takes it:
+
+- **In-app record reviews → 4.4.** The app runtime's own dialogs for creating, duplicating and deleting records and for record changes proposed by an app are unchanged. Record edits become direct in session 4 (D16); those dialogs go then.
+- **Duplicate an app → 4.x or 7.1.** Copying an app creates a new app through its own dialog, not the installation popup.
+- **Sharing outside the team by an app owner who is not an organization owner (session 2 carry-over) → 5.4.** Not done here; the screen is still shown to organization owners only.
+- **Access page with an app selected.** `platform:access` opens the app's own Access panel. The workspace Access page itself has no app selection; the link's `appId` parameter is ignored there.
+- **Plugin packages (O3).** The design baseline shipped in both plugins now describes the one approval footer. Installed plugins keep the old wording until the owner publishes new plugin versions. The server instructions and workspace guide are current already.
+- **Existing pending changes at release.** Assistant changes prepared before migration 087 recorded no origin; unfinished drafts are classified as the assistant's, others as revisions. Their access stamp was computed the old way, so each shows once as "needs preparing again".
+
+Environment note: browser tests run here only with the browser path overridden (`executablePath: /opt/pw-browsers/chromium`). Twenty screenshot comparisons fail identically on `main` in this container (font rendering), so they are not counted as regressions; the pull request's checks are the authority for them.
+

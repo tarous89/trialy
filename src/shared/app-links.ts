@@ -3,6 +3,8 @@ import type {z} from 'zod';
 // This function is also serialized into the isolated trusted frame. Keep it self-contained.
 export function frameLinkTarget(href:string,origin:string,current:{appId?:string;workspaceId?:string;source?:string}|null){
  if(!href||href.length>2000||/[\\\u0000-\u0020]/.test(href)||href.startsWith('//'))return null;
+ // U4: the platform's own Access, Logs and Automations pages, with this app selected.
+ if(/^platform:(access|logs|automations)$/.test(href))return {href,external:false};
  try{
   const absolute=/^[a-z][a-z0-9+.-]*:/i.test(href);
   if(absolute&&!/^(https?:|mailto:|tel:)/i.test(href))return null;
@@ -22,6 +24,7 @@ export function frameLinkTarget(href:string,origin:string,current:{appId?:string
 }
 export function resolveAppLink(href:string,current:z.infer<typeof appLocation>,origin:string){
  if(!href||href.length>2000||/[\\\u0000-\u0020]/.test(href)||href.startsWith('//'))return null;
+ {const destination=platformDestination(href);if(destination)return {kind:'platform' as const,destination,href:platformUrl(destination,current.workspaceId,current.appId)};}
  try{
   if(/^[a-z][a-z0-9+.-]*:/i.test(href)){
    const url=new URL(href);if(!['https:','http:','mailto:','tel:'].includes(url.protocol)||url.username||url.password)return null;
@@ -34,4 +37,16 @@ export function resolveAppLink(href:string,current:z.infer<typeof appLocation>,o
   const next=appLocation.parse({...current,route:{path:appPagePath.parse(page.pathname),...(page.searchParams.has('recordId')?{recordId:page.searchParams.get('recordId')}:{}),...(page.searchParams.has('page')?{page:Number(page.searchParams.get('page'))}:{})}});
   return {kind:'internal' as const,href:appUrl(next)};
  }catch{return null;}
+}
+
+/**
+ * U4: the one link contract from an app to the platform's administration pages. An app links to
+ * `platform:access`, `platform:logs` or `platform:automations`; the host opens that page with the app selected.
+ * The platform supplies and maintains those screens; apps never rebuild them.
+ */
+export type PlatformDestination='access'|'logs'|'automations';
+export function platformDestination(href:string):PlatformDestination|null{const m=/^platform:(access|logs|automations)$/.exec(href);return m?m[1] as PlatformDestination:null;}
+export function platformUrl(destination:PlatformDestination,workspaceId:string,appId:string){
+ const tab=destination==='access'?'access-control':destination;
+ return '/?tab='+tab+'&workspaceId='+encodeURIComponent(workspaceId)+'&appId='+encodeURIComponent(appId);
 }

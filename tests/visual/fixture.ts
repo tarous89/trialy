@@ -58,6 +58,9 @@ export async function fixture(){
   if(name==='check_component_access')return f.checkComponentAccess(actor,w.id,v.componentId,v.viewId);
   if(name==='prepare_workspace_change')return f.preview(actor,w.id,v.operation);
   if(name==='confirm_workspace_change')return f.confirm(actor,w.id,v.previewId,v.digest);
+  if(name==='approve_workspace_change')return f.confirm(actor,w.id,v.previewId,v.digest,v.installation??null);
+  if(name==='read_app_installation')return f.appInstallation(actor,w.id,v.previewId);
+  if(name==='list_pending_app_changes')return f.pendingAppChanges(actor,w.id,v.appId);
   if(name==='discard_workspace_preview')return f.discard(actor,w.id,v.previewId);
   throw Error('Unexpected tool '+name);
  };
@@ -75,6 +78,14 @@ export async function fixture(){
  addLocalAuth(app,db,base);
  addWideTrackerFixture(app,f,s,actor,w.id);
  await addAppsFixture(app,db,actor,w);
+ // A6: pending app changes are durable, so one test's unresolved change would show in the next test's footer.
+ // Each test starts from the fixture's own pending changes only, as a fresh account would.
+ const fixturePending=(await db.query("SELECT id FROM workspace_previews WHERE change_class<>'other'")).rows.map((r:any)=>r.id);
+ // The fixture's own standing previews are setup data that tests open by URL, not someone's unresolved work, so they
+ // are left out of the footer's list. Tests that exercise the footer create their own pending changes.
+ const listPending=WorkspaceFoundation.prototype.pendingAppChanges;
+ WorkspaceFoundation.prototype.pendingAppChanges=async function(this:WorkspaceFoundation,...args:Parameters<typeof listPending>){const r=await listPending.apply(this,args);return {...r,changes:r.changes.filter((c:any)=>!fixturePending.includes(c.previewId))};};
+ app.post('/fixture/reset-pending',async(_req,res)=>{await db.query("DELETE FROM workspace_previews WHERE change_class<>'other' AND NOT (id=ANY($1::uuid[]))",[fixturePending]);res.json({ok:true});});
  return {base,component,w,f,actor,close:async()=>{server.closeAllConnections();await new Promise<void>(r=>server.close(()=>r()));await db.close();}};
 }
 

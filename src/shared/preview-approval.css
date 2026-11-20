@@ -11,3 +11,13 @@
 @media(max-width:600px){.ty-workspace .ty-preview-approval{flex-wrap:wrap;gap:12px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}.ty-preview-approval-summary{flex-basis:100%}.ty-preview-approval-actions{margin-left:auto}}
 
 .ty-workspace #ty-main .ty-preview-approval .ty-button--primary:hover{background:#baf4c8!important;border-color:#baf4c8;color:#10251a}
+/* A6: the one approval footer also lists the person's other pending app changes. */
+.ty-pending-footer strong{display:block;font-weight:600}
+.ty-pending-footer p{margin:2px 0 0;color:#cfe0d5}
+.ty-pending-footer [role=alert]{color:#ffd2cc}
+.ty-pending-details summary,.ty-pending-more-toggle{cursor:pointer;color:#cfe0d5;font-size:13px}
+.ty-pending-more-toggle{background:none;border:0;padding:0;margin-top:4px;text-decoration:underline;font:inherit}
+.ty-pending-details ul,.ty-pending-more ul{margin:6px 0 0;padding-left:18px}
+.ty-pending-more ul{list-style:none;padding:0;display:grid;gap:8px;max-height:40dvh;overflow:auto}
+.ty-pending-more li{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:space-between}
+.ty-pending-actions{display:flex;gap:8px}

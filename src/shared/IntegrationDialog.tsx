@@ -20,7 +20,7 @@ export function IntegrationDialog({call,appId,role,onClose,onChanged}:{call:Call
  useEffect(()=>{void load();},[appId,role]);
  async function add(){const t=data.template;setBusy(true);setError('');try{
   const install={templateId:t.templateId,version:t.version,digest:t.digest,name:t.name,requestKey:requestKey.current};
-  const r=await dataAccess.gate({install},async()=>{if(platform.useTemplate){await platform.useTemplate(tpl(install),requestKey.current);return {embedded:true};}return call('install_app_template',install);});
+  const r=await dataAccess.gate({install});
   if(r?.embedded){onClose();return;}
   if(r){await load();onChanged();}
  }catch(e){setError((e as Error).message);}finally{setBusy(false);}}

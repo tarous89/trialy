@@ -44,14 +44,25 @@ test('removing bindings archives only unused empty fields and retires dependent 
 
   const partialType=await createTable('Partial',['keep','remove']),partial=await createApp('Partial',partialType,['keep','remove']),affected=randomUUID(),unaffected=randomUUID(),followup=randomUUID();
   for(const [id,field] of [[affected,'remove'],[unaffected,'keep']])await pg.query('INSERT INTO app_monitors(id,workspace_id,user_id,app_id,config,scope_stamp) VALUES($1,$2,$3,$4,$5,$6)',[id,w.id,other,partial,JSON.stringify({readBindings:[{typeId:partialType,fields:[field]}]}),'stamp']);
-  await pg.query('INSERT INTO app_actions(id,workspace_id,user_id,app_id,config,approved_by) VALUES($1,$2,$3,$4,$5,$3)',[followup,w.id,other,partial,JSON.stringify({trigger:{source:'automation_runs',automationId:affected}})]);
+  await pg.query('INSERT INTO app_actions(id,workspace_id,user_id,app_id,config,approved_by) VALUES($1,$2,$3,$4,$5,$3)',[followup,w.id,other,partial,JSON.stringify({trigger:{source:'automation_runs',automationId:unaffected}})]);
   const run=randomUUID(),job=randomUUID();await pg.query("INSERT INTO app_service_jobs(id,workspace_id,user_id,app_id,kind,request_key,digest,payload,deadline_at) VALUES($1,$2,$3,$4,'email','cleanup-job','digest','{}',now()+interval '1 day')",[job,w.id,other,partial]);
   await pg.query("INSERT INTO app_action_runs(id,workspace_id,user_id,action_id,action_version,occurrence,pending_job) VALUES($1,$2,$3,$4,0,'cleanup-run',$5)",[run,w.id,other,followup,job]);
-  await save({kind:'save_component',componentId:partial,expectedVersion:0,projectId:project.id,content:{name:'Partial',format:'frontend-js',source:'return {html:"<h1>Partial</h1>"};',sourceAccess:'bindings',bindings:[{typeId:partialType,fields:['keep']}]}});
-  assert.ok((await pg.query<any>('SELECT deleted_at FROM app_monitors WHERE id=$1',[affected])).rows[0].deleted_at);assert.equal((await pg.query<any>('SELECT deleted_at FROM app_monitors WHERE id=$1',[unaffected])).rows[0].deleted_at,null);assert.ok((await pg.query<any>('SELECT deleted_at FROM app_actions WHERE id=$1',[followup])).rows[0].deleted_at);
-  assert.equal((await pg.query<any>('SELECT status FROM app_service_jobs WHERE id=$1',[job])).rows[0].status,'cancelled');assert.equal((await pg.query<any>('SELECT status FROM app_action_runs WHERE id=$1',[run])).rows[0].status,'cancelled');
+  // A13 (3.6): the save that removes a field an automation reads is refused and names that automation; nothing changes.
+  const narrowing=await f.preview(a,w.id,{kind:'save_component',componentId:partial,expectedVersion:0,projectId:project.id,content:{name:'Partial',format:'frontend-js',source:'return {html:"<h1>Partial</h1>"};',sourceAccess:'bindings',bindings:[{typeId:partialType,fields:['keep']}]}});
+  assert.deepEqual(narrowing.dependencies.map((d:any)=>d.id),[affected],'preparation already reports it');
+  await assert.rejects(f.confirm(a,w.id,narrowing.id,narrowing.digest),(e:any)=>e.code==='dependency_breaks'&&JSON.parse(e.message).dependencies.map((d:any)=>d.id).join()===affected);
+  for(const id of [affected,unaffected])assert.equal((await pg.query<any>('SELECT deleted_at FROM app_monitors WHERE id=$1',[id])).rows[0].deleted_at,null);
+  // The person resolves it (the affected automation is removed); the same pending change then saves.
+  await pg.query('UPDATE app_monitors SET enabled=false,deleted_at=now() WHERE id=$1',[affected]);
+  await f.confirm(a,w.id,narrowing.id,narrowing.digest);
+  assert.equal((await pg.query<any>('SELECT deleted_at FROM app_monitors WHERE id=$1',[unaffected])).rows[0].deleted_at,null);assert.equal((await pg.query<any>('SELECT deleted_at FROM app_actions WHERE id=$1',[followup])).rows[0].deleted_at,null);
   const partialRow=(await pg.query<any>('SELECT fields,archived_fields FROM entity_types WHERE id=$1',[partialType])).rows[0];
   assert.deepEqual(partialRow.fields.map((f:any)=>f.key),['keep']);assert.deepEqual(partialRow.archived_fields.map((x:any)=>x.field.key),['remove']);
+  // The database trigger remains as a last safety net: a binding removed by any other path still retires what used it,
+  // with its follow-ups, queued jobs and runs.
+  await pg.query("UPDATE workspace_components SET bindings='[]' WHERE id=$1",[partial]);
+  assert.ok((await pg.query<any>('SELECT deleted_at FROM app_monitors WHERE id=$1',[unaffected])).rows[0].deleted_at);assert.ok((await pg.query<any>('SELECT deleted_at FROM app_actions WHERE id=$1',[followup])).rows[0].deleted_at);
+  assert.equal((await pg.query<any>('SELECT status FROM app_service_jobs WHERE id=$1',[job])).rows[0].status,'cancelled');assert.equal((await pg.query<any>('SELECT status FROM app_action_runs WHERE id=$1',[run])).rows[0].status,'cancelled');
   const empty=await createTable('Empty app',['empty']),emptyApp=await createApp('Empty app',empty,['empty']);await save({kind:'archive_component',componentId:emptyApp,expectedVersion:0,archived:true});
   assert.deepEqual((await pg.query<any>('SELECT fields FROM entity_types WHERE id=$1',[empty])).rows[0].fields.map((f:any)=>f.key),['empty']);
   await deleteArchivedItem(f,a,w.id,{kind:'app',id:emptyApp,confirmed:true});

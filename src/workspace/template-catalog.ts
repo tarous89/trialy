@@ -32,6 +32,8 @@ export async function syncTemplateCatalog(db:Database){
 }
 
 export const catalogInstallation=z.object({templateId:z.string().max(80),version:z.string().max(30),digest:z.string().regex(/^[a-f0-9]{64}$/),requestKey:z.string().uuid(),name:z.string().trim().min(1).max(100),createNew:z.boolean().optional(),
+ /** I2: the project chosen in the installation popup. Omitted: the organization's default project. */
+ projectId:z.string().uuid().optional(),
  /** Per shareable role: an existing table ID to reuse, or 'new' for a new table (another app's read-only output: not used). Omitted roles default to reuse when exactly one compatible table exists. */
  sharedTables:z.record(z.string().max(80),z.union([z.string().uuid(),z.literal('new')])).optional()}).strict();
 export const catalogInstallationRead=z.object({templateId:z.string().max(80),version:z.string().max(30)}).strict();

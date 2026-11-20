@@ -8,7 +8,7 @@ for(const width of [1440,900,390])test(`Concise recipe install approval preserve
  await page.route('**/data-access/confirm',r=>{confirmed=r.request().postDataJSON();return r.fulfill({json:{appId:f.appId,workspaceId:f.workspaceId,url:f.url,automationStatus:'pending'}});});
  await openPlatform(page,base+`/app-home?tab=templates&workspaceId=${f.workspaceId}`);
  const card=page.getByRole('region',{name:'App templates'}).locator('article').filter({has:page.getByRole('heading',{name:'Runway',exact:true})});
- await card.getByRole('button',{name:'Use',exact:true}).click();const dialog=page.getByRole('dialog',{name:'Add Runway'});
+ await card.getByRole('button',{name:'Use',exact:true}).click();const dialog=page.getByRole('dialog',{name:'Install Runway'});
  await expect(dialog.getByRole('checkbox',{name:/Research updates/})).toBeChecked();await expect(dialog.getByRole('checkbox',{name:/Email findings/})).toBeChecked();
  await expect(dialog.getByText(/Research and drafts save to the app database/)).toBeVisible();await expect(dialog.getByText('Includes 2 read-only functions for app briefs and summaries')).toBeVisible();await dialog.locator('.ty-app-functions summary').click();await expect(dialog.getByText('Summarize meaningful findings and skip empty updates.')).toBeVisible();
  await page.screenshot({path:`/tmp/trialy-recipes-install-default-${width}.png`,fullPage:true});
@@ -18,7 +18,7 @@ for(const width of [1440,900,390])test(`Concise recipe install approval preserve
  await dialog.getByRole('checkbox',{name:/Email findings/}).uncheck();await dialog.getByLabel('Time',{exact:true}).fill('10:30');
  await expect(page.locator('body')).toHaveJSProperty('scrollWidth',width);expect(await dialog.evaluate(el=>el.scrollWidth<=el.clientWidth+1)).toBe(true);
  await page.screenshot({path:`/tmp/trialy-recipes-install-${width}.png`,fullPage:true});
- await dialog.getByRole('button',{name:'Add app',exact:true}).click();await expect(page).toHaveURL(/\/apps\//);
+ await dialog.getByRole('button',{name:'Install',exact:true}).click();await expect(page).toHaveURL(/\/apps\//);
  expect(confirmed.automations.find(x=>x.key==='email').enabled).toBe(false);expect(confirmed.automations.find(x=>x.key==='research').settings.trigger.time).toBe('10:30');
 });
 
@@ -45,13 +45,13 @@ for(const width of [1440,900,390])test(`Research then email shows as one automat
  await page.route('**/data-access/confirm',r=>{confirmed=r.request().postDataJSON();return r.fulfill({json:{appId:f.appId,workspaceId:f.workspaceId,url:f.url,automationStatus:'pending'}});});
  await openPlatform(page,base+`/app-home?tab=templates&workspaceId=${f.workspaceId}`);
  const card=page.getByRole('region',{name:'App templates'}).locator('article').filter({has:page.getByRole('heading',{name:'Runway',exact:true})});
- await card.getByRole('button',{name:'Use',exact:true}).click();const dialog=page.getByRole('dialog',{name:'Add Runway'});
+ await card.getByRole('button',{name:'Use',exact:true}).click();const dialog=page.getByRole('dialog',{name:'Install Runway'});
  await expect(dialog.getByRole('checkbox')).toHaveCount(2);await expect(dialog.getByText(/Research, then email/)).toBeVisible();
  await dialog.getByRole('button',{name:'Edit',exact:true}).first().click();
  await expect(dialog.getByText(/includes fields you add later, except watched/)).toBeVisible();await expect(dialog.getByText(/Research and email are one automation/)).toBeVisible();await expect(dialog.getByLabel('Email recipients')).toBeVisible();
  await expect(page.locator('body')).toHaveJSProperty('scrollWidth',width);expect(await dialog.evaluate(el=>el.scrollWidth<=el.clientWidth+1)).toBe(true);
  await page.screenshot({path:`/tmp/trialy-recipes-combined-${width}.png`,fullPage:true});
- await dialog.getByRole('button',{name:'Add app',exact:true}).click();await expect(page).toHaveURL(/\/apps\//);
+ await dialog.getByRole('button',{name:'Install',exact:true}).click();await expect(page).toHaveURL(/\/apps\//);
  expect(confirmed.automations.map(x=>[x.key,x.enabled])).toEqual([['scan',true],['alert',true]]);
  const row={id,kind:'research',executor:'claude',name:'Trial Radar scan + digest',app_name:'Trial Radar',app_url:f.url,prompt:'Read the brief.',services:[{id:'claude',name:'Claude'}],followUps:[{id:'31000000-0000-4000-8000-000000000003',kind:'action',enabled:true,name:'Trial Radar scan + digest',recipients:['owner@example.invalid']}],connectors:['claude','email'],version:0,enabled:true,expires_at:'2027-11-16T00:00:00Z',trigger};
  await page.route(/\/app-services\/automations\/definitions(?:[/?].*)?$/,route=>route.fulfill({json:{rows:[row],nextOffset:null}}));

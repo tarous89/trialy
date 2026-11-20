@@ -111,8 +111,25 @@ test('assistants prepare the choice but never confirm it',async()=>{
   await assert.rejects(confirmDataAccess(f,ai,w.id,{...target,connections:{},stepDigest:prepared.digest}),/cannot approve its own changes/);
   // The user sees the proposal prefilled in the dialog and adds the app there (the app-only Add action).
   const step=await dataAccessStep(f,ai,w.id,target);assert.deepEqual(await preparedChoices(f.db,ai,w.id,step),{programs:'new'});
-  const saved=await confirmDataAccess(f,{...ai,actionConfirmed:true},w.id,{...target,connections:{programs:programs},stepDigest:step.digest});
+  const saved=await confirmDataAccess(f,{...ai,actionConfirmed:true,footerApproval:true},w.id,{...target,connections:{programs:programs},stepDigest:step.digest});
   assert.equal(x.mapOf(await x.comp(w.id,saved.appId)).programs.typeId,programs);
+ }finally{await x.pg.close();}
+});
+
+test('I2, A1: the catalog popup leads with the project and the team default, and the install applies both',async()=>{
+ const x=await setup();const {f,s,actor,R}=x;
+ try{
+  const w=await s.createWorkspace(actor,'Projects');
+  const node=await f.preview(actor,w.id,{kind:'create_node',nodeKind:'project',name:'Finance'}),finance=await f.confirm(actor,w.id,node.id,node.digest);
+  const target={install:{templateId:R.id,version:R.version,digest:R.digest,name:'Runway',requestKey:randomUUID()}};
+  const step=await dataAccessStep(f,actor,w.id,target);
+  assert.equal(step.needed,true,'the popup is shown even with nothing to connect');
+  assert.deepEqual(step.team,{choice:'editor',options:['editor','viewer','none']});
+  assert.ok(step.project.options.some((p:any)=>p.id===finance.id));
+  await assert.rejects(confirmDataAccess(f,actor,w.id,{...target,connections:{},stepDigest:step.digest,projectId:randomUUID()}),(e:any)=>e.code==='project_required');
+  const saved=await confirmDataAccess(f,actor,w.id,{...target,connections:{},stepDigest:step.digest,projectId:finance.id,teamDefault:'viewer'});
+  const row=(await x.pg.query<any>('SELECT project_id,team_default_role FROM workspace_components WHERE id=$1',[saved.appId])).rows[0];
+  assert.deepEqual({...row},{project_id:finance.id,team_default_role:'viewer'});
  }finally{await x.pg.close();}
 });
 

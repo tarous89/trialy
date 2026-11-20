@@ -435,8 +435,8 @@ Source of truth: the **Platform Access Decisions** table of the *Platform Capabi
 
 ### B2 · Bug · Bundled automations appear as standalone apps
 
-- **Status:** Decided · **Category:** App design · **Record:** `b3853b0b-0385-4e39-91aa-5ff6bf25ab90` (v1)
-- **Decision:** Open for investigation and fix. Seen with Deal Radar and Data Room. Confirmed in this workspace: Deal Radar’s three helper functions (brief, digest_summary, alert_summary) appear as separate entries on Home. Cause: helper functions are saved with no link to their app, and Home lists every function.
+- **Status:** Decided · **Category:** App design · **Record:** `b3853b0b-0385-4e39-91aa-5ff6bf25ab90` (v2)
+- **Decision:** Fixed and live since 20 November 2026 (session 1, pull request 196). Helpers installed with an app now belong to that app: they no longer appear as separate entries in the Apps list and are shown under their app on the Automations page. Checked on this workspace: Apps lists five apps, and Deal Radar's three helpers (brief, digest_summary, alert_summary) appear under Deal Radar in Automations.
 - **Limits:** Every automation and helper belongs to an app. Show them under their app in Automations, never as separate entries in the Apps list. Adding an automation selects an existing app and never creates one. Retrying an install creates no duplicates.
 
 ### B3 · Bug · Slow, freezing edits inside apps

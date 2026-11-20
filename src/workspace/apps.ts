@@ -22,7 +22,9 @@ export async function readApp(f:WorkspaceFoundation,a:Actor,input:unknown,includ
  if(v.source==='component'){
   const {component,initialOutput}=await f.readComponent(a,w,v.appId,includeOutput?'optional':false,v.route) as any;
   if(component.archived||component.project_archived)fail(404,'not_found','App unavailable');
-  return {...v,url:appUrl(v),component,...(initialOutput?{initialOutput}:{})};
+  // B1: opening an app brings back the person's pending change to it, wherever it was prepared.
+  const pendingChange=(await f.pendingAppChanges(a,w,v.appId).catch(()=>({changes:[]}))).changes[0];
+  return {...v,url:appUrl(v),component,...(initialOutput?{initialOutput}:{}),...(pendingChange?{pendingChange}:{})};
  }
  if(v.source==='preview'){
   const resolved=await f.resolveTrackerPreview(a,w,v.appId);

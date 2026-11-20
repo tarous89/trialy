@@ -234,7 +234,13 @@ test('E5 and E6 end to end on restricted roles',async t=>{
    const p=await f.preview(a,w,{kind:'save_component',componentId:c.id,expectedVersion:c.version,projectId:c.project_id,content:{name:'Renamed Signals',format:c.format,source:c.source,bindings:c.bindings}});await f.confirm(a,w,p.id,p.digest);
    c=(await f.readComponent(a,w,c.id)).component;assert.deepEqual(c.execution,installedApp.execution);
    const full=await f.preview(a,w,{kind:'save_component',componentId:c.id,expectedVersion:c.version,projectId:c.project_id,content:{name:c.name,format:c.format,source:c.source,bindings:c.bindings,manifest:c.manifest}});await f.confirm(a,w,full.id,full.digest);c=(await f.readComponent(a,w,c.id)).component;assert.deepEqual(c.execution,installedApp.execution);
-   const q=await f.preview(a,w,{kind:'save_component',componentId:c.id,expectedVersion:c.version,projectId:c.project_id,content:{name:c.name,format:c.format,source:c.source,bindings:c.bindings,manifest:c.manifest,execution:[]}});await f.confirm(a,w,q.id,q.digest);
+   const q=await f.preview(a,w,{kind:'save_component',componentId:c.id,expectedVersion:c.version,projectId:c.project_id,content:{name:c.name,format:c.format,source:c.source,bindings:c.bindings,manifest:c.manifest,execution:[]}});
+   // A13 (3.6): removing the helpers is reported at preparation and refused at save while automations rely on them.
+   assert.ok(q.dependencies.some((d:any)=>d.id===monitorId)&&q.dependencies.every((d:any)=>d.breaking));
+   await assert.rejects(f.confirm(a,w,q.id,q.digest),(e:any)=>e.code==='dependency_breaks');await f.discard(a,w,q.id);
+   assert.equal((await pg.query<any>('SELECT deleted_at FROM app_monitors WHERE id=$1',[monitorId])).rows[0].deleted_at,null);
+   // The database trigger stays as the last safety net when helpers disappear by another path.
+   await pg.query("UPDATE workspace_components SET execution='[]' WHERE id=$1",[c.id]);
    assert.ok((await pg.query<any>('SELECT deleted_at FROM app_monitors WHERE id=$1',[monitorId])).rows[0].deleted_at);
    assert.ok((await pg.query<any>('SELECT deleted_at FROM app_actions WHERE id=$1',[alertSetup.definition_id])).rows[0].deleted_at);const removed=(await f.readComponent(a,w,c.id)).component;const edit=await f.preview(a,w,{kind:'save_component',componentId:removed.id,expectedVersion:removed.version,projectId:removed.project_id,content:{name:'Still removed',format:removed.format,source:removed.source,bindings:removed.bindings}});await f.confirm(a,w,edit.id,edit.digest);assert.deepEqual((await f.readComponent(a,w,c.id)).component.execution,[]);
   });

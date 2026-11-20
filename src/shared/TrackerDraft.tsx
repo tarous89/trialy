@@ -5,11 +5,10 @@ import type {AppRoute} from './app-route.js';
 import {AppPlatform,AppNavigation} from './AppPlatform.js';
 import React,{useState,useRef,useEffect} from 'react';
 import {FrontendCodeRuntime} from './FrontendCodeRuntime.js';
-import {PreviewApprovalFooter} from './PreviewApprovalFooter.js';
+import {useFooterReview,pendingChanged,useApproveChange} from './PendingChanges.js';
 import {EmbeddedNavigation} from './ui/PageNavigation.js';
-import {Button} from './ui/Controls.js';
 type Call=(name:string,args:any,options?:WorkspaceRequestOptions)=>Promise<any>;
-/** The save click approves the visible tracker and its required new tables together. */
+/** The footer's Save, Publish or Approve applies the visible app and its required new tables together (A6). */
 export function TrackerDraft({preview,call,onSaved,onDiscard,onProposal,initialOutput}:{initialOutput?:any;preview:any;call:Call;onSaved:(component:any,output?:any,route?:AppRoute)=>void;onDiscard:()=>void;onProposal:(p:any)=>void}){
  const [busy,setBusy]=useState(false),[rendering,setRendering]=useState(true),[rendered,setRendered]=useState(false),[error,setError]=useState('');
  const invoke=(name:string,args:any={},options?:WorkspaceRequestOptions)=>call(name,{workspaceId:preview.workspaceId,...args},options);
@@ -21,17 +20,28 @@ export function TrackerDraft({preview,call,onSaved,onDiscard,onProposal,initialO
  useEffect(()=>{live.current=true;return()=>{live.current=false;};},[]);
  const [savedPhase,setSavedPhase]=useState<SavedRefreshPhase>(null);
  const reviewReady=preview.reviewState==='ready';
- const revision=!!preview.body.componentId;
- async function discard(){if(!reviewReady)return;setBusy(true);try{await invoke('discard_workspace_preview',{previewId:activePreview.current.id,digest:activePreview.current.digest});if(activePreview.current.id!==preview.id)await invoke('discard_workspace_preview',{previewId:preview.id});onDiscard();}catch(e){setError((e as Error).message);setBusy(false);}}
+ const revision=!!preview.body.componentId,stale=preview.previewStatus==='needs_preparing';
+ const kind=(preview.changeClass??(revision?'revision':'new')) as 'new'|'revision'|'assistant';
+ const approve=useApproveChange();
+ // A6: the platform footer is the only place this change is approved, discarded or declined.
+ // The footer appears once the change is on screen (or when it needs preparing again), as the first-save footer did:
+ // appearing mid-render would resize the app frame under the person's first click.
+ useFooterReview(savedReceipt.current||!(stale||reviewReady&&rendered)?null:{previewId:preview.id,kind,name:preview.body.content?.name??preview.body.setup?.name??null,
+  status:stale?'needs_preparing':reviewReady?'ready':'preparing',busy,disabled:rendering||!rendered,
+  summary:kind==='new'?`This ${label} is a preview. Save it to keep it.`:preview.appReview?.note??(kind==='assistant'?'Approving applies these changes for everyone who uses the app.':'Publishing applies this update for everyone who uses the app.'),
+  details:revision?(preview.appReview?.changes??[]):undefined,onAction:save,onDismiss:discard});
+ async function discard(){if(!reviewReady&&!stale)return;setBusy(true);try{await invoke('discard_workspace_preview',{previewId:activePreview.current.id,...(stale?{}:{digest:activePreview.current.digest})});if(activePreview.current.id!==preview.id)await invoke('discard_workspace_preview',{previewId:preview.id});pendingChanged();onDiscard();}catch(e){setError((e as Error).message);setBusy(false);}}
  async function save(){if(!reviewReady||saving.current||savedPhase==='unavailable')return;saving.current=true;setBusy(true);setError('');try{
   const p=activePreview.current;
-  const receipt=savedReceipt.current??await invoke('confirm_workspace_change',{previewId:p.id,digest:p.digest,confirmed:true});savedReceipt.current=receipt;if(!live.current)return;setSavedPhase('refreshing');
+  // I2, 3.4: a new app, or a change that affects access, connections or automations, opens the installation popup first.
+  // Cancel keeps the preview and its footer.
+  const receipt=savedReceipt.current??await approve((name,args)=>invoke(name,args),p,kind==='assistant'?'Approve':kind==='revision'?'Publish':'Install');if(!receipt)return;savedReceipt.current=receipt;pendingChanged();if(!live.current)return;setSavedPhase('refreshing');
   const result=await invoke('read_project_component',{componentId:receipt.id});
   if(p.id!==preview.id)await invoke('discard_workspace_preview',{previewId:preview.id}).catch(()=>{});
   const output=embedded?undefined:await invoke('run_component_frontend',{request:{componentId:result.component.id,expectedVersion:result.component.version,...(navigation?{route:navigation.route}:{}),event:{kind:'open'}}});
   if(live.current)onSaved(result.component,output,navigation?.route);
  }catch(e){if(!live.current)return;if(!savedReceipt.current)setError((e as Error).message);else setSavedPhase(savedViewUnavailable(e)?'unavailable':'failed');}finally{saving.current=false;if(live.current)setBusy(false);}}
  if(savedPhase==='unavailable')return <><SavedRefreshNotice phase={savedPhase}/><AppUnavailable onHome={onDiscard}/></>;
- return <section className="ty-tracker-preview"><SavedRefreshNotice phase={savedPhase} target="app" onRetry={()=>void save()}/>{!reviewReady&&<div role="status" className="ty-tracker-notice">Preparing app… Save will be available when the changes are ready.</div>}{error&&<p role="alert">{error}</p>}{revision&&reviewReady&&rendered&&!savedReceipt.current&&<div className="ty-app-revision-actions" aria-label="App update review"><div className="ty-app-review-summary"><strong>{preview.appReview?.title??"Review app update"}</strong><ul>{(preview.appReview?.changes??["Save the prepared app configuration."]).map((change:string)=><li key={change}>{change}</li>)}</ul><p>{preview.appReview?.note??"Saving applies this update to the existing app."}</p></div><div className="ty-actions"><Button disabled={busy} onClick={()=>void discard()}>Ignore changes</Button><Button variant="primary" disabled={rendering||busy} onClick={()=>void save()}>Save changes</Button></div></div>}{!revision&&reviewReady&&rendered&&!savedReceipt.current&&<PreviewApprovalFooter action={'Save '+label} disabled={rendering} busy={busy} onAction={()=>void save()} dismissLabel={"Discard "+label} onDismiss={()=>void discard()}>This {label} is a preview. Save it to keep it.</PreviewApprovalFooter>}<div inert={!!savedPhase}><FrontendCodeRuntime active={!savedReceipt.current} initialOutput={initialOutput} previewId={preview.id} call={invoke} onProposal={onProposal} onHome={onDiscard} onBusyChange={setRendering} onRendered={()=>setRendered(true)}/></div></section>;
+ return <section className="ty-tracker-preview"><SavedRefreshNotice phase={savedPhase} target="app" onRetry={()=>void save()}/>{!reviewReady&&<div role="status" className="ty-tracker-notice">Preparing app… Save will be available when the changes are ready.</div>}{error&&<p role="alert">{error}</p>}<div inert={!!savedPhase}><FrontendCodeRuntime active={!savedReceipt.current} initialOutput={initialOutput} previewId={preview.id} call={invoke} onProposal={onProposal} onHome={onDiscard} onBusyChange={setRendering} onRendered={()=>setRendered(true)}/></div></section>;
 }
 

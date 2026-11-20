@@ -1,3 +1,4 @@
+import {schemaChangeDependencies,dependencySummary} from '../workspace/dependencies.js';
 import {archivedFieldsOf,restoreArchivedSchema} from './archive.js';
 import {requireWorkflow} from './effective-access.js';
 import {applyTypePolicy,assertWritable,assertRecordScope} from './effective-access.js';
@@ -311,6 +312,8 @@ export class Service extends DataService {
   }
   const fieldChanges=await this.fieldDiff(this.db,a,w,op);
   if(fieldChanges.length)summary={...summary,fieldChanges};
+  // A13 (3.6): what relies on fields this table change removes or redefines. Only shown when something does.
+  if(op.kind==='update_type'||op.kind==='migrate_type'){const deps=await schemaChangeDependencies(this.db,a,w,op);if(deps.length)summary={...summary,...dependencySummary(deps)};}
   const p:Preview={id:randomUUID(),actorId:a.userId,workspaceId:w,operation:op,schemaFingerprint,migrationFingerprint:migration?.fingerprint,digest:checksum(json(summary)),expires:Date.now()+24*3600000};
   await this.db.transaction(async tx=>{
    await tx.query('SELECT id FROM workspaces WHERE id=$1 FOR UPDATE',[w]);
@@ -343,6 +346,8 @@ export class Service extends DataService {
    if(p.schemaFingerprint&&p.schemaFingerprint!==checksum(json((await tx.query('SELECT id,version FROM entity_types WHERE workspace_id=$1 ORDER BY id',[p.workspaceId])).rows)))fail(409,'stale_version','Table configuration changed. Prepare the preview again.');
    if(p.operation.kind==='database_changes'){requireCurrentAction(a);if(authorization&&authorization.kind!=='approval')fail(403,'approval_required','Database edits require an explicit save');}
    const policy=await this.validate(tx,a,p.workspaceId,p.operation);
+   // A13: a table change is saved only against the dependency report the person saw when it was prepared.
+   if(p.operation.kind==='update_type'||p.operation.kind==='migrate_type'){const now=await schemaChangeDependencies(tx,a,p.workspaceId,p.operation);if(!(await tx.query('SELECT $1::jsonb=$2::jsonb AS same',[json(row.summary?.dependencies??[]),json(now)])).rows[0].same)fail(409,'dependencies_changed',JSON.stringify({message:'What relies on this table changed since it was prepared. Prepare the change again.',...dependencySummary(now)}));}
    if(p.operation.kind==='migrate_type'&&p.migrationFingerprint!==(await this.migrationData(tx,a,p.workspaceId,p.operation)).fingerprint)fail(409,'stale_version','Records changed since migration preview');
    await setWriteAuthorization(tx,a,{...(authorization??{kind:'approval',id,digest,context:'data_preview'}),changeSetId:id,...(p.operation.kind==='reverse_field_change'?{reverses:p.operation.changeId}:p.operation.kind==='reverse_field_changes'?{reverses:p.operation.changes.map(c=>c.changeId)}:{})});
    const objects=await this.apply(tx,a,p.workspaceId,p.operation,policy);

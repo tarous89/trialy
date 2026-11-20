@@ -1,6 +1,15 @@
 # Using TrialAgents templates and optional tasks
 
-Version: 1.3.35
+Version: 1.3.36
+
+## Approval footer, installation popup and dependencies (1.3.36)
+
+- The platform shows every pending app change in one approval footer: Save / Discard for a new app, Publish / Discard for a revision, Approve / Decline for an assistant's change. Apps never draw their own first-save prompt or approval bar. Keep content clear of the footer.
+- An assistant prepares app changes but cannot approve them; the person does, in the footer. `confirm_workspace_change` refuses app changes from an assistant.
+- Saving a new app opens the installation popup: project, team access (Editor by default), table connections and optional automations. Each existing table shows its source and Read or Read/write use; a table another app uses is read-only unless the installer allows writing, and any suggested table can be replaced with a new empty one. Approving a change that affects access, table connections or automations shows the popup again with only those sections.
+- One pending change per app: revise it with `replacesPreviewId` and `expectedDigest`. A change whose app moved is shown as needing preparation and cannot be approved.
+- Preparation returns `dependencies` when another app, view, link or automation relies on what the change removes; a change that would break an automation cannot be saved.
+- Link to the platform's Access, Logs and Automations pages with `platform:access`, `platform:logs` and `platform:automations`. Only an owner of the app changes its layout and feature settings.
 
 ## Running and changing app code (1.3.32)
 
@@ -18,7 +27,7 @@ A recipe with research and email installs as one automation: one popup row ("Res
 
 ## App commands (1.3.31)
 
-When `list_app_commands` returns commands for a saved app, use them to do anything a person can do by clicking: `run_app_command` with the app's current version, the command id, its input and a stable `requestKey`. Read commands return the app's own calculated results; report those and never compute them yourself. Propose and layout commands return the exact review a click would create: show the user what it changes and confirm with `confirm_workspace_change` only after they agree. A retry with the same requestKey returns the same review. A viewer's assistant sees read commands only. When a value is read from another app, a write is refused with `role_read_only` naming the app that writes it: prepare the change in that app instead and tell the user where it will be made.
+When `list_app_commands` returns commands for a saved app, use them to do anything a person can do by clicking: `run_app_command` with the app's current version, the command id, its input and a stable `requestKey`. Read commands return the app's own calculated results; report those and never compute them yourself. Propose and layout commands return the exact review a click would create: show the user what it changes. Record changes are confirmed with `confirm_workspace_change` only after they agree; a layout command is an app change, which the person approves in the approval footer. A retry with the same requestKey returns the same review. A viewer's assistant sees read commands only. When a value is read from another app, a write is refused with `role_read_only` naming the app that writes it: prepare the change in that app instead and tell the user where it will be made.
 
 ## Installing and adding app automations (1.3.27)
 
@@ -97,7 +106,7 @@ For record workflows, retain the shared standard renderer and configure it inste
 3. Inspect only the schema/data needed for this request. Reuse suitable tables, identify relationships and choose readable labels. Ask only for material missing choices. Do not create duplicate schema to avoid understanding an existing one.
 4. Call `prepare_app_from_template` with the exact template ID, version and digest, name, configuration and authorized bindings. Keep one `requestKey` for the creation. Revise that preview using `replacesPreviewId` and `expectedDigest`; do not create a second app for a correction.
 5. Verify the complete preview and design-quality result. Save through the explicit platform review. Verify the saved receipt and stable app ID before saying it is saved. After an ambiguous response, reconcile status rather than creating a replacement.
-6. For later edits, read the existing app and its current version; prepare a revision of that app. Keep records, access, app identity and unrelated configuration intact. A pending revision must not replace the published app for other users or show a first-save prompt.
+6. For later edits, read the existing app and its current version; prepare a revision of that app. Keep records, access, app identity and unrelated configuration intact. A pending revision must not replace the published app for other users; it waits in the approval footer until the person approves it.
 
 Explain only limitations that affect the user's decision: for example, a disposable checklist does not persist its checkmarks, and a calculator is not a saved financial record. Never fabricate records or claim local state was committed.
 

@@ -45,7 +45,8 @@ test('assistant levels: Data and Apps, organization maximum and personal limit',
  const board=await change(owner,{kind:'save_component',projectId:project.id,content:{name:'Sites board',format:'text',source:'board',bindings:[{typeId,fields:['name']}]}});
  const names=async(a:Actor)=>(await as(a,()=>s.records(a,w,typeId))).rows.map((r:any)=>r.data.name).sort();
  const rename=(a:Actor,name:string)=>as(a,async()=>{const version=(await setup.query('SELECT version FROM records WHERE id=$1',[recordId])).rows[0].version;return s.preview(a,w,{kind:'update_record',recordId,expectedVersion:version,data:{name}});});
- const appChange=(a:Actor,source:string)=>as(a,async()=>{const version=(await setup.query('SELECT version FROM workspace_components WHERE id=$1',[app.id])).rows[0].version;return f.preview(a,w,{kind:'save_component',componentId:app.id,expectedVersion:version,projectId:project.id,content:{name:'Pipeline',format:'text',source}});});
+ // D9: one pending change per app; the person declines the previous one before the next is prepared.
+ const appChange=(a:Actor,source:string)=>as(a,async()=>{await setup.query("DELETE FROM workspace_previews WHERE component_id=$1",[app.id]);const version=(await setup.query('SELECT version FROM workspace_components WHERE id=$1',[app.id])).rows[0].version;return f.preview(a,w,{kind:'save_component',componentId:app.id,expectedVersion:version,projectId:project.id,content:{name:'Pipeline',format:'text',source}});});
  const newApp=(a:Actor)=>as(a,()=>f.preview(a,w,{kind:'save_component',projectId:project.id,content:{name:'Another',format:'text',source:'new'}}));
  const source=async(a:Actor)=>(await as(a,()=>f.readComponent(a,w,app.id))).component.source;
  const listed=async(a:Actor)=>as(a,()=>f.components(a,w));

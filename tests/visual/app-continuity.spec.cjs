@@ -34,7 +34,8 @@ for(const embedded of [false,true])test(`Saved app revisions have no first-save 
  await expect(root.locator('.ty-tracker-preview>.ty-action-footer')).toHaveCount(0);
  if(embedded){await page.setViewportSize({width:390,height:900});await page.screenshot({path:'/tmp/trialy-revision-review-mobile.png'});}
  await expect(root.getByText('Save it to keep it.',{exact:false})).toHaveCount(0);
- await expect(root.getByLabel('App update review')).toContainText('Update the app interface and behavior.');await expect(root.getByLabel('App update review')).toContainText('Automation setup is saved separately.');await root.getByRole('button',{name:'Save changes',exact:true}).click();
+ // A6: the one platform footer carries the review; a revision made by a person is published.
+ const footer=root.locator('.ty-pending-footer');await expect(footer).toContainText('not published yet');await expect(footer).toContainText('Update the app interface and behavior.');await expect(footer).toContainText('Automation setup is saved separately.');await footer.getByRole('button',{name:'Publish',exact:true}).click();
  if(embedded){
   await expect(root.getByRole('heading',{name:'Apps',exact:true})).toBeVisible();
   // Replayed host output still resolves the receipt even when the bundle is fresh.
@@ -99,13 +100,14 @@ test('AI revisions keep saved app usable and expose Save only after finalization
  const root=page.frameLocator('#app');
  await expect(root.getByRole('status')).toContainText('Updating app');
  await expect(root.frameLocator('iframe[title="Saved frontend code"]').getByRole('heading',{name:'Saved readiness app',exact:true})).toBeVisible();
- await expect(root.getByRole('button',{name:'Save changes',exact:true})).toHaveCount(0);
- await expect(root.getByRole('button',{name:'Ignore changes',exact:true})).toHaveCount(0);
+ await expect(root.getByRole('button',{name:'Approve',exact:true})).toHaveCount(0);
  const ready=await call(page,'finalize_app_preview',{previewId:draft.preview.id,digest:draft.preview.digest});
  await page.evaluate(r=>window.deliver(r),ready);
  await expect(root.frameLocator('iframe[title="Saved frontend code"]').getByRole('heading',{name:'Completed revision',exact:true})).toBeVisible();
- await expect(root.getByRole('button',{name:'Save changes',exact:true})).toBeEnabled();
- await root.getByRole('button',{name:'Save changes',exact:true}).click();
+ // A6: an assistant's change is approved or declined by the person, in the footer.
+ await expect(root.getByRole('button',{name:'Decline',exact:true})).toBeVisible();
+ await expect(root.getByRole('button',{name:'Approve',exact:true})).toBeEnabled();
+ await root.getByRole('button',{name:'Approve',exact:true}).click();
  await expect(root.getByRole('heading',{name:'Apps',exact:true})).toBeVisible();
  expect((await call(page,'read_project_component',{componentId:saved.id})).component.version).toBe(1);
  await archive(page,saved.id);

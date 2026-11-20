@@ -69,7 +69,7 @@ for(const embedded of [false,true])test(`Failed saves release progress and keep 
  if(embedded){await page.waitForFunction(()=>window.hostReady);await page.evaluate(r=>window.deliver(r),draft);}
  const root=embedded?page.frameLocator('#app'):page;await expect(root.getByRole('button',{name:'Save app',exact:true})).toBeEnabled();await expect(bar(root)).toHaveCount(0);
  const gate=deferred();let saves=0;
- await intercept(page,async(route,op)=>{if(op.name==='confirm_workspace_change'||new URL(route.request().url()).pathname.match(/\/organization\/previews\/[^/]+\/confirm$/)){saves++;await gate.promise;await fail(route,embedded,503);return true;}});
- await root.getByRole('button',{name:'Save app',exact:true}).click();await page.clock.runFor(250);await expect.poll(()=>saves).toBe(1);await expect(bar(root)).toBeVisible();gate.release();await expect(bar(root)).toHaveCount(0);
+ await intercept(page,async(route,op)=>{if(['confirm_workspace_change','approve_workspace_change'].includes(op.name)||new URL(route.request().url()).pathname.match(/\/organization\/previews\/[^/]+\/confirm$/)){saves++;await gate.promise;await fail(route,embedded,503);return true;}});
+ await root.getByRole('button',{name:'Save app',exact:true}).click();await root.getByRole('dialog').getByRole('button',{name:'Install',exact:true}).click();await page.clock.runFor(250);await expect.poll(()=>saves).toBe(1);await expect(bar(root)).toBeVisible();gate.release();await expect(bar(root)).toHaveCount(0);
  await expect(root.getByRole('alert').filter({hasText:'Permission check failed'})).toBeVisible();await expect(root.getByRole('button',{name:'Save app',exact:true})).toBeEnabled();await expect(root.frameLocator('iframe[title="Saved frontend code"]').getByRole('heading',{name:'Embedded draft',exact:true})).toBeVisible();expect(saves).toBe(1);
 });

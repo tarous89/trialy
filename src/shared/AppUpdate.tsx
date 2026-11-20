@@ -1,3 +1,4 @@
+import {useApproveChange} from './PendingChanges.js';
 import React,{useContext,useEffect,useRef,useState} from 'react';
 import {AppPlatform} from './AppPlatform.js';
 import {SystemNotice} from './SystemNotice.js';
@@ -19,13 +20,15 @@ export function useAppUpdate(component:any,call:Call){
 /** Review and confirm the update. Only the app's code changes; data, layout, access and automations stay. */
 export function AppUpdateDialog({offer,call,onUpdated,onClose}:{offer:any;call:Call;onUpdated:(component:any,output?:any)=>void;onClose:()=>void}){
  const [review,setReview]=useState<any>(null),[busy,setBusy]=useState(false),[error,setError]=useState(''),[done,setDone]=useState(false);
+ // 3.4: an update that adds tables or automations opens the installation popup before it applies.
+ const approve=useApproveChange();
  const live=useRef(true),saved=useRef(false);useEffect(()=>{live.current=true;return()=>{live.current=false;};},[]);
  async function act(fn:()=>Promise<void>){if(busy)return;setBusy(true);setError('');try{await fn();}catch(e){if(live.current)setError((e as Error).message||'The update could not complete. Try again.');}finally{if(live.current)setBusy(false);}}
  useEffect(()=>{void act(async()=>{const r=await call('prepare_app_update',{componentId:offer.componentId,expectedVersion:offer.expectedVersion,toVersion:offer.toVersion,toDigest:offer.toDigest});if(live.current)setReview(r.preview);});},[]);
  const cancel=()=>act(async()=>{if(review&&!saved.current)await call('discard_workspace_preview',{previewId:review.id}).catch(()=>{});onClose();});
  const confirm=()=>act(async()=>{
   // A lost response is never a second save: once confirmed, only the reload is retried.
-  if(!saved.current){await call('confirm_workspace_change',{previewId:review.id,digest:review.digest,confirmed:true});saved.current=true;}
+  if(!saved.current){if(!await approve(call,review,'Update'))return;saved.current=true;}
   const r=await call('read_project_component',{componentId:offer.componentId,includeOutput:true});
   if(live.current){setDone(true);onUpdated(r.component,r.initialOutput);}
  });

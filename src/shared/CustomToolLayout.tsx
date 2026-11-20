@@ -1,3 +1,4 @@
+import {useApproveChange} from './PendingChanges.js';
 import {SavedRefreshNotice,savedViewUnavailable,type SavedRefreshPhase} from './SavedRefreshNotice.js';
 import {AppUnavailable} from './AppUnavailable.js';
 import {Icon} from './ui/Icon.js';
@@ -6,6 +7,7 @@ import {readCustomLayout} from './custom-layout.js';
 import {ToolSettingsShell} from './ToolSettingsShell.js';
 import {Vivid,VividSection,VividField,VividLayoutRow} from './Vivid.js';
 export function CustomToolLayout({component,call,onBack,onSaved,onAccess}:{component:any;call:(name:string,args:any)=>Promise<any>;onBack:()=>void;onSaved:(c:any,output?:any)=>void;onAccess:()=>void}){
+ const approve=useApproveChange();
  const initial=readCustomLayout(component.source)!;
  const saved=useRef(false),acting=useRef(false),live=useRef(true);
  useEffect(()=>{live.current=true;return()=>{live.current=false;};},[]);
@@ -17,7 +19,7 @@ export function CustomToolLayout({component,call,onBack,onSaved,onAccess}:{compo
  const ignore=()=>act(async()=>{if(review&&!committed)await call('discard_workspace_preview',{previewId:review.id});onBack();});
  const save=()=>act(async()=>{
   if(!review){setReview(await call('prepare_tool_layout',{componentId:component.id,expectedVersion:component.version,name:profile.heading,description:'',tabs:[],newTables:[],extendTables:[],customLayout:profile}));return;}
-  if(!saved.current){await call('confirm_workspace_change',{previewId:review.id,digest:review.digest,confirmed:true});saved.current=true;if(!live.current)return;setCommitted(true);setSavedPhase('refreshing');}
+  if(!saved.current){if(!await approve(call,review,'Publish'))return;saved.current=true;if(!live.current)return;setCommitted(true);setSavedPhase('refreshing');}
   const r=await call('read_project_component',{componentId:component.id,includeOutput:true});if(live.current)onSaved(r.component,r.initialOutput);
  });
  function drop(target:string){if(!picked)return;const g=tab==='screens'?'screens':group;if(picked.group!==g)return;const arr=[...(g==='screens'?profile.tabs:profile.cols[g])],from=arr.indexOf(picked.id),to=arr.indexOf(target);if(from<0||to<0)return;arr.splice(to,0,arr.splice(from,1)[0]);setProfile(p=>g==='screens'?{...p,tabs:arr}:{...p,cols:{...p.cols,[g]:arr}});setPicked(null);}

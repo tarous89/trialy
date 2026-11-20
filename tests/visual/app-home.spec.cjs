@@ -31,9 +31,9 @@ for(const width of [1440,390])test(`Preview floating footer keeps both labeled a
   const draft=await (await page.request.get(base+'/fixture/app-draft')).json();
   await page.goto(base+(embedded?'/?apps=1':'/apps/'+draft.preview.id+'?workspaceId='+draft.workspaceId+'&source=preview'));
   if(embedded){await page.waitForFunction(()=>window.hostReady);await page.evaluate(r=>window.deliver(r),draft);}
-  const root=embedded?page.frameLocator('#app'):page,footer=root.locator('.ty-tracker-preview>.ty-preview-approval');
-  const save=footer.getByRole('button',{name:'Save app',exact:true}),discard=footer.getByRole('button',{name:'Discard app',exact:true});
-  await expect(save).toBeEnabled();await expect(save).toHaveCSS('background-color','rgb(162, 237, 181)');await expect(discard).toHaveCSS('color','rgb(244, 248, 245)');await expect(discard).toHaveText('Discard app');if(embedded)await expect(root.locator('.ty-topbar')).toHaveCSS('background-color','rgb(13, 19, 17)');
+  const root=embedded?page.frameLocator('#app'):page,footer=root.locator('.ty-pending-footer');
+  const save=footer.getByRole('button',{name:'Save app',exact:true}),discard=footer.getByRole('button',{name:'Discard',exact:true});
+  await expect(save).toBeEnabled();await expect(save).toHaveCSS('background-color','rgb(162, 237, 181)');await expect(discard).toHaveCSS('color','rgb(244, 248, 245)');await expect(discard).toHaveText('Discard');if(embedded)await expect(root.locator('.ty-topbar')).toHaveCSS('background-color','rgb(13, 19, 17)');
   const box=await footer.boundingBox();expect(box.x).toBeGreaterThanOrEqual(0);expect(box.width).toBeLessThanOrEqual(width);expect(box.y).toBeGreaterThan(700);await expect(footer).toHaveCSS('position','fixed');await expect(footer).toHaveCSS('background-color','rgb(13, 19, 17)');
   if(!embedded)expect((await root.locator('.ty-platform-header').boundingBox()).height).toBeLessThan(box.y);
   for(const button of [save,discard]){const b=await button.boundingBox();expect(b.x).toBeGreaterThanOrEqual(0);expect(b.x+b.width).toBeLessThanOrEqual(width);expect(b.y+b.height).toBeLessThanOrEqual(1000);}
@@ -49,7 +49,7 @@ for(const entry of ['card','menu'])test(`A preview opened from extension Home st
  await expect(root.frameLocator('iframe[title="Saved frontend code"]').getByRole('heading',{name:'Embedded draft',exact:true})).toBeVisible();
  await expect(root.locator('.ty-preview-approval').getByRole('button',{name:'Save app',exact:true})).toBeEnabled();
  expect(await page.evaluate(()=>window.lastOpenedUrl)).toBeFalsy();await expect(root.locator('.ty-shell-toggle')).toHaveAttribute('aria-expanded','false');
- await root.getByRole('button',{name:'Discard app',exact:true}).click();
+ await root.getByRole('button',{name:'Discard',exact:true}).click();
  await expect(root.getByRole('heading',{name:'Apps',exact:true})).toBeVisible();
 });
 
@@ -80,15 +80,15 @@ for(const width of [1440,390])test(`Finalized new app replaces Home with approva
  await page.evaluate(r=>window.deliver(r),{screen:'home',workspaceId:initial.workspaceId,viewerId:'fixture',workspaces:[],types:[]});
  const root=page.frameLocator('#app');await expect(root.getByRole('heading',{name:'Apps',exact:true})).toBeVisible();
  await page.evaluate(r=>window.deliver(r),{...draft,displayIntent:'background'});
- await expect(root.getByRole('heading',{name:'Apps',exact:true})).toBeVisible();await expect(root.locator('.ty-preview-approval')).toHaveCount(0);
+ await expect(root.getByRole('heading',{name:'Apps',exact:true})).toBeVisible();await expect(root.locator('.ty-preview-approval').getByRole('button',{name:/^(Save|Publish|Approve)/})).toHaveCount(0);
  const finalized=await call('finalize_app_preview',{workspaceId:initial.workspaceId,previewId:draft.preview.id,digest:draft.preview.digest});
  await page.evaluate(r=>window.deliver(r),finalized);
  const footer=root.locator('.ty-preview-approval');await expect(footer.getByRole('button',{name:'Save app',exact:true})).toBeEnabled();
  await expect(root.getByRole('heading',{name:'Apps',exact:true})).toHaveCount(0);
  const frame=root.frameLocator('iframe[title="Saved frontend code"]');await frame.getByRole('button',{name:'Companies',exact:true}).click();
  await expect.poll(async()=>{const f=await root.locator('iframe[title="Saved frontend code"]').boundingBox(),b=await footer.boundingBox();return f.y+f.height-b.y;}).toBeLessThanOrEqual(1);
- await footer.getByRole('button',{name:'Save app',exact:true}).click();
- await expect(root.getByRole('heading',{name:'Apps',exact:true})).toBeVisible();await expect(footer).toHaveCount(0);
+ await footer.getByRole('button',{name:'Save app',exact:true}).click();await root.getByRole('dialog').getByRole('button',{name:'Install',exact:true}).click();
+ await expect(root.getByRole('heading',{name:'Apps',exact:true})).toBeVisible();await expect(footer.getByRole('button',{name:/^(Save|Publish|Approve)/})).toHaveCount(0);
  // Leave the shared fixture workspace as this test found it. Later specs list the workspace's
  // apps (for example the connector Allowed apps screenshot in apps.spec.cjs).
  const saved=(await call('read_workspace_home',{workspaceId:initial.workspaceId,query:'New app approval',limit:100})).resources.filter(r=>r.source==='component'&&r.name==='New app approval');
