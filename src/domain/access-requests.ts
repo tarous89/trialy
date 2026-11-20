@@ -75,7 +75,9 @@ export class AccessRequests{
  async list(a:Actor,w:string,appId:string){
   const p=await access(this.db,a,w),mine=await appRole(this.db,a,p,appId);
   const rows=(await this.db.query(ONE+" AND r.status='pending' ORDER BY r.created_at,r.id",[w,appId])).rows,mineRow=rows.find(r=>r.user_id===a.userId);
-  return {appId,role:mine,mine:mineRow?own(mineRow):null,
+  // available: the app exists and is not archived. Without it there is nothing to ask for.
+  const available=!!(await this.db.query('SELECT 1 FROM workspace_components WHERE id=$1 AND workspace_id=$2 AND deleted_at IS NULL AND NOT archived',[appId,w])).rows.length;
+  return {appId,role:mine,available,mine:mineRow?own(mineRow):null,
    // A request is moot once the person holds the role, or has left the team.
    requests:mine?rows.filter(r=>r.user_id!==a.userId&&r.in_team&&roleRank(r.holds)<roleRank(r.requested_role)).map(r=>open(r,p,mine)).filter(r=>r.canApprove):[]};
  }

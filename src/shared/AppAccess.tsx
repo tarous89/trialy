@@ -15,9 +15,9 @@ export function NoAppAccess({api,workspaceId,appId,onHome}:Target&{onHome:()=>vo
  const chrome=usePlatformChrome(),[role,setRole]=useState<'viewer'|'editor'>('viewer'),[state,setState]=useState<'loading'|'ask'|'sent'|'closed'>('loading'),[busy,setBusy]=useState(false);
  useEffect(()=>{chrome.setAppName(null);chrome.setAppStatus(null);document.title='TrialAgents';},[chrome.setAppName,chrome.setAppStatus]);
  // A request that is still open is shown as sent. Someone outside this organization cannot ask.
- useEffect(()=>{let live=true;setState('loading');void api(path(workspaceId,appId)).then(r=>{if(live)setState(r.mine?'sent':'ask');},()=>{if(live)setState('closed');});return()=>{live=false;};},[workspaceId,appId]);
+ useEffect(()=>{let live=true;setState('loading');void api(path(workspaceId,appId)).then(r=>{if(live)setState(r.available===false?'closed':r.mine?'sent':'ask');},()=>{if(live)setState('closed');});return()=>{live=false;};},[workspaceId,appId]);
  const send=()=>{setBusy(true);void api(path(workspaceId,appId),'POST',{role}).then(()=>{setState('sent');chrome.notify({kind:'success',message:SENT});},e=>chrome.notify({kind:'error',message:e.message})).finally(()=>setBusy(false));};
- return <section className="ty-empty ty-no-access" aria-label="No access"><h2>You don't have access to this app.</h2>
+ return <section className="ty-empty ty-no-access" aria-label="No access"><h2>{state==='closed'?'No app is available':"You don't have access to this app."}</h2>
   {state==='sent'&&<p role="status">{SENT}</p>}
   {state==='ask'&&<fieldset><legend className="ty-sr">Access to ask for</legend>{(['viewer','editor'] as const).map(r=><label key={r}><input type="radio" name="ty-access-role" checked={role===r} onChange={()=>setRole(r)}/>{r==='viewer'?'View':'Edit'}</label>)}</fieldset>}
   <div className="ty-actions">{state==='ask'&&<Button variant="primary" disabled={busy} onClick={send}>Request access</Button>}<Button onClick={onHome}>Return to Apps</Button></div></section>;
