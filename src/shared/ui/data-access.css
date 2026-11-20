@@ -35,3 +35,9 @@
 .ty-workspace .ty-app-automation-feature>label{display:flex;flex-direction:column;gap:6px;margin:8px 0;min-width:0}.ty-workspace .ty-app-automation-feature>label select{width:100%}
 
 .ty-app-functions{margin:16px 0;min-width:0;overflow-wrap:anywhere;font-size:13px;line-height:1.5}.ty-app-functions summary{cursor:pointer}.ty-app-functions ul{padding-left:20px}.ty-app-functions p{font-size:inherit}
+/* I3: the installation popup. App name and purpose, then project and team access, table connections, optional automations. */
+.ty-installation-purpose{margin:-4px 0 4px;color:#4b5a52;font-size:14px;line-height:1.5}
+.ty-installation-note{margin:4px 0 0;color:#5d6b63;font-size:13px;line-height:1.5}
+.ty-installation-tables li>span{display:flex;flex-direction:column;gap:2px}
+.ty-installation-source{color:#5d6b63;font-size:12px;overflow-wrap:anywhere}
+.ty-installation-tables li.is-unavailable strong{color:#6b5a52}

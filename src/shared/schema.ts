@@ -72,7 +72,7 @@ export type Operation = z.infer<typeof operationSchema> | z.infer<typeof reversa
 export type Assistant = 'chatgpt'|'claude';
 export const ASSISTANTS:readonly Assistant[] = ['chatgpt','claude'];
 export const ASSISTANT_NAMES:Record<Assistant,string> = {chatgpt:'ChatGPT',claude:'Claude'};
-export type Actor = {userId:string; origin:'human'|'ai'|'worker'; actionConfirmed?:boolean; accessToolId?:string; connectionFamily?:string; clientId?:string; assistant?:Assistant};
+export type Actor = {userId:string; origin:'human'|'ai'|'worker'; actionConfirmed?:boolean; /** D11: set only by the footer's app-only approval tool inside ChatGPT or Claude, never by a tool the assistant can call. */ footerApproval?:boolean; accessToolId?:string; connectionFamily?:string; clientId?:string; assistant?:Assistant};
 export const assistantOf = (a:{assistant?:Assistant}):Assistant => a.assistant ?? 'chatgpt';
 export const isAssistant = (v:unknown):v is Assistant => v==='chatgpt'||v==='claude';
 export class AppError extends Error { details?:Record<string,unknown>; constructor(public status:number, public code:string, message:string) {super(message);} }

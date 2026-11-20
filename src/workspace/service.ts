@@ -46,6 +46,7 @@ import type {Database,Connection} from '../db/database.js';
 import {Service} from '../domain/service.js';
 import {access,typeAccess,visibleFields,projectData} from '../domain/permissions.js';
 import {requireAppOwner} from '../domain/app-roles.js';
+import {isNewApp,prepareInstallation,finishInstallation,installationStep,changeImpact,prepareChange,finishChange} from './installation.js';
 import {requireAssistantApps,requireAssistantChange,assistantNamesOnly,assistantDataBlocked,appNameOnly} from '../domain/assistant-levels.js';
 import {audit,revision,checksum} from '../domain/evidence.js';
 import {fail,failWith,type Actor} from '../shared/schema.js';
@@ -474,6 +475,10 @@ export class WorkspaceFoundation {
    if(prior&&!['create_tracker','save_component'].includes(prior.body.operation.kind))fail(400,'preview_revision','Only an app preview can be revised here.');
    if(prior?.body.preparation?.requestKey&&key!==prior.body.preparation.requestKey)fail(409,'request_conflict','Keep the original creation request ID when revising its preview.');
    if(existing&&replace&&existing.id!==replace)fail(409,'request_conflict','This request belongs to a different preview.');
+   if(op.componentId){
+    const ready=(await tx.query("SELECT id,digest FROM workspace_previews WHERE workspace_id=$1 AND user_id=$2 AND component_id=$3 AND change_class<>'other' AND ($4::uuid IS NULL OR id<>$4) AND body->>'reviewState' IS DISTINCT FROM 'draft' LIMIT 1",[w,a.userId,op.componentId,replace??null])).rows[0];
+    if(ready)fail(409,'pending_change_exists',JSON.stringify({message:'This app already has a change waiting for review. Revise it using its ID and digest, or ask the person to approve or decline it first.',previewId:ready.id,expectedDigest:ready.digest}));
+   }
    const standard=standardTracker(op.content.source);
    op.designOrigin={version:DESIGN_VERSION,template:standard?'trialy.standard.v1':null,...(standard?.config.theme?{theme:standard.config.theme}:{}),quality:'pending'};
    const preview=await f.preview(a,w,op,true),initialOutput=await f.runFrontend(a,w,{previewId:preview.id});
@@ -487,7 +492,11 @@ export class WorkspaceFoundation {
    const row=(await tx.query('SELECT body FROM workspace_previews WHERE id=$1',[preview.id])).rows[0];
    row.body.operation.designOrigin.quality=designQuality.status;row.body.preparation={requestKey:key??null,fingerprint};row.body.designQuality=designQuality;
    const digest=checksum(J(row.body)),target=replace??preview.id;
-   if(op.componentId)await tx.query("DELETE FROM workspace_previews WHERE workspace_id=$1 AND user_id=$2 AND body->'operation'->>'componentId'=$3 AND body->'operation'->>'kind' IN ('save_component','create_tracker') AND id<>$4",[w,a.userId,op.componentId,preview.id]);
+   // A6, D9: one pending change per app and person. An unfinished draft is replaced; a change already ready for
+   // review is never dropped silently: it is revised (replacesPreviewId) or resolved first.
+   if(op.componentId){
+    await tx.query("DELETE FROM workspace_previews WHERE workspace_id=$1 AND user_id=$2 AND component_id=$3 AND change_class<>'other' AND body->>'reviewState'='draft' AND id<>ALL($4::uuid[])",[w,a.userId,op.componentId,[preview.id,target]]);
+   }
    // Preview bodies are immutable to the runtime role. Replace the temporary row
    // atomically using its existing insert/delete permissions, keeping its identity.
    await tx.query('DELETE FROM workspace_previews WHERE workspace_id=$1 AND user_id=$2 AND id=ANY($3::uuid[])',[w,a.userId,[target,preview.id]]);
@@ -501,8 +510,10 @@ export class WorkspaceFoundation {
    await tx.query('SELECT id FROM workspaces WHERE id=$1 FOR UPDATE',[w]);requireAssistantApps(await access(tx,a,w),a,true);
    const f=new WorkspaceFoundation(adapter(tx)),saved=await f.readComponentForUpdate(a,w,componentId);
    if(saved.component.version!==expectedVersion)fail(409,'stale_version','App changed; read its current version');
-   await tx.query("DELETE FROM workspace_previews WHERE workspace_id=$1 AND user_id=$2 AND body->'operation'->>'componentId'=$3 AND body->'operation'->>'kind' IN ('save_component','create_tracker')",[w,a.userId,componentId]);
-   return {...saved,screen:'tracker',appUpdating:true};
+   // A6: starting an update never discards a change already waiting for review; the assistant revises that one.
+   await tx.query("DELETE FROM workspace_previews WHERE workspace_id=$1 AND user_id=$2 AND component_id=$3 AND change_class<>'other' AND body->>'reviewState'='draft'",[w,a.userId,componentId]);
+   const pending=(await tx.query("SELECT id,digest FROM workspace_previews WHERE workspace_id=$1 AND user_id=$2 AND component_id=$3 AND change_class<>'other' LIMIT 1",[w,a.userId,componentId])).rows[0];
+   return {...saved,screen:'tracker',appUpdating:true,...(pending?{pendingChange:{previewId:pending.id,expectedDigest:pending.digest,note:'Revise this pending change with replacesPreviewId and expectedDigest; it is the one review for this app.'}}:{})};
   });
  }
  /** A stale published data contract must not prevent an authorized replacement from being reviewed.
@@ -523,7 +534,7 @@ export class WorkspaceFoundation {
    if(!row||row.digest!==digest)fail(409,'preview_changed','Preview changed or unavailable');
    if(!['create_tracker','save_component'].includes(row.body.operation.kind))fail(400,'app_operation','Only app previews can be finalized');
    await f.validate(tx,a,w,row.body.operation);
-   if(row.body.accessStamp!==await f.accessStamp(tx,w))fail(409,'access_changed','Access changed; prepare a new preview');
+   if(row.body.accessStamp!==await f.accessStamp(tx,w,row.body.operation))fail(409,'access_changed','Access changed; prepare a new preview');
    await f.runFrontend(a,w,{previewId});
    if(row.body.reviewState!=='ready'){
     row.body.reviewState='ready';row.digest=checksum(J(row.body));
@@ -550,11 +561,13 @@ export class WorkspaceFoundation {
   };
   if(new Date(row.expires_at).getTime()<=Date.now())return published('expired');
   if(!['create_tracker','save_component'].includes(op.kind)||op.content?.format!=='frontend-js')return unavailable();
-  if(row.body.accessStamp!==await this.accessStamp(this.db,w))return published();
+  // A6, D10: a pending change whose app or access moved stays listed, but is prepared again, never approved blind.
+  const state=await this.pendingState(this.db,w,row);
+  if(state.status==='needs_preparing'){const pendingChange=this.pendingSummary(row,state);if(op.componentId)return {...await published(),pendingChange};return {...unavailable(),previewStatus:'needs_preparing',pendingChange};}
   try{
    if(row.body.reviewState!=='ready'&&op.componentId)return {...await published(),appUpdating:true};
    const initialOutput=await this.runFrontend(a,w,{previewId});
-   return {workspaceId:w,screen:'tracker-preview',preview:{id:row.id,workspaceId:w,workspaceFoundation:true,temporary:true,reviewState:row.body.reviewState??'draft',appReview:row.body.appReview,body:op,digest:row.digest,expiresAt:row.expires_at},initialOutput,saveStatus:op.componentId?'revision':'unsaved',previewStatus:'prepared',preparedAt:new Date().toISOString(),displayStatus:'awaiting_client'};
+   return {workspaceId:w,screen:'tracker-preview',preview:{id:row.id,workspaceId:w,workspaceFoundation:true,temporary:true,reviewState:row.body.reviewState??'draft',changeClass:row.change_class,appReview:row.body.appReview,body:op,digest:row.digest,expiresAt:row.expires_at},initialOutput,saveStatus:op.componentId?'revision':'unsaved',previewStatus:'prepared',preparedAt:new Date().toISOString(),displayStatus:'awaiting_client'};
   }catch(e){if(op.componentId)return published();if([403,404,409].includes((e as any).status))return unavailable();throw e;}
  }
  private async componentAccessStamp(a:Actor,w:string,c:any):Promise<string>{
@@ -892,7 +905,24 @@ export class WorkspaceFoundation {
   }
   if(op.kind==='unlink_identity'){const l=(await tx.query('SELECT * FROM identity_links WHERE id=$1 AND workspace_id=$2',[op.linkId,w])).rows[0];if(!l||l.revoked_at||l.version!==op.expectedVersion)fail(409,'stale_version','Identity link changed');await this.record(tx,a,w,l.source_record_id,true,true);await this.record(tx,a,w,l.preferred_record_id,true,true);}
  }
- private async accessStamp(tx:Connection,w:string){return checksum(J((await tx.query('SELECT access_version,permission_rules FROM workspaces WHERE id=$1',[w])).rows)+J((await tx.query('SELECT id,allowed_users,ai_enabled,parent_id,archived FROM workspace_nodes WHERE workspace_id=$1 ORDER BY id',[w])).rows)+J((await tx.query('SELECT id,allowed_users,ai_enabled,project_id FROM workspace_components WHERE workspace_id=$1 ORDER BY id',[w])).rows));}
+ /** What a pending change was prepared against. For an app change (A6, D10) only what can change who may use the app or
+  * what it reads: the app, its project, its tables and the rules on them. Anything else in the organization no longer
+  * invalidates it. Confirmation always revalidates every permission, so this only decides when to prepare again. */
+ private async accessStamp(tx:Connection,w:string,op?:any){
+  if(op&&['create_tracker','save_component'].includes(op.kind))return this.appChangeStamp(tx,w,op);
+  return this.workspaceAccessStamp(tx,w);
+ }
+ private async appChangeStamp(tx:Connection,w:string,op:any){
+  const appId=op.componentId??null,project=op.projectId??op.setup?.projectId??null;
+  const tables=new Set<string>([...(op.content?.bindings??[]).map((b:any)=>b.typeId),...(op.setup?.tabs??[]).map((t:any)=>t.typeId),...(op.setup?.extendTables??[]).map((t:any)=>t.typeId)].filter(Boolean));
+  const ws=(await tx.query('SELECT ai_enabled,permission_rules,archived FROM workspaces WHERE id=$1',[w])).rows[0]??{};
+  const rules=(ws.permission_rules??[]).filter((r:any)=>!r.resourceId||r.resourceId===appId||r.resourceId===project||tables.has(r.resourceId));
+  const node=project?(await tx.query('SELECT id,allowed_users,ai_enabled,archived FROM workspace_nodes WHERE workspace_id=$1 AND id=$2',[w,project])).rows:[];
+  const app=appId?(await tx.query('SELECT allowed_users,ai_enabled,project_id,team_default_role,archived FROM workspace_components WHERE workspace_id=$1 AND id=$2',[w,appId])).rows:[];
+  const members=appId?(await tx.query('SELECT user_id,role FROM app_members WHERE workspace_id=$1 AND app_id=$2 ORDER BY user_id',[w,appId])).rows:[];
+  return checksum(J({ai:ws.ai_enabled,archived:ws.archived,rules,node,app,members}));
+ }
+ private async workspaceAccessStamp(tx:Connection,w:string){return checksum(J((await tx.query('SELECT access_version,permission_rules FROM workspaces WHERE id=$1',[w])).rows)+J((await tx.query('SELECT id,allowed_users,ai_enabled,parent_id,archived FROM workspace_nodes WHERE workspace_id=$1 ORDER BY id',[w])).rows)+J((await tx.query('SELECT id,allowed_users,ai_enabled,project_id FROM workspace_components WHERE workspace_id=$1 ORDER BY id',[w])).rows));}
  async previewFieldChanges(a:Actor,w:string,body:WorkspaceOperation){
   const service=new Service(this.db);
   if(body.kind==='accept_collection_response'){const review=await this.responseReview(this.db,a,w,body);return service.fieldDiff(this.db,a,w,{kind:'create_record',typeId:review.typeId,data:body.data});}
@@ -906,19 +936,66 @@ export class WorkspaceFoundation {
  async preview(a:Actor,w:string,input:unknown,preparedApp=false):Promise<any>{
   if(!preparedApp&&process.env.APP_DESIGN_CHECKS!=='off'&&['create_tracker','save_component'].includes((input as any)?.kind)&&(input as any)?.content?.format==='frontend-js'){const result=await this.prepareRenderedTracker(a,w,input);return result.preview??result;}
   const body=workspaceOperation.parse(input);if(body.kind==='create_tracker'&&!body.setup.projectId){await access(this.db,a,w,true);body.setup.projectId=body.componentId?(await this.component(this.db,a,w,body.componentId)).project_id:(await this.db.query('SELECT ensure_default_project($1) AS id',[w])).rows[0].id;}if(['save_component','copy_component','move_component'].includes(body.kind)&&!(body as any).projectId){await access(this.db,a,w,true);const existing=(body as any).componentId?await this.component(this.db,a,w,(body as any).componentId):null;(body as any).projectId=existing?.project_id??(await this.db.query('SELECT ensure_default_project($1) AS id',[w])).rows[0]?.id??null;}if((body.kind==='apply_component_records'||body.kind==='edit_component_record')&&a.accessToolId!==body.componentId)return withActor({...a,accessToolId:body.componentId},()=>this.preview({...a,accessToolId:body.componentId},w,input));await this.validate(this.db,a,w,body);
+  if(!preparedApp&&['create_tracker','save_component'].includes(body.kind)&&(body as any).componentId){
+   // A6, D9: one pending change per app and person; never a second one beside it.
+   const ready=(await this.db.query("SELECT id,digest FROM workspace_previews WHERE workspace_id=$1 AND user_id=$2 AND component_id=$3 AND change_class<>'other' AND body->>'reviewState' IS DISTINCT FROM 'draft' LIMIT 1",[w,a.userId,(body as any).componentId])).rows[0];
+   if(ready)fail(409,'pending_change_exists',JSON.stringify({message:'This app already has a change waiting for review. Publish or discard it first.',previewId:ready.id,expectedDigest:ready.digest}));
+  }
   await this.db.query('DELETE FROM workspace_previews WHERE expires_at<now()');
   const n=Number((await this.db.query('SELECT count(*) AS n FROM workspace_previews WHERE user_id=$1',[a.userId])).rows[0].n);if(n>=50)fail(429,'preview_limit','Too many pending previews');
   const schemaStamp=body.kind==='save_scope'?await this.scopeStamp(this.db,{...a,origin:'ai'},w,body.scope):null;
-  const appReview=['create_tracker','save_component'].includes(body.kind)&&(body as any).componentId?appRevisionReview(await this.component(this.db,a,w,(body as any).componentId),body):undefined;const fieldChanges=await this.previewFieldChanges(a,w,body);const accessStamp=await this.accessStamp(this.db,w);const factReview=['record_fact','prefer_record_fact','retract_record_fact'].includes(body.kind)?await this.factReview(this.db,a,w,body as Extract<WorkspaceOperation,{kind:'record_fact'|'prefer_record_fact'|'retract_record_fact'}>):undefined;const projectLinks=body.kind==='link_project_records'||body.kind==='unlink_project_record'?await this.projectLinksReview(this.db,a,w,body):undefined;const projectArchive=body.kind==='archive_node'?await this.nodeArchive(this.db,a,w,body):undefined;const componentCopy=body.kind==='copy_component'?await this.componentCopy(this.db,a,w,body):undefined;const archiveReview=await this.archiveReview(this.db,a,w,body);const crossTableReview=body.kind==='link_cross_table_identity'||body.kind==='unlink_cross_table_identity'?await this.crossTableReview(this.db,a,w,body):undefined;const tableMappingReview=body.kind==='save_table_mapping'||body.kind==='revoke_table_mapping'?await new TableMappings(this.db).review(a,w,body):undefined;const linkedValueReview=body.kind==='propagate_linked_values'?await this.linkedValueReview(this.db,a,w,body):undefined;const trackingReview=body.kind==='setup_tracking'?await this.trackingReview(this.db,a,w,body):undefined;const collectionReview=body.kind==='create_collection_link'||body.kind==='revoke_collection_link'?await this.collectionReview(this.db,a,w,body):undefined;const responseReview=body.kind==='accept_collection_response'?await this.responseReview(this.db,a,w,body):undefined;const exchangeEnvelope=isExchangeOperation(body)?await externalExchangeReview(this.db,a,w,withoutRecords(body)):undefined;const reviewState=['create_tracker','save_component'].includes(body.kind)&&(body as any).content?.format==='frontend-js'&&a.origin==='ai'?'draft':'ready';const envelope={appReview,reviewState,responseReview,exchangeReview:exchangeEnvelope,collectionReview,trackingReview,linkedValueReview,tableMappingReview,crossTableReview,operation:body,schemaStamp,accessStamp,fieldChanges,componentCopy,projectArchive,projectLinks,factReview,archiveReview};const draft={id:randomUUID(),workspaceId:w,workspaceFoundation:true,temporary:true,reviewState,appReview,body,responseReview,exchangeReview:exchangeEnvelope,collectionReview,trackingReview,linkedValueReview,tableMappingReview,crossTableReview,fieldChanges,componentCopy,projectArchive,projectLinks,factReview,archiveReview,digest:checksum(J(envelope))};
+  const appReview=['create_tracker','save_component'].includes(body.kind)&&(body as any).componentId?appRevisionReview(await this.component(this.db,a,w,(body as any).componentId),body):undefined;const fieldChanges=await this.previewFieldChanges(a,w,body);const accessStamp=await this.accessStamp(this.db,w,body);const factReview=['record_fact','prefer_record_fact','retract_record_fact'].includes(body.kind)?await this.factReview(this.db,a,w,body as Extract<WorkspaceOperation,{kind:'record_fact'|'prefer_record_fact'|'retract_record_fact'}>):undefined;const projectLinks=body.kind==='link_project_records'||body.kind==='unlink_project_record'?await this.projectLinksReview(this.db,a,w,body):undefined;const projectArchive=body.kind==='archive_node'?await this.nodeArchive(this.db,a,w,body):undefined;const componentCopy=body.kind==='copy_component'?await this.componentCopy(this.db,a,w,body):undefined;const archiveReview=await this.archiveReview(this.db,a,w,body);const crossTableReview=body.kind==='link_cross_table_identity'||body.kind==='unlink_cross_table_identity'?await this.crossTableReview(this.db,a,w,body):undefined;const tableMappingReview=body.kind==='save_table_mapping'||body.kind==='revoke_table_mapping'?await new TableMappings(this.db).review(a,w,body):undefined;const linkedValueReview=body.kind==='propagate_linked_values'?await this.linkedValueReview(this.db,a,w,body):undefined;const trackingReview=body.kind==='setup_tracking'?await this.trackingReview(this.db,a,w,body):undefined;const collectionReview=body.kind==='create_collection_link'||body.kind==='revoke_collection_link'?await this.collectionReview(this.db,a,w,body):undefined;const responseReview=body.kind==='accept_collection_response'?await this.responseReview(this.db,a,w,body):undefined;const exchangeEnvelope=isExchangeOperation(body)?await externalExchangeReview(this.db,a,w,withoutRecords(body)):undefined;const reviewState=['create_tracker','save_component'].includes(body.kind)&&(body as any).content?.format==='frontend-js'&&a.origin==='ai'?'draft':'ready';const envelope={origin:a.origin,...(a.origin==='ai'&&a.assistant?{assistant:a.assistant}:{}),appReview,reviewState,responseReview,exchangeReview:exchangeEnvelope,collectionReview,trackingReview,linkedValueReview,tableMappingReview,crossTableReview,operation:body,schemaStamp,accessStamp,fieldChanges,componentCopy,projectArchive,projectLinks,factReview,archiveReview};const changeClass=['create_tracker','save_component'].includes(body.kind)?((body as any).componentId?(a.origin==='ai'?'assistant':'revision'):'new'):undefined;const draft={id:randomUUID(),workspaceId:w,workspaceFoundation:true,temporary:true,reviewState,...(changeClass?{changeClass}:{}),appReview,body,responseReview,exchangeReview:exchangeEnvelope,collectionReview,trackingReview,linkedValueReview,tableMappingReview,crossTableReview,fieldChanges,componentCopy,projectArchive,projectLinks,factReview,archiveReview,digest:checksum(J(envelope))};
   await this.db.query('INSERT INTO workspace_previews(id,workspace_id,user_id,body,digest) VALUES($1,$2,$3,$4,$5)',[draft.id,w,a.userId,J(envelope),draft.digest]);return draft;
  }
- async pending(a:Actor,w:string){await access(this.db,a,w);const rows=(await this.db.query('SELECT * FROM workspace_previews WHERE workspace_id=$1 AND user_id=$2 AND expires_at>now() ORDER BY expires_at',[w,a.userId])).rows;const visible=[];for(const r of rows){try{if(r.body.accessStamp!==await this.accessStamp(this.db,w))continue;await this.validate(this.db,a,w,r.body.operation);if((r.body.operation.kind==='save_table_mapping'||r.body.operation.kind==='revoke_table_mapping')&&!(await this.db.query('SELECT $1::jsonb=$2::jsonb AS same',[J(r.body.tableMappingReview),J(await new TableMappings(this.db).review(a,w,r.body.operation))])).rows[0].same)continue;if((r.body.operation.kind==='link_cross_table_identity'||r.body.operation.kind==='unlink_cross_table_identity')&&!(await this.db.query('SELECT $1::jsonb=$2::jsonb AS same',[J(r.body.crossTableReview),J(await this.crossTableReview(this.db,a,w,r.body.operation))])).rows[0].same)continue;visible.push({id:r.id,workspaceId:w,workspaceFoundation:true,reviewState:r.body.reviewState??'draft',body:r.body.operation,responseReview:r.body.responseReview,exchangeReview:r.body.exchangeReview,collectionReview:r.body.collectionReview,trackingReview:r.body.trackingReview,linkedValueReview:r.body.linkedValueReview,tableMappingReview:r.body.tableMappingReview,crossTableReview:r.body.crossTableReview,componentCopy:r.body.componentCopy,projectArchive:r.body.projectArchive,projectLinks:r.body.projectLinks,factReview:r.body.factReview,archiveReview:r.body.archiveReview,fieldChanges:r.body.fieldChanges??[],digest:r.digest,expiresAt:r.expires_at});}catch{}}return visible;}
+ /** I2, I3: what the installation popup shows before a pending new app is first saved. Read only. */
+ async appInstallation(a:Actor,w:string,previewId:string):Promise<any>{
+  const row=(await this.db.query('SELECT * FROM workspace_previews WHERE id=$1 AND workspace_id=$2 AND user_id=$3',[previewId,w,a.userId])).rows[0];
+  if(!row)fail(404,'not_found','Preview unavailable');
+  const op=row.body.operation;
+  if(isNewApp(op))return {previewId,previewDigest:row.digest,...await installationStep(this,this.db,a,w,op)};
+  // 3.4: for a change to an existing app, only what it affects. Null: nothing to review in the popup.
+  return {previewId,previewDigest:row.digest,impact:await changeImpact(this,this.db,a,w,op)};
+ }
+ /** Whether a pending app change can still be reviewed as prepared (A6, D10). Computed on read, never stored. */
+ private async pendingState(db:Connection,w:string,row:any):Promise<{status:'preparing'|'ready'|'needs_preparing';reason?:'app_changed'|'app_unavailable'|'access_changed'}>{
+  const op=row.body.operation;
+  if(op.componentId){
+   const app=(await db.query('SELECT version,archived FROM workspace_components WHERE workspace_id=$1 AND id=$2 AND deleted_at IS NULL',[w,op.componentId])).rows[0];
+   if(!app||app.archived)return {status:'needs_preparing',reason:'app_unavailable'};
+   if(typeof op.expectedVersion==='number'&&app.version!==op.expectedVersion)return {status:'needs_preparing',reason:'app_changed'};
+  }
+  if(row.body.accessStamp!==await this.accessStamp(db,w,op))return {status:'needs_preparing',reason:'access_changed'};
+  return {status:row.body.reviewState==='draft'?'preparing':'ready'};
+ }
+ private pendingSummary(row:any,state:{status:string;reason?:string},name?:string|null){
+  const op=row.body.operation,changeClass=row.change_class??(op.componentId?(row.body.origin==='ai'?'assistant':'revision'):'new');
+  return {previewId:row.id,digest:row.digest,componentId:op.componentId??null,name:name??op.content?.name??op.setup?.name??null,changeClass,origin:row.body.origin??null,assistant:row.body.assistant??null,
+   status:state.status,...(state.reason?{reason:state.reason}:{}),preparedAt:row.prepared_at??null,
+   ...(row.body.appReview?{review:{title:row.body.appReview.title,changes:row.body.appReview.changes}}:{})};
+ }
+ /** A6, B1: every pending app change of the signed-in person in this organization, for the one approval footer.
+  * Teammates never see someone else's pending change; they keep using the published version until it is approved. */
+ async pendingAppChanges(a:Actor,w:string,componentId?:string){
+  requireAssistantApps(await access(this.db,a,w),a,false);
+  const rows=(await this.db.query("SELECT p.*,c.name AS app_name FROM workspace_previews p LEFT JOIN workspace_components c ON c.id=p.component_id AND c.workspace_id=p.workspace_id WHERE p.workspace_id=$1 AND p.user_id=$2 AND p.change_class<>'other' AND ($3::uuid IS NULL OR p.component_id=$3) ORDER BY p.prepared_at,p.id",[w,a.userId,componentId??null])).rows;
+  const out=[];
+  for(const r of rows){
+   // A pending change to an app this person can no longer open is not shown; it cannot be approved either.
+   if(r.component_id){try{await this.component(this.db,{...a,accessToolId:r.component_id},w,r.component_id,false,true);}catch(e){if([403,404].includes((e as any).status))continue;throw e;}}
+   out.push(this.pendingSummary(r,await this.pendingState(this.db,w,r),r.app_name));
+  }
+  return {workspaceId:w,changes:out};
+ }
+ async pending(a:Actor,w:string){await access(this.db,a,w);const rows=(await this.db.query('SELECT * FROM workspace_previews WHERE workspace_id=$1 AND user_id=$2 AND expires_at>now() ORDER BY expires_at',[w,a.userId])).rows;const visible=[];for(const r of rows){try{if(r.body.accessStamp!==await this.accessStamp(this.db,w,r.body.operation))continue;await this.validate(this.db,a,w,r.body.operation);if((r.body.operation.kind==='save_table_mapping'||r.body.operation.kind==='revoke_table_mapping')&&!(await this.db.query('SELECT $1::jsonb=$2::jsonb AS same',[J(r.body.tableMappingReview),J(await new TableMappings(this.db).review(a,w,r.body.operation))])).rows[0].same)continue;if((r.body.operation.kind==='link_cross_table_identity'||r.body.operation.kind==='unlink_cross_table_identity')&&!(await this.db.query('SELECT $1::jsonb=$2::jsonb AS same',[J(r.body.crossTableReview),J(await this.crossTableReview(this.db,a,w,r.body.operation))])).rows[0].same)continue;visible.push({id:r.id,workspaceId:w,workspaceFoundation:true,reviewState:r.body.reviewState??'draft',body:r.body.operation,responseReview:r.body.responseReview,exchangeReview:r.body.exchangeReview,collectionReview:r.body.collectionReview,trackingReview:r.body.trackingReview,linkedValueReview:r.body.linkedValueReview,tableMappingReview:r.body.tableMappingReview,crossTableReview:r.body.crossTableReview,componentCopy:r.body.componentCopy,projectArchive:r.body.projectArchive,projectLinks:r.body.projectLinks,factReview:r.body.factReview,archiveReview:r.body.archiveReview,fieldChanges:r.body.fieldChanges??[],digest:r.digest,expiresAt:r.expires_at});}catch{}}return visible;}
  async discard(a:Actor,w:string,id:string,digest?:string){return this.db.transaction(async tx=>{await access(tx,a,w);await tx.query('SELECT id FROM workspaces WHERE id=$1 FOR UPDATE',[w]);const row=(await tx.query('SELECT * FROM workspace_previews WHERE id=$1 AND workspace_id=$2 AND user_id=$3',[id,w,a.userId])).rows[0];if(row&&digest&&(row.digest!==digest||row.body.reviewState==='draft'))fail(409,'preview_changed','Preview changed or is still being prepared');if(row?.body.preparation?.requestKey)await tx.query('INSERT INTO workspace_receipts(id,workspace_id,user_id,digest,result) VALUES($1,$2,$3,$4,$5)',[id,w,a.userId,row.digest,J({status:'discarded',preparation:row.body.preparation})]);await tx.query('DELETE FROM workspace_previews WHERE id=$1 AND workspace_id=$2 AND user_id=$3',[id,w,a.userId]);return {discarded:true};});}
  private async replay(tx:Connection,a:Actor,w:string,id:string,digest:string){const r=(await tx.query('SELECT * FROM workspace_receipts WHERE id=$1',[id])).rows[0];if(r){if(r.user_id!==a.userId||r.workspace_id!==w||r.digest!==digest)fail(409,'receipt_conflict','Request does not match its saved receipt');return r.result;}}
- async confirm(a:Actor,w:string,id:string,digest:string){requireCurrentAction(a);return this.db.transaction(async tx=>{
+ async confirm(a:Actor,w:string,id:string,digest:string,installation?:unknown){requireCurrentAction(a);return this.db.transaction(async tx=>{
   await tx.query('SELECT id FROM workspaces WHERE id=$1 FOR UPDATE',[w]);const p=await access(tx,a,w);const prior=await this.replay(tx,a,w,id,digest);if(prior)return prior;
   const draft=(await tx.query('SELECT * FROM workspace_previews WHERE id=$1 AND workspace_id=$2 AND user_id=$3 AND expires_at>now()',[id,w,a.userId])).rows[0];if(!draft||draft.digest!==digest)fail(409,'preview_expired','Preview unavailable');
-  const op=workspaceOperation.parse(draft.body.operation);if(['create_tracker','save_component'].includes(op.kind)&&(op as any).content?.format==='frontend-js'&&draft.body.reviewState!=='ready')fail(409,'preview_not_ready','This app is still being prepared. Save is available after finalization.');if(op.kind==='apply_component_records'||op.kind==='edit_component_record'){a={...a,accessToolId:op.componentId};await withActor(a,()=>setDatabaseContext(tx));}
+  let op=workspaceOperation.parse(draft.body.operation);if(['create_tracker','save_component'].includes(op.kind)&&(op as any).content?.format==='frontend-js'&&draft.body.reviewState!=='ready')fail(409,'preview_not_ready','This app is still being prepared. Save is available after finalization.');if(op.kind==='apply_component_records'||op.kind==='edit_component_record'){a={...a,accessToolId:op.componentId};await withActor(a,()=>setDatabaseContext(tx));}
+  // D11, A4: an assistant prepares app changes but never approves them. A person approves in the platform footer,
+  // on the website or inside the assistant (the footer's own tool, which the assistant cannot call).
+  if(['create_tracker','save_component'].includes(op.kind)&&a.origin==='ai'&&!a.footerApproval)requireHuman(a);
   // Only a person sends, publishes, replies or accepts; say so before anything else is checked.
   if(isExchangeOperation(op)&&['send_exchange_email','publish_exchange_clarification','accept_exchange_submission','accept_exchange_file','reply_exchange','reply_exchanges'].includes(op.kind))requireHuman(a);
   else if(isExchangeOperation(op)&&exchangeRecords(op)){a={...a,accessToolId:exchangeRecords(op)!.componentId};await withActor(a,()=>setDatabaseContext(tx));}
@@ -927,7 +1004,7 @@ export class WorkspaceFoundation {
   // Never carry cached metadata into apply(), which can change those very rows.
   if(op.kind==='save_component')await withReadMetadata(adapter(tx),db=>new WorkspaceFoundation(db).validate(db,a,w,op));
   else await this.validate(tx,a,w,op);
-  if(draft.body.accessStamp!==await this.accessStamp(tx,w))fail(409,'access_changed','Project access or organization changed; prepare a new preview');
+  if(draft.body.accessStamp!==await this.accessStamp(tx,w,draft.body.operation))fail(409,'access_changed','Project access or organization changed; prepare a new preview');
   if((op.kind==='link_cross_table_identity'||op.kind==='unlink_cross_table_identity')&&!(await tx.query('SELECT $1::jsonb=$2::jsonb AS same',[J(draft.body.crossTableReview),J(await this.crossTableReview(tx,a,w,op))])).rows[0].same)fail(409,'stale_version','Cross-table mapping or values changed; prepare again');
   if((op.kind==='save_table_mapping'||op.kind==='revoke_table_mapping')&&!(await tx.query('SELECT $1::jsonb=$2::jsonb AS same',[J(draft.body.tableMappingReview),J(await new TableMappings(tx).review(a,w,op))])).rows[0].same)fail(409,'mapping_schema_changed','Table mapping review changed; prepare again');
   if(op.kind==='propagate_linked_values'&&!(await tx.query('SELECT $1::jsonb=$2::jsonb AS same',[J(draft.body.linkedValueReview),J(await this.linkedValueReview(tx,a,w,op))])).rows[0].same)fail(409,'link_changed','Source or link changed; prepare again');
@@ -942,7 +1019,18 @@ export class WorkspaceFoundation {
   if(op.kind==='archive_node'&&!(await tx.query('SELECT $1::jsonb=$2::jsonb AS same',[J(draft.body.projectArchive),J(await this.nodeArchive(tx,a,w,op))])).rows[0].same)fail(409,'stale_version','Project contents changed; prepare archival again');
   if(['archive_component','save_component','create_tracker'].includes(op.kind)&&!(await tx.query('SELECT $1::jsonb IS NOT DISTINCT FROM $2::jsonb AS same',[draft.body.archiveReview===undefined?null:J(draft.body.archiveReview),(r=>r===undefined?null:J(r))(await this.archiveReview(tx,a,w,op))])).rows[0].same)fail(409,'stale_version','Archived items changed; prepare again');
   if(op.kind==='copy_component'&&!(await tx.query('SELECT $1::jsonb=$2::jsonb AS same',[J(draft.body.componentCopy),J(await this.componentCopy(tx,a,w,op))])).rows[0].same)fail(409,'stale_version','Copy contents changed; prepare again');
-  const saved=await this.apply(tx,a,w,p,op,{kind:'approval',id,digest,context:'workspace_preview'});const result={...saved,...(draft.body.preparation?{preparation:draft.body.preparation}:{})};await tx.query('INSERT INTO workspace_receipts(id,workspace_id,user_id,digest,result) VALUES($1,$2,$3,$4,$5)',[id,w,a.userId,digest,J(result)]);await tx.query('DELETE FROM workspace_previews WHERE id=$1',[id]);return result;
+  // I2, I3 (3.3): a new app is saved only with the reviewed installation choices. Every entry point a person or an
+  // assistant reaches passes the choices, or null when there are none, which is refused with the popup's content.
+  // Internal callers that showed their own popup (the catalog installation step) pass nothing.
+  let installPlan:any=null;
+  // 3.4: an approved change that affects access, table connections or automations shows the popup again (A4, I2).
+  let changePlan:any=null;
+  if(isNewApp(op)&&installation!==undefined){const f=new WorkspaceFoundation(adapter(tx)),prepared=await prepareInstallation(f,tx,a,w,op,installation);op=workspaceOperation.parse(prepared.op);installPlan=prepared.finish;await this.validate(tx,a,w,op);}
+  else if(installation!==undefined&&['create_tracker','save_component'].includes(op.kind)){const f=new WorkspaceFoundation(adapter(tx)),prepared=await prepareChange(f,tx,a,w,op,installation);if(prepared){op=workspaceOperation.parse(prepared.op);changePlan=prepared.finish;await this.validate(tx,a,w,op);}}
+  const saved=await this.apply(tx,a,w,p,op,{kind:'approval',id,digest,context:'workspace_preview'});
+  if(installPlan&&saved?.id)await finishInstallation(tx,a,w,saved.id,installPlan);
+  if(changePlan&&saved?.id)await finishChange(tx,a,w,saved.id,changePlan);
+  const result={...saved,...(draft.body.preparation?{preparation:draft.body.preparation}:{})};await tx.query('INSERT INTO workspace_receipts(id,workspace_id,user_id,digest,result) VALUES($1,$2,$3,$4,$5)',[id,w,a.userId,digest,J(result)]);await tx.query('DELETE FROM workspace_previews WHERE id=$1',[id]);return result;
  });}
  private async apply(tx:Connection,a:Actor,w:string,p:any,op:WorkspaceOperation,authorization?:WriteAuthorization):Promise<any>{
   if(op.kind==='create_automation_template'){

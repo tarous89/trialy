@@ -29,7 +29,9 @@ const connections=z.record(roleKey,z.union([id,z.literal('new')])).default({});
 const accessLevels=z.array(z.object({subject:z.union([id,z.literal('chatgpt'),z.literal('claude')]),level:z.enum(['none','view','edit','read','propose'])}).strict()).max(500).default([]);
 export const dataAccessTarget=z.object({install}).strict();
 export const dataAccessPrepareShape={install,connections};
-export const dataAccessCommitShape={install,connections,access:accessLevels,automations:recipeChoices.optional(),stepDigest:digest64};
+/** I2, A1: the project the app goes into and the role team members get by default. Omitted: the popup's defaults. */
+const teamDefault=z.enum(['editor','viewer','none']);
+export const dataAccessCommitShape={install,connections,access:accessLevels,automations:recipeChoices.optional(),stepDigest:digest64,projectId:id.optional(),teamDefault:teamDefault.optional()};
 const prepareInput=z.object(dataAccessPrepareShape).strict(),commitInput=z.object(dataAccessCommitShape).strict();
 const tx=(db:Connection):Database=>({query:db.query.bind(db) as any,transaction:fn=>fn(db),close:async()=>{}});
 
@@ -55,13 +57,20 @@ export async function dataAccessStep(f:WorkspaceFoundation,a:Actor,w:string,inpu
   alternative:r.readOnly?'skip':'new',candidates:r.candidates.map((c:any)=>({typeId:c.typeId,name:c.name,records:c.records,apps:c.apps})),choice:r.candidates[0].typeId}));
  const functions=readAppFunctions(row.payload,Object.keys(row.install_schema??{})).functions.map(({name,purpose,scope})=>({name,purpose,scope}));
  const accessRows=await accessSection(f.db,a,w);
+ // I2, I3: the popup leads with the project and the team's default role (A1: Editor unless the installer changes it).
+ const nodes=(await f.nodes(a,w)).nodes.filter((n:any)=>n.kind==='project'&&!n.archived&&!n.effective_archived).map((n:any)=>({id:n.id,name:n.name}));
+ const fallback=(await f.db.query('SELECT ensure_default_project($1) AS id',[w])).rows[0]?.id??nodes[0]?.id??null;
+ if(fallback&&!nodes.some((n:any)=>n.id===fallback)){const n=(await f.db.query('SELECT id,name FROM workspace_nodes WHERE id=$1',[fallback])).rows[0];if(n)nodes.unshift(n);}
+ const project={choice:fallback,options:nodes},team={choice:'editor',options:['editor','viewer','none']};
+ const purpose=row.payload?.summary??row.payload?.description??null;
  const canAutomate=recipesEnabled()&&(await access(f.db,a,w)).role==='owner';
  const offers=canAutomate?readRecipes(row.payload):{recommended:[],unavailable:[]};
  const account=offers.recommended.length?(await f.db.query('SELECT email FROM users WHERE id=$1',[a.userId])).rows[0]:null;
  const setupOptions=offers.recommended.length?await recipeSetupOptions(f.db,a,w):{runners:[]};
- const identity={runners:setupOptions.runners,automationRecipes:offers.recommended,templateDigest:row.digest,recipient:account?.email??null,install:{templateId:v.install.templateId,version:v.install.version},tables:tables.map(t=>[t.role,t.candidates.map((c:any)=>c.typeId)]),access:[accessRows.version,...[...accessRows.people,...accessRows.assistants].map((x:any)=>[x.id,x.level])]};
+ const identity={projects:nodes.map((n:any)=>n.id),fallback,runners:setupOptions.runners,automationRecipes:offers.recommended,templateDigest:row.digest,recipient:account?.email??null,install:{templateId:v.install.templateId,version:v.install.version},tables:tables.map(t=>[t.role,t.candidates.map((c:any)=>c.typeId)]),access:[accessRows.version,...[...accessRows.people,...accessRows.assistants].map((x:any)=>[x.id,x.level])]};
  // Shown when there are tables to connect, or when the signed-in owner can decide access before the app exists.
- return {app:v.install.name??row.payload?.name??v.install.templateId,functions,needed:functions.length>0||tables.length>0||accessRows.canChange||offers.recommended.length>0,automations:offers.recommended,automationRunners:setupOptions.runners,automationRecipient:account?.email??null,automationUnavailable:offers.unavailable,tables,access:accessRows,digest:createHash('sha256').update(JSON.stringify(identity)).digest('hex')};
+ // I2: the popup is shown for every installation, also when there is nothing to connect; the server requires its digest.
+ return {app:v.install.name??row.payload?.name??v.install.templateId,purpose,project,team,functions,needed:true,automations:offers.recommended,automationRunners:setupOptions.runners,automationRecipient:account?.email??null,automationUnavailable:offers.unavailable,tables,access:accessRows,digest:createHash('sha256').update(JSON.stringify(identity)).digest('hex')};
 }
 
 function validate(step:any,choices:Record<string,string>){
@@ -93,13 +102,16 @@ export async function confirmDataAccess(f:WorkspaceFoundation,a:Actor,w:string,i
   if(step.digest!==v.stepDigest)fail(409,'data_access_changed','Your tables changed. Review the choice again.');
   validate(step,v.connections);
   const sharedTables=Object.fromEntries(step.tables.map((r:any)=>[r.role,v.connections[r.role]??r.choice]));
-  const i=v.install,receipt=await installCatalogApp(sf,a,w,{templateId:i.templateId,version:i.version,digest:i.digest!,name:i.name!,requestKey:i.requestKey!,...(i.createNew?{createNew:true}:{}),...(Object.keys(sharedTables).length?{sharedTables}:{})});
+  if(v.projectId&&!step.project.options.some((x:any)=>x.id===v.projectId))fail(400,'project_required','Choose one of the listed projects');
+  const i=v.install,receipt=await installCatalogApp(sf,a,w,{templateId:i.templateId,version:i.version,digest:i.digest!,name:i.name!,requestKey:i.requestKey!,...(v.projectId?{projectId:v.projectId}:{}),...(i.createNew?{createNew:true}:{}),...(Object.keys(sharedTables).length?{sharedTables}:{})});
   // Access chosen before installing: app rules saved by the Access tab's own rules, in the same transaction.
   const current=new Map<string,string>([...step.access.people,...step.access.assistants].map((x:any)=>[x.id,x.level]));
   for(const x of v.access)if(!current.has(x.subject)||!([...step.access.people,...step.access.assistants].find((r:any)=>r.id===x.subject)!.levels.includes(x.level)))fail(400,'invalid_access','Choose a listed person or assistant and one of its access levels');
   const changes=v.access.filter(x=>current.get(x.subject)!==x.level).map(x=>({subject:x.subject,kind:'tool' as const,resourceId:receipt.appId,read:x.level!=='none',write:x.level==='edit'||x.level==='propose'}));
   if(changes.length){if(!step.access.canChange)fail(403,'human_required','Change access in your signed-in owner session on the TrialAgents website.');await new AccessGrid(tx(t)).save(a,w,{expectedVersion:(await access(t,a,w)).access_version,changes});}
-  await audit(t,a,await access(t,a,w),'workspace.data_access_step',receipt.appId,null,{tables:sharedTables,access:changes.map(c=>({subject:c.subject,read:c.read,write:c.write}))});
+  // A1: the team default chosen in the popup. The installer is the app's first owner (database trigger).
+  if(v.teamDefault&&v.teamDefault!=='editor'){await t.query('UPDATE workspace_components SET team_default_role=$1 WHERE id=$2 AND workspace_id=$3',[v.teamDefault,receipt.appId,w]);await t.query('UPDATE workspaces SET access_version=access_version+1 WHERE id=$1',[w]);}
+  await audit(t,a,await access(t,a,w),'workspace.data_access_step',receipt.appId,null,{projectId:v.projectId??step.project.choice,teamDefault:v.teamDefault??'editor',tables:sharedTables,access:changes.map(c=>({subject:c.subject,read:c.read,write:c.write}))});
   await t.query("DELETE FROM workspace_previews WHERE workspace_id=$1 AND user_id=$2 AND body->'operation'->>'kind'='data_access_step'",[w,a.userId]);
   const selections=v.automations??[];
   if(selections.some(x=>!step.automations.some((r:any)=>r.key===x.key)))fail(409,'recipes_changed','Review the app automations again');

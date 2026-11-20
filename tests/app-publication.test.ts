@@ -45,8 +45,10 @@ test('draft execution and review stay separate from published apps and public li
   // Re-prepare after that explicit access change; publication remains exact and atomic.
   const final=await f.preview(ai,w.id,operation),stale=await f.preview(ai,w.id,operation);
   const ready=await f.finalizeAppPreview(ai,w.id,final.id,final.digest);
-  await f.confirm({...ai,actionConfirmed:true},w.id,ready.preview.id,ready.preview.digest);
-  await assert.rejects(f.confirm({...ai,actionConfirmed:true},w.id,stale.id,stale.digest),/changed|still being prepared/);
+  // D11: the assistant cannot approve its own app change; the person does, in the footer inside the assistant.
+  await assert.rejects(f.confirm({...ai,actionConfirmed:true},w.id,ready.preview.id,ready.preview.digest),(e:any)=>e.code==='human_approval_required');
+  await f.confirm({...ai,actionConfirmed:true,footerApproval:true},w.id,ready.preview.id,ready.preview.digest);
+  await assert.rejects(f.confirm({...ai,actionConfirmed:true,footerApproval:true},w.id,stale.id,stale.digest),/changed|still being prepared/);
   assert.equal((await f.readComponent(owner,w.id,saved.id)).component.version,1);
   const publicView=await sharing.publicContext(token);assert.equal(publicView.c.version,1);
   assert.match((await withActor(publicView.a,()=>f.runFrontend(publicView.a,w.id,{componentId:saved.id,expectedVersion:1}))).html,/Draft only/);

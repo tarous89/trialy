@@ -42,9 +42,13 @@ test('catalog approval, complete suite installation, retry and tenant isolation'
   const installTool=aiTools.get('install_app_template');assert.deepEqual(installTool.config._meta.ui.visibility,['app']);assert.equal(installTool.config.annotations.readOnlyHint,false);
   const approved=list.templates[1],aiRequest={templateId:approved.id,version:approved.version,digest:approved.digest,name:approved.name,requestKey:randomUUID()};
   await assert.rejects(()=>installCatalogApp(f,ai,workspace.id,aiRequest),/human|confirm|authoriz|approv/i);
-  const installed=await installTool.handler({workspaceId:workspace.id,...aiRequest,confirmed:true});assert.ok(installed.appId);
-  assert.deepEqual(await installTool.handler({workspaceId:workspace.id,...aiRequest,confirmed:true}),installed);
-  const claudeInstalled=await installCatalogApp(f,{...ai,assistant:'claude',actionConfirmed:true},workspace.id,{...aiRequest,requestKey:randomUUID()});assert.ok(claudeInstalled.appId);
+  // I2: Use always goes through the installation popup; installing without it is refused.
+  await assert.rejects(installTool.handler({workspaceId:workspace.id,...aiRequest,confirmed:true}),(e:any)=>e.code==='installation_required');
+  const step=await aiTools.get('read_data_access').handler({workspaceId:workspace.id,install:aiRequest});assert.equal(step.needed,true);assert.equal(step.team.choice,'editor');assert.ok(step.project.choice);
+  const confirmInstall=()=>aiTools.get('confirm_data_access').handler({workspaceId:workspace.id,install:aiRequest,stepDigest:step.digest,confirmed:true});
+  const installed=await confirmInstall();assert.ok(installed.appId);
+  assert.deepEqual(await confirmInstall(),installed);
+  const claudeInstalled=await installCatalogApp(f,{...ai,assistant:'claude',actionConfirmed:true,footerApproval:true},workspace.id,{...aiRequest,requestKey:randomUUID()});assert.ok(claudeInstalled.appId);
   const candidate=list.templates[1],broken={templateId:candidate.id,version:candidate.version,digest:candidate.digest,name:candidate.name,requestKey:randomUUID()};
   const before=(await db.query('SELECT count(*)::int n FROM entity_types')).rows[0].n;
   await db.query("UPDATE app_template_catalog SET install_schema=install_schema || $2::jsonb WHERE template_id=$1 AND version=$3",[candidate.id,JSON.stringify({zz_invalid:{name:'Invalid schema',fields:[{key:'!',name:'Invalid',kind:'text'}],logicalFields:{}}}),candidate.version]);

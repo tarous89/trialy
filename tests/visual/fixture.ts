@@ -58,6 +58,8 @@ export async function fixture(){
   if(name==='check_component_access')return f.checkComponentAccess(actor,w.id,v.componentId,v.viewId);
   if(name==='prepare_workspace_change')return f.preview(actor,w.id,v.operation);
   if(name==='confirm_workspace_change')return f.confirm(actor,w.id,v.previewId,v.digest);
+  if(name==='approve_workspace_change')return f.confirm(actor,w.id,v.previewId,v.digest,v.installation??null);
+  if(name==='list_pending_app_changes')return f.pendingAppChanges(actor,w.id,v.appId);
   if(name==='discard_workspace_preview')return f.discard(actor,w.id,v.previewId);
   throw Error('Unexpected tool '+name);
  };

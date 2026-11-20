@@ -15,6 +15,7 @@ import {FoundationPanel} from './FoundationPanel.js';
 import {CollectionsPanel} from './CollectionsPanel.js';
 import {ChangeSummary} from './ChangeSummary.js';
 import {Button} from './ui/Controls.js';
+import {PendingChangesProvider,ProposalReview,type PendingChange} from './PendingChanges.js';
 import './ui/design.css';import './ui/brand.css';import './ui/scroll.css';import './app-pages.css';
 type Call=(name:string,args:any,options?:WorkspaceRequestOptions)=>Promise<any>;
 export function StandaloneApp({signedIn,loading=false,call,api,accountName='Account',accountEmail}:{accountName?:string;accountEmail?:string;signedIn:boolean;loading?:boolean;call:Call;api:(path:string,method?:string,body?:unknown,options?:WorkspaceRequestOptions)=>Promise<any>}){
@@ -39,7 +40,10 @@ export function StandaloneApp({signedIn,loading=false,call,api,accountName='Acco
  // U3: one plain page for an app this person cannot open, or can no longer open.
  const noAccess=current?.source==='component'?<NoAppAccess key={current.appId} api={api} workspaceId={current.workspaceId} appId={current.appId} onHome={goHome}/>:null;
 
- return <AppPlatform.Provider value={{enabled:true,origin:location.origin}}><WorkspaceShell headerActions={component&&current?<AssistantLinks iconsOnly prompt={'Customize my TrialAgents app (app ID '+current.appId+', workspace ID '+current.workspaceId+'). Read the saved app before making changes.'}/>:undefined} appView selected="home" accountName={accountName} accountEmail={accountEmail} onNavigate={platformNavigate} onNew={kind=>platformNavigate("create",kind)}><AppNavigation.Provider value={current?{route:current.route,reset,navigate,setDirty}:null}>
+ // A6, B1: pending app changes come back from the server; Review opens the change itself, never approves it blind.
+ const openPending=(c:PendingChange)=>{if(!current)return;const next=appUrl({workspaceId:current.workspaceId,appId:c.previewId,source:'preview'});if(dirty.current||proposal){setPending(next);return;}setReset(n=>n+1);assign(next);};
+ const pendingCall=useCallback((name:string,args:any)=>call(name,args),[call]);
+ return <AppPlatform.Provider value={{enabled:true,origin:location.origin}}><PendingChangesProvider call={pendingCall} workspaceId={signedIn?current?.workspaceId:null} onOpen={openPending}><WorkspaceShell headerActions={component&&current?<AssistantLinks iconsOnly prompt={'Customize my TrialAgents app (app ID '+current.appId+', workspace ID '+current.workspaceId+'). Read the saved app before making changes.'}/>:undefined} appView selected="home" accountName={accountName} accountEmail={accountEmail} onNavigate={platformNavigate} onNew={kind=>platformNavigate("create",kind)}><AppNavigation.Provider value={current?{route:current.route,reset,navigate,setDirty}:null}>
  {!current?<AppUnavailable onHome={goHome}/>:loading?<div aria-busy="true" aria-label="Loading app"/>:!signedIn?<section className="ty-empty"><h1>Sign in to open this app</h1><a className="ty-button ty-button--primary" href={'/auth/login?returnTo='+encodeURIComponent(appUrl(current))}>Sign in</a></section>:<>
  {automationNotice&&<SystemNotice message="App added. Automation setup continues in the background." onDismiss={()=>setAutomationNotice(false)}><button onClick={()=>platformNavigate('automations')}>View Automations</button></SystemNotice>}
  {error&&<SystemNotice error message={error} onDismiss={()=>setError('')}/>}{!loaded&&(loadFailed?([403,404].includes(loadStatus)&&noAccess)||<AppUnavailable onHome={goHome} reason={[401,403,404].includes(loadStatus)?'missing':'load'} onRetry={()=>setReload(n=>n+1)}/>:<div aria-busy="true" aria-label="Loading app"/>)}
@@ -52,10 +56,12 @@ export function StandaloneApp({signedIn,loading=false,call,api,accountName='Acco
  {loaded?.source==='collection'&&<CollectionsPanel call={invoke} onBack={goHome} onPreview={setProposal} initialLinkId={current.appId}/>}
  {loaded?.source==='legacy'&&<LegacyApp api={api} workspaceId={current.workspaceId} resource={loaded.resource}/>}
  </NoAccessPage.Provider>
- {proposal&&<div className="ty-content-overlay"><section className="ty-confirm-dialog" role="dialog" aria-modal="true" aria-label="Review app changes"><h2>Review changes</h2><ChangeSummary value={proposal.summary??proposal.body}/><div className="ty-actions"><Button disabled={busy} onClick={()=>{void invoke('discard_workspace_preview',{previewId:proposal.id}).then(()=>{setProposal(null);setDirty(false);setReload(n=>n+1);}).catch(e=>setError(e.message));}}>Cancel</Button><Button variant="primary" disabled={busy} onClick={()=>{setBusy(true);void invoke('confirm_workspace_change',{previewId:proposal.id,digest:proposal.digest,confirmed:true}).then(()=>{setProposal(null);setDirty(false);setReload(n=>n+1);}).catch(e=>setError(e.message)).finally(()=>setBusy(false));}}>Save changes</Button></div></section></div>}
+ {proposal&&<ProposalReview key={proposal.id} proposal={proposal} busy={busy} summary={<ChangeSummary value={proposal.summary??proposal.body}/>}
+  onDismiss={async()=>{try{await invoke('discard_workspace_preview',{previewId:proposal.id});setProposal(null);setDirty(false);setReload(n=>n+1);}catch(e){setError((e as Error).message);}}}
+  onAction={async approve=>{setBusy(true);try{const app=['save_component','create_tracker'].includes(proposal.body?.kind);if(app){if(!await approve(invoke,proposal,'Publish'))return;}else await invoke('confirm_workspace_change',{previewId:proposal.id,digest:proposal.digest,confirmed:true});setProposal(null);setDirty(false);setReload(n=>n+1);}catch(e){setError((e as Error).message);}finally{setBusy(false);}}}/>}
  </>}
  {pending&&<div className="ty-content-overlay"><section className="ty-confirm-dialog" role="alertdialog" aria-modal="true" aria-label="Unsaved changes"><h3>Keep your edits?</h3><p>Your changes have not been saved.</p><Button autoFocus onClick={()=>setPending(null)}>Keep editing</Button><Button onClick={()=>{const next=pending;setPending(null);setDirty(false);setProposal(null);if(next===APP_BRAND.website)location.assign(APP_BRAND.website);else if(next==='/'||next.startsWith('/?tab='))location.assign(next);else{setReset(n=>n+1);assign(next);}}}>Discard edits and continue</Button></section></div>}
- </AppNavigation.Provider></WorkspaceShell></AppPlatform.Provider>;
+ </AppNavigation.Provider></WorkspaceShell></PendingChangesProvider></AppPlatform.Provider>;
 }
 function LegacyApp({api,workspaceId,resource}:{api:(p:string,m?:string,b?:unknown)=>Promise<any>;workspaceId:string;resource:any}){
  const [paused,setPaused]=useState(resource.status==='Paused'),[busy,setBusy]=useState(false),[error,setError]=useState('');
