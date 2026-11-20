@@ -126,7 +126,9 @@ export class Service extends DataService {
    if(op.dueOn&&(Number.isNaN(Date.parse(op.dueOn))||new Date(op.dueOn).toISOString().slice(0,10)!==op.dueOn))fail(400,'invalid_date','Choose a valid due date');
   }
   if(op.kind==='accept_submission'){requireCurrentAction(a);if(p.role!=='owner')fail(403,'owner_required','A human owner must review external submissions');const submission=(await tx.query('SELECT f.id FROM form_submissions f LEFT JOIN submission_acceptances accepted ON accepted.submission_id=f.id WHERE f.id=$1 AND f.workspace_id=$2 AND f.type_id=$3 AND accepted.submission_id IS NULL',[op.submissionId,w,op.typeId])).rows[0];if(!submission)fail(409,'submission_unavailable','Submission is unavailable or already accepted');const linked=(await tx.query('SELECT l.project_id FROM external_links l JOIN form_submissions s ON s.link_id=l.id WHERE s.id=$1 AND s.workspace_id=$2',[op.submissionId,w])).rows[0];if(linked?.project_id)await activeProject(tx,a,w,linked.project_id);await this.validate(tx,a,w,{kind:'create_record',typeId:op.typeId,data:op.data});}
-  if(['create_type','update_type','install_template','create_view','update_view'].includes(op.kind)&&p.role!=='owner')fail(403,'owner_required','Only the owner may configure this workspace');
+  // A2: any team member may add a new table (for the app they are building); changing an existing table stays with organization owners. Guests add nothing.
+  if(op.kind==='create_type'&&p.role!=='owner'&&p.direct_data===false)fail(403,'owner_required','Only team members can add tables');
+  if(['update_type','install_template','create_view','update_view'].includes(op.kind)&&p.role!=='owner')fail(403,'owner_required','Only the owner may configure this workspace');
   if(op.kind==='restore_archived_schema'){
    if(p.role!=='owner')fail(403,'owner_required','Only the workspace owner can restore archived fields and tables');
    const t=(await tx.query('SELECT version,fields,archived_fields,archived_at,deleted_at FROM entity_types WHERE id=$1 AND workspace_id=$2',[op.typeId,w])).rows[0];

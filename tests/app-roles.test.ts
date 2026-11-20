@@ -9,6 +9,7 @@ import {Service} from '../src/domain/service.js';
 import {WorkspaceFoundation} from '../src/workspace/service.js';
 import {AppRoles,roleRule} from '../src/domain/app-sharing.js';
 import type {Actor} from '../src/shared/schema.js';
+import {markAppTables} from '../src/domain/effective-access.js';
 
 // R1–R5, A1, A3, A5: app Owner, Editor and Viewer, enforced by the application and again by the database.
 test('whoever creates an app owns it; roles are granted up to your own and lowered only by owners',async()=>{
@@ -97,5 +98,54 @@ test('whoever creates an app owns it; roles are granted up to your own and lower
   await assert.rejects(setup.query("UPDATE memberships SET role='editor' WHERE user_id=$1",[owner.userId]),/at least one owner/);
   await setup.query("UPDATE memberships SET role='owner' WHERE user_id=$1",[alice.userId]);
   await setup.query("UPDATE memberships SET role='editor' WHERE user_id=$1",[owner.userId]);
+ }finally{await pg.close();}
+});
+
+// A2: a table added for an app follows each person's role on that app.
+test('an app\'s own tables: Editors edit, Viewers read, people without a role are blocked',async()=>{
+ const pg=new PGlite();
+ try{
+  for(const file of (await readdir('migrations')).filter(f=>f.endsWith('.sql')).sort())await pg.exec(await readFile('migrations/'+file,'utf8'));
+  await pg.exec(await readFile('ops/runtime-role.sql','utf8'));
+  const setup:Database={query:(q,v)=>pg.query(q,v) as any,transaction:fn=>pg.transaction(tx=>fn(tx as Connection)),close:async()=>{}};
+  const db:Database={query:(q,v)=>db.transaction(tx=>tx.query(q,v)),transaction:fn=>pg.transaction(async tx=>{await tx.exec('SET LOCAL ROLE trialy_runtime');await setDatabaseContext(tx as Connection);return fn(tx as Connection);}),close:async()=>{}};
+  const person=():Actor=>({userId:randomUUID(),origin:'human'}),owner=person(),alice=person(),bob=person(),eve=person();
+  for(const [a,name] of [[owner,'Owner'],[alice,'Alice'],[bob,'Bob'],[eve,'Eve']] as const)await setup.query('INSERT INTO users(id,subject,email,name) VALUES($1,$2,$3,$4)',[a.userId,a.userId,name.toLowerCase()+'@example.invalid',name]);
+  const boot=new Service(setup),w=(await boot.createWorkspace(owner,'Tables')).id;
+  for(const a of [alice,bob,eve])await boot.share(owner,w,a.userId,'editor',[],null,false);
+  const s=new Service(db),f=new WorkspaceFoundation(db),roles=new AppRoles(db);
+  const data=(a:Actor,op:any)=>withActor(a,async()=>{const p=await s.preview(a,w,op);return s.commit(a,p.id,p.digest);});
+  const change=(a:Actor,op:any)=>withActor(a,async()=>{const p=await f.preview(a,w,op);return f.confirm(a,w,p.id,p.digest);});
+  const table=(await data(alice,{kind:'create_type',name:'Deals',fields:[{key:'name',name:'Name',kind:'text'}]})).objects[0].id,other=(await data(alice,{kind:'create_type',name:'Shared list',fields:[{key:'name',name:'Name',kind:'text'}]})).objects[0].id;
+  const project=await change(owner,{kind:'create_node',nodeKind:'project',name:'Work'});
+  const app=await change(alice,{kind:'save_component',projectId:project.id,content:{name:'Pipeline',format:'html',source:'<p>Deals</p>',bindings:[{typeId:table,fields:['name']}]}});
+  const theirs=await change(eve,{kind:'save_component',projectId:project.id,content:{name:'Other',format:'html',source:'<p>Other</p>',bindings:[{typeId:other,fields:['name']}]}});
+  // Only an owner of the app decides which tables belong to it, and a table belongs to one app.
+  await assert.rejects(withActor(eve,()=>db.transaction(tx=>markAppTables(tx,w,app.id,[table]))),/Only an owner of the app/);
+  await withActor(alice,()=>db.transaction(tx=>markAppTables(tx,w,app.id,[table])));
+  await withActor(eve,()=>db.transaction(tx=>markAppTables(tx,w,theirs.id,[table])));
+  assert.equal((await setup.query('SELECT origin_app_id FROM entity_types WHERE id=$1',[table])).rows[0].origin_app_id,app.id,'a second app cannot take the table over');
+  const add=(a:Actor,name:string,typeId=table)=>data(a,{kind:'create_record',typeId,data:{name}});
+  const count=async(a:Actor,typeId=table)=>(await withActor(a,()=>s.records(a,w,typeId))).total;
+  const raw=async(a:Actor)=>(await withActor(a,()=>db.query('SELECT id FROM records WHERE type_id=$1',[table]))).rows.length;
+  const teamDefault=(role:string)=>withActor(alice,()=>roles.setTeamDefault(alice,w,{appId:app.id,role}));
+
+  // Team default Editor: teammates read and write the app's table.
+  await add(alice,'First');await add(bob,'Second');assert.equal(await count(bob),2);assert.equal(await raw(bob),2);
+  // Viewer: read only, in the application and in the database.
+  await teamDefault('viewer');assert.equal(await count(bob),2);
+  await assert.rejects(add(bob,'Third'),/read-only|not permitted|restricted/i);
+  await assert.rejects(withActor(bob,()=>db.query('INSERT INTO records(id,workspace_id,type_id,data) VALUES($1,$2,$3,$4)',[randomUUID(),w,table,'{}'])),/row-level security/);
+  // No role on the app: the table is blocked, in the application and in the database.
+  await teamDefault('none');
+  await assert.rejects(count(bob),/not found/i);assert.equal(await raw(bob),0);
+  // A role of their own brings the table back; the app owner and the organization owner are never cut off.
+  await withActor(alice,()=>roles.setRole(alice,w,{appId:app.id,userId:bob.userId,role:'editor'}));
+  await add(bob,'Third');assert.equal(await count(bob),3);assert.equal(await count(alice),3);assert.equal(await count(owner),3);
+  // A table that belongs to no app keeps the organization's access.
+  await add(bob,'Elsewhere',other);assert.equal(await count(bob,other),1);
+  // Deleting the app leaves its table as an ordinary table.
+  await setup.query('UPDATE workspace_components SET archived=true WHERE id=$1',[app.id]);await setup.query('UPDATE workspace_components SET deleted_at=now() WHERE id=$1',[app.id]);
+  assert.equal((await setup.query('SELECT origin_app_id FROM entity_types WHERE id=$1',[table])).rows[0].origin_app_id,null);
  }finally{await pg.close();}
 });

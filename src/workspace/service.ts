@@ -20,7 +20,7 @@ import {appPublicUrl} from '../shared/public-url.js';
 import {automationTemplate} from './automation-template.js';
 import {Connectors} from '../connectors/service.js';
 import {withActor,setDatabaseContext} from '../db/context.js';
-import {rulesFor,denied,resourceGrant,assertRecordScope,assertWritable,toolPolicy} from '../domain/effective-access.js';
+import {rulesFor,denied,resourceGrant,assertRecordScope,assertWritable,toolPolicy,markAppTables} from '../domain/effective-access.js';
 import {standardTracker,renderStandard} from './standard-tracker.js';
 import {isDeepStrictEqual} from 'node:util';
 import {applyTrackerLayout,trackerOperation} from './tracker-template.js';
@@ -955,7 +955,10 @@ export class WorkspaceFoundation {
    if(op.content.manifest?.functions!==undefined){const manifest=retainHelperManifest(op.content.manifest,built.content.manifest);if(manifest.automationRoles)manifest.automationRoles=Object.fromEntries(Object.entries(manifest.automationRoles).map(([role,id])=>[role,ids.get(id as string)??id]));built.content.manifest=manifest;}
    const previous=op.componentId?await this.component(tx,a,w,op.componentId):null;
    const operation=workspaceOperation.parse({...built,catalogOrigin:op.catalogOrigin,reuseOrigin:op.reuseOrigin,designOrigin:op.designOrigin,...(previous?{componentId:previous.id,expectedVersion:op.expectedVersion,content:{...built.content,manifest:retainHelperManifest(previous.manifest,built.content.manifest),sourceAccess:previous.source_access,assets:previous.assets??[],execution:previous.execution??[]}}:{})});
-   await this.validate(tx,a,w,operation);return this.apply(tx,a,w,p,operation,authorization);
+   await this.validate(tx,a,w,operation);const built_app=await this.apply(tx,a,w,p,operation,authorization);
+   // A2: tables created together with a new app are the app's own and follow each person's role on it.
+   if(!previous&&built_app?.id)await markAppTables(tx,w,built_app.id,[...ids.values()]);
+   return built_app;
   }
   if(op.kind==='link_cross_table_identity'||op.kind==='unlink_cross_table_identity'){
    const review=await this.crossTableReview(tx,a,w,op),linkId=op.kind==='unlink_cross_table_identity'?op.linkId:randomUUID(),version=op.kind==='unlink_cross_table_identity'?op.expectedVersion+1:0;

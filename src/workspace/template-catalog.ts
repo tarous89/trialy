@@ -6,6 +6,7 @@ import {readFile,readdir} from 'node:fs/promises';
 import {z} from 'zod';
 import type {Database,Connection} from '../db/database.js';
 import {typeAccess} from '../domain/permissions.js';
+import {markAppTables} from '../domain/effective-access.js';
 import {fail,type Actor} from '../shared/schema.js';
 import {Service} from '../domain/service.js';
 import {WorkspaceFoundation} from './service.js';
@@ -50,7 +51,7 @@ export async function installCatalogApp(f:WorkspaceFoundation,a:Actor,w:string,i
   if(row.digest!==v.digest)fail(409,'template_changed','Reload the template catalog');
   // Restoring an archived app from this template is offered before creating a new one.
   // A9: installing never offers a restore. Archived apps are restored only from the archived apps list.
-  const map:any={},bindings:any[]=[],fields:any[]=[],roles:any[]=[];
+  const map:any={},bindings:any[]=[],fields:any[]=[],roles:any[]=[],createdTables:string[]=[];
   const usedNames=new Set((await tx.query('SELECT name FROM entity_types WHERE workspace_id=$1',[w])).rows.map(r=>r.name));
   // Reuse, never copy (modular apps rule 1): shareable roles connect to an existing compatible table by default.
   const shared=await sharedTableCandidates(db,a,w,row.install_schema);
@@ -79,7 +80,7 @@ export async function installCatalogApp(f:WorkspaceFoundation,a:Actor,w:string,i
    if(def.optional&&def.readOnly){roles.push(roleLabel(role,def));continue;}
    const base=(v.name+' · '+def.name).slice(0,90);let tableName=base,index=2;while(usedNames.has(tableName))tableName=base+' ('+(index++)+')';usedNames.add(tableName);
    const p=await service.preview(a,w,{kind:'create_type',name:tableName,fields:def.fields});
-   const saved=await service.commit(a,p.id,p.digest),typeId=saved.objects[0].id;
+   const saved=await service.commit(a,p.id,p.digest),typeId=saved.objects[0].id;createdTables.push(typeId);
    map[role]={typeId,fields:def.logicalFields,writableFields:Object.keys(def.logicalFields)};
    bindings.push({typeId,fields:def.fields.map((x:any)=>x.key)});
    fields.push(...def.fields.map((x:any)=>({id:manifestFieldId(role,x.key),typeId,field:x.key,schemaVersion:0,kind:x.kind,mode:'write'})));
@@ -97,6 +98,8 @@ export async function installCatalogApp(f:WorkspaceFoundation,a:Actor,w:string,i
   const operation=await catalog.operation(scoped,a,w,{...request,configuration,bindings,manifest:fields.length||template.functions.length||template.recommendedAutomations||template.automationFeatures?{version:1,scope:'workspace',fields,...(template.recommendedAutomations?{recommendedAutomations:template.recommendedAutomations}:{}),...(template.automationFeatures?{automationFeatures:template.automationFeatures}:{}),...((template.functions.length||template.recommendedAutomations||template.automationFeatures)?{automationRoles:Object.fromEntries(Object.entries(map).filter(([key])=>roleKey.safeParse(key).success).map(([key,value]:any)=>[key,value.typeId]))}:{}),...(roles.some(Boolean)?{roles:roles.filter(Boolean)}:{})}:undefined});
   // Approved immutable publisher source has already been reviewed; normal validation still runs.
   const draft=await scoped.preview(a,w,operation,true),preview=draft.reviewState==='draft'?(await scoped.finalizeAppPreview(a,w,draft.id,draft.digest)).preview:draft,saved=await scoped.confirm(a,w,preview.id,preview.digest);
+  // A2: tables this install created are the app's own and follow each person's role on it.
+  await markAppTables(tx,w,saved.id,createdTables);
   const result={appId:saved.id,workspaceId:w,url:appUrl({appId:saved.id,workspaceId:w,source:'component'}),templateRequestKey:v.requestKey,templateId:v.templateId,templateVersion:v.version,templateDigest:v.digest,name:v.name};
   await tx.query('INSERT INTO workspace_receipts(id,workspace_id,user_id,digest,result) VALUES($1,$2,$3,$4,$5)',[randomUUID(),w,a.userId,v.digest,JSON.stringify(result)]);
   return result;

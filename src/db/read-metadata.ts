@@ -15,6 +15,7 @@ const eligible=(sql:string)=>{
   // The app permission lookup (toolPolicy in src/domain/effective-access.ts), with and without saved source.
   || q===`SELECT id,project_id,allowed_users,ai_enabled,source_access,bindings,manifest,team_default_role,${MEMBER_ROLE} FROM workspace_components WHERE id=$1 AND workspace_id=$2`
   || q===`SELECT *,${MEMBER_ROLE} FROM workspace_components WHERE id=$1 AND workspace_id=$2`
+  || q==='SELECT trialy_security.app_role($1,$2) AS role'
   || q==='SELECT fields FROM entity_types WHERE workspace_id=$1'
   || q==='SELECT fields FROM entity_types WHERE id=$1 AND workspace_id=$2'
   || q==='SELECT allowed_users,ai_enabled FROM document_access WHERE workspace_id=$1 UNION ALL SELECT allowed_users,ai_enabled FROM folder_access WHERE workspace_id=$1';
