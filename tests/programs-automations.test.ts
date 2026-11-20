@@ -99,7 +99,9 @@ test('Add app enables the AI digest and five member notices; the digest only cre
   // The scheduler finds today's assignment: one email batch for the member (one due action per dispatch call).
   const dispatchAll=async()=>{for(let i=0;i<20&&await worker(()=>dispatchAppActions(x.db));i++);};
   const assign=await action('item_assigned');
-  await x.pg.query("UPDATE app_actions SET next_at=now()-interval '1 second' WHERE id=$1",[assign.id]);await dispatchAll();
+  // The notice is due at 08:00 Berlin on the assignment date. Before that hour (00:00 to 07:00 UTC in winter) nothing is due yet,
+  // so the test moves the hour to 00:00 to stay independent of when it runs.
+  await x.pg.query("UPDATE app_actions SET config=jsonb_set(config,'{trigger,time}',to_jsonb($2::text)),next_at=now()-interval '1 second' WHERE id=$1",[assign.id,'00:00']);await dispatchAll();
   const batches=(await x.pg.query<any>('SELECT id FROM app_notification_batches WHERE action_id=$1',[assign.id])).rows;assert.equal(batches.length,1,'one assignment email');
   await x.pg.query('UPDATE app_notification_batches SET not_before=now() WHERE id=$1',[batches[0].id]);await worker(()=>dispatchNotificationBatch(x.db));
   const job=(await x.pg.query<any>("SELECT payload FROM app_service_jobs WHERE app_id=$1 ORDER BY created_at DESC LIMIT 1",[id])).rows[0];assert.ok(job,'assignment notice delivered to the outbox');
