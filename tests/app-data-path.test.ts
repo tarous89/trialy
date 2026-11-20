@@ -82,8 +82,9 @@ test('4.4 a person\'s edit in an app saves directly in one request, once, and th
   assert.equal((await db.query("SELECT count(*)::int AS n FROM workspace_previews WHERE workspace_id=$1",[w])).rows[0].n,0);
   // Retrying the same request never saves twice.
   const again=await f.runFrontend(actor,w,submit);assert.equal(again.saved.retried,true);assert.equal(await count(x,typeId),1);
-  // The same key with another change is refused.
-  await assert.rejects(f.runFrontend(actor,w,{...submit,event:{...submit.event,form:{name:'Other'}}}),(e:any)=>e.code==='receipt_mismatch');
+  // A key names one action: the same key never makes a second, different save.
+  const reused=await f.runFrontend(actor,w,{...submit,event:{...submit.event,form:{name:'Other'}}});assert.equal(reused.saved.retried,true);assert.equal(await count(x,typeId),1);
+  await assert.rejects(f.saveAppRecords(actor,w,{componentId:appId,expectedVersion:version,requestKey:key,changes:[{kind:'create_record',typeId,data:{name:'Other'}}]}),(e:any)=>e.code==='receipt_mismatch');
   // Validation runs once on the direct path, with every problem reported.
   await assert.rejects(f.saveAppRecords(actor,w,{componentId:appId,expectedVersion:version,requestKey:randomUUID(),changes:[{kind:'create_record',typeId,data:{qty:-2}}]}),(e:any)=>e.details.issues.map((i:any)=>i.code).join()==='required_field,out_of_range');
   // Opening an app never saves on its own: changes made while opening keep their review.
@@ -190,5 +191,16 @@ test('4.4 an edit that changes no value is checked but not written',async()=>{
   assert.equal(same.unchanged,true);assert.deepEqual(same.rows,[]);assert.equal((await db.query('SELECT version FROM records WHERE id=$1',[rec.id])).rows[0].version,0);
   const stranger:Actor={userId:randomUUID(),origin:'human'};await db.query('INSERT INTO users(id,subject,email,name) VALUES($1,$2,$3,$4)',[stranger.userId,stranger.userId,'s@example.invalid','S']);
   await assert.rejects(f.saveAppRecords(stranger,w,{componentId:appId,expectedVersion:version,requestKey:randomUUID(),changes:[{kind:'update_record',recordId:rec.id,expectedVersion:0,data:{name:'Same'}}]}),'no answer without access');
+ }finally{await db.close();}
+});
+
+test('4.4 a retried action whose save already happened returns that save and runs nothing again',async()=>{
+ const x=await setup();const {f,w,actor,db}=x;
+ try{
+  const {typeId,appId,version}=await app(x),first=await open(x,appId,version),key=randomUUID();
+  const submit={componentId:appId,expectedVersion:version,viewId:first.viewId,requestKey:key,state:first.state,event:{kind:'submit' as const,action:'add',value:null,form:{name:'Once',qty:'1'}}};
+  await f.runFrontend(actor,w,submit);
+  // The response was lost; the screen kept its earlier state. The retry returns the first save.
+  const again=await f.runFrontend(actor,w,submit);assert.equal(again.saved.retried,true);assert.equal(await count(x,typeId),1);assert.equal(again.state.count,1);
  }finally{await db.close();}
 });

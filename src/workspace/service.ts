@@ -211,6 +211,9 @@ export class WorkspaceFoundation {
     return new WorkspaceFoundation(this.db,'custom').runFrontend(a,w,request,signal);
    }
   }
+  // P5 (4.4): a retried action whose save already happened returns that save and a fresh screen; the action is not run again.
+  if(request.requestKey&&request.componentId){const done=(await this.db.query('SELECT result,workspace_id FROM commit_receipts WHERE preview_id=$1 AND actor_id=$2',[request.requestKey,a.userId])).rows[0];
+   if(done){if(done.workspace_id!==w)fail(409,'receipt_mismatch','This save key was already used for another change');const {requestKey:ignored,...next}=request;return {...await this.runFrontend(a,w,{...next,event:{kind:'open',action:'',value:null,form:{}}},signal),saved:{...done.result,retried:true}};}}
   const unit=<T>(read:()=>Promise<T>)=>readMetadataScope(this.db,read);
   let content:any,version:number|undefined,viewId=request.viewId;let draftTables:string[]=[];let draftSchema=false;
   if(request.componentId){const runtime=await unit(()=>this.runtimeComponent(this.db,a,w,request.componentId!,request.expectedVersion,viewId));assertRuntimeScope(runtime.latest,runtime.c);content=runtime.c;version=content.version;viewId=runtime.view.id;}
