@@ -1,8 +1,9 @@
 const {test,expect}=require('./test.cjs');
 const base='http://127.0.0.1:4179';
-const open=async page=>{await page.goto(base);await page.waitForFunction(()=>window.hostReady);await page.evaluate(result=>window.deliver(result),await(await page.request.get(base+'/fixture/initial')).json());const host=page.frameLocator('#app'),app=host.frameLocator('iframe[title="Saved frontend code"]');await app.getByRole('button',{name:'Companies',exact:true}).click();return {host,app};};
+const open=async page=>{await page.goto(base);await page.waitForFunction(()=>window.hostReady);await page.evaluate(result=>window.deliver(result),await(await page.request.get(base+'/fixture/initial')).json());const host=page.frameLocator('#app'),app=host.frameLocator('iframe[title="Saved frontend code"]');app.__page=page;await app.getByRole('button',{name:'Companies',exact:true}).click();return {host,app};};
 const tool=r=>{try{return r.url().endsWith('/fixture/tool')?r.postDataJSON():null;}catch{return null;}};
-const edit=async(app,value)=>{await app.getByRole('button',{name:'Edit Company',exact:true}).first().click();await app.getByRole('textbox',{name:'Company',exact:true}).fill(value);await app.getByRole('textbox',{name:'Company',exact:true}).press('Enter');};
+// The new value shows at once; wait for the saved screen before the next edit, as a person would see it settle.
+const edit=async(app,value,page=app.__page)=>{await app.getByRole('button',{name:'Edit Company',exact:true}).first().click();await app.getByRole('textbox',{name:'Company',exact:true}).fill(value);const settled=page?page.waitForResponse(r=>{const b=tool(r.request());return b?.name==='run_component_frontend'&&b.arguments?.request?.event?.action==='bound-batch';}).catch(()=>{}):Promise.resolve();await app.getByRole('textbox',{name:'Company',exact:true}).press('Enter');await settled;await app.getByRole('button',{name:'Edit Company',exact:true}).first().waitFor();};
 
 // P5, B3 (4.4, 4.5): a cell edit is one request that saves and returns the saved screen; no review, no confirm, no Save control.
 for(const width of [1440,390])test(`tracker saves cell edits in one request without Save controls at ${width}px`,async({page})=>{
@@ -46,10 +47,10 @@ test('the app is never locked while a cell edit saves',async({page})=>{
  let release;const held=new Promise(r=>{release=r;});let saving=false;
  await page.route('**/fixture/tool',async route=>{const b=route.request().postDataJSON();if(b.name==='run_component_frontend'&&b.arguments.request.event?.action==='bound-batch'&&!saving){saving=true;await held;}return route.continue();});
  const originalName=await app.getByRole('button',{name:'Edit Company',exact:true}).first().innerText();
- const name='Unlocked '+Date.now();await edit(app,name);
+ const name='Unlocked '+Date.now();await app.getByRole('button',{name:'Edit Company',exact:true}).first().click();await app.getByRole('textbox',{name:'Company',exact:true}).fill(name);await app.getByRole('textbox',{name:'Company',exact:true}).press('Enter');
  await expect.poll(()=>saving).toBe(true);
  await expect(app.locator('#surface')).not.toHaveAttribute('inert');
  await expect(app.getByText(name,{exact:true})).toBeVisible();
- release();await expect(app.getByRole('button',{name:'Edit Company',exact:true}).filter({hasText:name})).toBeVisible();
+ const done=page.waitForResponse(r=>{const b=tool(r.request());return b?.name==='run_component_frontend'&&b.arguments?.request?.event?.action==='bound-batch';});release();await done;await expect(app.getByRole('button',{name:'Edit Company',exact:true}).filter({hasText:name})).toBeVisible();
  await edit(app,originalName);await expect(app.getByText(originalName,{exact:true})).toBeVisible();
 });

@@ -450,8 +450,9 @@ export class WorkspaceFoundation {
   // P8 (4.7): record saves share the workspace lock, so they never queue behind each other; access and configuration
   // changes still take it exclusively and so never interleave with a save. Records themselves are locked row by row.
   await tx.query('SELECT id FROM workspaces WHERE id=$1 FOR SHARE',[w]);
-  const changes=await this.mergeConcurrentEdits(tx,a,w,v);
-  await this.validate(tx,a,w,{kind:'apply_component_records',componentId:v.componentId,expectedVersion:v.expectedVersion,...(v.viewId?{viewId:v.viewId}:{}),changes});
+  const unchanged:any[]=[],changes=await this.mergeConcurrentEdits(tx,a,w,v,unchanged);
+  await this.validate(tx,a,w,{kind:'apply_component_records',componentId:v.componentId,expectedVersion:v.expectedVersion,...(v.viewId?{viewId:v.viewId}:{}),changes:[...changes,...unchanged]});
+  if(!changes.length){requireAssistantChange(await access(tx,a,w,true),a,'bulk_records');const result={status:'saved',requestKey:v.requestKey,rows:[],invalidated:[],undoId:null,unchanged:true,savedAt:new Date().toISOString()};await tx.query('INSERT INTO commit_receipts(preview_id,actor_id,workspace_id,digest,result) VALUES($1,$2,$3,$4,$5)',[v.requestKey,a.userId,w,digest,J(result)]);return result;}
   const service=new Service(adapter(tx));
   const applied=await service.applyRecordChanges(tx,a,w,changes as RecordChange[],{kind:'approval',id:v.requestKey,digest,context:'app_direct_edit'});
   const component=await this.component(tx,a,w,v.componentId,!v.viewId);
@@ -464,11 +465,13 @@ export class WorkspaceFoundation {
   return result;
  }
  /** D17: a record that changed since the app read it. Fields nobody else changed are saved on top of the newer version. */
- private async mergeConcurrentEdits(tx:Connection,a:Actor,w:string,v:{componentId:string;changes:any[]}){
+ private async mergeConcurrentEdits(tx:Connection,a:Actor,w:string,v:{componentId:string;changes:any[]},unchanged:any[]=[]){
   const out=[];
   for(const change of v.changes){
    if(change.kind!=='update_record'){out.push(change);continue;}
    const current=(await tx.query('SELECT id,version,data FROM records WHERE id=$1 AND workspace_id=$2 FOR UPDATE',[change.recordId,w])).rows[0];
+   // An edit that changes no value is checked like any other but not written: no new version, history entry or Undo.
+   if(current&&Object.entries(change.data).every(([k,v])=>J(current.data[k]??null)===J(v??null))){unchanged.push({...change,expectedVersion:current.version});continue;}
    if(!current||current.version===change.expectedVersion){out.push(change);continue;}
    const base=(await tx.query("SELECT snapshot FROM revisions WHERE workspace_id=$1 AND object_id=$2 AND object_kind='record' AND version=$3",[w,change.recordId,change.expectedVersion])).rows[0]?.snapshot?.data;
    const changed=Object.keys(change.data).filter(k=>!base||J(current.data[k]??null)!==J(base[k]??null));

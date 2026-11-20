@@ -180,3 +180,15 @@ test('4.4, 4.6 under the restricted database role: direct save, conflicts and Un
   const undone=await as(owner,()=>f.undoAppChange(owner,w,{componentId:appId,viewId:view,undoId:saved.undoId}));assert.equal(undone.rows[0].state,'archived');
  }finally{await pg.close();}
 });
+
+test('4.4 an edit that changes no value is checked but not written',async()=>{
+ const x=await setup();const {f,s,w,actor,db}=x;
+ try{
+  const {typeId,appId,version}=await app(x);
+  const p=await s.preview(actor,w,{kind:'create_record',typeId,data:{name:'Same',qty:1}});const rec=(await s.commit(actor,p.id,p.digest)).objects[0];
+  const same=await f.saveAppRecords(actor,w,{componentId:appId,expectedVersion:version,requestKey:randomUUID(),changes:[{kind:'update_record',recordId:rec.id,expectedVersion:0,data:{name:'Same'}}]});
+  assert.equal(same.unchanged,true);assert.deepEqual(same.rows,[]);assert.equal((await db.query('SELECT version FROM records WHERE id=$1',[rec.id])).rows[0].version,0);
+  const stranger:Actor={userId:randomUUID(),origin:'human'};await db.query('INSERT INTO users(id,subject,email,name) VALUES($1,$2,$3,$4)',[stranger.userId,stranger.userId,'s@example.invalid','S']);
+  await assert.rejects(f.saveAppRecords(stranger,w,{componentId:appId,expectedVersion:version,requestKey:randomUUID(),changes:[{kind:'update_record',recordId:rec.id,expectedVersion:0,data:{name:'Same'}}]}),'no answer without access');
+ }finally{await db.close();}
+});

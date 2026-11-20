@@ -46,7 +46,7 @@ for(const surface of ['standalone','extension','public'])test(`Open ${surface} a
  const banner=await root.locator('.ty-app-update').boundingBox(),app=await root.locator('iframe[title="Saved frontend code"]').boundingBox();expect(banner.y+banner.height).toBeLessThanOrEqual(app.y);
  // P5, D16 (4.4): the save is direct. If it commits but its response is lost, Retry reuses its key and never saves twice.
  const runEndpoint=surface==='extension'?'**/fixture/tool':surface==='public'?'**/public-app/call':'**/organization/frontend/run';let interrupted=false;
- const isSave=route=>{const body=route.request().postDataJSON(),request=body?.request??body?.args?.request??body?.arguments?.request??body;return request?.event?.kind!=='open'&&!!request?.requestKey;};
+ const isSave=route=>{const body=route.request().postDataJSON(),request=body?.request??body?.args?.request??body?.arguments?.request??body;return request?.event?.kind==='submit'&&!!request?.requestKey;};
  await page.route(runEndpoint,async route=>{if(interrupted||!isSave(route))return route.continue();interrupted=true;await route.fetch();const error={status:503,code:'temporary'};return route.fulfill({status:surface==='extension'?200:503,contentType:'application/json',body:JSON.stringify(surface==='extension'?{isError:true,structuredContent:{error},content:[{type:'text',text:'The save response was interrupted.'}]}:{error:'temporary',message:'The save response was interrupted.'})});});
  await frame.getByRole('button',{name:'Save value'}).click();await expect(root.getByRole('dialog',{name:'Review app changes'})).toHaveCount(0);
  await expect(root.getByRole('alert')).toContainText('interrupted');await root.getByRole('button',{name:'Dismiss error'}).click();

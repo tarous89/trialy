@@ -29,13 +29,13 @@ const version=async(page,f)=>(await(await page.request.get(base+`/api/workspaces
 for(const host of ['web','embedded','public']){
  test(`A record save is one request, saves once and needs no reload (${host})`,async({page})=>{
   const f=await(await page.request.post(base+'/fixture/publication')).json(),{root,frame}=await open(page,host,f);let saves=0,confirms=0;
-  await intercept(page,async(route,op)=>{if(['confirm_workspace_change','approve_workspace_change'].includes(op.name))confirms++;if(op.name==='run_component_frontend'&&op.args?.request?.requestKey)saves++;});
+  await intercept(page,async(route,op)=>{if(['confirm_workspace_change','approve_workspace_change'].includes(op.name))confirms++;if(op.name==='run_component_frontend'&&op.args?.request?.event?.kind==='submit')saves++;});
   await saveValue(root,frame,'Direct value');await expect.poll(()=>version(page,f)).toBe(1);await expect(frame.getByLabel('Value',{exact:true})).toHaveValue('Direct value');await expect(status(root)).toHaveCount(0);await expect(root.locator('iframe[title="Saved frontend code"]')).not.toHaveAttribute('inert');
   await saveValue(root,frame,'A distinct second edit');await expect.poll(()=>version(page,f)).toBe(2);await expect(frame.getByLabel('Value',{exact:true})).toHaveValue('A distinct second edit');expect(saves).toBe(2);expect(confirms).toBe(0);
  });
  test(`Access removed before a save: nothing is saved and the app is removed (${host})`,async({page})=>{
   const f=await(await page.request.post(base+'/fixture/publication')).json(),{root,frame}=await open(page,host,f);
-  await intercept(page,async(route,op)=>{if(op.name==='run_component_frontend'&&op.args?.request?.requestKey){await fail(route,403,'forbidden');return true;}});
+  await intercept(page,async(route,op)=>{if(op.name==='run_component_frontend'&&op.args?.request?.event?.kind==='submit'){await fail(route,403,'forbidden');return true;}});
   await saveValue(root,frame,'Never saved');await expect(root.getByRole('alert')).toBeVisible();expect(await version(page,f)).toBe(0);
  });
 }
