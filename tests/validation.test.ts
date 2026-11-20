@@ -71,3 +71,34 @@ test('X3 every write path reports all problems by field and row; combined keys; 
  assert.equal((await db.query('SELECT count(*)::int AS n FROM records WHERE type_id=$1',[typeId])).rows[0].n,2);
  await db.close();
 });
+
+test('X3, X4 import report: every row checked on the server, duplicates and conflicts reported, nothing written or merged',async()=>{
+ const {importReport}=await import('../src/domain/import-report.js');
+ const db=await freshDatabase(),s=new Service(db),owner:Actor={userId:randomUUID(),origin:'human'};
+ await db.query('INSERT INTO users(id,subject,email,name) VALUES($1,$2,$3,$4)',[owner.userId,owner.userId,'test@example.invalid','Owner']);
+ const w=(await s.createWorkspace(owner,'Imports')).id;
+ const save=async(op:unknown)=>{const p=await s.preview(owner,w,op);return s.commit(owner,p.id,p.digest);};
+ const typeId=(await save({kind:'create_type',name:'Investigators',fields:[
+  {key:'email',name:'Email',kind:'text',required:true,unique:true,format:'email',normalize:['trim','lowercase']},
+  {key:'name',name:'Name',kind:'text'},{key:'trials',name:'Trials',kind:'number',range:{min:0}},{key:'since',name:'Since',kind:'date'}]})).objects[0].id;
+ await save({kind:'create_record',typeId,data:{email:'ana@site.org',name:'Ana'}});
+ const before=(await db.query('SELECT count(*)::int AS n FROM records')).rows[0].n;
+ const report=await importReport(s,owner,w,{typeId,headers:['Email','name','Trials','Since'],rows:[
+  ['  Ben@Site.org','Ben','1,200','2024-03-01'],   // ready: parsed and normalized
+  ['ana@site.org','Ana','',''],                    // duplicate of a saved record, same values
+  ['ANA@site.org','Ana Smith','',''],              // conflict: same key, different name
+  ['ben@site.org','Ben','1200','2024-03-01'],      // repeats row 1
+  ['not-an-email','Cy','-3','03/01/2024'],         // several problems
+  ['','Dee','2','']]});                            // required value missing
+ assert.deepEqual(report.rows.map(r=>r.status),['ready','duplicate','conflict','duplicate','problem','problem']);
+ assert.deepEqual(report.rows[0]!.data,{email:'ben@site.org',name:'Ben',trials:1200,since:'2024-03-01'});
+ assert.deepEqual(report.rows[2]!.matches![0]!.differences,['Name']);
+ assert.equal(report.rows[3]!.matches![0]!.row,1);
+ assert.deepEqual(report.rows[4]!.issues.map(i=>[i.field,i.code]),[['email','invalid_format'],['trials','out_of_range'],['since','invalid_value']],'every column with a problem is reported');
+ assert.deepEqual(report.rows[5]!.issues.map(i=>[i.row,i.field,i.code]),[[6,'email','required_field']]);
+ assert.deepEqual(report.summary,{ready:1,problem:2,duplicate:2,conflict:1,total:6});
+ const unknown=await importReport(s,owner,w,{typeId,headers:['Email','Fax'],rows:[['a@b.co','1']]});
+ assert.equal(unknown.headerIssues[0]!.code,'unknown_column');
+ assert.equal((await db.query('SELECT count(*)::int AS n FROM records')).rows[0].n,before,'checking writes nothing');
+ await db.close();
+});
