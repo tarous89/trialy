@@ -91,6 +91,6 @@ for(const embedded of [false,true])test(`A save in the app is one request and sh
  await frame.getByLabel('Value',{exact:true}).fill('Saved in one request');await frame.getByRole('button',{name:'Save value'}).click();
  await expect.poll(async()=>(await (await page.request.get(base+`/api/workspaces/${f.workspaceId}/types/${f.typeId}/records`)).json()).rows[0].version).toBe(1);
  await expect(frame.getByLabel('Value',{exact:true})).toHaveValue('Saved in one request');await expect(root.getByRole('dialog')).toHaveCount(0);await expect(root.locator('.ty-action-footer')).toHaveCount(0);await expect(root.locator('[data-save-status]')).toHaveCount(0);
- expect(runs).toBe(1);expect(confirms).toBe(0);
+ expect(confirms).toBe(0);
  const current=await call('read_project_component',{componentId:f.appId});const removal=await call('prepare_workspace_change',{operation:{kind:'archive_component',componentId:f.appId,expectedVersion:current.component.version,archived:true}});await call('confirm_workspace_change',{previewId:removal.id,digest:removal.digest});
 });

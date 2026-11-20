@@ -73,7 +73,7 @@ for (const width of [1440, 1100, 390]) test(`Vivid connected tracker at ${width}
     await editor.press("Enter");await saved;
     await expect(embed.getByRole("button", { name: "Save edits", exact: true })).toHaveCount(0);
     await expect(tracker.getByText("Pending company edit", { exact: true })).toBeVisible();
-    await tracker.getByRole("button", { name: "Edit Company", exact: true }).first().click();await editor.fill(originalName);await editor.press("Enter");await expect(tracker.getByText(originalName,{exact:true})).toBeVisible();
+    await tracker.getByRole("button", { name: "Edit Company", exact: true }).first().click();await editor.fill(originalName);const restored=page.waitForResponse(r=>{try{const b=r.request().postDataJSON();const q=b?.name==="run_component_frontend"?b.arguments?.request:b;return q?.event?.action==="bound-batch";}catch{return false;}});await editor.press("Enter");await restored;await expect(tracker.getByText(originalName,{exact:true})).toBeVisible();
   }
   expect(errors).toEqual([]);
 });
