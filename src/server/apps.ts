@@ -1,6 +1,7 @@
 import {z} from 'zod';
 import {AppRoles} from '../domain/app-sharing.js';
 import {AccessRequests} from '../domain/access-requests.js';
+import {AppLogs} from '../domain/app-log.js';
 import {templateMedia} from '../workspace/template-media.js';
 import {catalogInstallation,catalogInstallationRead,installCatalogApp,readCatalogInstallation} from '../workspace/template-catalog.js';
 import {appDesignGuide} from '../shared/app-design.js';
@@ -58,6 +59,8 @@ export function addAppApi(app:Express,f:WorkspaceFoundation){
  app.get('/api/workspaces/:workspaceId/apps/:appId/access-requests/:requestId',async(req,res)=>res.json(await requests.read(req.actor!,id.parse(req.params.workspaceId),id.parse(req.params.appId),id.parse(req.params.requestId))));
  app.post('/api/workspaces/:workspaceId/apps/:appId/access-requests/:requestId',async(req,res)=>res.json(await requests.decide(req.actor!,id.parse(req.params.workspaceId),{...req.body,appId:req.params.appId,requestId:req.params.requestId})));
  app.delete('/api/workspaces/:workspaceId/apps/:appId/access-requests/:requestId',async(req,res)=>res.json(await requests.cancel(req.actor!,id.parse(req.params.workspaceId),id.parse(req.params.appId),id.parse(req.params.requestId))));
+ // A7: the app's own log, for its owners. Read-only.
+ app.get('/api/workspaces/:workspaceId/apps/:appId/log',async(req,res)=>res.json(await new AppLogs(f.db).appLog(req.actor!,id.parse(req.params.workspaceId),id.parse(req.params.appId),{offset:z.coerce.number().int().min(0).default(0).parse(req.query.offset)})));
  app.get('/api/workspaces/:workspaceId/apps/:appId/update',async(req,res)=>res.json(await readAppUpdate(f,req.actor!,id.parse(req.params.workspaceId),id.parse(req.params.appId))));
  app.post('/api/workspaces/:workspaceId/apps/:appId/update',async(req,res)=>res.json(await prepareAppUpdate(f,req.actor!,id.parse(req.params.workspaceId),{...req.body,componentId:id.parse(req.params.appId)})));
  // The website opens an app with one read, started alongside the account check: the location and its first render.

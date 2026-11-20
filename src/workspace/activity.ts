@@ -12,15 +12,17 @@ export const activityQuery=z.object({eventId:id.optional(),offset:z.number().int
 export async function activityPage(db:Database,a:Actor,w:string,input:unknown){return withReadMetadata(db,db=>activityPageRead(db,a,w,input));}
 async function activityPageRead(db:Database,a:Actor,w:string,input:unknown){
  const q=activityQuery.parse(input),p=await access(db,a,w),f=new WorkspaceFoundation(db);
- // Unrestricted human audit readers retain the existing audit entitlement. AI and
- // other members see only metadata for currently accessible project resources.
- let full=a.origin==='human'&&['owner','inspector'].includes(p.role)&&p.document_scope&&p.allowed_types===null&&!p.hidden_fields.length;
+ // A7: the organization-wide log is for organization owners, signed in as a person. Their assistant sees
+ // metadata for the resources it can reach. Everyone else sees record events for records they can read,
+ // their own run statuses, and app events only for the apps they own.
+ let full=a.origin==='human'&&p.role==='owner'&&p.document_scope&&p.allowed_types===null&&!p.hidden_fields.length;
  if(full){try{await new Service(db).inspectionAccess(db,a,w);}catch(e){if((e as any).status!==403)throw e;full=false;}}
  const [nodes,components,functions]=await Promise.all([f.nodes(a,w),full?db.query('SELECT id,name FROM workspace_components WHERE workspace_id=$1 ORDER BY name,id',[w]).then(r=>r.rows):f.components(a,w),full?Promise.resolve([]):new Foundation(db).functions(a,w).catch(()=>[])]);
  const permitted=[...nodes.nodes.map(n=>n.id),...components.map(c=>c.id),...functions.map(f=>f.id)];
+ const member=p.role!=='owner',objects=member?[...components.filter((c:any)=>c.app_role==='owner').map(c=>c.id),...functions.map(f=>f.id)]:permitted;
  const tables=await new Service(db).types(a,w),allowedTypes=tables.map(t=>t.id);
  const before=q.before??new Date().toISOString();
- const params=[w,a.userId,full,permitted,q.query,q.category,q.outcome,q.actorId??null,q.projectId??null,q.resourceId??null,q.since??null,q.until??null,before,q.limit+1,q.offset,allowedTypes,q.eventId??null,q.appId??null];
+ const params=[w,a.userId,full,permitted,q.query,q.category,q.outcome,q.actorId??null,q.projectId??null,q.resourceId??null,q.since??null,q.until??null,before,q.limit+1,q.offset,allowedTypes,q.eventId??null,q.appId??null,objects,member];
  const rows=(await db.query(`WITH events AS (
  SELECT e.id::text id,e.created_at,e.actor_id,e.action,e.object_id resource_id,CASE WHEN e.action IN ('automation.failed','automation.cancelled') THEN split_part(e.action,'.',2) ELSE 'succeeded' END outcome,e.origin,
  CASE WHEN e.action ~ '(access|permission|grant|sharing)' THEN 'access' WHEN e.action ~ '(delet|archiv|remov)' THEN 'deletion' WHEN e.action ~ '(automation|monitoring|app_action|execution|function)' THEN 'automation' WHEN e.action ~ '(record|field|data)' THEN 'data' ELSE 'configuration' END category,
@@ -32,7 +34,7 @@ async function activityPageRead(db:Database,a:Actor,w:string,input:unknown){
  LEFT JOIN app_actions j ON j.id=coalesce(ar.action_id,CASE WHEN e.action LIKE 'app_action.%' THEN e.object_id END) AND j.workspace_id=e.workspace_id
  LEFT JOIN workspace_components ec ON ec.id::text=coalesce(e.after_value->>'componentId',e.after_value->>'appId',e.after_value->'config'->>'appId',m.app_id::text,j.app_id::text) AND ec.workspace_id=e.workspace_id
  LEFT JOIN entity_types t ON t.id=e.object_id AND t.workspace_id=e.workspace_id LEFT JOIN records rec ON rec.id=e.object_id AND rec.workspace_id=e.workspace_id LEFT JOIN entity_types rt ON rt.id=rec.type_id
- WHERE e.workspace_id=$1 AND e.action NOT IN ('monitoring.started','monitoring.finished') AND ($3::boolean OR coalesce(c.id,ec.id) IS NULL OR coalesce(c.id,ec.id)=ANY($4::uuid[])) AND ($3::boolean OR e.source_run_id IS NULL OR e.after_value->>'componentId' IS NULL OR ec.id=ANY($4::uuid[])) AND ($3::boolean OR e.object_id=ANY($4::uuid[]) OR (e.actor_id=$2 AND e.action ~ '^(monitoring|app_action)[.]' AND ec.id=ANY($4::uuid[])) OR t.id=ANY($16::uuid[]) OR rec.type_id=ANY($16::uuid[]) OR (e.actor_id=$2 AND e.action IN ('automation.failed','automation.succeeded','automation.cancelled') AND e.object_id=e.source_run_id))
+ WHERE e.workspace_id=$1 AND e.action NOT IN ('monitoring.started','monitoring.finished') AND ($3::boolean OR coalesce(c.id,ec.id) IS NULL OR coalesce(c.id,ec.id)=ANY($4::uuid[])) AND ($3::boolean OR e.source_run_id IS NULL OR e.after_value->>'componentId' IS NULL OR ec.id=ANY($4::uuid[])) AND ($3::boolean OR e.object_id=ANY($19::uuid[]) OR (e.actor_id=$2 AND e.action ~ '^(monitoring|app_action)[.]' AND ec.id=ANY($4::uuid[])) OR (NOT $20::boolean AND t.id=ANY($16::uuid[])) OR rec.type_id=ANY($16::uuid[]) OR (e.actor_id=$2 AND e.action IN ('automation.failed','automation.succeeded','automation.cancelled') AND e.object_id=e.source_run_id))
  UNION ALL
  SELECT 'run:'||r.id::text,r.created_at,r.user_id,'automation.'||r.status,fn.id,r.status,'worker','automation',c.project_id,COALESCE(fn.name,'Code execution'),c.id,c.name
  FROM foundation_runs r LEFT JOIN foundation_revisions rev ON rev.id=r.revision_id LEFT JOIN foundation_functions fn ON fn.id=rev.function_id LEFT JOIN workspace_components c ON c.id=(r.component_context->>'id')::uuid AND c.workspace_id=r.workspace_id

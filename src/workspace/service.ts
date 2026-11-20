@@ -582,6 +582,8 @@ export class WorkspaceFoundation {
  }
  async componentHistory(a:Actor,w:string,id:string){
   const current=await this.component(this.db,a,w,id),p=await access(this.db,a,w);
+  // A7: earlier versions are part of the app's own log, which is for its owners.
+  await requireAppOwner(this.db,a,p,id,'Only an owner of this app can see its earlier versions');
   const rows=(await this.db.query("SELECT * FROM revisions WHERE workspace_id=$1 AND object_id=$2 AND object_kind='workspace_component' ORDER BY version DESC",[w,id])).rows;
   const result=[];for(const r of rows){try{const snapshot=projectAppSections(p,a,{...r.snapshot,id},current);if(snapshot.source_access!=='bindings')await this.componentSourcePolicy(this.db,a,w,snapshot.source);await this.nodeAccess(this.db,a,w,snapshot.project_id);await this.componentBindings(this.db,{...a,accessToolId:id},w,snapshot.bindings);await this.componentAssets(this.db,a,w,snapshot.assets);result.push({...r,snapshot});}catch{}}return result;
  }

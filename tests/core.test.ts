@@ -214,7 +214,7 @@ test('Shared backend: access, committed history, original preservation and retri
   const exp=await s.exportWorkspace(owner,w.id);assert.equal(exp.acknowledgements.length,1);assert.equal(exp.workspace_policies[0].legalHold,true);
   await assert.rejects(s.preview(owner,w.id,{kind:'set_workspace_policy',expectedVersion:1,archived:false,legalHold:true,retentionUntil:null,reason:'Remove date'}),error('retention_protected'));
   await save({kind:'set_workspace_policy',expectedVersion:1,archived:false,legalHold:true,retentionUntil:'2030-01-01',reason:'Resume editing under hold'});
-  await s.share(owner,w.id,other.userId,'inspector',[],null,true);assert.ok((await s.history(other,w.id,{action:'document.'})).length);assert.ok((await s.exportWorkspace(other,w.id)).documents.length);
+  await s.share(owner,w.id,other.userId,'inspector',[],null,true);assert.ok((await s.history(owner,w.id,{action:'document.'})).length);await assert.rejects(s.history(other,w.id,{action:'document.'}),error('owner_required'));const inspection=await s.exportWorkspace(other,w.id);assert.ok(inspection.documents.length);assert.deepEqual(inspection.audit_events,[]);
   await assert.rejects(s.preview(other,w.id,{kind:'create_record',typeId,data:{name:'No'}}),error('forbidden'));await assert.rejects(s.documents({...other,origin:'ai'},w.id),error('ai_disabled'));await s.unshare(owner,w.id,other.userId);
  });
  await t.test('table AI exclusion and document policy cover reads, writes and inspection',async()=>{

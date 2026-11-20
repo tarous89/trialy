@@ -10,7 +10,7 @@ Migration 017 adds generic project/folder organization and approved record maint
 - Exact request-key replay receipts, original observations and existing record revisions/audit. Revoking or editing scope stops old authorizations. Re-approval after schema expansion enables explicit backfill from permitted input.
 - Same-table reversible identity links. Both source records and their original relationships survive; links explicitly identify the preferred record. No transitive chains, destructive merges or automatic collapsed query output.
 - Evidence tool returns up to 100 latest observations plus active/revoked links. Full record field access is required; inaccessible links are omitted. Existing record-history tools expose earlier saved values.
-- Owner/inspector exports include project nodes, scopes, receipts, links, observations and revision/audit evidence. Temporary previews expire after 24 hours and are cleaned when preparing another preview; infrastructure backup retention still applies.
+- Owner/inspector exports include project nodes, scopes, receipts, links, observations and revision/audit evidence. The organization-wide log is for organization owners: an inspector's export leaves it out, an app's owners read that app's log, and everyone else reads the history of records they can read. Temporary previews expire after 24 hours and are cleaned when preparing another preview; infrastructure backup retention still applies.
 
 ## Authorization and semantic limits
 

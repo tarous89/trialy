@@ -1,5 +1,6 @@
 import React,{useEffect,useRef,useState} from 'react';
 import {usePlatformChrome} from './PlatformChrome.js';
+import {AppActivity} from './AppActivity.js';
 
 type Call=(name:string,args?:any)=>Promise<any>;
 type Role='owner'|'editor'|'viewer'|'none';
@@ -40,7 +41,7 @@ export function AppPeople({call,appId,readOnly=false,onManage}:{call:Call;appId:
  const options=(p:any):Role[]=>owner?['owner','editor','viewer','none']:(['viewer','editor','owner'] as Role[]).filter(r=>data.canGrant.includes(r)&&RANK[r]>RANK[p.role as Role]);
  const why=(p:any)=>p.source==='organization_owner'?'Organization owner':p.source==='granted'?`Granted by ${p.grantedBy??'someone who left'} on ${grantedWhen(p.grantedAt)}`:p.source==='team_default'?'Team default':p.kind==='guest'?'Guest':'';
  const people=[...data.people].sort((a:any,b:any)=>RANK[b.role as Role]-RANK[a.role as Role]||a.name.localeCompare(b.name));
- return <section className="ty-app-people" aria-label="People and roles" aria-busy={busy}>
+ return <><section className="ty-app-people" aria-label="People and roles" aria-busy={busy}>
   <div className="ty-app-people-head"><h3>People and roles</h3><span className={'ty-role ty-role--'+data.role}>You: {LABEL[data.role as Role]}</span></div>
   {requests.length>0&&<ul className="ty-app-people-list ty-app-people-requests" aria-label="Access requests">{requests.map((r:any)=><li key={r.id}><span className="ty-app-people-name"><b>{r.name} asks to {r.role==='editor'?'edit':'view'} this app</b>{r.note&&<small>{r.note}</small>}</span><span className="ty-actions">{r.canDecline&&<button type="button" className="ty-button" disabled={busy} onClick={()=>void answer(r,false)}>Decline</button>}{r.canApprove&&<button type="button" className="ty-button ty-button--primary" disabled={busy} onClick={()=>void answer(r,true)}>Approve</button>}</span></li>)}</ul>}
   {owner&&<label className="ty-app-people-default"><span><b>Team default</b><small>The role team members have when nobody set one for them. Guests never get it.</small></span>
@@ -54,5 +55,5 @@ export function AppPeople({call,appId,readOnly=false,onManage}:{call:Call;appId:
   {asking&&<div className="ty-content-overlay"><section className="ty-confirm-dialog" role="alertdialog" aria-modal="true" aria-label="Change access"><h2>{asking.role==='none'?`Remove ${asking.person.name}'s access?`:`Make ${asking.person.name} ${asking.role==='editor'?'an Editor':'a Viewer'}?`}</h2>
    <p>{asking.role==='none'?`${asking.person.name} will no longer be able to open this app. Only an owner can give access back.`:`${asking.person.name} will have less access than now: ${WHAT[asking.role].toLowerCase()}.`}</p>
    <div className="ty-actions"><button className="ty-button" autoFocus onClick={()=>setAsking(null)}>Cancel</button><button className="ty-button ty-button--primary" onClick={()=>void apply(asking.person,asking.role)}>{asking.role==='none'?'Remove access':'Change role'}</button></div></section></div>}
- </section>;
+ </section>{owner&&<AppActivity call={call} appId={appId}/>}</>;
 }

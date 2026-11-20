@@ -75,6 +75,7 @@ export function foundationClient(api:(path:string,method?:string,body?:unknown,o
  read_access_directory:['/api/account/access'],
  read_access_grid:[`/api/workspaces/${v.workspaceId}/access-grid${v.subject?'?subject='+encodeURIComponent(v.subject):''}`],
  read_app_members:[`/api/workspaces/${v.workspaceId}/apps/${v.appId}/members`],
+ read_app_log:[`/api/workspaces/${v.workspaceId}/apps/${v.appId}/log?offset=${v.offset??0}`],
  set_app_role:[`/api/workspaces/${v.workspaceId}/apps/${v.appId}/members`,'POST',{userId:v.userId,role:v.role}],
  set_app_team_default:[`/api/workspaces/${v.workspaceId}/apps/${v.appId}/team-default`,'POST',{role:v.role}],
  read_app_access_requests:[`/api/workspaces/${v.workspaceId}/apps/${v.appId}/access-requests`],

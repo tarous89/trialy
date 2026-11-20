@@ -101,7 +101,11 @@ test('Project access: inherited restrictions, sticky moves, stale approval, AI r
  await assert.rejects(f.readComponent(member,w.id,c.id));await assert.rejects(f.readComponent(ai,w.id,c.id));
  await change({kind:'set_component_access',componentId:c.id,expectedVersion:1,allowedUsers:[member.userId],ai:true});
  assert.equal((await f.readComponent(member,w.id,c.id)).component.id,c.id);
+ // A7: earlier versions are for the app's owners.
+ await assert.rejects(f.componentHistory(member,w.id,c.id),/owner of this app/);
+ await db.query("INSERT INTO app_members(workspace_id,app_id,user_id,role) VALUES($1,$2,$3,'owner')",[w.id,c.id,member.userId]);
  assert.equal((await f.componentHistory(member,w.id,c.id)).length,2); // old restricted-project source revision is hidden
+ await db.query('DELETE FROM app_members WHERE app_id=$1 AND user_id=$2',[c.id,member.userId]);
  await s.share(owner,w.id,member.userId,'inspector',[],null,false);await assert.rejects(s.exportWorkspace(member,w.id),/restricted/);await assert.rejects(s.history(member,w.id),/restricted/);
  assert.equal((await s.exportWorkspace(owner,w.id)).workspace_components.length,1);
  }finally{await db.close();}
