@@ -31,6 +31,7 @@ import {readCustomLayout,updateCustomLayout,customLayoutProfile} from '../shared
 import {appIntegrations} from './integrations.js';
 import {appDocuments,documentCapabilities} from './app-documents.js';
 import {DerivedReader} from '../domain/derived-fields.js';
+import {AppCapabilities,READ_CAPABILITIES} from './app-capabilities.js';
 import {derived} from '../shared/formulas.js';
 import {exchangeReview,createExchange} from '../domain/exchange.js';
 import {TableMappings,mappingStamp,validatePairs} from './mappings.js';
@@ -39,7 +40,7 @@ import {z} from 'zod';
 import {id} from '../shared/schema.js';
 import {requireCurrentAction,requireHuman,type WriteAuthorization} from '../domain/write-authorization.js';
 import {execute,LIMITS} from '../foundation/runtime.js';
-import {frontendRequest,frontendOutput,frontendRead,componentRecordChanges} from './frontend.js';
+import {frontendRequest,frontendOutput,frontendRead,componentRecordChanges,readAppDataRequest} from './frontend.js';
 import {interfaceSchema} from './ui.js';
 import {randomUUID} from 'node:crypto';
 import type {Database,Connection} from '../db/database.js';
@@ -50,7 +51,7 @@ import {appChangeDependencies,dependencySummary,refuseBreaking} from './dependen
 import {isNewApp,prepareInstallation,finishInstallation,installationStep,changeImpact,prepareChange,finishChange} from './installation.js';
 import {requireAssistantApps,requireAssistantChange,assistantNamesOnly,assistantDataBlocked,appNameOnly} from '../domain/assistant-levels.js';
 import {audit,revision,checksum} from '../domain/evidence.js';
-import {fail,failWith,type Actor} from '../shared/schema.js';
+import {fail,failWith,AppError,type Actor} from '../shared/schema.js';
 import {maintenanceSchema,maintenanceBatch,workspaceOperation,type WorkspaceOperation} from './schema.js';
 import {redactExchangeLinks} from '../app-services/exchange-email.js';
 import {isExchangeOperation,exchangeReview as externalExchangeReview,commitExchangeOperation,appExchangeWrites,appExchangeReads,appExchangeRead,exchangeOperationApp,exchangeReachedOutside,preparationKinds} from '../domain/external-exchange.js';import {dynamicStamp} from '../app-services/dynamic-fields.js';
@@ -62,9 +63,8 @@ const J=JSON.stringify;
 const activeFrontends=new FrontendQueue(2),activeDraftFrontends=new FrontendQueue(1,8);
 const customFrontendSession=Symbol('custom frontend needs independent capability transactions');
 const adapter=(tx:Connection):Database=>({query:tx.query.bind(tx),transaction:fn=>fn(tx),close:async()=>{}});
-/** Read-only app capabilities; anything that proposes, runs or calls out is never a reuse unit. */
-export const READ_BATCH_LIMIT=12;
-const READ_CAPABILITIES=new Set(['records.read','records.readMany','records.get','project.records','project.relationships','roles.list','integrations.list']);
+/** Read-only app capabilities (src/workspace/app-capabilities.ts); anything that proposes, runs or calls out is never a reuse unit. */
+export {READ_BATCH_LIMIT} from './app-capabilities.js';
 export class WorkspaceFoundation {
  constructor(public db:Database,private frontendSession:boolean|'custom'=false){}
  // Project-level sharing comes later. Avoid leaking project/scope metadata to partial-access members.
@@ -256,14 +256,13 @@ export class WorkspaceFoundation {
    }
    const currentPolicy=await access(this.db,a,w),accessStamp=request.componentId?await unit(()=>this.componentAccessStamp(a,w,content)):undefined;
    const tracker=knownTracker,pages:any[]=[];
-   const tableCache=new Map<string,Promise<any>>(),pageRecords=new Map<string,any>(),resolvedPages=new Map<string,any>();
-   const tableAccess=(typeId:string)=>{if(!tableCache.has(typeId))tableCache.set(typeId,typeAccess(this.db,a,w,typeId));return tableCache.get(typeId)!;};
-   const bound=Object.fromEntries(content.bindings.map((b:any)=>[b.typeId,b.fields]));
-   const pageReader=new DerivedReader(this.db,a,w,Object.keys(bound),bound);
+   // P6 (4.3): custom app code rechecks the app before each record read (its run can be long); the tracker renderer runs in one transaction.
+   const capabilities=new AppCapabilities(this,a,w,{componentId:request.componentId??null,content,draftTables,signal,recheck:request.componentId&&!tracker?()=>this.runtimeComponent(this.db,a,w,request.componentId!,version,viewId):undefined});
+   const pageRecords=capabilities.pageRecords,resolvedPages=capabilities.resolvedPages,tableAccess=(typeId:string)=>capabilities.tableAccess(typeId);
    const writable=!!request.componentId&&!currentPolicy.archived&&currentPolicy.role!=='inspector'&&(await toolPolicy(this.db,a,currentPolicy,request.componentId)).grant.write;
-   let batchedReads=0;
    const handler=async(name:string,value:unknown):Promise<any>=>{
     signal?.throwIfAborted();
+    if(capabilities.handles(name))return capabilities.call(name,value);
     if(['actions.list','actions.run','actions.status','connectors.status'].includes(name)&&process.env.SIMPLE_APPS_ENABLED==='true'){
      if(!request.componentId)fail(403,'preview_read_only','Open a saved app');
      const actions=new AppActions(this.db);
@@ -279,18 +278,6 @@ export class WorkspaceFoundation {
      const v=z.object({connectionId:id,operation:z.string().max(64),requestKey:id,parameters:z.record(z.string(),z.unknown()).optional(),records:z.record(z.string(),id).optional()}).strict().parse(value);
      if(connectorReviews.length>=3)fail(429,'connector_reviews','Review existing connector requests before creating more');const latest=(await this.runtimeComponent(this.db,a,w,request.componentId,version,viewId)).latest;signal?.throwIfAborted();const result=await new Connectors(this.db,(tx,actor,workspaceId,appId)=>this.component(tx,actor,workspaceId,appId)).call(a,w,{...v,appId:request.componentId,appVersion:latest.version},true);if(result.status==='review_required')connectorReviews.push(result);return result;
     }
-    if(name==='project.records'||name==='project.relationships'){
-     const v=z.object({offset:z.number().int().min(0).max(1000000).default(0)}).strict().parse(value);
-     const typeIds=content.bindings.map((b:any)=>b.typeId),projectId=content.project_id;
-     if(!projectId)fail(400,'project_required','This independent app has no project data scope. Use bound records.read instead.');
-     const projectRecord=(record:any)=>{const binding=content.bindings.find((b:any)=>b.typeId===(record.type_id??record.typeId));return {id:record.id,typeId:record.type_id??record.typeId,version:record.version,data:Object.fromEntries(Object.entries(record.data).filter(([k])=>binding.fields.includes(k)))};};
-     if(name==='project.records'){const page=await this.projectRecords(a,w,projectId,v.offset,typeIds);return {projectId,records:page.records.map(r=>projectRecord(r.record)),nextOffset:page.nextOffset};}
-     const page=await this.projectRelationships(a,w,projectId,v.offset,typeIds);return {projectId,relationships:page.relationships.filter(r=>content.bindings.find((b:any)=>b.typeId===r.source.typeId)?.fields.includes(r.field)).map(r=>({field:r.field,label:r.label,source:projectRecord(r.source),target:projectRecord(r.target)})),nextOffset:page.nextOffset};
-    }
-    // Role-based connections: which declared roles are connected, to which bound table (modular apps §7). No records.
-    if(name==='roles.list'){const roles=await appRoles(this.db,w,{...content,id:request.componentId??null}),writers=await this.roleWriters(a,w,roles);return {roles:roles.map(r=>({...(writers[r.role]?{writer:writers[r.role]}:{}),role:r.role,name:r.name,contract:r.contract,connected:!!r.typeId,typeId:r.typeId??null,optional:!!r.optional,readOnly:!!r.readOnly,writable:r.writable,fields:(content.manifest?.fields??[]).filter((f:any)=>f.typeId===r.typeId).map((f:any)=>({id:f.id,field:f.field,mode:f.mode}))}))};}
-    // In-app integrations: where each integration's data comes from and the subtle offer to show (install, connect or none).
-    if(name==='integrations.list'){const app={...content,id:request.componentId??null},writers=await this.roleWriters(a,w,await appRoles(this.db,w,app));return {integrations:(await appIntegrations(this.db,a,w,app)).map((x:any)=>writers[x.role]?{...x,writer:writers[x.role]}:x)};}
     // External exchange (docs/product/EXTERNAL_EXCHANGE.md §2.6): reads are scoped to this app's groups; every write becomes one reviewed workspace change.
     if(name.startsWith('exchange.')){
      if(!request.componentId)fail(403,'preview_read_only','Save the app to use external exchanges');
@@ -333,50 +320,6 @@ export class WorkspaceFoundation {
     if(name==='functions.status'){
      if(!request.componentId)fail(403,'preview_read_only','Open a saved interface');
      const v=z.object({requestKey:id}).strict().parse(value);const r=(await this.db.query('SELECT id,component_context FROM foundation_runs WHERE workspace_id=$1 AND user_id=$2 AND request_key=$3',[w,a.userId,v.requestKey])).rows[0];if(!r||r.component_context?.id!==request.componentId)fail(404,'not_found','Component run not found');return new Foundation(this.db).run(a,w,r.id);
-    }
-    if(name==='records.get'&&process.env.SIMPLE_APPS_ENABLED==='true'){
-     if(!request.componentId)fail(403,'preview_read_only','Open a saved app to read a record detail');
-     const v=z.object({recordId:id}).strict().parse(value),record=await this.record(this.db,a,w,v.recordId);
-     const binding=content.bindings.find((b:any)=>b.typeId===record.type_id);
-     if(!binding||record.state==='archived')fail(404,'not_found','Record unavailable');
-     if(content.manifest?.scope==='project'&&!(await this.db.query('SELECT id FROM project_records WHERE workspace_id=$1 AND project_id=$2 AND record_id=$3 AND revoked_at IS NULL',[w,content.project_id,record.id])).rows.length)fail(404,'not_found','Record unavailable');
-     const resolved=await pageReader.read({...record,data:Object.fromEntries(Object.entries(record.data).filter(([key])=>binding.fields.includes(key)))});
-     return {id:record.id,typeId:record.type_id,version:record.version,data:resolved.data};
-    }
-    // Several record reads in one call. Each read is checked exactly like records.read (binding,
-    // permissions, filters, limits) and the run's call and size budgets still apply; permission
-    // lookups are made once for the batch and verified before it returns.
-    if(name==='records.readMany'){
-     const v=z.object({reads:z.array(z.unknown()).min(1).max(READ_BATCH_LIMIT)}).strict().parse(value);
-     if((batchedReads+=v.reads.length)>LIMITS.calls)fail(400,'capability_limit','This app made too many reads');
-     const results=[];for(const read of v.reads){signal?.throwIfAborted();results.push(await handler('records.read',read));}
-     return {results};
-    }
-    if(name==='records.read'){
-     if(draftTables.includes((value as any)?.typeId)){const v=frontendRead.parse(value);return {rows:[],total:0,limit:v.limit,offset:v.offset};}
-     const v=frontendRead.parse(value),binding=content.bindings.find((b:any)=>b.typeId===v.typeId);if(!binding)fail(403,'binding_required','Table is not bound to this component');
-     if(request.componentId&&!tracker)await this.runtimeComponent(this.db,a,w,request.componentId,version,viewId);
-     let linkedTable;try{linkedTable=await tableAccess(v.typeId);}catch(e){if((e as any).status===403||(e as any).status===404)return {unavailable:true,message:'This table is restricted',rows:[],total:null,limit:v.limit,offset:v.offset};throw e;}const readableKeys=visibleFields(linkedTable.type.fields,linkedTable.policy,a).filter(f=>binding.fields.includes(f.key)).map(f=>f.key);
-     if(Object.keys(v.filters).length>8||Object.keys(v.filters).some(k=>!readableKeys.includes(k)))fail(403,'filter_field','Filter only readable bound fields');
-     const sortField=v.sort?linkedTable.type.fields.find((f:any)=>f.key===v.sort!.field&&readableKeys.includes(f.key)):undefined;
-     if(v.sort&&!sortField)fail(403,'sort_field','Sort only readable bound fields');
-     if(sortField&&(sortField.formula||sortField.computed||sortField.lookup))fail(400,'sort_field','Sorting calculated fields is not supported');
-     const scalar="NULLIF(CASE WHEN jsonb_typeof(data->$8)='array' THEN data->$8->>0 ELSE data->>$8 END,'')";
-     const sortValue=sortField&&['number','money'].includes(sortField.kind)?`CASE WHEN ${scalar} ~ '^-?[0-9]+(\\.[0-9]+)?$' THEN (${scalar})::numeric END`:sortField?.kind==='select'?`array_position($9::text[],${scalar})`:`lower(${scalar})`;
-     const order=v.sort?`${sortValue} ${v.sort.direction==='desc'?'DESC':'ASC'} NULLS LAST,created_at,id`:'created_at,id';
-     const where="workspace_id=$1 AND type_id=$2 AND state<>'archived' AND NOT EXISTS(SELECT 1 FROM jsonb_each_text($7::jsonb) filter WHERE NOT (CASE WHEN jsonb_typeof(records.data->filter.key)='array' THEN (records.data->filter.key) @> jsonb_build_array(filter.value) ELSE records.data->>filter.key=filter.value END IS TRUE)) AND ($6::uuid IS NULL OR EXISTS(SELECT 1 FROM project_records pr WHERE pr.workspace_id=$1 AND pr.project_id=$6 AND pr.record_id=records.id AND pr.revoked_at IS NULL)) AND ($10::text='' OR EXISTS(SELECT 1 FROM jsonb_each_text(records.data) search WHERE search.key=ANY($3::text[]) AND strpos(lower(search.value),lower($10))>0))";
-     const args=[w,v.typeId,readableKeys,v.limit,v.offset,content.manifest?.scope==='project'?content.project_id:null,J(v.filters),v.sort?.field??null,sortField?.options??[],v.q??''];
-     // Typed parameters are shared by count and page queries. All predicates and ordering precede LIMIT.
-     const parameters='WITH params AS (SELECT $4::int,$5::int,$8::text,$9::text[]) ';
-     const rows=v.limit===0?[]:(await this.db.query(parameters+`SELECT id,version,CASE WHEN octet_length(selected::text)<=100000 THEN selected ELSE NULL END AS data FROM (
-      SELECT id,version,(SELECT coalesce(jsonb_object_agg(key,value),'{}'::jsonb) FROM jsonb_each(data) WHERE key=ANY($3::text[])) AS selected
-      FROM records WHERE ${where} ORDER BY ${order} LIMIT $4 OFFSET $5) page`,args)).rows;
-     if(rows.some(r=>r.data===null))fail(400,'read_limit','A record exceeds the interface read budget');
-     const total=Number((await this.db.query(parameters+`SELECT count(*) AS n FROM records WHERE ${where}`,args)).rows[0].n);
-     pageReader.prime(v.typeId,linkedTable.type,linkedTable.policy);
-     // SQL already applied this exact project scope before returning these rows.
-     if(linkedTable.policy.scope_project===(content.manifest?.scope==='project'?content.project_id:null))pageReader.authorizeRows(rows.map(r=>r.id));
-     const resolved=await Promise.all(rows.map(async r=>{const record={...r,type_id:v.typeId,fields:visibleFields(linkedTable.type.fields,linkedTable.policy,a)};pageRecords.set(r.id,record);const {fields:ignored,...value}=await pageReader.read(record);resolvedPages.set(r.id,value);return value;}));return {tableName:linkedTable.type.name,rows:resolved,total,limit:v.limit,offset:v.offset};
     }
     if(name==='layout.propose'){
      if(!request.componentId)fail(403,'preview_read_only','Save the tracker before changing its layout');
@@ -444,6 +387,24 @@ export class WorkspaceFoundation {
    });
    return {queued,...(connectorReviews.length?{connectorReviews}:{}),viewId,runtime:'trialy-frontend-js-v1',frameUrl:new URL('/frontend/frame',appPublicUrl()).toString(),...output,css:runtimeCss+output.css,accessVersion:currentPolicy.access_version,accessStamp,controls,connected:!!content.manifest,proposal,temporary:!request.componentId,...(tracker?{tracker:{config:tracker.config,theme:tracker.theme,pages,saved:!!request.componentId,writable}}:{})};
   }finally{release?.();}
+ }
+ /**
+  * P3, P6, P8 (4.3): an app's reads without its sandbox or queue. The app is checked once, the reads run with the
+  * caller's own permissions through AppCapabilities (the same code the sandboxed run uses), and access is rechecked
+  * once at the end so a concurrent revocation never releases data. Reads only: nothing here writes, runs or sends.
+  */
+ async readAppData(a:Actor,w:string,input:unknown):Promise<any>{
+  const v=readAppDataRequest.parse(input);a={...a,accessToolId:v.componentId};
+  if(v.reads.some(r=>!READ_CAPABILITIES.has(r.name)))fail(403,'capability_unavailable','read_app_data serves reads only');
+  return withActor(a,()=>this.db.transaction(tx=>withReadMetadata(adapter(tx),async db=>{
+   const f=new WorkspaceFoundation(db,true),before=await access(db,a,w);
+   const runtime=await f.runtimeComponent(db,a,w,v.componentId,v.expectedVersion,v.viewId);assertRuntimeScope(runtime.latest,runtime.c);
+   const capabilities=new AppCapabilities(f,a,w,{componentId:v.componentId,content:runtime.c});
+   const results=[];for(const read of v.reads){if(!capabilities.handles(read.name))fail(403,'capability_unavailable','This read is unavailable');
+    try{results.push({ok:true,value:await capabilities.call(read.name,read.input)});}catch(e){if(!(e instanceof AppError)||e.status>=500||e.code==='access_changed')throw e;results.push({ok:false,error:{code:e.code,message:e.message}});}}
+   if((await access(db,a,w)).access_version!==before.access_version)fail(409,'access_changed','Permissions changed while reading. Try again.');
+   return {componentId:v.componentId,version:runtime.c.version,viewId:runtime.view.id,accessVersion:before.access_version,results};
+  })));
  }
  private parseInterface(content:any){
   let spec;try{spec=interfaceSchema.parse(JSON.parse(content.source));}catch{fail(400,'invalid_interface','Use a valid legacy TrialAgents interface description');}

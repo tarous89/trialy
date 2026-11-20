@@ -10,3 +10,6 @@ export const frontendOutput=z.object({controls:z.array(z.object({slot:z.string()
 export const frontendRead=z.object({q:z.string().max(500).optional(),sort:z.object({field:z.string().regex(/^[a-z][a-z0-9_]{0,63}$/),direction:z.enum(['asc','desc'])}).strict().optional(),typeId:id,limit:z.number().int().min(0).max(100).default(25),offset:z.number().int().min(0).max(1000000).default(0),filters:z.record(z.string().regex(/^[a-z][a-z0-9_]{0,63}$/),z.string().max(100)).default({})}).strict();
 export const componentRecordChanges=z.array(recordWriteSchema).min(1).max(50);
 
+
+/** P3 (4.3): reads an app asks for in one request (read_app_data). Each is one read capability and its input. */
+export const readAppDataRequest=z.object({componentId:id,expectedVersion:z.number().int().min(0),viewId:id.optional(),reads:z.array(z.object({name:z.string().max(64),input:z.unknown()}).strict()).min(1).max(12)}).strict();
