@@ -3,6 +3,8 @@
 .ty-workspace .ty-platform-header{justify-content:flex-start;position:fixed;inset:0 0 auto;height:60px;z-index:100;display:flex;align-items:center;gap:12px;padding:0 18px;background:var(--ty-sidebar,#17372b);color:#fff;border-bottom:1px solid #ffffff18}
 .ty-platform-header .ty-icon-button{color:#d9e9df}
 .ty-platform-brand{display:flex;align-items:center;gap:9px;text-decoration:none;color:inherit;font-size:19px}
+.ty-header-app{min-width:0;padding-left:12px;border-left:1px solid #ffffff2e;color:#e4efe9;font-size:15px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+@media(max-width:480px){.ty-platform-header .ty-platform-brand strong{display:none}}
 .ty-workspace.ty-platform-shell .ty-sidebar--desktop{display:flex!important;position:fixed;top:60px;left:0;width:230px;height:calc(100dvh - 60px);padding:22px 14px;z-index:90}
 .ty-workspace.ty-platform-shell .ty-sidebar nav button,.ty-workspace.ty-platform-shell .ty-settings-button{font-size:14px;justify-content:flex-start;white-space:normal}
 .ty-workspace.ty-platform-shell .ty-main-column{margin-left:var(--shell-nav);padding:0;height:calc(100dvh - 60px);width:calc(100% - var(--shell-nav));min-width:0}
