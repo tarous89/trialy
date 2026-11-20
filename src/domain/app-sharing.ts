@@ -67,16 +67,15 @@ export class AppRoles{
    }
    const write=v.role==='editor'||v.role==='owner';
    if(guest&&v.role!=='none'&&c.source_access!=='bindings')fail(409,'review_tool_source','This app holds saved data in its code. Save a reviewed connected-data version before sharing it with a guest.');
-   // Until table access moves to per-table settings (package 2.4), a person who is view-only in the organization stays view-only in apps.
-   if(!guest&&write&&['viewer','inspector'].includes(t.workspace_role))fail(409,'organization_view_only',`${t.name} is view-only in this organization. An organization owner can change that under Team.`);
    const rule=roleRule(c,v.userId,v.role,guest,existing);
    await tx.query('SELECT trialy_security.set_app_role($1,$2,$3,$4)',[v.appId,v.userId,v.role,J(rule)]);
    await audit(tx,a,p,'app.role_changed',v.appId,{userId:v.userId,role:theirs},{userId:v.userId,role:v.role,grantedBy:a.userId});
    // A5: tell the person sharing when the recipient cannot see tables the app uses. Sharing an app never widens table access.
-   const blockedTables:string[]=[];
+   // An Editor or Owner whose table access is view-only can use the app but not change records in those tables (R4).
+   const blockedTables:string[]=[],readOnlyTables:string[]=[];
    if(!guest&&v.role!=='none'){const target:Actor={userId:v.userId,origin:'human',accessToolId:v.appId} as Actor;
-    try{const tp=await access(tx,target,w);for(const b of c.bindings){const type=(await tx.query('SELECT * FROM entity_types WHERE id=$1 AND workspace_id=$2',[b.typeId,w])).rows[0];if(!type)continue;const policy=await applyTypePolicy(tx,target,tp,type);if(!policy.read_fields.length)blockedTables.push(type.name);}}catch{/* The warning is advisory; the grant itself is already decided. */}}
-   return {appId:v.appId,userId:v.userId,name:t.name,role:v.role,previous:theirs,blockedTables};
+    try{const tp=await access(tx,target,w);for(const b of c.bindings){const type=(await tx.query('SELECT * FROM entity_types WHERE id=$1 AND workspace_id=$2',[b.typeId,w])).rows[0];if(!type)continue;const policy=await applyTypePolicy(tx,target,tp,type);if(!policy.read_fields.length)blockedTables.push(type.name);else if(write&&!policy.write_fields.length)readOnlyTables.push(type.name);}}catch{/* The warning is advisory; the grant itself is already decided. */}}
+   return {appId:v.appId,userId:v.userId,name:t.name,role:v.role,previous:theirs,blockedTables,readOnlyTables};
   });
  }
 

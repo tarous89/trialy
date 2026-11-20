@@ -22,7 +22,9 @@ export function AppPeople({call,appId,readOnly=false,onManage}:{call:Call;appId:
  async function apply(person:any,role:Role){
   setAsking(null);setBusy(true);
   try{const r=await call('set_app_role',{appId,userId:person.userId,role});
-   chrome.notify(r.blockedTables?.length?{kind:'info',message:`${person.name} is now ${LABEL[role]}, but cannot see ${r.blockedTables.join(', ')}. Sharing an app does not open its tables.`}:{kind:'success',message:role==='none'?`${person.name} no longer has access`:`${person.name} is now ${LABEL[role]}`});
+   chrome.notify(r.blockedTables?.length?{kind:'info',message:`${person.name} is now ${LABEL[role]}, but cannot see ${r.blockedTables.join(', ')}. Sharing an app does not open its tables.`}
+    :r.readOnlyTables?.length?{kind:'info',message:`${person.name} is now ${LABEL[role]}, but can only view ${r.readOnlyTables.join(', ')}. An organization owner sets table access.`}
+    :{kind:'success',message:role==='none'?`${person.name} no longer has access`:`${person.name} is now ${LABEL[role]}`});
    await load();
   }catch(e){chrome.notify({kind:'error',message:(e as Error).message});}finally{setBusy(false);}
  }

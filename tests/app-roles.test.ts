@@ -76,6 +76,12 @@ test('whoever creates an app owns it; roles are granted up to your own and lower
   await grant(alice,bob,'owner');const v4=await edit(bob,v3.version,'v4');assert.equal(v4.version,v3.version+1);
   await grant(bob,vic,'viewer');assert.equal((await role(bob,vic))!.role,'viewer');
 
+  // A person whose table access is view-only can still hold the Editor role; record writes stay subject to table access (R4).
+  const ro=person();await setup.query('INSERT INTO users(id,subject,email,name) VALUES($1,$2,$3,$4)',[ro.userId,ro.userId,'ro@example.invalid','Rory']);
+  await boot.share(owner,w,ro.userId,'viewer',[],null,false);
+  assert.equal((await grant(alice,ro,'editor')).role,'editor');assert.equal((await role(alice,ro))!.role,'editor');
+  await assert.rejects(edit(ro,v4.version,'no'),/not permitted|owner of this app/);
+
   // The database applies the same rules to a caller that skips the application checks.
   const rule=(target:Actor,r:any)=>JSON.stringify(roleRule({id:app.id,bindings:[]},target.userId,r,false));
   await assert.rejects(withActor(vic,()=>db.query('SELECT trialy_security.set_app_role($1,$2,$3,$4)',[app.id,eve.userId,'editor',rule(eve,'editor')])),/up to your own/);
