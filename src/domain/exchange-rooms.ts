@@ -1,3 +1,5 @@
+import {checkValue} from '../shared/validation.js';
+import {derived} from '../shared/formulas.js';
 import {randomUUID} from 'node:crypto';
 import type {Connection,Database} from '../db/database.js';
 import {fail,type Actor} from '../shared/schema.js';
@@ -200,7 +202,8 @@ async function trackExchange(tx:Connection,exchangeId:string,w:string){
  const e=await exchangeRow(tx,w,exchangeId),g=await groupRow(tx,w,e.group_id),tables=(await tx.query('SELECT * FROM exchange_tracked_tables WHERE group_id=$1',[g.id])).rows;
  await tx.query("SELECT set_config('trialy.tracked_write','on',true),set_config('trialy.write_authorization',$1,true)",[J({kind:'tracked',origin:'tracked',actorId:g.owner_id,source:'exchange',groupId:g.id,exchangeId:e.id})]);
  const typeOf=async(typeId:string)=>(await tx.query('SELECT id,fields FROM entity_types WHERE id=$1',[typeId])).rows[0];
- const fit=(fields:any[],data:Record<string,any>)=>Object.fromEntries(Object.entries(data).filter(([k,v])=>{const f=fields.find(x=>x.key===k);return f&&(v===null||f.kind!=='select'||(f.options??[]).includes(v));}));
+ // X3 (4.1): platform-written facts pass the same value checks (type, date, option, range, format); a value that fails is left out, never written.
+ const fit=(fields:any[],data:Record<string,any>)=>Object.fromEntries(Object.entries(data).filter(([k,v])=>{const f=fields.find(x=>x.key===k);return f&&!derived(f)&&(v===null||(Array.isArray(v)?f.multiple&&v.every(x=>!checkValue({...f,multiple:false},x).length):!checkValue(f,v).length));}));
  const write=async(typeId:string,role:'access'|'engagement'|'delivery'|'responses',ref:string,data:Record<string,any>,recordId?:string|null,initial:Record<string,any>={})=>{
   const t=await typeOf(typeId);if(!t)return;const values=fit(t.fields,data);
   let id=recordId??(await tx.query('SELECT record_id FROM exchange_tracked_records WHERE exchange_id=$1 AND role=$2 AND document_ref=$3',[e.id,role,ref])).rows[0]?.record_id;

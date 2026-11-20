@@ -1,5 +1,6 @@
 import React from 'react';
 import {defaultMultiple,type Field} from './schema.js';
+import type {FieldFormat,NormalizeRule} from './validation.js';
 export function FieldEditor({fields,onChange,types,existing=[]}:{fields:Field[];onChange:(fields:Field[])=>void;types:any[];existing?:Field[]}) {
  const change=(index:number,patch:Partial<Field>)=>onChange(fields.map((f,i)=>i===index?{...f,...patch}:f));
  return <fieldset><legend>Fields</legend>{fields.map((f,i)=><div className="field-definition" key={i}>
@@ -18,9 +19,26 @@ export function FieldEditor({fields,onChange,types,existing=[]}:{fields:Field[];
  <label>Default display<select value={f.renderer?.kind??'text'} onChange={e=>change(i,{renderer:{kind:e.target.value as any,...(e.target.value==='code'?{source:'return String(input.value);'}:{})}})}>{['text','badge',...(['number','money'].includes(f.kind)?['progress','number']:[]),'code'].map(k=><option key={k}>{k}</option>)}</select></label>{f.renderer?.kind==='code'&&<label>Display JavaScript<textarea value={f.renderer.source??''} onChange={e=>change(i,{renderer:{...f.renderer!,source:e.target.value}})}/><small>Return text or a display object (kind, text, value) from input.value. Underlying sorting and filtering are unchanged.</small></label>}
  <label><input disabled={!!(f.formula||f.computed||f.lookup)} type="checkbox" checked={f.required} onChange={e=>change(i,{required:e.target.checked})}/>Required</label>
  <label><input type="checkbox" checked={f.ai} onChange={e=>change(i,{ai:e.target.checked})}/>AI readable</label>
- <label><input disabled={!!(f.formula||f.computed||f.lookup)} type="checkbox" checked={!!f.unique} onChange={e=>change(i,{unique:e.target.checked})}/>Unique when filled</label>
+ <label><input disabled={!!(f.formula||f.computed||f.lookup)} type="checkbox" checked={!!f.unique} onChange={e=>change(i,{unique:e.target.checked,...(e.target.checked?{}:{uniqueWith:undefined})})}/>Unique when filled</label>
+ {f.unique&&<label>Unique together with (optional field keys, comma separated)<input value={(f.uniqueWith??[]).join(',')} placeholder="e.g. site_id" onChange={e=>{const keys=e.target.value.split(',').map(k=>k.trim()).filter(Boolean);change(i,{uniqueWith:keys.length?keys:undefined});}}/></label>}
+ {!(f.formula||f.computed||f.lookup)&&<FieldChecks field={f} onChange={patch=>change(i,patch)}/>}
  {!existing.some(x=>x.key===f.key)&&<button type="button" onClick={()=>onChange(fields.filter((_,n)=>n!==i))}>Remove</button>}
  </div>)}<button type="button" disabled={fields.length>=100} onClick={()=>onChange([...fields,{key:`field_${fields.length+1}`,name:'New field',kind:'text',ai:true,required:false,multiple:true}])}>Add field</button><p>Changes affecting existing values may require an explicit data migration.</p></fieldset>;
 }
 
 
+
+/** X3, X4 (4.1): the checks and formatting rules a field declares. Empty settings are removed, not stored. */
+function FieldChecks({field:f,onChange}:{field:Field;onChange:(patch:Partial<Field>)=>void}){
+ const numeric=['number','money'].includes(f.kind),date=f.kind==='date',text=f.kind==='text';
+ if(!numeric&&!date&&!text)return null;
+ const bound=(which:'min'|'max',raw:string)=>{const value=raw===''?undefined:numeric||text?Number(raw):raw;const range={...f.range,[which]:value};if(range.min===undefined)delete range.min;if(range.max===undefined)delete range.max;onChange({range:Object.keys(range).length?range:undefined});};
+ const rules=f.normalize??[],toggle=(rule:NormalizeRule,on:boolean)=>{const next=on?[...rules.filter(r=>!(rule==='lowercase'&&r==='uppercase')&&!(rule==='uppercase'&&r==='lowercase')),rule]:rules.filter(r=>r!==rule);onChange({normalize:next.length?next:undefined});};
+ const label=numeric?'value':date?'date':'length (characters)';
+ return <div className="field-checks">
+  <label>Lowest {label}<input type={date?'date':'number'} value={f.range?.min??''} onChange={e=>bound('min',e.target.value)}/></label>
+  <label>Highest {label}<input type={date?'date':'number'} value={f.range?.max??''} onChange={e=>bound('max',e.target.value)}/></label>
+  {text&&<><label>Format<select value={f.format??''} onChange={e=>onChange({format:(e.target.value||undefined) as FieldFormat|undefined})}><option value="">Any text</option><option value="email">Email address</option><option value="url">Web address</option><option value="phone">Phone number</option><option value="code">Code or identifier</option></select></label>
+  <fieldset className="field-normalize"><legend>Formatting applied when saving</legend>{([['trim','Remove spaces at the start and end'],['collapse_spaces','Single spaces only'],['lowercase','Lowercase'],['uppercase','Uppercase']] as [NormalizeRule,string][]).map(([rule,name])=><label key={rule}><input type="checkbox" checked={rules.includes(rule)} onChange={e=>toggle(rule,e.target.checked)}/>{name}</label>)}</fieldset></>}
+ </div>;
+}
