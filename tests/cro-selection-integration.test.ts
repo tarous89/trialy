@@ -21,7 +21,7 @@ test('Acceptance 1: quick quote — three suppliers in one confirmed send (one p
   // 1. New quick quote: the built-in questions and preclinical cost categories are copied onto the request (reviewed).
   await ui.open({section:'requests'});await ui.click('add:requests:quick_quote');
   await ui.submit('save-record',{name:'28-day GLP tox quote',service_type:'preclinical_study',scope:'28-day repeat-dose GLP toxicology study in rats with toxicokinetics (fictional).',assume_notes:'Three dose groups plus control.',assume_baseline:'In-life phase | 120000\nBioanalysis | 40000\nHistopathology | 30000\nReporting | 20000',currency:'EUR',cda_option:'none',response_deadline:'2026-12-31',owner:'N. Clinical (fictional)'});
-  assert.equal((await x.rows(tid('croselection.requests'))).length,0,'nothing is written before approval');await ui.approve();
+  assert.equal((await x.rows(tid('croselection.requests'))).length,1,'D16 (4.4): saved directly');await ui.approve();
   const req=(await x.rows(tid('croselection.requests')))[0];assert.equal(req.data.mode,'quick_quote');assert.equal(req.data.question_deadline,'2026-12-24');assert.match(req.data.questions,/^What does your price include/);assert.match(req.data.cost_categories,/^Study design and protocol/);
   // 2. Longlist: recipients come from the vendors' contacts (reviewed).
   await ui.open({section:'vendors',requestId:req.id});
@@ -237,7 +237,7 @@ test('Acceptance 3, 7 and 8: CDA via Contracts and skip; handoff into Contracts 
   await grid.save(actor,w,{expectedVersion:gv,changes:(['claude','chatgpt'] as const).map(subject=>({subject,kind:'table',resourceId:tid('croselection.awards'),read:true,write:false}))});
   for(const who of [ai,{...ai,assistant:'claude'}])await assert.rejects(()=>s.preview(who,w,{kind:'create_record',typeId:tid('croselection.awards'),data:{request_id:rc.id,organization_id:helix,service_type:'clinical_study',currency:'EUR',rationale:'x',approver:'x',decided_on:'2026-12-11'}}),/This table is read-only/);
   assert.equal((await s.records(ai,w,tid('croselection.awards'),{limit:5,offset:0})).rows.length,1,'assistants still read the award');
-  await ui.click('prepare-handoff');assert.equal(ui.last.proposal.body.kind,'apply_component_records');await ui.approve();
+  await ui.click('prepare-handoff');assert.ok(ui.last.saved,'D16 (4.4): the handoff records save directly');await ui.approve();
   const award=(await x.rows(tid('croselection.awards')))[0],h=JSON.parse(award.data.handoff_status);assert.equal(h.agreement.state,'draft_prepared');
   const msa=(await x.rows(cmap.agreements.typeId)).find((a:any)=>a.data.agreement_type==='msa')!;assert.equal(msa.data.status,'drafting');assert.equal(msa.data.counterparty_id,helix);
   await contractsUi.open({section:'pipeline'});assert.match(text(contractsUi.html),/MSA — Helix Clinical Research GmbH \(fictional\)/,'the draft agreement is in Contracts\' pipeline');

@@ -1,3 +1,4 @@
+import {settle,tookEffect} from './settle.js';
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
 import {randomUUID} from 'node:crypto';
@@ -38,13 +39,15 @@ test('Frontend code: read-only drafts, bound reads, reviewed atomic writes, stal
  await assert.rejects(f.runFrontend(a,w.id,{previewId:draft.id,event:{kind:'submit',action:'rename'}}));
  const saved=await f.confirm(a,w.id,draft.id,draft.digest);
  const request={componentId:saved.id,expectedVersion:0,event:{kind:'submit',action:'rename'}};
- const run=await f.runFrontend(ai,w.id,request);assert.ok(run.proposal);assert.equal((await f.record(db,a,w.id,record)).data.name,'Original');
- const receipt=await f.confirm(a,w.id,run.proposal.id,run.proposal.digest);assert.deepEqual(await f.confirm(a,w.id,run.proposal.id,run.proposal.digest),receipt);assert.equal((await f.record(db,a,w.id,record)).data.name,'Renamed');
+ const run=await f.runFrontend(ai,w.id,request);assert.ok(tookEffect(run));assert.equal((await f.record(db,a,w.id,record)).data.name,'Renamed','D16 (4.4): a click inside the assistant saves directly with Data = Edit');
+ const receipt=await settle(f,a,w.id,run);assert.deepEqual(await settle(f,a,w.id,run),receipt);assert.equal((await f.record(db,a,w.id,record)).data.name,'Renamed');
  await assert.rejects(f.runFrontend(viewer,w.id,request));
  await assert.rejects(f.runFrontend(ai,w.id,{...request,event:{kind:'click',action:'bad'}}),/bindings/);
  const before=(await f.pending(ai,w.id)).length;await assert.rejects(f.runFrontend(ai,w.id,{...request,event:{kind:'click',action:'fail'}}));assert.equal((await f.pending(ai,w.id)).length,before);
  await assert.rejects(f.runFrontend(ai,w.id,{...request,expectedVersion:1}),(e:any)=>e.code==='component_changed');
- const stale=await f.runFrontend(ai,w.id,request);assert.ok(stale.proposal);const staleProposal=stale.proposal;await save({kind:'update_record',recordId:record,expectedVersion:1,data:{name:'Concurrent update'}});await assert.rejects(f.confirm(a,w.id,staleProposal.id,staleProposal.digest),/changed/);
+ // D17 (4.4): an edit made from an earlier version to a value someone else changed first is refused with the newer value.
+ await save({kind:'update_record',recordId:record,expectedVersion:1,data:{name:'Concurrent update'}});
+ await assert.rejects(f.saveAppRecords(ai,w.id,{componentId:saved.id,expectedVersion:0,requestKey:randomUUID(),changes:[{kind:'update_record',recordId:record,expectedVersion:1,data:{name:'Stale'}}]}),(e:any)=>e.code==='stale_value'&&e.details.row.data.name==='Concurrent update');
  // Hold admission before the source starts, queue the same actor/app, then revoke.
  const acquire=FrontendQueue.prototype.acquire;let admissions=0,release!:()=>void,entered!:()=>void;
  const held=new Promise<void>(resolve=>{release=resolve;}),started=new Promise<void>(resolve=>{entered=resolve;});
@@ -76,4 +79,13 @@ test('Frame shell uses a hash-only trusted script and an HTTP sandbox without sa
  const response=await request(baseApp()).get('/frontend/frame').expect(200);
  const hash=createHash('sha256').update(FRAME_SCRIPT).digest('base64');assert.ok(response.headers['content-security-policy'].includes(`script-src 'sha256-${hash}'`));
  assert.ok(response.headers['content-security-policy'].includes('sandbox allow-scripts;'));assert.ok(response.headers['content-security-policy'].includes("form-action 'none'"));assert.equal(response.headers['x-frame-options'],undefined);assert.ok(!response.headers['content-security-policy'].includes('allow-same-origin'));assert.ok(response.text.includes(FRAME_SCRIPT));
+});
+
+test('P2 (4.7): the fingerprinted frame address is cached for good; the bare address is revalidated',async()=>{
+ const {baseApp}=await import('../src/server/app.js');const {default:request}=await import('supertest');const {frameUrl,frameVersion}=await import('../src/workspace/frame-url.js');
+ const app=baseApp(),url=new URL(frameUrl());assert.equal(url.searchParams.get('v'),frameVersion());
+ const cached=await request(app).get('/frontend/frame?v='+frameVersion()).expect(200);assert.equal(cached.headers['cache-control'],'public, max-age=31536000, immutable');
+ const bare=await request(app).get('/frontend/frame').expect(200);assert.equal(bare.headers['cache-control'],'public, max-age=0, must-revalidate');
+ const old=await request(app).get('/frontend/frame?v=0000000000000000').expect(200);assert.equal(old.headers['cache-control'],'public, max-age=0, must-revalidate');
+ assert.equal(cached.text,bare.text);
 });

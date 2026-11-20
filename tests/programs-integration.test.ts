@@ -1,3 +1,4 @@
+import {settle,tookEffect} from './settle.js';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFile} from 'node:fs/promises';
@@ -18,8 +19,8 @@ test('installed Programs: exact reviewed slip save, native layout and stale-edit
   const opened=await run();assert.equal(opened.connected,true);assert.match(opened.html,/Candidate selection · PX-202, 15 Dec 2026/);
   const edit=await run({section:'plan'},{kind:'click',action:'edit:items:'+ind.id});
   const p=await run(edit.state,{kind:'submit',action:'save-record',form:{end_date:'2027-04-21',slip_reason:'regulatory'}});
-  assert.ok(p.proposal,p.state?.notice);assert.equal((await rows('programs.slips')).length,2,'nothing written before approval');
-  await f.confirm(actor,w.id,p.proposal.id,p.proposal.digest);
+  assert.ok(tookEffect(p),p.state?.notice);assert.equal((await rows('programs.slips')).length,3,'D16 (4.4): saved directly');
+  await settle(f,actor,w.id,p);
   const slips=await rows('programs.slips');assert.equal(slips.length,3);const slip=slips.find((r:any)=>r.data.plan_item_id===ind.id)!;
   assert.deepEqual([slip.data.old_end,slip.data.new_end,slip.data.days,slip.data.reason],['2027-03-31','2027-04-21',21,'regulatory']);
   assert.equal((await rows('programs.plan_items')).find((r:any)=>r.id===ind.id)!.data.end_date,'2027-04-21');

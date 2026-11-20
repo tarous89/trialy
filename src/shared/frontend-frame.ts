@@ -8,7 +8,7 @@ export const FRAME_SCRIPT=String.raw`(()=>{'use strict';
  const renderTracker=function(config,theme,input,tools){${trackerRenderer}};
  const host=window.parent,root=document.getElementById('surface'),sheet=document.getElementById('appearance');
  let channel=null,model=null,uiState=null,controls=[],connected=false,detailScroll=0;
- let pending=Object.create(null),original=Object.create(null),savingCell=false;
+ let pending=Object.create(null),original=Object.create(null),savingCell=false,inflight=Object.create(null),failed=[],failedMessage='';
  document.documentElement.classList.add('trialy-responsive-toolbar');
  let optionsOpen=false,optionsTab=null,toolbarObserver=null;
  function setOptionsOpen(open,focus=false){
@@ -34,7 +34,8 @@ export const FRAME_SCRIPT=String.raw`(()=>{'use strict';
  }
  function commitCell(){
   if(!model?.saved||!model?.writable||savingCell||!Object.keys(pending).length)return;
-  savingCell=true;root.inert=true;post('trialy.approve',{action:'bound-batch'});footerAction('save-edits');
+  // P5 (4.5): the new value stays on screen while it saves; the rest of the app stays usable.
+  savingCell=true;inflight={...pending};post('trialy.approve',{action:'bound-batch'});footerAction('save-edits');
  }
  function activateCell(button){const holder=button.parentElement,editor=holder.querySelector('.cell-input,.example-input');if(!editor)return;editor._before={pending:{...pending},examples:{...uiState?.examples}};button.hidden=true;editor.hidden=false;editor.querySelector('input,textarea,select')?.focus({preventScroll:true});}
  function showValue(el,c,value,edited){
@@ -169,12 +170,21 @@ export const FRAME_SCRIPT=String.raw`(()=>{'use strict';
   if(event.source!==host||typeof event.data?.channel!=='string')return;
   const v=event.data;if(channel!==null&&v.channel!==channel)return;
   if(v.kind==='trialy.cache'){if(model&&v.tracker){model=v.tracker;}return;}
-  if(v.kind==='trialy.save-start'){savingCell=true;root.inert=true;return;}
+  if(v.kind==='trialy.save-start'){savingCell=true;if(!v.cells)root.inert=true;return;}
+  // A cell save failed: its earlier value comes back with the next render and the cell is marked; edits made meanwhile are kept.
+  if(v.kind==='trialy.save-failed'){for(const k of Object.keys(inflight)){if(pending[k]===inflight[k])delete pending[k];}failed=Object.keys(inflight).map(k=>k.split(':').slice(0,3).join(':'));failedMessage=String(v.message||'Not saved').slice(0,200);inflight=Object.create(null);savingCell=false;root.inert=false;return;}
   if(v.kind==='trialy.save-idle'){savingCell=false;root.inert=!!v.blocked;return;}
   if(v.kind==='trialy.action'){footerAction(v.action);return;}
   if(v.kind!=='trialy.render'||typeof v.html!=='string'||v.html.length>200000||typeof v.css!=='string'||v.css.length>50000)return;
   navigationOnly=!!v.navigationOnly;appLinks=!!v.appLinks;appOrigin=v.appOrigin||'';linkContext=v.linkContext||null;channel=v.channel;model=v.tracker||null;uiState=v.state;controls=Array.isArray(v.controls)?v.controls:[];connected=v.connected;
-  savingCell=false;root.inert=false;pending=Object.create(null);original=Object.create(null);paint(v.html,v.css);post('trialy.rendered');
+  const carried=Object.entries(pending).filter(([k,val])=>!(k in inflight)||inflight[k]!==val),marks=failed,markMessage=failedMessage;
+  inflight=Object.create(null);failed=[];failedMessage='';
+  savingCell=false;root.inert=false;pending=Object.create(null);original=Object.create(null);paint(v.html,v.css);
+  const prefix=k=>k.split(':').slice(0,3).join(':'),cells=k=>[...root.querySelectorAll('[data-action]')].filter(el=>el.getAttribute('data-action')===k);
+  for(const k of Object.keys(original))if(marks.includes(prefix(k)))for(const el of cells(k)){const holder=el.closest('td,.cell,label')||el;holder.style.background='#fdecea';holder.title=markMessage;}
+  // P5 (4.5): edits made while the previous save ran are kept (their record may have a new version) and saved next.
+  if(carried.length&&model?.saved){for(const [k,val] of carried){const now=Object.keys(original).find(x=>prefix(x)===prefix(k));if(!now)continue;pending[now]=val;for(const el of cells(now)){if(el.type==='checkbox')el.checked=val;else el.value=val;el.style.background='#e5f6e9';}}if(Object.keys(pending).length){footer();setTimeout(commitCell,0);}}
+  post('trialy.rendered');
  });
  function send(kind,target){
   const trigger=target.closest('[data-action]');if(!trigger||!channel)return;const action=trigger.getAttribute('data-action');if(!action||action.length>200)return;

@@ -1,3 +1,4 @@
+import {settle,tookEffect} from './settle.js';
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
 import {randomUUID} from 'node:crypto';
@@ -55,16 +56,16 @@ test('External exchange from apps: preparation on click, one reviewed send that 
  // Someone edits Alpha's record before the send is confirmed.
  await run(owner,async()=>{const r=await rec(recA.id);const p=await s.preview(owner,w.id,{kind:'update_record',recordId:recA.id,expectedVersion:r.version,data:{price:100}});return s.commit(owner,p.id,p.digest);});
  assert.ok(stale.proposal.exchangeReview.plan.documents.includes('Pack.pdf'));assert.equal(stale.proposal.exchangeReview.plan.recipients.length,2);
- await assert.rejects(()=>run(owner,()=>f.confirm(owner,w.id,stale.proposal.id,stale.proposal.digest)));assert.equal(await emails(),0);assert.equal((await rec(recA.id)).data.status,'longlist');
+ await assert.rejects(()=>run(owner,()=>settle(f,owner,w.id,stale)));assert.equal(await emails(),0);assert.equal((await rec(recA.id)).data.status,'longlist');
  await click(owner,'prepare');const ok=await click(owner,'send',{va:String((await rec(recA.id)).version),vb:String((await rec(recB.id)).version)});
- await assert.rejects(()=>run(ai,()=>f.confirm({...ai,actionConfirmed:true},w.id,ok.proposal.id,ok.proposal.digest)),/cannot approve/);
- const sent=await run(owner,()=>f.confirm(owner,w.id,ok.proposal.id,ok.proposal.digest));assert.ok(sent.records);
+ await assert.rejects(()=>run(ai,()=>settle(f,{...ai,actionConfirmed:true},w.id,ok)),/cannot approve/);
+ const sent=await run(owner,()=>settle(f,owner,w.id,ok));assert.ok(sent.records);
  assert.equal(await emails(),2);assert.equal((await rec(recA.id)).data.status,'invited');assert.equal((await rec(recB.id)).data.status,'invited');
  // 3. Once suppliers were emailed, changing what they see is reviewed again.
  const after=await click(owner,'share');assert.equal(after.proposal?.body?.kind,'share_exchange_documents');await run(owner,()=>f.discard(owner,w.id,after.proposal.id));
  // 4. Notify all: one review, one private message and email per recipient; only a person confirms.
  const n=await click(owner,'notify');assert.equal(n.proposal.body.kind,'reply_exchanges');assert.equal(n.proposal.exchangeReview.replies.length,2);
- await assert.rejects(()=>run(ai,()=>f.confirm({...ai,actionConfirmed:true},w.id,n.proposal.id,n.proposal.digest)),/cannot approve/);
- await run(owner,()=>f.confirm(owner,w.id,n.proposal.id,n.proposal.digest));
+ await assert.rejects(()=>run(ai,()=>settle(f,{...ai,actionConfirmed:true},w.id,n)),/cannot approve/);
+ await run(owner,()=>settle(f,owner,w.id,n));
  assert.equal(Number((await pg.query<any>("SELECT count(*)::int n FROM exchange_messages WHERE workspace_id=$1 AND kind='private' AND author='workspace'",[w.id])).rows[0].n),2);assert.equal(await emails(),4);
 });

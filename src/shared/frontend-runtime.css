@@ -1,0 +1,4 @@
+/* G8 (4.6): Undo for the last add, duplicate or delete in a standard tracker. */
+.ty-undo{display:flex;align-items:center;gap:8px;margin:0 0 8px;padding:6px 10px;border:1px solid var(--ty-line,#dfe7df);border-radius:8px;background:var(--ty-surface,#fff);font-size:14px}
+.ty-undo span{flex:1}
+.ty-undo-dismiss{border:0;background:none;font-size:18px;line-height:1;cursor:pointer;color:inherit}

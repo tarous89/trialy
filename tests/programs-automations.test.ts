@@ -1,3 +1,4 @@
+import {settle,tookEffect} from './settle.js';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {PGlite} from '@electric-sql/pglite';
@@ -87,7 +88,7 @@ test('Add app enables the AI digest and five member notices; the digest only cre
   // A fictional plan, saved through the app's own proposals: the owner (the signed-in member) is on the team with a member ID.
   const program=await x.save(w,T('programs'),{name:'PX-101 (fictional)',stage:'ind_enabling',status:'active',archived:false});
   const run=async(state:any,event:any)=>{const c=await x.comp(w,id);return x.f.runFrontend(x.human,w,{componentId:c.id,expectedVersion:c.version,state,event});};
-  const commit=async(state:any,event:any)=>{const out:any=await run(state,event);const p=out.proposal;assert.ok(p,'the app proposed a change: '+JSON.stringify(out.state?.notice));await x.f.confirm(x.human,w,p.id,p.digest);return out;};
+  const commit=async(state:any,event:any)=>{const out:any=await run(state,event);assert.ok(tookEffect(out),'the app saved a change: '+JSON.stringify(out.state?.notice));await settle(x.f,x.human,w,out);return out;};
   let st:any=(await run({section:'settings'},{kind:'click',action:'add:team'})).state;
   await commit(st,{kind:'submit',action:'save-record',form:{program_id:program,name:'Morgan Lee',member_id:x.human.userId,role:'CMC lead'}});
   const team=(await x.rows(T('programs.team')))[0];assert.equal(team.data.added_on,day(0),'added today: the welcome notice date');

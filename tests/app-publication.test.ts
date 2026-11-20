@@ -76,10 +76,11 @@ test('open publications keep compatible reads and writes with current permission
   const sharing=new AppSharing(db),sp=await sharing.prepare(owner,w.id,{appId:app.id,appVersion:0,kind:'public',mode:'edit',reviewedSource:true}),share=await sharing.confirm(owner,w.id,sp.id,sp.digest),token=share.url!.split('#')[1];
   const publicContext=await sharing.publicContext(token),publicLoaded=await withActor(publicContext.a,()=>f.runFrontend(publicContext.a,w.id,{componentId:app.id,expectedVersion:0}));
   const old={componentId:app.id,expectedVersion:0,viewId:loaded.viewId};
-  const pending=await f.runFrontend(owner,w.id,{...old,event:{kind:'click',action:'rename',value:'Saved after publish'}});
+  // D16 (4.4): a record edit in the open app saves directly; there is no pending review to confirm later.
+  const direct=await f.runFrontend(owner,w.id,{...old,event:{kind:'click',action:'rename',value:'Saved after publish'}});
+  assert.equal(direct.proposal,null);assert.equal(direct.saved.status,'saved');
   await publish({kind:'save_component',componentId:app.id,expectedVersion:0,content:{...content,source:source('Version one')}});
   assert.equal((await f.checkComponentAccess(owner,w.id,app.id,loaded.viewId)).version,1);
-  await f.confirm(owner,w.id,pending.proposal.id,pending.proposal.digest);
   const stillOld=await f.runFrontend(owner,w.id,old);assert.match(stillOld.html,/Version zero/);assert.equal(stillOld.state.rows[0].data.name,'Saved after publish');
   assert.match((await f.runFrontend(owner,w.id,{componentId:app.id,expectedVersion:1})).html,/Version one/);
   await assert.rejects(f.runFrontend(owner,w.id,{componentId:app.id,expectedVersion:0}),/newer app version/);
@@ -89,18 +90,16 @@ test('open publications keep compatible reads and writes with current permission
   await assert.rejects(f.runFrontend(owner,w.id,{...old,viewId:randomUUID()}),/session needs a refresh/);
   // Additive schema changes do not break existing field writes.
   await save({kind:'update_type',typeId,expectedVersion:0,name:'Items',fields:[...fields,{key:'extra',name:'Extra',kind:'text',ai:true}]});
-  const compatible=await f.runFrontend(owner,w.id,{...old,event:{kind:'click',action:'rename',value:'Compatible save'}});await f.confirm(owner,w.id,compatible.proposal.id,compatible.proposal.digest);
-  // Changing a field contract rejects both a new write and a pending reviewed write.
-  const pendingSchema=await f.runFrontend(owner,w.id,{...old,event:{kind:'click',action:'rename',value:'Must not commit'}});
+  const compatible=await f.runFrontend(owner,w.id,{...old,event:{kind:'click',action:'rename',value:'Compatible save'}});assert.equal(compatible.saved.rows[0].data.name,'Compatible save');
+  // Changing a field contract rejects a new write.
   // Simulate the result of an explicitly reviewed schema migration.
   const migrated=(await db.query('SELECT fields FROM entity_types WHERE id=$1',[typeId])).rows[0].fields.map((field:any)=>field.key==='name'?{...field,required:true}:field);
   await db.query('UPDATE entity_types SET fields=$2,version=version+1 WHERE id=$1',[typeId,JSON.stringify(migrated)]);
-  await assert.rejects(f.confirm(owner,w.id,pendingSchema.proposal.id,pendingSchema.proposal.digest),/no longer compatible/);
   await assert.rejects(f.runFrontend(owner,w.id,{...old,event:{kind:'click',action:'rename',value:'Must not save'}}),/no longer compatible/);
   assert.equal((await f.checkComponentAccess(owner,w.id,app.id,loaded.viewId)).version,1);
   assert.equal((await s.records(owner,w.id,typeId)).rows[0].data.name,'Compatible save');
   // A freshly opened generic app can use the revised schema, without requiring a code edit.
-  const fresh=await f.runFrontend(owner,w.id,{componentId:app.id,expectedVersion:1});const freshEdit=await f.runFrontend(owner,w.id,{componentId:app.id,expectedVersion:1,viewId:fresh.viewId,event:{kind:'click',action:'rename',value:'Fresh save'}});await f.confirm(owner,w.id,freshEdit.proposal.id,freshEdit.proposal.digest);
+  const fresh=await f.runFrontend(owner,w.id,{componentId:app.id,expectedVersion:1});const freshEdit=await f.runFrontend(owner,w.id,{componentId:app.id,expectedVersion:1,viewId:fresh.viewId,event:{kind:'click',action:'rename',value:'Fresh save'}});assert.equal(freshEdit.saved.status,'saved');
   // Removing a field leaves the loaded view available, but writes to it fail.
   await db.query('UPDATE entity_types SET fields=$2,version=version+1 WHERE id=$1',[typeId,JSON.stringify(migrated.filter((field:any)=>field.key==='note'))]);
   await f.checkComponentAccess(owner,w.id,app.id,loaded.viewId);await assert.rejects(f.runFrontend(owner,w.id,{...old,event:{kind:'click',action:'rename',value:'Removed'}}),/no longer compatible/);

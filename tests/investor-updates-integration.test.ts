@@ -1,3 +1,4 @@
+import {settle,tookEffect} from './settle.js';
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
 import {randomUUID,randomBytes} from 'node:crypto';
@@ -56,7 +57,7 @@ async function suite(){
  const app=(w:string,id:string,who:Actor=human)=>{let state:any={};const v:any={html:'',last:null,state:()=>state,
   async ev(event:any){const c=await comp(w,id);const out:any=await f.runFrontend(who,w,{componentId:c.id,expectedVersion:c.version,state,event:{value:null,form:{},...event}});state=out.state;v.html=out.html;v.last=out;return out;},
   open:(st:any={})=>{state={...state,...st};return v.ev({kind:'open',action:''});},click:(a:string,form:any={})=>v.ev({kind:'click',action:a,form}),submit:(a:string,form:any={})=>v.ev({kind:'submit',action:a,form}),
-  async approve(out:any=v.last){if(!out?.proposal)throw Error('No proposal: '+(out?.state?.notice??''));const r=await f.confirm(human,w,out.proposal.id,out.proposal.digest);await v.ev({kind:'open',action:''});return r;}};return v;};
+  async approve(out:any=v.last){if(!tookEffect(out))throw Error('No proposal: '+(out?.state?.notice??''));const r=await settle(f,human,w,out);await v.ev({kind:'open',action:''});return r;}};return v;};
  const rows=async(typeId:string)=>(await pg.query<any>("SELECT id,version,data FROM records WHERE type_id=$1 AND state<>'archived' ORDER BY created_at,id",[typeId])).rows;
  const save=async(w:string,typeId:string,data:any)=>{const p=await s.preview(human,w,{kind:'create_record',typeId,data});return (await s.commit(human,p.id,p.digest)).objects[0].id as string;};
  const workspace=async(name:string)=>{const w=(await s.createWorkspace(human,name)).id;await s.setAi(human,w,true);await pg.query("UPDATE tenants SET name='Northwind Bio (fictional)' WHERE id=(SELECT tenant_id FROM workspaces WHERE id=$1)",[w]);return w;};
@@ -97,7 +98,7 @@ test('install: four recommendations offered on; standard records at first use; N
   for(const r of ['categories','templates','share_classes'])assert.equal((await x.rows(map['investorupdates.'+r].typeId)).length,0,r);
   // The design gate runs in tests/investor-updates.test.ts and the browser test; here every screen opens on the real path.
   const ui=x.app(w,id);for(const section of SCREENS){const out=await ui.open({section,panel:null});assert.doesNotMatch(text(out.html),/could not be shown|Partial data/,section);}
-  await ui.open({section:'overview'});await ui.click('setup-standard');assert.equal((await x.rows(map['investorupdates.categories'].typeId)).length,0,'nothing before approval');await ui.approve();
+  await ui.open({section:'overview'});await ui.click('setup-standard');assert.ok((await x.rows(map['investorupdates.categories'].typeId)).length>0,'D16 (4.4): saved directly');await ui.approve();
   assert.deepEqual((await x.rows(map['investorupdates.categories'].typeId)).map((r:any)=>r.data.kind).sort(),['board','investors','shareholders']);assert.equal((await x.rows(map['investorupdates.templates'].typeId)).length,5);assert.equal((await x.rows(map['investorupdates.share_classes'].typeId)).length,0);
   // No runner: the drafting automation needs setup; the email automations (no runner needed) are active.
   const setups=await x.reconcile(id);assert.deepEqual(setups.map((r:any)=>r.recipe_key),['meeting_before_draft','new_response','ready_for_review','weekly_digest']);
@@ -230,8 +231,9 @@ test('exchange: one confirmed send (assistants cannot confirm), tracked deliveri
   assert.ok(rd.result.recipients.excluded.some((e:any)=>e.name==='Priya Natarajan'&&/unsubscribed/.test(e.reason)));assert.equal(rd.result.recipients.people,2);
   // Assistants: commands propose only (a person confirms), there is no send command, and links never reach them.
   const c=await x.comp(w,id),cl=await listAppCommands(x.f,x.ai,w,{appId:c.id});assert.equal(cl.commands.length,39);assert.ok(!cl.commands.some((k:any)=>/send|approve/.test(k.id)));
-  const dr=await runAppCommand(x.f,x.ai,w,{appId:c.id,expectedVersion:c.version,command:'update.create_draft',input:{format:'email',title:'Draft from chat',category_ids:JSON.parse(plan.data.category_ids),kind:'one_off'},requestKey:randomUUID()});assert.equal(dr.ok,true,dr.error);assert.ok(dr.proposal);
-  await assert.rejects(()=>x.f.confirm(x.ai,w,dr.proposal!.previewId,dr.proposal!.digest));await x.f.confirm(x.human,w,dr.proposal!.previewId,dr.proposal!.digest);assert.ok((await x.rows(T('investorupdates.updates'))).some((u:any)=>u.data.title==='Draft from chat'));
+  const dr=await runAppCommand(x.f,x.ai,w,{appId:c.id,expectedVersion:c.version,command:'update.create_draft',input:{format:'email',title:'Draft from chat',category_ids:JSON.parse(plan.data.category_ids),kind:'one_off'},requestKey:randomUUID()});assert.equal(dr.ok,true,dr.error);assert.ok(tookEffect(dr));
+  // A4 (4.4): the draft is a record change, so with Data = Edit it saves directly; sending it still needs a person.
+  assert.ok(dr.saved);assert.equal(dr.proposal,null);assert.ok((await x.rows(T('investorupdates.updates'))).some((u:any)=>u.data.title==='Draft from chat'));
   const bot=x.app(w,id,x.ai);await bot.open({section:'updates'});await bot.click('send-open:'+uid);assert.doesNotMatch(J(bot.last),new RegExp(tok(byTo('mara@alder.example.invalid'))),'no recipient link reaches an assistant');
   // Archive first: archiving the app stops the online links; restoring makes them available again.
   await x.change(w,{kind:'archive_component',componentId:id,expectedVersion:(await x.comp(w,id)).version,archived:true});assert.equal((await mara.get()).status,404);

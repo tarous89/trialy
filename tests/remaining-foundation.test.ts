@@ -1,3 +1,4 @@
+import {settle,tookEffect} from './settle.js';
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
 import {randomUUID} from 'node:crypto';
@@ -47,7 +48,7 @@ test('Task setup, project relationships, exact alias correction, collection cons
   const aiCustom=await f.preview(ai,w.id,{kind:'save_component',projectId:project.id,content});await f.discard(ai,w.id,aiCustom.id);
   const componentPreview=await f.preview(a,w.id,{kind:'save_component',projectId:project.id,content});const component=await f.confirm(a,w.id,componentPreview.id,componentPreview.digest);assert.equal((await f.readComponent(editor,w.id,component.id)).component.source_access,'bindings');assert.equal((await f.nodes(editor,w.id)).nodes.length,1);
   await assert.rejects(f.preview(editor,w.id,{kind:'save_component',projectId:project.id,content}),/Only an owner/);
-  const run=await f.runFrontend(editor,w.id,{componentId:component.id,expectedVersion:0,event:{kind:'click',action:'edit'}});assert.ok(run.proposal);await f.confirm(editor,w.id,run.proposal.id,run.proposal.digest);assert.ok((await s.records(editor,w.id,configured.typeId)).rows.some(r=>r.data.name==='Human correction'));
+  const run=await f.runFrontend(editor,w.id,{componentId:component.id,expectedVersion:0,event:{kind:'click',action:'edit'}});assert.ok(tookEffect(run));await settle(f,editor,w.id,run);assert.ok((await s.records(editor,w.id,configured.typeId)).rows.some(r=>r.data.name==='Human correction'));
   // An older hidden field blocks even owner-approved source access when a required binding is hidden. It can no longer be set (A2, D1), so it is seeded.
   await assert.rejects(s.share(a,w.id,editor.userId,'editor',['name'],[configured.typeId],true),retired);await f.readComponent(editor,w.id,component.id);await seedHiddenFields(db,w.id,editor.userId,['name']);await assert.rejects(f.readComponent(editor,w.id,component.id),/unavailable/);
   const filePreview=await s.previewFile(a,w.id,{filename:'source.txt',mime:'text/plain',bytes:Buffer.from('Saved source'),ai:true});const file=(await s.commit(a,filePreview.id,filePreview.digest)).objects[0] as any;

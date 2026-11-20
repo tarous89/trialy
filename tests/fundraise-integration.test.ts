@@ -1,3 +1,4 @@
+import {settle,tookEffect} from './settle.js';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {PGlite} from '@electric-sql/pglite';
@@ -30,8 +31,8 @@ test('installed Fundraise: an activity and last_activity_on in one reviewed save
   const before=(await rows('fundraise.activities')).length;
   const open=await run({section:'activity'},{kind:'click',action:'add:acts:'+opp.id});
   const p=await run(open.state,{kind:'submit',action:'save-record',form:{opportunity_id:opp.id,activity_on:'2026-11-10',kind:'call',summary:'Partner meeting booked'}});
-  assert.ok(p.proposal,p.state?.notice);assert.equal((await rows('fundraise.activities')).length,before,'nothing written before approval');
-  await f.confirm(actor,w.id,p.proposal.id,p.proposal.digest);
+  assert.ok(tookEffect(p),p.state?.notice);assert.equal((await rows('fundraise.activities')).length,before+1,'D16 (4.4): saved directly');
+  await settle(f,actor,w.id,p);
   assert.equal((await rows('fundraise.activities')).length,before+1);
   assert.equal((await rows('fundraise.opportunities')).find((r:any)=>r.id===opp.id)!.data.last_activity_on,'2026-11-10','same reviewed save');
   // Native layout: presentation only, versioned review, re-read on every render.
@@ -291,7 +292,7 @@ test('customization: a custom field added by an assistant through reviewed chang
   // A person edits the field through the app's reviewed save.
   const run=(state:any,event:any)=>x.comp(w,id).then(cc=>f.runFrontend(actor,w,{componentId:cc.id,expectedVersion:cc.version,state,event}));
   const ed=await run({section:'pipeline'},{kind:'click',action:'edit:opps:'+opp});assert.match(ed.html,/name="syndicate_role"/);
-  const sv:any=await run(ed.state,{kind:'submit',action:'save-record',form:{syndicate_role:'Lead'}});await f.confirm(actor,w,sv.proposal.id,sv.proposal.digest);
+  const sv:any=await run(ed.state,{kind:'submit',action:'save-record',form:{syndicate_role:'Lead'}});await settle(f,actor,w,sv);
   assert.equal((await x.pg.query<any>('SELECT data FROM records WHERE id=$1',[opp])).rows[0].data.syndicate_role,'Lead');
   assert.match(text((await x.open(w,id,{section:'pipeline',detail:{role:'opps',id:opp}})).html),/Syndicate role Lead/);
  }finally{await x.pg.close();}

@@ -1,3 +1,4 @@
+import {settle,tookEffect} from '../settle.js';
 import {PGlite} from '@electric-sql/pglite';
 import {readFile,readdir} from 'node:fs/promises';
 import {randomUUID} from 'node:crypto';
@@ -57,7 +58,7 @@ export async function contractsSuite(){
  const save=async(w:string,typeId:string,data:any,who:Actor=actor)=>{const p=await s.preview(who,w,{kind:'create_record',typeId,data});return (await s.commit(who,p.id,p.digest)).objects[0].id as string;};
  const update=async(w:string,id:string,data:any)=>{const r=(await pg.query<any>('SELECT version FROM records WHERE id=$1',[id])).rows[0];const p=await s.preview(actor,w,{kind:'update_record',recordId:id,expectedVersion:r.version,data});return s.commit(actor,p.id,p.digest);};
  const run=async(w:string,id:string,state:any={},event:any={kind:'open'})=>{const c=await comp(w,id);return f.runFrontend(actor,w,{componentId:c.id,expectedVersion:c.version,state,event});};
- const approve=async(w:string,out:any)=>{if(!out.proposal)throw Error('No proposal: '+(out.state?.notice??''));return f.confirm(actor,w,out.proposal.id,out.proposal.digest);};
+ const approve=async(w:string,out:any)=>{if(!tookEffect(out))throw Error('No proposal: '+(out.state?.notice??''));return settle(f,actor,w,out);};
  const rows=async(typeId:string)=>(await pg.query<any>("SELECT id,version,data FROM records WHERE type_id=$1 AND state<>'archived' ORDER BY created_at,id",[typeId])).rows;
  const count=async(sql:string,args:any[])=>(await pg.query<any>(sql,args)).rows[0].n as number;
  const tables=(w:string)=>count('SELECT count(*)::int n FROM entity_types WHERE workspace_id=$1 AND deleted_at IS NULL',[w]);

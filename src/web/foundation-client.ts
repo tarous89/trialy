@@ -107,6 +107,7 @@ export function foundationClient(api:(path:string,method?:string,body?:unknown,o
  invoke_component_function:[`${o}/functions/invoke`,'POST',v.request],
  run_component_frontend:[`${o}/frontend/run`,'POST',v.request],
  read_app_data:[`${o}/apps/data`,'POST',v.request],
+ save_app_records:[`${o}/apps/save`,'POST',v.request],list_app_undo:[`${o}/apps/undo/list`,'POST',v.request],undo_app_change:[`${o}/apps/undo`,'POST',v.request],
  render_project_component:[`${o}/components/${v.componentId}/render?block=${v.block}&offset=${v.offset??0}`],
  list_project_sharing_members:[`${o}/sharing-members`],
  list_project_components:[`${o}/components${v.projectId?'?projectId='+encodeURIComponent(v.projectId):''}`],read_project_component:[`${o}/components/${v.componentId}${v.includeOutput?'?includeOutput=true':''}`],read_component_history:[`${o}/components/${v.componentId}/history`],

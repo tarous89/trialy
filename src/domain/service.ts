@@ -24,6 +24,8 @@ import {PostgresOriginalStore,type OriginalStore} from '../db/originals.js';
 import { templates, templateLinks } from './templates.js';
 import {assertUntracked} from './exchange-room-model.js';
 export type FileOperation={kind:'save_document';filename:string;mime:string;bytes:Buffer;ai:boolean;documentId?:string;expectedVersion?:number;submissionFileId?:string};
+/** A record change an app saves (4.4); restore_record is produced only by Undo (4.6). */
+export type RecordChange={kind:'create_record';typeId:string;data:Record<string,any>}|{kind:'update_record';recordId:string;expectedVersion:number;data:Record<string,any>;reason?:string}|{kind:'archive_record';recordId:string;expectedVersion:number}|{kind:'restore_record';recordId:string;expectedVersion:number;state:string};
 type Preview={id:string;actorId:string;workspaceId:string;operation:Operation|FileOperation;digest:string;expires:number;schemaFingerprint?:string;migrationFingerprint?:string};
 const json=(v:unknown)=>JSON.stringify(v);
 export class Service extends DataService {
@@ -412,6 +414,56 @@ export class Service extends DataService {
    await tx.query('INSERT INTO commit_receipts(preview_id,actor_id,workspace_id,digest,result) VALUES($1,$2,$3,$4,$5)',[id,a.userId,p.workspaceId,digest,json(result)]);
    await tx.query('DELETE FROM data_previews WHERE id=$1',[id]);return result;
   });return result;
+ }
+ /**
+  * P5, P6, B3, D19 (4.4, 4.6): apply record changes in the caller's transaction, validated exactly once, with no
+  * preview row. Used by an app's direct save, its Undo and a reviewed app record change. Changes are create, update,
+  * archive (an app's delete) and, for Undo only, restore. Returns what was saved and the reverse change of each step,
+  * computed here from the saved state, so the client never supplies earlier values.
+  */
+ async applyRecordChanges(tx:Connection,a:Actor,w:string,changes:RecordChange[],authorization:WriteAuthorization):Promise<{objects:any[];inverse:RecordChange[];policy:any}>{
+  const writes=changes.filter((c):c is Extract<RecordChange,{kind:'create_record'|'update_record'}>=>c.kind==='create_record'||c.kind==='update_record');
+  const normalized=writes.length?(await this.normalizeOperation(w,{kind:'bulk_records',changes:writes})).changes:[];
+  const policy=writes.length?await this.validate(tx,a,w,{kind:'bulk_records',changes:normalized}):await access(tx,a,w,true);
+  if(!writes.length)requireAssistantChange(policy,a,'bulk_records');
+  for(const c of changes)if(c.kind==='archive_record'||c.kind==='restore_record')await this.stateChangeCheck(tx,a,w,c);
+  await setWriteAuthorization(tx,a,authorization);
+  const objects:any[]=[],inverse:RecordChange[]=[];let next=0;
+  for(const change of changes){
+   if(change.kind==='create_record'||change.kind==='update_record'){
+    const c=normalized[next++]!;
+    const before=c.kind==='update_record'?(await tx.query('SELECT data FROM records WHERE id=$1 AND workspace_id=$2 FOR UPDATE',[c.recordId,w])).rows[0]:null;
+    const [saved]=await this.apply(tx,a,w,c,policy);objects.push(saved);
+    inverse.unshift(c.kind==='create_record'?{kind:'archive_record',recordId:saved.id,expectedVersion:saved.version}:{kind:'update_record',recordId:c.recordId,expectedVersion:saved.version,data:Object.fromEntries(Object.keys(c.data).map(k=>[k,before.data[k]??null]))});
+    continue;
+   }
+   const r=(await tx.query('SELECT * FROM records WHERE id=$1 AND workspace_id=$2 FOR UPDATE',[change.recordId,w])).rows[0],version=r.version+1;
+   const state=change.kind==='archive_record'?'archived':change.state;
+   await tx.query('UPDATE records SET state=$2,version=$3,updated_at=now() WHERE id=$1',[r.id,state,version]);
+   await revision(tx,a,w,r.id,'record',version,{data:r.data,state});
+   await audit(tx,a,policy,change.kind==='archive_record'?'record.archived':'record.archive_undone',r.id,{state:r.state,version:r.version},{state,version,retained:true,authorization});
+   objects.push({id:r.id,kind:'record',version,state});
+   inverse.unshift(change.kind==='archive_record'?{kind:'restore_record',recordId:r.id,expectedVersion:version,state:r.state}:{kind:'archive_record',recordId:r.id,expectedVersion:version});
+  }
+  return {objects,inverse,policy};
+ }
+ /** D19: archiving (an app's delete) needs the whole record: every field visible and writable. Undo restores the earlier state. */
+ private async stateChangeCheck(tx:Connection,a:Actor,w:string,c:Extract<RecordChange,{kind:'archive_record'|'restore_record'}>){
+  const r=(await tx.query('SELECT * FROM records WHERE id=$1 AND workspace_id=$2',[c.recordId,w])).rows[0];if(!r)fail(404,'not_found','Record not found');
+  const {type,policy}=await typeAccess(tx,a,w,r.type_id,true);await assertRecordScope(tx,policy,r.id);
+  const editable=type.fields.filter((f:Field)=>!derived(f)).map((f:Field)=>f.key);
+  if(visibleFields(type.fields,policy,a).length!==type.fields.length||editable.some((k:string)=>!policy.write_fields.includes(k)))fail(403,'full_record_required','Deleting needs edit access to every field of the record');
+  if(r.version!==c.expectedVersion)fail(409,'stale_version','The record changed. Refresh and try again.');
+  await assertUntracked(tx,r.type_id,{},r,true);
+  if(c.kind==='archive_record'){
+   if(['archived','superseded'].includes(r.state))fail(409,'controlled_record','This record is already deleted or replaced');
+   if(policy.legal_hold||(policy.retention_until&&new Date(policy.retention_until).getTime()>Date.now()))fail(409,'retention_protected','Retention policy prevents deletion');
+  }else{
+   if(r.state!=='archived')fail(409,'stale_version','The record is no longer deleted');
+   if(!['draft','in_review','approved'].includes(c.state))fail(400,'invalid_state','Unknown record state');
+   // Restoring re-checks the values against the table as it is now.
+   await this.validateData(tx,a,w,type,policy,editableData(type.fields,r.data),false,r.id);
+  }
  }
  /** Create a reviewed graph atomically; temporary IDs never become record references. */
  async createTypeBundle(tx:Connection,a:Actor,w:string,tables:{id:string;name:string;fields:Field[]}[],authorization:WriteAuthorization){

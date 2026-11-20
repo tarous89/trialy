@@ -1,4 +1,5 @@
 import {materializeAppFunctions,safeAppHelpers,appHelpersOnly,retainHelperManifest} from './app-functions.js';
+import {frameUrl} from './frame-url.js';
 import {validateAppFunctions,declaredFunctionRoles,readAppFunctions} from './app-functions-schema.js';
 import {cleanupRemovedAppFields} from './app-cleanup.js';
 import {bindingRestores,restoreBoundSchema,typeAccessIncludingArchived} from '../domain/archive.js';
@@ -32,6 +33,7 @@ import {appIntegrations} from './integrations.js';
 import {appDocuments,documentCapabilities} from './app-documents.js';
 import {DerivedReader} from '../domain/derived-fields.js';
 import {AppCapabilities,READ_CAPABILITIES} from './app-capabilities.js';
+import {parseValue} from '../shared/validation.js';
 import {derived} from '../shared/formulas.js';
 import {exchangeReview,createExchange} from '../domain/exchange.js';
 import {TableMappings,mappingStamp,validatePairs} from './mappings.js';
@@ -40,11 +42,11 @@ import {z} from 'zod';
 import {id} from '../shared/schema.js';
 import {requireCurrentAction,requireHuman,type WriteAuthorization} from '../domain/write-authorization.js';
 import {execute,LIMITS} from '../foundation/runtime.js';
-import {frontendRequest,frontendOutput,frontendRead,componentRecordChanges,readAppDataRequest} from './frontend.js';
+import {frontendRequest,frontendOutput,frontendRead,componentRecordChanges,readAppDataRequest,saveAppRecordsRequest,undoAppChangeRequest} from './frontend.js';
 import {interfaceSchema} from './ui.js';
 import {randomUUID} from 'node:crypto';
 import type {Database,Connection} from '../db/database.js';
-import {Service} from '../domain/service.js';
+import {Service,type RecordChange} from '../domain/service.js';
 import {access,typeAccess,visibleFields,projectData} from '../domain/permissions.js';
 import {requireAppOwner} from '../domain/app-roles.js';
 import {appChangeDependencies,dependencySummary,refuseBreaking} from './dependencies.js';
@@ -229,24 +231,26 @@ export class WorkspaceFoundation {
     if(prefix!=='bound'||!control||!recordId||!/^\d+$/.test(versionText??''))fail(400,'invalid_control','Choose a bound writable field');
     const record=await this.record(this.db,a,w,id.parse(recordId),true);
     if(record.type_id!==control.typeId)fail(403,'manifest_binding','Record does not belong to this control');
-    const field=record.fields.find((f:any)=>f.key===control.field);if(!field)incompatible();let value:any=rawValue;
-    if(value===''&&!field.required)value=null;
-    else if(field.multiple&&typeof value==='string'&&value.trim().startsWith('[')){try{value=JSON.parse(value);}catch{fail(400,'invalid_value','Enter a valid list of values');}if(!Array.isArray(value))fail(400,'invalid_value','Enter a list of values');}
-    else if(['number','money'].includes(field.kind)){if(typeof value!=='string'||!value.trim()||!Number.isFinite(Number(value)))fail(400,'invalid_value','Enter a valid number');value=Number(value);}
-    else if(field.kind==='boolean'&&typeof value!=='boolean')fail(400,'invalid_value','Choose a boolean value');
+    const field=record.fields.find((f:any)=>f.key===control.field);if(!field)incompatible();
+    // X3 (4.1): the shared parser turns typed text into the field's value; ambiguous input is refused, not guessed.
+    if(field.kind==='boolean'&&typeof rawValue!=='boolean'&&typeof rawValue!=='string')fail(400,'invalid_value','Choose a boolean value');
+    const parsed=parseValue(field,rawValue);if('issue' in parsed)failWith(400,'invalid_value',parsed.issue.message,{issues:[{...parsed.issue,row:null}]});
+    const value:any=parsed.value===null&&field.required?'':parsed.value;
     let change=changes.find(c=>c.recordId===recordId);if(!change){change={kind:'update_record',recordId,expectedVersion:Number(versionText),data:{}};changes.push(change);}
     if(change.expectedVersion!==Number(versionText))fail(409,'stale_version','Edit versions disagree');
     change.data[control.field]=value;
    }
    signal?.throwIfAborted();
-   const proposal=await this.preview(a,w,{kind:'apply_component_records',componentId:request.componentId,expectedVersion:version,viewId,changes});
-   return {boundEdit:true,proposal,state:request.state,html:'',css:''};
+   // P5, B3 (4.4, 4.5): the edit saves directly, then the screen is rendered once from the saved data, in this one request.
+   const saved=await this.saveAppRecords(a,w,{componentId:request.componentId,expectedVersion:version!,...(viewId?{viewId}:{}),requestKey:request.requestKey??randomUUID(),changes});
+   const {requestKey:ignored,...next}=request;
+   return {...await this.runFrontend(a,w,{...next,viewId,event:{kind:'open',action:'',value:null,form:{}}},signal),boundEdit:true,saved};
   }
   // Draft evaluation has its own bounded capacity and cannot occupy a published app slot.
   const knownTracker=standardTracker(content.source),pool=request.componentId?activeFrontends:activeDraftFrontends,key=w+':'+a.userId+':'+(request.componentId??request.previewId);
   signal?.throwIfAborted();
   const release=knownTracker?undefined:await pool.acquire(a.userId,key,signal);
-  const changes:any[]=[],invocations:any[]=[],connectorReviews:any[]=[];let layoutProposal:any=null,exchangeProposal:any=null;
+  const changes:any[]=[],invocations:any[]=[],connectorReviews:any[]=[];let layoutProposal:any=null,exchangeProposal:any=null,rerender:{state:unknown;saved:any}|null=null;
   try{
    signal?.throwIfAborted();
    // Only queued admission needs to repeat the checks made just above.
@@ -263,6 +267,13 @@ export class WorkspaceFoundation {
    const handler=async(name:string,value:unknown):Promise<any>=>{
     signal?.throwIfAborted();
     if(capabilities.handles(name))return capabilities.call(name,value);
+    // G8 (4.6): the app places its own Undo control. Listing is a read; undoing needs the person's own click in this open app.
+    if(name==='undo.list'||name==='undo.run'){
+     if(!request.componentId||!viewId)fail(403,'preview_read_only','Undo is available in a saved, open app');
+     if(name==='undo.list')return this.listUndo(a,w,{componentId:request.componentId,viewId});
+     if(a.origin!=='human'||!['click','submit'].includes(request.event.kind))fail(403,'undo_interaction','Undo runs from a person\'s own click in the app');
+     const v=z.object({undoId:id}).strict().parse(value);return this.undoAppChange(a,w,{componentId:request.componentId,viewId,undoId:v.undoId});
+    }
     if(['actions.list','actions.run','actions.status','connectors.status'].includes(name)&&process.env.SIMPLE_APPS_ENABLED==='true'){
      if(!request.componentId)fail(403,'preview_read_only','Open a saved app');
      const actions=new AppActions(this.db);
@@ -373,20 +384,33 @@ export class WorkspaceFoundation {
    if(new Set(controls.map(c=>c.slot)).size!==controls.length)fail(400,'duplicate_control','Control slots must be unique');
    signal?.throwIfAborted();
    // Once this write transaction starts, let it finish and retain its receipts.
+   const command=request.event.kind==='command',directSave=!!request.componentId&&(command?!!request.requestKey:['click','change','submit'].includes(request.event.kind));
+   if(command&&!request.requestKey&&changes.length)fail(500,'command_contract','A read command proposed changes; the app must be fixed.');
+   let saved:any=null;
    const {proposal,queued}=!layoutProposal&&!exchangeProposal&&!changes.length&&!invocations.length?{proposal:null,queued:[]}:await this.db.transaction(async tx=>{
     signal?.throwIfAborted();
-    await tx.query('SELECT id FROM workspaces WHERE id=$1 FOR UPDATE',[w]);const f=new WorkspaceFoundation(adapter(tx));
+    // P8 (4.7): a save of records only shares the workspace lock; reviews, layout and function runs keep it exclusive.
+    await tx.query(`SELECT id FROM workspaces WHERE id=$1 ${!layoutProposal&&!exchangeProposal&&!invocations.length&&directSave?'FOR SHARE':'FOR UPDATE'}`,[w]);const f=new WorkspaceFoundation(adapter(tx));
     if(request.componentId){const runtime=await f.runtimeComponent(tx,a,w,request.componentId,version,viewId);assertRuntimeScope(runtime.latest,content);}
     if(layoutProposal&&(changes.length||invocations.length))fail(400,'mixed_changes','Review layout and data changes separately');
     if(exchangeProposal&&invocations.length)fail(400,'mixed_changes','Review exchange changes and function runs separately');
     // An exchange change and the app's own record changes (e.g. the supplier's status) are one review and one transaction.
     if(exchangeProposal&&changes.length)exchangeProposal={...exchangeProposal,records:{componentId:request.componentId,expectedVersion:version,...(viewId?{viewId}:{}),changes}};
-    let proposal=layoutProposal?await f.preview(a,w,layoutProposal):exchangeProposal?await f.preview(a,w,exchangeProposal):changes.length?await f.preview(a,w,{kind:'apply_component_records',componentId:request.componentId,expectedVersion:version,viewId,changes}):null;
+    // P5, A4, A6, D16 (4.4): record changes from a person's own click, edit or form, or from an app command (an assistant
+    // with Data = Edit), save directly. Changes an app makes while opening, and record changes that travel with an
+    // exchange (something goes out), keep their review.
+    if(!layoutProposal&&!exchangeProposal&&changes.length&&directSave){saved=await f.saveRecordsIn(tx,a,w,{componentId:request.componentId!,expectedVersion:version!,...(viewId?{viewId}:{}),requestKey:request.requestKey??randomUUID(),changes});}
+    let proposal=layoutProposal?await f.preview(a,w,layoutProposal):exchangeProposal?await f.preview(a,w,exchangeProposal):changes.length&&!saved?await f.preview(a,w,{kind:'apply_component_records',componentId:request.componentId,expectedVersion:version,viewId,changes}):null;
     if(layoutProposal&&proposal?.reviewState==='draft')proposal=(await f.finalizeAppPreview(a,w,proposal.id,proposal.digest)).preview;
     const queued=[];for(const v of invocations){const latest=await f.component(tx,a,w,request.componentId!);if(!isDeepStrictEqual(content.execution.find((b:any)=>b.name===v.binding),latest.execution.find((b:any)=>b.name===v.binding)))incompatible();queued.push(await f.invokeComponent(a,w,{...v,componentId:request.componentId,expectedVersion:latest.version}));}return {proposal,queued};
    });
-   return {queued,...(connectorReviews.length?{connectorReviews}:{}),viewId,runtime:'trialy-frontend-js-v1',frameUrl:new URL('/frontend/frame',appPublicUrl()).toString(),...output,css:runtimeCss+output.css,accessVersion:currentPolicy.access_version,accessStamp,controls,connected:!!content.manifest,proposal,temporary:!request.componentId,...(tracker?{tracker:{config:tracker.config,theme:tracker.theme,pages,saved:!!request.componentId,writable}}:{})};
+   if(saved&&!command){rerender={state:output.state,saved};}
+   else return {queued,...(saved?{saved}:{}),...(connectorReviews.length?{connectorReviews}:{}),viewId,runtime:'trialy-frontend-js-v1',frameUrl:frameUrl(),...output,css:runtimeCss+output.css,accessVersion:currentPolicy.access_version,accessStamp,controls,connected:!!content.manifest,proposal,temporary:!request.componentId,...(tracker?{tracker:{config:tracker.config,theme:tracker.theme,pages,saved:!!request.componentId,writable}}:{})};
   }finally{release?.();}
+  // After a direct save the app is rendered once more from the saved data, with the state it returned (v1 apps), so the
+  // person sees the result without a second request. The queue slot was released first.
+  const {requestKey:ignored,...next}=request;
+  return {...await this.runFrontend(a,w,{...next,viewId,state:rerender!.state,event:{kind:'open',action:'',value:null,form:{}}},signal),saved:rerender!.saved};
  }
  /**
   * P3, P6, P8 (4.3): an app's reads without its sandbox or queue. The app is checked once, the reads run with the
@@ -405,6 +429,124 @@ export class WorkspaceFoundation {
    if((await access(db,a,w)).access_version!==before.access_version)fail(409,'access_changed','Permissions changed while reading. Try again.');
    return {componentId:v.componentId,version:runtime.c.version,viewId:runtime.view.id,accessVersion:before.access_version,results};
   })));
+ }
+ /**
+  * P5, B3, A6, D16, D17 (4.4): an app's record changes save directly, in one transaction, with one validation and no
+  * review step: for people, and for assistants whose Data level is Edit. The request key makes a retry return the
+  * first result. Edits to different fields of a record that changed meanwhile both save; an edit to a field someone
+  * else changed first is refused with the newer value (stale_value) and nothing is written. Returns only the changed
+  * rows, as the caller may see them, and an Undo id (4.6).
+  */
+ async saveAppRecords(a:Actor,w:string,input:unknown):Promise<any>{
+  const v=saveAppRecordsRequest.parse(input);a={...a,accessToolId:v.componentId};
+  return withActor(a,()=>this.db.transaction(tx=>new WorkspaceFoundation(adapter(tx)).saveRecordsIn(tx,a,w,v)));
+ }
+ async saveRecordsIn(tx:Connection,a:Actor,w:string,v:z.infer<typeof saveAppRecordsRequest>):Promise<any>{
+  a={...a,accessToolId:v.componentId};
+  await tx.query('SELECT pg_advisory_xact_lock(hashtext($1))',[v.requestKey]);
+  const digest=checksum(J({componentId:v.componentId,expectedVersion:v.expectedVersion,changes:v.changes}));
+  const existing=(await tx.query('SELECT * FROM commit_receipts WHERE preview_id=$1',[v.requestKey])).rows[0];
+  if(existing){if(existing.actor_id!==a.userId||existing.digest!==digest||existing.workspace_id!==w)fail(409,'receipt_mismatch','This save key was already used for another change');await access(tx,a,w);return {...existing.result,retried:true};}
+  // P8 (4.7): record saves share the workspace lock, so they never queue behind each other; access and configuration
+  // changes still take it exclusively and so never interleave with a save. Records themselves are locked row by row.
+  await tx.query('SELECT id FROM workspaces WHERE id=$1 FOR SHARE',[w]);
+  const changes=await this.mergeConcurrentEdits(tx,a,w,v);
+  await this.validate(tx,a,w,{kind:'apply_component_records',componentId:v.componentId,expectedVersion:v.expectedVersion,...(v.viewId?{viewId:v.viewId}:{}),changes});
+  const service=new Service(adapter(tx));
+  const applied=await service.applyRecordChanges(tx,a,w,changes as RecordChange[],{kind:'approval',id:v.requestKey,digest,context:'app_direct_edit'});
+  const component=await this.component(tx,a,w,v.componentId,!v.viewId);
+  await this.linkCreatedRecords(tx,a,w,component,changes,applied.objects,applied.policy,{kind:'approval',id:v.requestKey,digest,context:'app_direct_edit'});
+  await audit(tx,a,applied.policy,'component.records_applied',v.componentId,null,{componentVersion:v.expectedVersion,records:applied.objects,direct:true,requestKey:v.requestKey});
+  const rows=await this.appRows(tx,a,w,component,applied.objects.map(o=>o.id));
+  const undoId=v.viewId?await this.recordUndo(tx,a,w,v.componentId,v.viewId,v.requestKey,changes,applied):null;
+  const result={status:'saved',requestKey:v.requestKey,rows,invalidated:[...new Set(rows.map((r:any)=>r.typeId))],undoId,savedAt:new Date().toISOString()};
+  await tx.query('INSERT INTO commit_receipts(preview_id,actor_id,workspace_id,digest,result) VALUES($1,$2,$3,$4,$5)',[v.requestKey,a.userId,w,digest,J(result)]);
+  return result;
+ }
+ /** D17: a record that changed since the app read it. Fields nobody else changed are saved on top of the newer version. */
+ private async mergeConcurrentEdits(tx:Connection,a:Actor,w:string,v:{componentId:string;changes:any[]}){
+  const out=[];
+  for(const change of v.changes){
+   if(change.kind!=='update_record'){out.push(change);continue;}
+   const current=(await tx.query('SELECT id,version,data FROM records WHERE id=$1 AND workspace_id=$2 FOR UPDATE',[change.recordId,w])).rows[0];
+   if(!current||current.version===change.expectedVersion){out.push(change);continue;}
+   const base=(await tx.query("SELECT snapshot FROM revisions WHERE workspace_id=$1 AND object_id=$2 AND object_kind='record' AND version=$3",[w,change.recordId,change.expectedVersion])).rows[0]?.snapshot?.data;
+   const changed=Object.keys(change.data).filter(k=>!base||J(current.data[k]??null)!==J(base[k]??null));
+   if(changed.length){
+    const component=await this.component(tx,a,w,v.componentId,false),[row]=await this.appRows(tx,a,w,component,[change.recordId]);
+    failWith(409,'stale_value','Someone changed this value first. Their value is shown; your edit was not saved.',{recordId:change.recordId,fields:changed.filter(k=>row&&Object.hasOwn(row.data,k)),row:row??null});
+   }
+   out.push({...change,expectedVersion:current.version});
+  }
+  return out;
+ }
+ /** Records created by an app with a project scope join its project in the same transaction. */
+ private async linkCreatedRecords(tx:Connection,a:Actor,w:string,component:any,changes:any[],objects:any[],p:any,authorization:any){
+  if(component.manifest?.scope!=='project')return;
+  const created=objects.filter((_:any,i:number)=>changes[i]?.kind==='create_record');
+  for(const record of created){const linkId=randomUUID(),reason='Connect records created by this tracker';await tx.query('INSERT INTO project_records(id,workspace_id,project_id,record_id,created_by,reason) VALUES($1,$2,$3,$4,$5,$6)',[linkId,w,component.project_id,record.id,a.userId,reason]);const snapshot={projectId:component.project_id,recordId:record.id,version:0,active:true,authorization};await revision(tx,a,w,linkId,'project_record',0,snapshot);await audit(tx,a,p,'workspace.link_project_records',linkId,null,snapshot,reason);}
+ }
+ /** Changed rows as the caller may see them through this app: bound fields only, calculated values resolved. */
+ private async appRows(tx:Connection,a:Actor,w:string,c:any,ids:string[]){
+  const bound=Object.fromEntries(c.bindings.map((b:any)=>[b.typeId,b.fields])),reader=new DerivedReader(adapter(tx),a,w,Object.keys(bound),bound),rows=[];
+  for(const id of [...new Set(ids)]){
+   let record;try{record=await this.record(tx,a,w,id);}catch{continue;}
+   const fields=bound[record.type_id];if(!fields)continue;
+   const resolved=await reader.read({...record,data:Object.fromEntries(Object.entries(record.data).filter(([k])=>fields.includes(k)))});
+   rows.push({id:record.id,typeId:record.type_id,version:record.version,state:record.state,data:resolved.data,...(resolved.display?{display:resolved.display}:{})});
+  }
+  return rows;
+ }
+ /** G8, D18 (4.6): keep the reverse of an action for the person who made it, in this open app view, for 60 minutes. */
+ private async recordUndo(tx:Connection,a:Actor,w:string,appId:string,viewId:string,requestKey:string,changes:any[],applied:{objects:any[];inverse:RecordChange[]}){
+  const id=randomUUID(),kinds=new Set(changes.map(c=>c.kind)),n=changes.length;
+  const label=kinds.size===1&&kinds.has('create_record')?(n===1?'Add record':`Add ${n} records`):kinds.size===1&&kinds.has('archive_record')?(n===1?'Delete record':`Delete ${n} records`):kinds.size===1&&kinds.has('update_record')?`Edit ${[...new Set(changes.flatMap(c=>Object.keys(c.data)))].slice(0,3).join(', ')}`:'Change records';
+  await tx.query('DELETE FROM app_undo_entries WHERE user_id=$1 AND workspace_id=$2 AND expires_at<=now()',[a.userId,w]);
+  await tx.query("INSERT INTO app_undo_entries(id,workspace_id,app_id,user_id,view_id,request_key,label,inverse,results,expires_at) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,now()+interval '60 minutes')",[id,w,appId,a.userId,viewId,requestKey,label.slice(0,200),J(applied.inverse),J(applied.objects.map(o=>({recordId:o.id,version:o.version})))]);
+  return id;
+ }
+ /** G8 (4.6): the person's own actions in this open app that can still be undone, newest first (at most 20). */
+ async listUndo(a:Actor,w:string,input:unknown){
+  const v=z.object({componentId:id,viewId:id}).strict().parse(input);
+  await this.component(this.db,{...a,accessToolId:v.componentId},w,v.componentId,false);
+  const rows=(await this.db.query('SELECT id,label,created_at FROM app_undo_entries WHERE workspace_id=$1 AND user_id=$2 AND app_id=$3 AND view_id=$4 AND used_at IS NULL AND expires_at>now() ORDER BY created_at DESC LIMIT 20',[w,a.userId,v.componentId,v.viewId])).rows;
+  return {actions:rows.map(r=>({undoId:r.id,label:r.label,at:new Date(r.created_at).toISOString()}))};
+ }
+ /**
+  * G8, A10, D18 (4.6): undo one of the person's own recent actions. Same person, same open app view, within 60 minutes
+  * and the last 20 actions, and only while every record is still at the version the action left it. The reverse
+  * change is checked like any save, with current access, and recorded as a new change; history is never rewritten.
+  */
+ async undoAppChange(a:Actor,w:string,input:unknown):Promise<any>{
+  const v=undoAppChangeRequest.parse(input);a={...a,accessToolId:v.componentId};
+  return withActor(a,()=>this.db.transaction(async tx=>{
+   const f=new WorkspaceFoundation(adapter(tx));
+   const entry=(await tx.query('SELECT * FROM app_undo_entries WHERE id=$1 AND workspace_id=$2 AND user_id=$3 FOR UPDATE',[v.undoId,w,a.userId])).rows[0];
+   if(!entry||entry.app_id!==v.componentId||entry.view_id!==v.viewId)fail(404,'undo_unavailable','This action can no longer be undone here');
+   if(entry.used_at)fail(409,'undo_used','This action was already undone');
+   if(new Date(entry.expires_at).getTime()<=Date.now())fail(410,'undo_expired','Undo is available for 60 minutes');
+   const newer=Number((await tx.query('SELECT count(*) AS n FROM app_undo_entries WHERE workspace_id=$1 AND user_id=$2 AND view_id=$3 AND created_at>$4',[w,a.userId,v.viewId,entry.created_at])).rows[0].n);
+   if(newer>=20)fail(410,'undo_expired','Undo covers your last 20 actions');
+   await tx.query('SELECT id FROM workspaces WHERE id=$1 FOR SHARE',[w]);
+   // Each record must be as this action left it, or changed since only by undoing later actions of the same person here (Undo is a stack).
+   const later=(await tx.query('SELECT results,undone FROM app_undo_entries WHERE workspace_id=$1 AND user_id=$2 AND view_id=$3 AND created_at>$4 AND used_at IS NOT NULL',[w,a.userId,v.viewId,entry.created_at])).rows;
+   for(const r of entry.results){const now=(await tx.query('SELECT version FROM records WHERE id=$1 AND workspace_id=$2 FOR UPDATE',[r.recordId,w])).rows[0];
+    const undoneSince=(version:number)=>later.some((l:any)=>l.results.some((x:any)=>x.recordId===r.recordId&&x.version===r.version+1)&&l.undone?.some((x:any)=>x.recordId===r.recordId&&x.version===version));
+    if(!now||(now.version!==r.version&&!undoneSince(now.version)))fail(409,'undo_stale','This record changed since, so this action can no longer be undone');}
+   // D18: Undo lasts while the app stays open, so the person's open view of this app must still be live.
+   const live=(await tx.query('SELECT version FROM app_runtime_views WHERE id=$1 AND workspace_id=$2 AND user_id=$3 AND app_id=$4 AND expires_at>now()',[v.viewId,w,a.userId,v.componentId])).rows[0];if(!live)fail(410,'undo_expired','Undo ends when the app is closed');
+   const runtime=await f.runtimeComponent(tx,a,w,v.componentId,live.version,v.viewId);assertRuntimeScope(runtime.latest,runtime.c);
+   // The app's own rules (bindings, writer, project) apply to the reverse change; a restore is checked like the delete it reverses.
+   const inverse=await Promise.all(entry.inverse.map(async(c:any)=>({...c,expectedVersion:(await tx.query('SELECT version FROM records WHERE id=$1',[c.recordId])).rows[0].version})));
+   const asApp=inverse.map((c:any)=>c.kind==='restore_record'?{kind:'archive_record',recordId:c.recordId,expectedVersion:c.expectedVersion}:c);
+   const writes=asApp.filter((c:any)=>c.kind!=='archive_record'||inverse.some((x:any)=>x.kind==='archive_record'&&x.recordId===c.recordId));
+   if(writes.length)await f.validate(tx,a,w,{kind:'apply_component_records',componentId:v.componentId,expectedVersion:runtime.c.version,viewId:v.viewId,changes:writes});
+   const applied=await new Service(adapter(tx)).applyRecordChanges(tx,a,w,inverse,{kind:'approval',id:entry.id,context:'app_undo',reverses:entry.request_key});
+   await tx.query('UPDATE app_undo_entries SET used_at=now(),undone=$2 WHERE id=$1',[entry.id,J(applied.objects.map(o=>({recordId:o.id,version:o.version})))]);
+   await audit(tx,a,applied.policy,'component.change_undone',v.componentId,null,{undoId:entry.id,requestKey:entry.request_key,records:applied.objects});
+   const rows=await f.appRows(tx,a,w,runtime.c,applied.objects.map(o=>o.id));
+   return {status:'undone',undoId:entry.id,label:entry.label,rows,invalidated:[...new Set(rows.map((r:any)=>r.typeId))]};
+  }));
  }
  private parseInterface(content:any){
   let spec;try{spec=interfaceSchema.parse(JSON.parse(content.source));}catch{fail(400,'invalid_interface','Use a valid legacy TrialAgents interface description');}
@@ -831,6 +973,12 @@ export class WorkspaceFoundation {
      const target=change.kind==='create_record'?change.typeId:(await this.record(tx,a,w,change.recordId).catch(()=>null))?.type_id;
      const readRole=readRoles.find(r=>r.typeId===target);if(readRole){const writer=await outputWriter(tx,w,target,readRole.role,writerCache),name=writer&&!writer.deleted?writer.name:null;failWith(403,'role_read_only',`${c.name} reads ${readRole.name}${name?' from '+name:''}; it cannot change it. ${name?'Make this change in '+name+'.':'Make this change where that data is kept.'}`,{role:readRole.role,recordId:change.kind==='update_record'?change.recordId:null,writerAppName:name});}
     }
+    // D19 (4.6): a delete (archive) needs a table this app writes; whole-record access is checked when it is applied.
+    if(change.kind==='archive_record'){const record=await this.record(tx,a,w,change.recordId,true);if(record.version!==change.expectedVersion)fail(409,'stale_version','Record changed');
+     if(!(c.manifest?.fields??[]).some((f:any)=>f.typeId===record.type_id&&f.mode==='write')||!c.bindings.some((b:any)=>b.typeId===record.type_id))fail(403,'binding_required','This app does not write this table');
+     await requireRoleWriter(tx,w,c,record.type_id,writerCache);
+     if(c.manifest?.scope==='project'&&!(await tx.query('SELECT id FROM project_records WHERE workspace_id=$1 AND project_id=$2 AND record_id=$3 AND revoked_at IS NULL',[w,c.project_id,record.id])).rows.length)fail(403,'project_scope','Record is outside this project');
+     continue;}
     const record=change.kind==='update_record'?await this.record(tx,a,w,change.recordId,true):null;
     if(record&&change.kind==='update_record'&&record.version!==change.expectedVersion)fail(409,'stale_version','Record changed');
     const typeId=change.kind==='create_record'?change.typeId:record!.type_id;
@@ -892,7 +1040,7 @@ export class WorkspaceFoundation {
   if(body.kind==='accept_collection_response'){const review=await this.responseReview(this.db,a,w,body);return service.fieldDiff(this.db,a,w,{kind:'create_record',typeId:review.typeId,data:body.data});}
   if(body.kind==='propagate_linked_values')return service.fieldDiff(this.db,a,w,(await this.linkedValueReview(this.db,a,w,body)).operation);
   if(body.kind==='prefer_record_fact'){const review=await this.factReview(this.db,a,w,body);return service.fieldDiff(this.db,a,w,{kind:'update_record',recordId:review.recordId,expectedVersion:body.expectedVersion,data:{[review.field]:review.value},reason:body.reason});}
-  if(body.kind==='apply_component_records'||body.kind==='apply_maintenance')return service.fieldDiff(this.db,a,w,{kind:'bulk_records',changes:body.kind==='apply_maintenance'?body.batch.changes:body.changes});
+  if(body.kind==='apply_component_records'||body.kind==='apply_maintenance')return service.fieldDiff(this.db,a,w,{kind:'bulk_records',changes:body.kind==='apply_maintenance'?body.batch.changes:body.changes.filter((c):c is Exclude<typeof c,{kind:'archive_record'}>=>c.kind!=='archive_record')});
   {const rec=exchangeRecords(body);if(rec)return service.fieldDiff(this.db,{...a,accessToolId:rec.componentId},w,{kind:'bulk_records',changes:(workspaceOperation.parse(rec) as any).changes});}
   if(body.kind==='edit_component_record')return service.fieldDiff(this.db,a,w,{kind:'update_record',recordId:body.recordId,expectedVersion:body.recordVersion,data:{[body.field]:body.value}});
   return [];
@@ -1053,7 +1201,8 @@ export class WorkspaceFoundation {
   if(op.kind==='accept_collection_response'){const review=await this.responseReview(tx,a,w,op),service=new Service(adapter(tx));const draft=await service.preview(a,w,{kind:'accept_submission',submissionId:op.submissionId,typeId:review.typeId,data:op.data});return {workspaceId:w,workspaceFoundation:true,status:'saved',receipt:await service.commit(a,draft.id,draft.digest,authorization)};}
   if(op.kind==='apply_maintenance')return new WorkspaceFoundation(adapter(tx)).maintain(a,w,op.batch,authorization);
   if(op.kind==='apply_component_records'){
-   const service=new Service(adapter(tx));const draft=await service.preview(a,w,{kind:'bulk_records',changes:op.changes});const saved=await service.commit(a,draft.id,draft.digest,authorization);
+   // P6 (4.4): the reviewed change is validated once and applied in this transaction, without a second preview.
+   const service=new Service(adapter(tx));const applied=await service.applyRecordChanges(tx,a,w,op.changes as any,authorization??{kind:'approval',id:randomUUID(),context:'app_review'});const saved={status:'saved',objects:applied.objects,savedAt:new Date().toISOString()};
    const component=await this.component(tx,a,w,op.componentId,!op.viewId);
    if(component.manifest?.scope==='project'){
     // Attach only the exact new rows from this reviewed write, in the same transaction.

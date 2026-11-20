@@ -1,7 +1,17 @@
 # Using TrialAgents templates and optional tasks
 
-Version: 1.3.36
+Version: 1.3.37
 
+
+## Direct saves, validation and Undo (1.3.37)
+
+- Record edits save directly. `records.propose` changes from a person's click, edit or form, and from a write command, are saved in one step after the run, with no review dialog; the screen is rendered again from the saved data in the same request. Do not build "Review changes" or "Save" steps for ordinary record edits unless the job needs one. Changes an app makes while opening, and record changes that travel with an exchange that sends something out, keep their review.
+- An assistant whose Data level is Edit saves records directly through app commands (`run_app_command` returns `saved.rows`); with View only it is refused. App changes (code, layout, connections) still need the person's approval in the footer.
+- The platform checks every write: required values, types, unambiguous numbers and dates (1,234.5 and 2026-11-20; "1,5" and "11/12/2026" are refused), options, declared ranges (`range`), formats (`format`: email, url, phone, code), declared formatting rules (`normalize`: trim, collapse_spaces, lowercase, uppercase) and unique keys, alone or combined (`unique` with `uniqueWith`). Every problem comes back by field (and by row for imports) in `details.issues`; show them beside the values.
+- Two people: edits to different fields of one record both save; an edit to a field someone else changed first is not saved (`stale_value`, with the newer value in `details.row`). Show the newer value and say the edit was not saved.
+- Delete is `{kind:"archive_record",recordId,expectedVersion}` for a person who can edit the whole record. Nothing is removed.
+- Undo: `tools.call('undo.list')` lists the person's own recent actions in this open app (60 minutes, last 20); `tools.call('undo.run',{undoId})` from their click reverses one as a new checked change, refused when the record changed since. Place the control where it helps; sends and connector calls have no Undo.
+- Totals: `tools.call('records.summarize',{typeId,metric,groupBy})` uses all matching records, never just the loaded page. Imports are checked first with `check_import`, which reports each row as ready, problem, duplicate or conflict and writes nothing.
 ## Approval footer, installation popup and dependencies (1.3.36)
 
 - The platform shows every pending app change in one approval footer: Save / Discard for a new app, Publish / Discard for a revision, Approve / Decline for an assistant's change. Apps never draw their own first-save prompt or approval bar. Keep content clear of the footer.
@@ -27,7 +37,7 @@ A recipe with research and email installs as one automation: one popup row ("Res
 
 ## App commands (1.3.31)
 
-When `list_app_commands` returns commands for a saved app, use them to do anything a person can do by clicking: `run_app_command` with the app's current version, the command id, its input and a stable `requestKey`. Read commands return the app's own calculated results; report those and never compute them yourself. Propose and layout commands return the exact review a click would create: show the user what it changes. Record changes are confirmed with `confirm_workspace_change` only after they agree; a layout command is an app change, which the person approves in the approval footer. A retry with the same requestKey returns the same review. A viewer's assistant sees read commands only. When a value is read from another app, a write is refused with `role_read_only` naming the app that writes it: prepare the change in that app instead and tell the user where it will be made.
+When `list_app_commands` returns commands for a saved app, use them to do anything a person can do by clicking: `run_app_command` with the app's current version, the command id, its input and a stable `requestKey`. Read commands return the app's own calculated results; report those and never compute them yourself. Write commands do what the click does: record changes save directly when your Data level is Edit (the result carries `saved.rows`; report them as saved), and changes that send something out return the exact review a click would create, confirmed with `confirm_workspace_change` only after the user agrees. A layout command is an app change, which the person approves in the approval footer. A retry with the same requestKey returns the first result and saves nothing more. A viewer's assistant sees read commands only. When a value is read from another app, a write is refused with `role_read_only` naming the app that writes it: prepare the change in that app instead and tell the user where it will be made.
 
 ## Installing and adding app automations (1.3.27)
 

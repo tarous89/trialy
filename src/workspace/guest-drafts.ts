@@ -1,4 +1,5 @@
 import {appPublicUrl,PLATFORM_ORIGIN} from '../shared/public-url.js';
+import {frameUrl} from './frame-url.js';
 import {randomUUID} from 'node:crypto';
 import {z} from 'zod';
 import type {Database} from '../db/database.js';
@@ -61,7 +62,7 @@ export class GuestDrafts{
     return {rows:t.rows.slice(q.offset,q.offset+q.limit).map(r=>({id:r.id,version:0,data:Object.fromEntries(Object.entries(r.data).filter(([k])=>binding.fields.includes(k)))})),total:t.rows.length,limit:q.limit,offset:q.offset};
    }));
    const controls=(output.controls??[]).map(item=>{const f=c.manifest?.fields.find(f=>f.id===item.fieldId),table=draft.bundle!.tables.find(t=>t.id===f?.typeId),row=table?.rows.find(r=>r.id===item.recordId),field=table?.fields.find(x=>x.key===f?.field);if(!f||!row||!field||!c.bindings.some(b=>b.typeId===table!.id&&b.fields.includes(field.key)))fail(400,'invalid_control','Preview control must refer to a bound draft field');return {slot:item.slot,label:f.label??field.name,kind:field.kind,value:row.data[field.key]??null,options:field.options??[],editable:false,action:''};});
-   return {...output,controls,connected:!!c.manifest,temporary:true,frameUrl:new URL('/frontend/frame',appPublicUrl()).href};
+   return {...output,controls,connected:!!c.manifest,temporary:true,frameUrl:frameUrl()};
   }finally{active.delete(v.handle.id);}
  }
  async destinations(a:Actor,input:unknown){
