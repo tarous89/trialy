@@ -45,6 +45,7 @@ import {randomUUID} from 'node:crypto';
 import type {Database,Connection} from '../db/database.js';
 import {Service} from '../domain/service.js';
 import {access,typeAccess,visibleFields,projectData} from '../domain/permissions.js';
+import {requireAppOwner} from '../domain/app-roles.js';
 import {audit,revision,checksum} from '../domain/evidence.js';
 import {fail,failWith,type Actor} from '../shared/schema.js';
 import {maintenanceSchema,maintenanceBatch,workspaceOperation,type WorkspaceOperation} from './schema.js';
@@ -805,7 +806,9 @@ export class WorkspaceFoundation {
    if(op.kind!=='save_component'||op.content.sourceAccess!=='bindings')await this.componentSourcePolicy(tx,a,w,op.kind==='save_component'?op.content.source:undefined,op.kind==='save_component');
    else if((await access(tx,a,w,true)).role!=='owner')fail(403,'owner_required','Only an owner can approve source sharing with a restricted data audience');
    if((op.kind==='save_component'||op.kind==='move_component')&&op.projectId){const project=(await this.activeNode(tx,a,w,op.projectId))[0];if(project.kind!=='project')fail(400,'project_required','Choose a project');}
-   if(op.componentId){const c=await this.component(tx,a,w,op.componentId);if(c.project_archived)fail(409,'project_archived','Restore the project before editing components');if(c.version!==op.expectedVersion)fail(409,'stale_version','Component changed');}
+   if(op.componentId){const c=await this.component(tx,a,w,op.componentId);if(c.project_archived)fail(409,'project_archived','Restore the project before editing components');if(c.version!==op.expectedVersion)fail(409,'stale_version','Component changed');
+    // A3, R4: changing, moving or archiving an existing app is for its owners.
+    await requireAppOwner(tx,a,await access(tx,a,w,true),op.componentId,'Only an owner of this app can change, move or archive it');}
    if(op.kind==='archive_component'&&!op.archived)await this.restoreRights(tx,a,w,(await this.component(tx,a,w,op.componentId,false)).bindings);
    if(op.kind==='move_component'&&(await this.component(tx,a,w,op.componentId)).manifest?.scope==='project')fail(400,'use_tool_move','Use move_tool to organize this app without changing its data scope');
    if(op.kind==='save_component'&&!op.componentId&&op.expectedVersion!==undefined)fail(400,'invalid_version','New components have no expected version');
@@ -860,7 +863,7 @@ export class WorkspaceFoundation {
    const spec=this.parseInterface(c);if(!spec.blocks.some(b=>b.kind==='table'&&b.editable&&b.typeId===record.type_id&&b.fields.includes(op.field))||!record.fields.some((f:any)=>f.key===op.field&&!derived(f)))fail(403,'field_scope','This field is not editable in this interface');
   }
   if(op.kind==='set_project_access'||op.kind==='set_component_access'){
-   const p=await this.policy(tx,a,w,true);if(p.role!=='owner')fail(403,'owner_required','Only the workspace owner may change sharing');
+   const p=await this.policy(tx,a,w,true);if(op.kind==='set_component_access')await requireAppOwner(tx,a,p,op.componentId,'Only an owner of this app may change who can open it');else if(p.role!=='owner')fail(403,'owner_required','Only the workspace owner may change sharing');
    const target=op.kind==='set_project_access'?await this.node(tx,w,op.nodeId):(await tx.query('SELECT * FROM workspace_components WHERE id=$1 AND workspace_id=$2',[op.componentId,w])).rows[0];
    if(!target||target.version!==op.expectedVersion)fail(409,'stale_version','Sharing target changed');
    const members=(await tx.query('SELECT user_id FROM memberships WHERE tenant_id=$1',[p.tenant_id])).rows;

@@ -2,6 +2,7 @@ import {isDeepStrictEqual} from 'node:util';
 import {z} from 'zod';
 import {id,fail,type Actor} from '../shared/schema.js';
 import {access} from '../domain/permissions.js';
+import {appRole} from '../domain/app-roles.js';
 import {AppTemplates} from './app-templates.js';
 import {catalogBody} from './catalog-source.js';
 import type {WorkspaceFoundation} from './service.js';
@@ -47,7 +48,8 @@ export async function readAppUpdate(f:WorkspaceFoundation,a:Actor,w:string,compo
  if('none' in r)return {available:false as const,reason:r.none};
  const p=await access(f.db,a,w);
  return {available:true as const,componentId:r.c.id,expectedVersion:r.c.version,templateId:r.to.id,name:r.to.name,fromVersion:r.from.version,toVersion:r.to.version,toDigest:r.to.digest,
-  canUpdate:!p.archived&&(p.role==='owner'||p.role==='editor')};
+  // A3: a catalog update changes the app's code, so it is offered to the app's owners.
+  canUpdate:!p.archived&&await appRole(f.db,a,p,r.c.id)==='owner'};
 }
 
 /** A private review of the update. Nothing is saved until it is confirmed like any other app change. */

@@ -21,19 +21,26 @@ export function resourceGrant(p:any,a:Actor,kind:'project'|'tool',resourceId:str
 }
 /** Context is constructed by the server after resolving the saved tool. Never accepted from generated code. */
 /** Columns a permission decision needs. Saved source is large and only section rules read it. */
-export const TOOL_POLICY_QUERY='SELECT id,project_id,allowed_users,ai_enabled,source_access,bindings,manifest FROM workspace_components WHERE id=$1 AND workspace_id=$2';
+/** member_role is the acting person's recorded app role (migration 081); only 'owner' changes a decision. */
+const MEMBER_ROLE='(SELECT m.role FROM app_members m WHERE m.app_id=workspace_components.id AND m.user_id=$3) AS member_role';
+export const TOOL_POLICY_QUERY=`SELECT id,project_id,allowed_users,ai_enabled,source_access,bindings,manifest,team_default_role,${MEMBER_ROLE} FROM workspace_components WHERE id=$1 AND workspace_id=$2`;
+export type AppRole='owner'|'editor'|'viewer';
 export async function toolPolicy(db:Connection,a:Actor,p:any,toolId:string,withSource=false){
  // Section restrictions are derived from saved source; every other decision uses the columns above.
  const sections=withSource||(p.permission_rules??[]).some((r:any)=>r.kind==='app_section'&&r.resourceId===toolId);
- const c=(await db.query(sections?'SELECT * FROM workspace_components WHERE id=$1 AND workspace_id=$2':TOOL_POLICY_QUERY,[toolId,p.id])).rows[0];if(!c)fail(404,'not_found','App unavailable');
+ const c=(await db.query(sections?`SELECT *,${MEMBER_ROLE} FROM workspace_components WHERE id=$1 AND workspace_id=$2`:TOOL_POLICY_QUERY,[toolId,p.id,a.userId])).rows[0];if(!c)fail(404,'not_found','App unavailable');
  const parents:string[]=[];let current=c.project_id;
  while(current){if(parents.includes(current))fail(409,'folder_cycle','Invalid project hierarchy');parents.push(current);const n=(await db.query('SELECT * FROM workspace_nodes WHERE id=$1 AND workspace_id=$2',[current,p.id])).rows[0];if(!n||(p.role!=='owner'&&n.allowed_users!==null&&!n.allowed_users.includes(a.userId))||(a.origin==='ai'&&!n.ai_enabled))fail(403,'tool_access','Project access is restricted');current=n.parent_id;}
  if((p.role!=='owner'&&c.allowed_users!==null&&!c.allowed_users.includes(a.userId))||(a.origin==='ai'&&!c.ai_enabled))fail(403,'tool_access','App access is restricted');
  const grant=resourceGrant(p,a,'tool',c.id,parents);if(!grant.read)fail(403,'tool_access','You do not have access to this app');
  // Legacy source may contain copied values; only reviewed bound resources support scoped sharing.
  if(p.direct_data===false&&c.source_access!=='bindings')fail(403,'tool_source_scope','This app needs a reviewed connected-data version before sharing');
+ // A1: team members nobody set a role for receive the app's team default; an owner or an explicit grant is never capped.
+ const owns=p.role==='owner'||c.member_role==='owner';
+ if(!owns&&!grant.rules.some(r=>r.subject===a.userId&&r.read==='allow')){if(c.team_default_role==='none')fail(403,'tool_access','You do not have access to this app');if(c.team_default_role==='viewer')grant.write=false;}
  const scopes=grant.rules.filter(r=>r.subject===a.userId&&r.read==='allow').flatMap(r=>r.bindings??[]);
- return {c,grant,scopes};
+ const role:AppRole=owns?'owner':grant.write?'editor':'viewer';
+ return {c,grant,scopes,role};
 }
 export async function applyTypePolicy(db:Connection,a:Actor,p:any,type:any){
  const owner=p.role==='owner',legacy=owner||(p.direct_data!==false&&(!p.allowed_types||p.allowed_types.includes(type.id)));
