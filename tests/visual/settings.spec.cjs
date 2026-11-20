@@ -31,7 +31,8 @@ for(const width of [1440,390])test(`Overview and actual tool settings at ${width
  await expect(embed.getByRole('button',{name:'Save changes',exact:true})).toBeVisible();
  await expect(embed.getByRole('button',{name:'Save changes',exact:true})).toBeDisabled();
  await expect(embed.getByRole('heading',{name:'Column permissions',exact:true})).toHaveCount(0);
- await expect(embed.getByRole('combobox',{name:'Company permission',exact:true})).toBeVisible();
+ // Access is set per table (A2): each tab's table has one level select; there are no per-column selects any more.
+ await expect(embed.getByRole('combobox',{name:/ permission$/}).first()).toBeVisible();await expect(embed.getByRole('combobox',{name:'Company permission',exact:true})).toHaveCount(0);
  await expect.poll(accessCalls).toBe(beforeAccess+1);
  await page.screenshot({path:`test-results/access-${width}.png`,fullPage:true});
  await embed.getByRole('tab',{name:'Layout',exact:true}).click();
