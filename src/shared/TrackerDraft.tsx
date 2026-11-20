@@ -24,7 +24,9 @@ export function TrackerDraft({preview,call,onSaved,onDiscard,onProposal,initialO
  const kind=(preview.changeClass??(revision?'revision':'new')) as 'new'|'revision'|'assistant';
  const approve=useApproveChange();
  // A6: the platform footer is the only place this change is approved, discarded or declined.
- useFooterReview(savedReceipt.current?null:{previewId:preview.id,kind,name:preview.body.content?.name??preview.body.setup?.name??null,
+ // The footer appears once the change is on screen (or when it needs preparing again), as the first-save footer did:
+ // appearing mid-render would resize the app frame under the person's first click.
+ useFooterReview(savedReceipt.current||!(stale||reviewReady&&rendered)?null:{previewId:preview.id,kind,name:preview.body.content?.name??preview.body.setup?.name??null,
   status:stale?'needs_preparing':reviewReady?'ready':'preparing',busy,disabled:rendering||!rendered,
   summary:kind==='new'?`This ${label} is a preview. Save it to keep it.`:preview.appReview?.note??(kind==='assistant'?'Approving applies these changes for everyone who uses the app.':'Publishing applies this update for everyone who uses the app.'),
   details:revision?(preview.appReview?.changes??[]):undefined,onAction:save,onDismiss:discard});
