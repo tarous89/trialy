@@ -2,11 +2,12 @@ import type {WorkspaceRequestOptions} from './workspace-request.js';
 import {WorkspaceShell} from './ui/WorkspaceShell.js';
 import {AssistantLinks} from './AssistantLinks.js';
 import {SystemNotice} from './SystemNotice.js';
-import {AppUnavailable} from './AppUnavailable.js';
+import {AppUnavailable,NoAccessPage} from './AppUnavailable.js';
+import {NoAppAccess,ViewOnlyStatus,AccessRequestDialog} from './AppAccess.js';
 import {takeEarlyRead,earlyReadKey} from './early-reads.js';
 import React,{useCallback,useEffect,useMemo,useRef,useState} from 'react';
 import {AppPlatform,AppNavigation,APP_BRAND} from './AppPlatform.js';
-import {appUrl,parseAppUrl} from './app-route.js';
+import {appUrl,parseAppUrl,accessRequestParam} from './app-route.js';
 import {resolveAppLink} from './app-links.js';
 import {ComponentEditor} from './ComponentEditor.js';
 import {TrackerDraft} from './TrackerDraft.js';
@@ -31,16 +32,26 @@ export function StandaloneApp({signedIn,loading=false,call,api,accountName='Acco
  const platformNavigate=(tab:string,kind?:string)=>{const next='/?tab='+encodeURIComponent(tab==='settings'?'access':tab)+(kind?'&new='+encodeURIComponent(kind):'')+(current?.workspaceId?'&workspaceId='+current.workspaceId:'');if(dirty.current||proposal){setPending(next);return;}location.assign(next);};
  const goHome=()=>{if(dirty.current||proposal){setPending('/?tab=home');return;}location.assign(APP_BRAND.home+'?tab=home');};
  const component=loaded?.component??loaded?.preview?.component;
+ // A5: an emailed link names the request to answer. It is kept across sign-in and shown once the app is open.
+ const requestKey=current?'trialy:access-request:'+current.appId:'';
+ const [accessRequest,setAccessRequest]=useState<string|null>(()=>{const asked=accessRequestParam(location.search);try{if(asked&&requestKey)sessionStorage.setItem(requestKey,asked);return asked??(requestKey?sessionStorage.getItem(requestKey):null);}catch{return asked;}});
+ const closeAccessRequest=()=>{setAccessRequest(null);try{sessionStorage.removeItem(requestKey);}catch{}if(current&&accessRequestParam(location.search))assign(appUrl(current),true);};
+ // U3: one plain page for an app this person cannot open, or can no longer open.
+ const noAccess=current?.source==='component'?<NoAppAccess key={current.appId} api={api} workspaceId={current.workspaceId} appId={current.appId} onHome={goHome}/>:null;
 
  return <AppPlatform.Provider value={{enabled:true,origin:location.origin}}><WorkspaceShell headerActions={component&&current?<AssistantLinks iconsOnly prompt={'Customize my TrialAgents app (app ID '+current.appId+', workspace ID '+current.workspaceId+'). Read the saved app before making changes.'}/>:undefined} appView selected="home" accountName={accountName} accountEmail={accountEmail} onNavigate={platformNavigate} onNew={kind=>platformNavigate("create",kind)}><AppNavigation.Provider value={current?{route:current.route,reset,navigate,setDirty}:null}>
  {!current?<AppUnavailable onHome={goHome}/>:loading?<div aria-busy="true" aria-label="Loading app"/>:!signedIn?<section className="ty-empty"><h1>Sign in to open this app</h1><a className="ty-button ty-button--primary" href={'/auth/login?returnTo='+encodeURIComponent(appUrl(current))}>Sign in</a></section>:<>
  {automationNotice&&<SystemNotice message="App added. Automation setup continues in the background." onDismiss={()=>setAutomationNotice(false)}><button onClick={()=>platformNavigate('automations')}>View Automations</button></SystemNotice>}
- {error&&<SystemNotice error message={error} onDismiss={()=>setError('')}/>}{!loaded&&(loadFailed?<AppUnavailable onHome={goHome} reason={[401,403,404].includes(loadStatus)?'missing':'load'} onRetry={()=>setReload(n=>n+1)}/>:<div aria-busy="true" aria-label="Loading app"/>)}
+ {error&&<SystemNotice error message={error} onDismiss={()=>setError('')}/>}{!loaded&&(loadFailed?([403,404].includes(loadStatus)&&noAccess)||<AppUnavailable onHome={goHome} reason={[401,403,404].includes(loadStatus)?'missing':'load'} onRetry={()=>setReload(n=>n+1)}/>:<div aria-busy="true" aria-label="Loading app"/>)}
+ {loaded?.component?.app_role==='viewer'&&<ViewOnlyStatus key={loaded.component.id} api={api} workspaceId={current.workspaceId} appId={loaded.component.id}/>}
+ {loaded?.component&&accessRequest&&<AccessRequestDialog key={accessRequest} api={api} workspaceId={current.workspaceId} appId={loaded.component.id} requestId={accessRequest} onClose={closeAccessRequest}/>}
+ <NoAccessPage.Provider value={noAccess}>
  {component&&<ComponentEditor key={component.id+':'+loaded.loadedRevision} initialOutput={loaded.initialOutput} component={component} projects={[]} call={invoke} onBack={goHome} onPreview={setProposal}/>}
  {!component&&loaded?.preview?.preview&&<TrackerDraft preview={loaded.preview.preview} call={invoke} onSaved={c=>{setDirty(false);assign(appUrl({...current,appId:c.id,source:'component'}),true);}} onDiscard={goHome} onProposal={setProposal}/>}
  {loaded?.source==='function'&&<FoundationPanel workspaceId={current.workspaceId} types={[]} call={call} initialRevisionId={loaded.resource.revisionId}/>}
  {loaded?.source==='collection'&&<CollectionsPanel call={invoke} onBack={goHome} onPreview={setProposal} initialLinkId={current.appId}/>}
  {loaded?.source==='legacy'&&<LegacyApp api={api} workspaceId={current.workspaceId} resource={loaded.resource}/>}
+ </NoAccessPage.Provider>
  {proposal&&<div className="ty-content-overlay"><section className="ty-confirm-dialog" role="dialog" aria-modal="true" aria-label="Review app changes"><h2>Review changes</h2><ChangeSummary value={proposal.summary??proposal.body}/><div className="ty-actions"><Button disabled={busy} onClick={()=>{void invoke('discard_workspace_preview',{previewId:proposal.id}).then(()=>{setProposal(null);setDirty(false);setReload(n=>n+1);}).catch(e=>setError(e.message));}}>Cancel</Button><Button variant="primary" disabled={busy} onClick={()=>{setBusy(true);void invoke('confirm_workspace_change',{previewId:proposal.id,digest:proposal.digest,confirmed:true}).then(()=>{setProposal(null);setDirty(false);setReload(n=>n+1);}).catch(e=>setError(e.message)).finally(()=>setBusy(false));}}>Save changes</Button></div></section></div>}
  </>}
  {pending&&<div className="ty-content-overlay"><section className="ty-confirm-dialog" role="alertdialog" aria-modal="true" aria-label="Unsaved changes"><h3>Keep your edits?</h3><p>Your changes have not been saved.</p><Button autoFocus onClick={()=>setPending(null)}>Keep editing</Button><Button onClick={()=>{const next=pending;setPending(null);setDirty(false);setProposal(null);if(next===APP_BRAND.website)location.assign(APP_BRAND.website);else if(next==='/'||next.startsWith('/?tab='))location.assign(next);else{setReset(n=>n+1);assign(next);}}}>Discard edits and continue</Button></section></div>}

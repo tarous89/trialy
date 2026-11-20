@@ -1,5 +1,6 @@
 import {z} from 'zod';
 import {AppRoles} from '../domain/app-sharing.js';
+import {AccessRequests} from '../domain/access-requests.js';
 import {templateMedia} from '../workspace/template-media.js';
 import {catalogInstallation,catalogInstallationRead,installCatalogApp,readCatalogInstallation} from '../workspace/template-catalog.js';
 import {appDesignGuide} from '../shared/app-design.js';
@@ -50,6 +51,13 @@ export function addAppApi(app:Express,f:WorkspaceFoundation){
  app.get('/api/workspaces/:workspaceId/apps/:appId/members',async(req,res)=>res.json(await roles.members(req.actor!,id.parse(req.params.workspaceId),id.parse(req.params.appId))));
  app.post('/api/workspaces/:workspaceId/apps/:appId/members',async(req,res)=>res.json(await roles.setRole(req.actor!,id.parse(req.params.workspaceId),{...req.body,appId:req.params.appId})));
  app.post('/api/workspaces/:workspaceId/apps/:appId/team-default',async(req,res)=>res.json(await roles.setTeamDefault(req.actor!,id.parse(req.params.workspaceId),{...req.body,appId:req.params.appId})));
+ // A5: ask for access to an app, and answer such a request. The first answer counts.
+ const requests=new AccessRequests(f.db);
+ app.post('/api/workspaces/:workspaceId/apps/:appId/access-requests',async(req,res)=>res.json(await requests.request(req.actor!,id.parse(req.params.workspaceId),{...req.body,appId:req.params.appId})));
+ app.get('/api/workspaces/:workspaceId/apps/:appId/access-requests',async(req,res)=>res.json(await requests.list(req.actor!,id.parse(req.params.workspaceId),id.parse(req.params.appId))));
+ app.get('/api/workspaces/:workspaceId/apps/:appId/access-requests/:requestId',async(req,res)=>res.json(await requests.read(req.actor!,id.parse(req.params.workspaceId),id.parse(req.params.appId),id.parse(req.params.requestId))));
+ app.post('/api/workspaces/:workspaceId/apps/:appId/access-requests/:requestId',async(req,res)=>res.json(await requests.decide(req.actor!,id.parse(req.params.workspaceId),{...req.body,appId:req.params.appId,requestId:req.params.requestId})));
+ app.delete('/api/workspaces/:workspaceId/apps/:appId/access-requests/:requestId',async(req,res)=>res.json(await requests.cancel(req.actor!,id.parse(req.params.workspaceId),id.parse(req.params.appId),id.parse(req.params.requestId))));
  app.get('/api/workspaces/:workspaceId/apps/:appId/update',async(req,res)=>res.json(await readAppUpdate(f,req.actor!,id.parse(req.params.workspaceId),id.parse(req.params.appId))));
  app.post('/api/workspaces/:workspaceId/apps/:appId/update',async(req,res)=>res.json(await prepareAppUpdate(f,req.actor!,id.parse(req.params.workspaceId),{...req.body,componentId:id.parse(req.params.appId)})));
  // The website opens an app with one read, started alongside the account check: the location and its first render.

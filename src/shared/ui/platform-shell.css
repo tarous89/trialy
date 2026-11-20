@@ -5,6 +5,22 @@
 .ty-platform-brand{display:flex;align-items:center;gap:9px;text-decoration:none;color:inherit;font-size:19px}
 .ty-header-app{min-width:0;padding-left:12px;border-left:1px solid #ffffff2e;color:#e4efe9;font-size:15px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 @media(max-width:480px){.ty-platform-header:has(.ty-header-app) .ty-platform-brand strong{display:none}}
+/* U3: one quiet status beside the app's name, with at most one control. */
+.ty-header-status{display:inline-flex;align-items:center;gap:10px;min-width:0;flex:0 100 auto;color:#b9d0c6;font-size:13px;white-space:nowrap}
+.ty-header-status>span{min-width:0;overflow:hidden;text-overflow:ellipsis}
+.ty-workspace .ty-header-status button{flex:none;min-height:28px;margin:0;padding:3px 10px;border:1px solid #ffffff33;border-radius:8px;background:transparent;color:#e4efe9;font:inherit;font-size:13px;cursor:pointer}
+.ty-workspace .ty-header-status button:hover:not(:disabled),.ty-workspace .ty-header-status button:focus-visible{background:#ffffff16;border-color:#ffffff55}
+.ty-workspace .ty-header-status button:disabled{opacity:.6;cursor:default}
+/* On a phone the app's name and the control come first: the assistant links keep their icons, and the control speaks for the status. */
+@media(max-width:600px){.ty-header-status{gap:6px;font-size:12px}.ty-workspace .ty-header-status button{padding:3px 8px;font-size:12px}.ty-platform-header:has(.ty-header-status) .ty-assistant-icons a span{display:none}}
+@media(max-width:480px){.ty-header-status:has(button)>span{display:none}}
+/* The page a person sees for an app they cannot open, and the dialog that answers a request. */
+.ty-workspace .ty-no-access{max-width:560px;margin:48px auto;text-align:center}
+.ty-no-access fieldset{display:flex;justify-content:center;gap:20px;margin:20px 0;padding:0;border:0}
+.ty-no-access fieldset label{display:inline-flex;align-items:center;gap:8px;margin:0;cursor:pointer}
+.ty-workspace .ty-no-access fieldset input{width:auto;margin:0}
+.ty-no-access .ty-actions{justify-content:center}
+.ty-access-request-note{padding:10px 12px;border-radius:8px;background:#f3f7f4;overflow-wrap:anywhere}
 .ty-workspace.ty-platform-shell .ty-sidebar--desktop{display:flex!important;position:fixed;top:60px;left:0;width:230px;height:calc(100dvh - 60px);padding:22px 14px;z-index:90}
 .ty-workspace.ty-platform-shell .ty-sidebar nav button,.ty-workspace.ty-platform-shell .ty-settings-button{font-size:14px;justify-content:flex-start;white-space:normal}
 .ty-workspace.ty-platform-shell .ty-main-column{margin-left:var(--shell-nav);padding:0;height:calc(100dvh - 60px);width:calc(100% - var(--shell-nav));min-width:0}

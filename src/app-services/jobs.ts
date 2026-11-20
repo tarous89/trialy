@@ -28,6 +28,7 @@ export async function authorizeJob(db:Database,j:any,reading=false){
   else if(j.payload.notification){const {authorizeNotificationJob}=await import('./notifications.js');await authorizeNotificationJob(db,j,reading);}
   else if(j.payload.action){if(j.kind==='email'&&!reading)fail(403,'notification_policy','Notification requires current safety checks');const {AppActions}=await import('./service.js');await new AppActions(db).authorizeRun(j.payload.action.runId,j.payload.action.version,reading);}
   else if(j.kind==='connector'){const f=new WorkspaceFoundation(db),c=new Connectors(db,(tx,a,w,id)=>f.component(tx,a,w,id)),b=await c.inspect(db,a,j.workspace_id,j.payload.call);if(b.digest!==j.payload.digest)fail(409,'connector_changed','Connector request changed');if(b.reviewRequired){const r=(await db.query("SELECT * FROM connector_reviews WHERE id=$1 AND user_id=$2 AND kind='invoke'",[j.payload.reviewId,j.user_id])).rows[0];if(!r||r.body.digest!==j.payload.digest)fail(403,'connector_review','Missing exact approval');}}
+  else if(j.payload.accessRequest){if(!reading){const {checkAccessRequestDelivery}=await import('../domain/access-requests.js');await checkAccessRequestDelivery(db,j);}}
   else if(j.payload.invitation&&!reading){const {checkInvitationDelivery}=await import('./sharing.js');await checkInvitationDelivery(db,j);}
   else if(!j.payload.invitation)fail(403,'job_authority','Job has no active authority');
   return a;

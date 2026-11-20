@@ -109,3 +109,6 @@ GRANT SELECT ON exchange_unsubscribes TO trialy_runtime;
 
 -- Speed histograms (migration 080): anonymous counters, added to and never deleted by the runtime role.
 GRANT INSERT,UPDATE ON ux_timing_daily TO trialy_runtime;
+
+-- Access requests (migration 083): asked and answered by people, never deleted by the runtime role.
+GRANT INSERT,UPDATE ON app_access_requests TO trialy_runtime;
