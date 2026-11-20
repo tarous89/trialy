@@ -143,7 +143,7 @@ function App(){
  {config.simpleApps&&tab==='connectors'&&<ConnectorsPanel workspaceId={workspace} call={foundationCall} initialConnectionId={reviewParams.get('connectionId')??undefined} initialReviewId={reviewParams.get('connectorReview')??undefined}/>}
  {workspace&&tab==='create'&&<CreationCenter key={creationKind} kind={creationKind} call={(name,args)=>foundationCall(name,{workspaceId:workspace,...args})} onClose={()=>setTab('home')} onCreated={()=>{setHomeRevision(r=>r+1);setTab('home');void refresh();}}/>}
  {workspace&&visited.includes('home')&&<div hidden={tab!=='home'}><HomePanel loadTypes={id=>api(`/api/workspaces/${id}/types`)} active={tab==='home'} loadHome={(args,options)=>takeEarlyRead(earlyReadKey('home',args),()=>api('/api/account/home','POST',args,options))} onLegacyAutomations={()=>setTab('automations')} viewerId={me.id} key={me.id+':'+workspace+':'+homeRevision} workspaceId={workspace} types={types} call={foundationCall} onDocuments={()=>setTab('documents')}/></div>}
- {workspace&&tab==='logs'&&<LogsPanel key={workspace} workspaceId={workspace} call={foundationCall}/>}
+ {workspace&&tab==='logs'&&<LogsPanel key={workspace} workspaceId={workspace} call={foundationCall} initialAppId={reviewParams.get('appId')??undefined}/>}
  {error&&<SystemNotice error message={error} onDismiss={()=>setError('')}/>}{notice&&<SystemNotice message={notice} onDismiss={()=>setNotice('')}/>}
  {workspace&&['trackers','forms','visuals'].includes(tab)&&<ProjectFilter workspaceId={workspace} value={projectId} onChange={setProjectId} call={foundationCall}/>}
  {!workspace&&<div className="empty"><h2>No account data available</h2><p>Check your account access in Settings.</p></div>}

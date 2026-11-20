@@ -381,6 +381,8 @@ export class WorkspaceFoundation {
     if(name==='layout.propose'){
      if(!request.componentId)fail(403,'preview_read_only','Save the tracker before changing its layout');
      if(layoutProposal)fail(400,'layout_limit','One layout proposal per action');
+     // U5, A3: layout and feature settings belong to the app's owners; say so before preparing anything.
+     await requireAppOwner(this.db,a,await access(this.db,a,w),request.componentId,'Only an owner of this app can change its layout and settings. Ask an owner, or request Owner from the app’s settings.');
      // Custom apps with a declared layout (templateLayoutSchema): the same presentation-only update the layout gear makes.
      if(!standardTracker(content.source)&&readCustomLayout(content.source)){let source:string;try{source=updateCustomLayout(content.source,value);}catch(e){fail(400,'custom_layout',(e as Error).message);}const profile=customLayoutProfile.parse(value);layoutProposal={kind:'save_component',componentId:request.componentId,expectedVersion:version,projectId:content.project_id,content:{name:profile.heading,source,format:content.format,sourceAccess:content.source_access,resourceKind:content.resource_kind,manifest:content.manifest,bindings:content.bindings,assets:content.assets??[],execution:content.execution??[]}};return {status:'proposed'};}
      const update=applyTrackerLayout(content,value);

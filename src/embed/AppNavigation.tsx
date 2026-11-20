@@ -13,6 +13,8 @@ export function EmbeddedAppNavigation({appId,workspaceId,source,route:initialRou
  const navigate=(href:string)=>{
   const target=resolveAppLink(href,{appId,workspaceId,source,route},origin);
   if(!target){setError('This link is not available.');return;}
+  // U4: the platform's Logs and Automations pages open inside the extension, with this app selected.
+  if(target.kind==='platform'){window.dispatchEvent(new CustomEvent('trialy:platform-page',{detail:{destination:target.destination,appId,workspaceId}}));return;}
   if(target.kind!=='internal'){openLink(target.href);return;}
   const next=parseAppUrl(target.href)!.route;setError('');
   if(dirty.current)setPending(next);else setRoute(next);
