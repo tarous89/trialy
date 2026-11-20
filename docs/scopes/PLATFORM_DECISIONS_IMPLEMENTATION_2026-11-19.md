@@ -416,7 +416,7 @@ Updated at the end of every session.
 
 | Session | Status | Pull request | Shipped | Carried over |
 | --- | --- | --- | --- | --- |
-| 1 · Foundations and quick fixes | Built, 20 November 2026. In review. | See the pull request for branch `ccr-df272190-za925q` | 1.1 to 1.9, with the changes listed under "Session 1 notes" | Listed under "Session 1 notes" |
+| 1 · Foundations and quick fixes | Built, 20 November 2026. In review. | [#196](https://github.com/tarous89/trialy/pull/196) | 1.1 to 1.9, with the changes listed under "Session 1 notes" | Listed under "Session 1 notes" |
 | 2 · Roles and access | Not started | | | |
 | 3 · App lifecycle and installation | Not started | | | |
 | 4 · Data path and server speed | Not started | | | |
