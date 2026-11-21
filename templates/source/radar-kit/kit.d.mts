@@ -1,6 +1,7 @@
 /* Types for kit.mjs (the Bio Radars kit generator library). Radar definitions are JSON; see templates/source/radars/<slug>/radar.json. */
 export type RadarDefinition=Record<string,any>;
 export const KIT_VERSION:string;
+export const APP_CONTRACT:'v2';
 export const REQUIRED_RULES:string[];
 export const IMPACT:string[];
 export const DIRECTION:string[];
@@ -25,5 +26,5 @@ export function cadenceTrigger(radar:RadarDefinition):any;
 export function recipes(radar:RadarDefinition):any[];
 export function functionDecls(radar:RadarDefinition,sources:{common:string;brief:string;digest:string;alert:string}):any[];
 export function radarRuntime(radar:RadarDefinition):any;
-export function layoutSchema(radar:RadarDefinition):{screens:{id:string;label:string}[];groups:Record<string,{id:string;label:string}[]>};
+export function appRuntime(radar:RadarDefinition):any;
 export function catalogText(radar:RadarDefinition):{instructions:string;documentation:any};

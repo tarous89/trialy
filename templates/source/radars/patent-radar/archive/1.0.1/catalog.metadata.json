@@ -1,0 +1,14 @@
+{
+  "description": "Patent filings, grants, legal events, oppositions and expiries for your targets, assignees and own families, with sources. One table of patent families, an events feed with a calendar of expiries in the next 24 months, and a monthly scan + digest and high-impact alert run by Claude or ChatGPT. Not legal advice.",
+  "tags": [
+    "biotech",
+    "patents",
+    "intellectual property",
+    "freedom to operate",
+    "expiries",
+    "radar",
+    "bio radars"
+  ],
+  "whenToUse": "Keep an eye on patents around your targets and competitors: new publications and grants, legal events, oppositions and expiries in the next 24 months, and your own families, with a monthly digest.",
+  "whenNotToUse": "Freedom-to-operate or validity opinions, patent drafting or prosecution, docketing official deadlines for your own filings, licensing deals (Deal Radar), legal advice."
+}

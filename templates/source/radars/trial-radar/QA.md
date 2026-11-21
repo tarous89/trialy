@@ -12,3 +12,14 @@ Run on 14 November 2026 with fictional data only: production QuickJS, disposable
 Render times with 5,000 events and 2,000 trials on the in-process test database (first render, ms): overview ~5,200, tracker ~1,350, events ~1,800, feed ~1,850, calendar ~1,750, setup ~950 (CI runners are about 1.4x slower). Every screen reads at most about 12 bounded pages.
 
 Not verified here: a live Claude or ChatGPT scheduled run against the real registries and TrialAgents Intel, delivery through the production email provider, and the deployed catalog. These are separate outcomes.
+
+
+## Trial Radar 2.0.0 (kit 2.0.0): QA
+
+Run on 21 November 2026 with fictional data only.
+
+| Test | Covers | Result |
+|---|---|---|
+| `tests/radars-v2.test.ts` (Trial Radar) | Package: v2 marker on line 1, no `records.propose`, header, banner or footer; same installer schema, recommended automations and helpers as 1.0.0 and 1.0.1; `upgradeFrom`; a draft. Every screen and panel renders with the kit and one batched read; edits save with the version shown (inline select and watched, side-panel edit refused when the record changed meanwhile, mark reviewed, dismiss with a reason, scope status, add and remove a scope, bulk review); Undo; notices; Settings for owners only, no edit controls for viewers; every empty screen offers its first action; pending reads show as loading; the scope is the person's working context. | pass |
+| `tests/radars-v2-integration.test.ts` | Install of the approved draft from the catalog with the same functions and automations, demo data, every screen and two panels in the production runtime, the current design rules at 1440, 400 and 390 px; one direct save and a refused stale version | pass |
+| `node scripts/build-radar-templates.mjs --check` | The new package and the released ones are current (the released ones byte-identical) | verified |

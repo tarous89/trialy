@@ -1,0 +1,15 @@
+{
+  "description": "Financings, IPOs and grants in your space and the investors behind them. One table of financings (shared with Fundraise and Deal Comps as fundingradar.financings), an events feed, and a weekly scan + digest of rounds and the most active investors run by Claude or ChatGPT.",
+  "tags": [
+    "biotech",
+    "fundraising",
+    "financings",
+    "investors",
+    "venture capital",
+    "grants",
+    "radar",
+    "bio radars"
+  ],
+  "whenToUse": "Track financings, IPOs and grants in your modalities, indications and stages, with the investors who led them, as comparables and a target list for your own fundraising, with a weekly digest.",
+  "whenNotToUse": "Your own fundraising process and investor CRM (Fundraise), investor updates (Investor Updates), deal terms between companies (Deal Radar), valuation or investment advice."
+}
