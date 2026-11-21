@@ -1,0 +1,53 @@
+{
+  "note": "5.2: unchanged code of these catalog versions also runs in the browser frame (browser-compat). A version is listed only while its browser test in tests/frame-engine.test.ts passes. Installed copies are not changed; customized copies and every other version stay on server mode. APP_BROWSER_RUNTIME=off switches the browser runtime off everywhere.",
+  "compat": {
+    "life.cash-runway": [
+      "2.2.1"
+    ],
+    "life.contracts": [
+      "1.1.1"
+    ],
+    "life.cro-selection": [
+      "2.1.1"
+    ],
+    "life.data-room": [
+      "1.1.1"
+    ],
+    "life.deal-radar": [
+      "1.0.1"
+    ],
+    "life.funding-radar": [
+      "1.0.1"
+    ],
+    "life.investor-crm": [
+      "2.0.1"
+    ],
+    "life.investor-updates": [
+      "1.0.1"
+    ],
+    "life.literature-radar": [
+      "2.0.1"
+    ],
+    "life.market-radar": [
+      "1.0.1"
+    ],
+    "life.partnership-tracker": [
+      "2.2.1"
+    ],
+    "life.patent-radar": [
+      "1.0.1"
+    ],
+    "life.pipeline-radar": [
+      "1.0.1"
+    ],
+    "life.project-oversight": [
+      "2.2.1"
+    ],
+    "life.regulatory-radar": [
+      "1.0.1"
+    ],
+    "life.trial-radar": [
+      "1.0.1"
+    ]
+  }
+}

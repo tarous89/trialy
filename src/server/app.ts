@@ -15,8 +15,7 @@ import {AssistantLevelSettings} from '../domain/assistant-levels.js';
 import {AccessManagement} from '../domain/access-management.js';
 import {accountCatalog} from '../workspace/catalog.js';
 import {accountHome} from '../workspace/home.js';
-import {frontendFrameDocument,FRAME_SCRIPT} from '../shared/frontend-frame.js';
-import {createHash} from 'node:crypto';
+import {frontendFrameDocument,framePolicy} from '../shared/frontend-frame.js';
 import {addFoundationApi} from './foundation.js';
 import {addReviews} from './reviews.js';
 import {addInvitations} from './invitations.js';
@@ -40,8 +39,7 @@ export function baseApp(requestsPerMinute=180) {
  // Public stateless frame shell. HTTP sandbox also protects direct navigation.
  let frameDocument:Promise<string>|null=null;
  app.get('/frontend/frame',async(req,res)=>{
-  const hash=createHash('sha256').update(FRAME_SCRIPT).digest('base64');
-  res.removeHeader('X-Frame-Options');res.set('Content-Security-Policy',`sandbox allow-scripts${process.env.SIMPLE_APPS_ENABLED==='true'?' allow-popups allow-popups-to-escape-sandbox':''}; default-src 'none'; script-src 'sha256-${hash}'; style-src 'unsafe-inline'; img-src data:; font-src data:; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'`);
+  res.removeHeader('X-Frame-Options');res.set('Content-Security-Policy',`sandbox allow-scripts${process.env.SIMPLE_APPS_ENABLED==='true'?' allow-popups allow-popups-to-escape-sandbox':''}; ${framePolicy()}`);
   // P2 (4.7): the fingerprinted address is cached for good; the bare address (older clients) is revalidated.
   res.set('Cache-Control',req.query.v===frameVersion()?'public, max-age=31536000, immutable':'public, max-age=0, must-revalidate');res.set('Cross-Origin-Resource-Policy','cross-origin');res.type('html').send(await (frameDocument??=frontendFrameDocument(bundledAppFont)));
  });

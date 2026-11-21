@@ -5,7 +5,8 @@ import {z} from 'zod';
 import type {Database} from '../db/database.js';
 import {id,fieldsSchema,fail,type Actor} from '../shared/schema.js';
 import {componentContent} from './schema.js';
-import {frontendOutput,frontendRead,frontendRequest} from './frontend.js';
+import {frontendOutput,frontendOutputV2,frontendRead,frontendRequest} from './frontend.js';
+import {effectiveSource,isV2Source} from './browser-runtime.js';
 import {execute} from '../foundation/runtime.js';
 import {Service} from '../domain/service.js';
 import {WorkspaceFoundation} from './service.js';
@@ -55,7 +56,7 @@ export class GuestDrafts{
   if(Buffer.byteLength(JSON.stringify(v.request))>150000)fail(413,'input_limit','Interface input is too large');
   if(active.size>=2||active.has(v.handle.id))fail(429,'runtime_busy','Another preview is running. Retry shortly.');active.add(v.handle.id);
   try{
-   const output=frontendOutput.parse(await execute(c.source,{state:v.request.state,event:v.request.event},async(name,args)=>{
+   const output=(isV2Source(c.source)?frontendOutputV2:frontendOutput).parse(await execute(effectiveSource(c.source),{state:v.request.state,event:v.request.event},async(name,args)=>{
     if(name!=='records.read')fail(403,'preview_read_only','Temporary code can only read its bound preview tables. Save before proposing database changes.');
     const q=frontendRead.parse(args),binding=c.bindings.find(b=>b.typeId===q.typeId),t=draft.bundle!.tables.find(t=>t.id===q.typeId);
     if(!binding||!t)fail(403,'binding_required','Table is not bound to this preview');

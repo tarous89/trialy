@@ -1,6 +1,7 @@
 import {frameLinkTarget} from './app-links.js';
 import {SNAPSHOT_TTL} from './tracker-cache.js';
 import {trackerRenderer} from '../workspace/standard-tracker.js';
+import {FRAME_ENGINE_SCRIPT,frameEngineWasmBase64,sha256Base64} from './frame-engine.js';
 // Only the shipped renderer and this trusted bridge run in the frame. Custom code stays in QuickJS.
 export const FRAME_SCRIPT=String.raw`(()=>{'use strict';
  let navigationOnly=false,appLinks=false,appOrigin='',linkContext=null;
@@ -260,9 +261,11 @@ export const FRAME_SCRIPT=String.raw`(()=>{'use strict';
  new ResizeObserver(()=>{if(!model)post('trialy.resize',{height:Math.ceil(root.getBoundingClientRect().height)+32});}).observe(document.body);
  host.postMessage({kind:'trialy.ready'},'*');
 })();`;
-export async function frontendFrameDocument(fontCss=''){
- const bytes=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(FRAME_SCRIPT));
- const hash=btoa(String.fromCharCode(...new Uint8Array(bytes)));
- return `<!doctype html><html><head><meta charset="utf-8"><meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-${hash}'; style-src 'unsafe-inline'; img-src data:; font-src data:; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'"><meta name="viewport" content="width=device-width,initial-scale=1"><style>${fontCss}@layer trialagents-defaults{body{font:15px Inter,Arial,sans-serif;margin:0;color:#183d32}*{box-sizing:border-box}}input,button,select,textarea{font:inherit}.cell-input[hidden],.cell-display[hidden]{display:none!important}.multi-value-editor{display:grid;gap:5px;min-width:150px}.multi-value-row{display:flex;gap:4px;align-items:center}.multi-value-row input,.multi-value-row select{width:100%;min-width:0}.multi-value-editor>button{justify-self:start;width:auto}.multi-value-editor button{font-size:12px;padding:3px 6px;color:#253c40;background:#f8faf9;border:1px solid #dce5e1;border-radius:6px;text-align:left}</style><style id="appearance"></style></head><body><div id="surface"></div><script>${FRAME_SCRIPT}</script></body></html>`;
+/** The frame policy: two trusted scripts by hash, WebAssembly for the engine (5.1), no eval, no network, no forms. */
+export function framePolicy(){
+ return `default-src 'none'; script-src 'sha256-${sha256Base64(FRAME_ENGINE_SCRIPT)}' 'sha256-${sha256Base64(FRAME_SCRIPT)}' 'wasm-unsafe-eval'; style-src 'unsafe-inline'; img-src data:; font-src data:; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'`;
 }
-
+export async function frontendFrameDocument(fontCss=''){
+ // 5.1: the engine binary travels as a data block (never executed as script); the engine script reads it once at start.
+ return `<!doctype html><html><head><meta charset="utf-8"><meta http-equiv="Content-Security-Policy" content="${framePolicy()}"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><style>${fontCss}@layer trialagents-defaults{body{font:15px Inter,Arial,sans-serif;margin:0;color:#183d32}*{box-sizing:border-box}}input,button,select,textarea{font:inherit}.cell-input[hidden],.cell-display[hidden]{display:none!important}.multi-value-editor{display:grid;gap:5px;min-width:150px}.multi-value-row{display:flex;gap:4px;align-items:center}.multi-value-row input,.multi-value-row select{width:100%;min-width:0}.multi-value-editor>button{justify-self:start;width:auto}.multi-value-editor button{font-size:12px;padding:3px 6px;color:#253c40;background:#f8faf9;border:1px solid #dce5e1;border-radius:6px;text-align:left}[data-trialy-pressed]{opacity:.72;transition:opacity .08s}</style><style id="appearance"></style></head><body><div id="surface"></div><script type="application/x-trialy-engine" id="trialy-engine-binary">${frameEngineWasmBase64()}</script><script>${FRAME_ENGINE_SCRIPT}</script><script>${FRAME_SCRIPT}</script></body></html>`;
+}

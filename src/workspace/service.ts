@@ -10,6 +10,8 @@ import {appSections,sectionGrant,projectAppSections,validateSectionRevision} fro
 import {openRuntimeView,assertRuntimeReadAccess,assertRuntimeScope,assertRuntimeWriteSchema,incompatible} from './runtime-view.js';
 import {withReadMetadata,ambientReadDatabase,readMetadataScope} from '../db/read-metadata.js';
 import {isCatalogSource} from './catalog-source.js';
+import {browserMode,effectiveSource,isV2Source,runtimeCssFor,runtimeStyles,sourceDigest,SEED_BYTES} from './browser-runtime.js';
+import {SEEDED_READS} from '../frame-engine/local-runtime.js';
 import {FrontendQueue} from './frontend-queue.js';
 import {AppActions} from '../app-services/service.js';
 import {AppMonitoring} from '../app-services/monitoring.js';
@@ -42,13 +44,13 @@ import {z} from 'zod';
 import {id} from '../shared/schema.js';
 import {requireCurrentAction,requireHuman,type WriteAuthorization} from '../domain/write-authorization.js';
 import {execute,LIMITS} from '../foundation/runtime.js';
-import {frontendRequest,frontendOutput,frontendRead,componentRecordChanges,readAppDataRequest,saveAppRecordsRequest,undoAppChangeRequest} from './frontend.js';
+import {frontendRequest,frontendOutput,frontendOutputV2,frontendRead,componentRecordChanges,readAppDataRequest,saveAppRecordsRequest,undoAppChangeRequest,appContextRequest} from './frontend.js';
 import {interfaceSchema} from './ui.js';
 import {randomUUID} from 'node:crypto';
 import type {Database,Connection} from '../db/database.js';
 import {Service,type RecordChange} from '../domain/service.js';
 import {access,typeAccess,visibleFields,projectData} from '../domain/permissions.js';
-import {requireAppOwner} from '../domain/app-roles.js';
+import {requireAppOwner,appRole as appRole_} from '../domain/app-roles.js';
 import {appChangeDependencies,dependencySummary,refuseBreaking} from './dependencies.js';
 import {isNewApp,prepareInstallation,finishInstallation,installationStep,changeImpact,prepareChange,finishChange} from './installation.js';
 import {requireAssistantApps,requireAssistantChange,assistantNamesOnly,assistantDataBlocked,appNameOnly} from '../domain/assistant-levels.js';
@@ -63,6 +65,8 @@ const exchangeRecords=(op:any)=>{const r=isExchangeOperation(op)?(op as any).rec
 const withoutRecords=(op:any)=>{const {records,...rest}=op;return rest;};
 const J=JSON.stringify;
 const activeFrontends=new FrontendQueue(2),activeDraftFrontends=new FrontendQueue(1,8);
+/** 5.1: a screen rendered after a save replaces everything the frame had stored for this app. */
+const resetBrowser=(r:any)=>r?.browser?.mode&&r.browser.mode!=='server'?{...r,browser:{...r.browser,reset:true}}:r;
 const customFrontendSession=Symbol('custom frontend needs independent capability transactions');
 const adapter=(tx:Connection):Database=>({query:tx.query.bind(tx),transaction:fn=>fn(tx),close:async()=>{}});
 /** Read-only app capabilities (src/workspace/app-capabilities.ts); anything that proposes, runs or calls out is never a reuse unit. */
@@ -213,7 +217,7 @@ export class WorkspaceFoundation {
   }
   // P5 (4.4): a retried action whose save already happened returns that save and a fresh screen; the action is not run again.
   if(request.requestKey&&request.componentId){const done=(await this.db.query('SELECT result,workspace_id FROM commit_receipts WHERE preview_id=$1 AND actor_id=$2',[request.requestKey,a.userId])).rows[0];
-   if(done){if(done.workspace_id!==w)fail(409,'receipt_mismatch','This save key was already used for another change');const {requestKey:ignored,...next}=request;return {...await this.runFrontend(a,w,{...next,event:{kind:'open',action:'',value:null,form:{}}},signal),saved:{...done.result,retried:true}};}}
+   if(done){if(done.workspace_id!==w)fail(409,'receipt_mismatch','This save key was already used for another change');const {requestKey:ignored,...next}=request;return resetBrowser({...await this.runFrontend(a,w,{...next,event:{kind:'open',action:'',value:null,form:{}}},signal),saved:{...done.result,retried:true}});}}
   const unit=<T>(read:()=>Promise<T>)=>readMetadataScope(this.db,read);
   let content:any,version:number|undefined,viewId=request.viewId;let draftTables:string[]=[];let draftSchema=false;
   if(request.componentId){const runtime=await unit(()=>this.runtimeComponent(this.db,a,w,request.componentId!,request.expectedVersion,viewId));assertRuntimeScope(runtime.latest,runtime.c);content=runtime.c;version=content.version;viewId=runtime.view.id;}
@@ -247,7 +251,7 @@ export class WorkspaceFoundation {
    // P5, B3 (4.4, 4.5): the edit saves directly, then the screen is rendered once from the saved data, in this one request.
    const saved=await this.saveAppRecords(a,w,{componentId:request.componentId,expectedVersion:version!,...(viewId?{viewId}:{}),requestKey:request.requestKey??randomUUID(),changes});
    const {requestKey:ignored,...next}=request;
-   return {...await this.runFrontend(a,w,{...next,viewId,event:{kind:'open',action:'',value:null,form:{}}},signal),boundEdit:true,saved};
+   return resetBrowser({...await this.runFrontend(a,w,{...next,viewId,event:{kind:'open',action:'',value:null,form:{}}},signal),boundEdit:true,saved});
   }
   // Draft evaluation has its own bounded capacity and cannot occupy a published app slot.
   const knownTracker=standardTracker(content.source),pool=request.componentId?activeFrontends:activeDraftFrontends,key=w+':'+a.userId+':'+(request.componentId??request.previewId);
@@ -263,6 +267,12 @@ export class WorkspaceFoundation {
    }
    const currentPolicy=await access(this.db,a,w),accessStamp=request.componentId?await unit(()=>this.componentAccessStamp(a,w,content)):undefined;
    const tracker=knownTracker,pages:any[]=[];
+   // 5.1, 5.2, 5.3: whether the frame may also run this app, and the reads it needs to make the next screens itself.
+   const v2=!tracker&&isV2Source(content.source),code=tracker?content.source:effectiveSource(content.source);
+   const browser=request.browser&&request.componentId&&!tracker?await browserMode(this.db,content,request.event):null;
+   const seed:any[]=[];let seedBytes=0,sideEffects=false;
+   const appRole=v2&&request.componentId?(await appRole_(this.db,a,await access(this.db,a,w),request.componentId))??'viewer':undefined;
+   const personContext=v2&&request.componentId?await this.appContext(a,w,request.componentId):undefined;
    // P6 (4.3): custom app code rechecks the app before each record read (its run can be long); the tracker renderer runs in one transaction.
    const capabilities=new AppCapabilities(this,a,w,{componentId:request.componentId??null,content,draftTables,signal,recheck:request.componentId&&!tracker?()=>this.runtimeComponent(this.db,a,w,request.componentId!,version,viewId):undefined});
    const pageRecords=capabilities.pageRecords,resolvedPages=capabilities.resolvedPages,tableAccess=(typeId:string)=>capabilities.tableAccess(typeId);
@@ -354,22 +364,27 @@ export class WorkspaceFoundation {
     fail(403,'capability_unavailable','This interface capability is unavailable');
    };
    signal?.throwIfAborted();
-   const output=frontendOutput.parse(await (tracker?((_:string,input:any,call:any)=>renderStandard(tracker.config,tracker.theme,input,call)):execute)(content.source,{state:request.state,event:request.event,saved:!!request.componentId,writable,...(request.route?{route:request.route}:{})},async(name,value)=>{const result=await (READ_CAPABILITIES.has(name)?unit(()=>handler(name,value)):handler(name,value));if(tracker&&name==='records.read')pages.push({request:value,result});return result;},signal,release?.detachUntil));
+   const baseInput={saved:!!request.componentId,writable,...(request.route?{route:request.route}:{}),...(v2?{appRole,context:personContext??null,...(request.viewport?{viewport:request.viewport}:{})}:{})};
+   const record=(entry:any)=>{if(!browser||browser.mode==='server'||seedBytes>SEED_BYTES)return;const bytes=Buffer.byteLength(J(entry));seedBytes+=bytes;if(seedBytes<=SEED_BYTES)seed.push(entry);};
+   const output=(v2?frontendOutputV2:frontendOutput).parse(await (tracker?((_:string,input:any,call:any)=>renderStandard(tracker.config,tracker.theme,input,call)):execute)(code,{...baseInput,state:request.state,event:request.event},async(name,value)=>{
+    if(!SEEDED_READS.has(name))sideEffects=true;
+    let result;try{result=await (READ_CAPABILITIES.has(name)?unit(()=>handler(name,value)):handler(name,value));}catch(e){if(SEEDED_READS.has(name)&&e instanceof AppError&&e.status<500)record({name,input:value,error:e.message});throw e;}
+    if(tracker&&name==='records.read')pages.push({request:value,result});else if(SEEDED_READS.has(name))record({name,input:value??{},result});return result;},signal,release?.detachUntil)) as any;
    signal?.throwIfAborted();
    if(!tracker&&(output.controls?.length??0)>100)fail(400,'control_limit','Custom interfaces support at most 100 controls');
    if(Buffer.byteLength(J(output.state))>100000)fail(400,'state_limit','Interface state is too large');
    // Recheck after execution; a concurrent revoke/edit must not release its output.
    if(request.componentId){const runtime=await this.runtimeComponent(this.db,a,w,request.componentId,version,viewId);assertRuntimeScope(runtime.latest,content);if((await access(this.db,a,w)).access_version!==currentPolicy.access_version)fail(409,'access_changed','Permissions changed while this action was running. Try again.');}
    else {const draft=(await this.db.query('SELECT * FROM workspace_previews WHERE id=$1 AND workspace_id=$2 AND user_id=$3 AND expires_at>now()',[request.previewId,w,a.userId])).rows[0];if(!draft)fail(409,'preview_expired','Preview unavailable');await this.validate(this.db,a,w,draft.body.operation);}
-   const runtimeCss=tracker?'':appRuntimeCss(output.html);
+   const runtimeCss=tracker?'':runtimeCssFor(content.source,output.html);
    if(runtimeCss.length+output.css.length>50000)fail(400,'css_limit','App styles exceed the frame size limit.');
    const controls=[];const recordCache=tracker?pageRecords:new Map<string,any>(),resolvedCache=tracker?resolvedPages:new Map<string,any>();
    const scopeChecked=new Set<string>();
    if(tracker&&content.manifest.scope==='project'&&(output.controls?.length??0)>0){
-    const ids=[...new Set((output.controls??[]).map(c=>c.recordId))];
+    const ids=[...new Set((output.controls??[]).map((c:any)=>c.recordId as string))];
     const allowed=(await this.db.query('SELECT record_id FROM project_records WHERE workspace_id=$1 AND project_id=$2 AND record_id=ANY($3::uuid[]) AND revoked_at IS NULL',[w,content.project_id,ids])).rows;
     for(const row of allowed)scopeChecked.add(row.record_id);
-    if(ids.some(id=>!scopeChecked.has(id)))fail(403,'project_scope','Control record is outside this project');
+    if(ids.some((id:any)=>!scopeChecked.has(id)))fail(403,'project_scope','Control record is outside this project');
    }
    const controlReader=new DerivedReader(this.db,a,w,content.bindings.map((b:any)=>b.typeId),Object.fromEntries(content.bindings.map((b:any)=>[b.typeId,b.fields])));
    for(const item of output.controls??[]){
@@ -408,27 +423,50 @@ export class WorkspaceFoundation {
     const queued=[];for(const v of invocations){const latest=await f.component(tx,a,w,request.componentId!);if(!isDeepStrictEqual(content.execution.find((b:any)=>b.name===v.binding),latest.execution.find((b:any)=>b.name===v.binding)))incompatible();queued.push(await f.invokeComponent(a,w,{...v,componentId:request.componentId,expectedVersion:latest.version}));}return {proposal,queued};
    });
    if(saved&&!command){rerender={state:output.state,saved};}
-   else return {queued,...(saved?{saved}:{}),...(connectorReviews.length?{connectorReviews}:{}),viewId,runtime:'trialy-frontend-js-v1',frameUrl:frameUrl(),...output,css:runtimeCss+output.css,accessVersion:currentPolicy.access_version,accessStamp,controls,connected:!!content.manifest,proposal,temporary:!request.componentId,...(tracker?{tracker:{config:tracker.config,theme:tracker.theme,pages,saved:!!request.componentId,writable}}:{})};
+   // G4 (5.3): a v2 app's changed working context is remembered for this person.
+   if(v2&&request.componentId&&output.context!==undefined&&J(output.context)!==J(personContext??null))await this.setAppContext(a,w,{componentId:request.componentId,context:output.context}).catch(()=>{});
+   const browserPayload=!browser?undefined:browser.mode==='server'?{mode:'server',reason:browser.reason}:seedBytes>SEED_BYTES?{mode:'server',reason:'seed_size'}:
+    {mode:browser.mode,version:v2?'v2':'v1',digest:sourceDigest(code),reads:seed,reset:sideEffects||!!saved||!!proposal||queued.length>0,input:baseInput,styles:runtimeStyles(content.source),...(request.browser!.source?{source:code}:{})};
+   const {context:ignoredContext,...shown}=output;
+   if(!saved||command)return {queued,...(saved?{saved}:{}),...(connectorReviews.length?{connectorReviews}:{}),...(browserPayload?{browser:browserPayload}:{}),viewId,runtime:v2?'trialy-frontend-js-v2':'trialy-frontend-js-v1',frameUrl:frameUrl(),...shown,css:runtimeCss+output.css,accessVersion:currentPolicy.access_version,accessStamp,controls,connected:!!content.manifest,proposal,temporary:!request.componentId,...(tracker?{tracker:{config:tracker.config,theme:tracker.theme,pages,saved:!!request.componentId,writable}}:{})};
   }finally{release?.();}
   // After a direct save the app is rendered once more from the saved data, with the state it returned (v1 apps), so the
   // person sees the result without a second request. The queue slot was released first.
   const {requestKey:ignored,...next}=request;
-  return {...await this.runFrontend(a,w,{...next,viewId,state:rerender!.state,event:{kind:'open',action:'',value:null,form:{}}},signal),saved:rerender!.saved};
+  return resetBrowser({...await this.runFrontend(a,w,{...next,viewId,state:rerender!.state,event:{kind:'open',action:'',value:null,form:{}}},signal),saved:rerender!.saved});
  }
  /**
   * P3, P6, P8 (4.3): an app's reads without its sandbox or queue. The app is checked once, the reads run with the
   * caller's own permissions through AppCapabilities (the same code the sandboxed run uses), and access is rechecked
   * once at the end so a concurrent revocation never releases data. Reads only: nothing here writes, runs or sends.
   */
+ /** G4 (5.3): the working context this person chose in a v2 app (null when none). */
+ async appContext(a:Actor,w:string,componentId:string):Promise<unknown>{
+  return (await this.db.query('SELECT context FROM app_person_context WHERE app_id=$1 AND user_id=$2 AND workspace_id=$3',[componentId,a.userId,w])).rows[0]?.context??null;
+ }
+ /** G4 (5.3): remembers a v2 app's working context for this person. Small JSON only (4 KB); the person must be able to open the app. */
+ async setAppContext(a:Actor,w:string,input:unknown):Promise<{saved:true}>{
+  const v=appContextRequest.parse(input),raw=J(v.context??null);if(Buffer.byteLength(raw)>4096)fail(400,'context_limit','The remembered context is limited to 4 KB');
+  a={...a,accessToolId:v.componentId};
+  return withActor(a,()=>this.db.transaction(async tx=>{await this.runtimeComponent(tx,a,w,v.componentId,undefined);
+   await tx.query('INSERT INTO app_person_context(workspace_id,app_id,user_id,context) VALUES($1,$2,$3,$4) ON CONFLICT(app_id,user_id) DO UPDATE SET context=excluded.context,updated_at=now()',[w,v.componentId,a.userId,raw]);return {saved:true as const};}));
+ }
  async readAppData(a:Actor,w:string,input:unknown):Promise<any>{
   const v=readAppDataRequest.parse(input);a={...a,accessToolId:v.componentId};
-  if(v.reads.some(r=>!READ_CAPABILITIES.has(r.name)))fail(403,'capability_unavailable','read_app_data serves reads only');
+  // 5.1: the frame fills a screen's missing reads here. Besides record reads, an app's own documents, exchange and file
+  // lists are reads too: each is answered exactly as inside the app's sandboxed run (same scope, same redaction).
+  const other=(name:string)=>(documentCapabilities as readonly string[]).includes(name)||(appExchangeReads as readonly string[]).includes(name)||name==='files.list';
+  if(v.reads.some(r=>!READ_CAPABILITIES.has(r.name)&&!other(r.name)))fail(403,'capability_unavailable','read_app_data serves reads only');
   return withActor(a,()=>this.db.transaction(tx=>withReadMetadata(adapter(tx),async db=>{
    const f=new WorkspaceFoundation(db,true),before=await access(db,a,w);
    const runtime=await f.runtimeComponent(db,a,w,v.componentId,v.expectedVersion,v.viewId);assertRuntimeScope(runtime.latest,runtime.c);
    const capabilities=new AppCapabilities(f,a,w,{componentId:v.componentId,content:runtime.c});
-   const results=[];for(const read of v.reads){if(!capabilities.handles(read.name))fail(403,'capability_unavailable','This read is unavailable');
-    try{results.push({ok:true,value:await capabilities.call(read.name,read.input)});}catch(e){if(!(e instanceof AppError)||e.status>=500||e.code==='access_changed')throw e;results.push({ok:false,error:{code:e.code,message:e.message}});}}
+   const results=[];for(const read of v.reads){if(!capabilities.handles(read.name)&&!other(read.name))fail(403,'capability_unavailable','This read is unavailable');
+    try{const value=capabilities.handles(read.name)?await capabilities.call(read.name,read.input)
+     :(documentCapabilities as readonly string[]).includes(read.name)?await appDocuments(db,a,w,true,read.name as any,read.input)
+     :read.name==='files.list'?await f.componentAssets(db,a,w,runtime.c.assets)
+     :await appExchangeRead(db,a,w,v.componentId,read.name as any,read.input).then(r=>a.origin==='ai'?redactExchangeLinks(r):r);
+     results.push({ok:true,value});}catch(e){if(!(e instanceof AppError)||e.status>=500||e.code==='access_changed')throw e;results.push({ok:false,error:{code:e.code,message:e.message}});}}
    if((await access(db,a,w)).access_version!==before.access_version)fail(409,'access_changed','Permissions changed while reading. Try again.');
    return {componentId:v.componentId,version:runtime.c.version,viewId:runtime.view.id,accessVersion:before.access_version,results};
   })));

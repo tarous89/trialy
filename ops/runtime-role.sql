@@ -116,3 +116,5 @@ GRANT INSERT,UPDATE ON app_access_requests TO trialy_runtime;
 GRANT SELECT,INSERT,UPDATE ON assistant_limits TO trialy_runtime;
 -- App Undo (migration 089): a person's own Undo entries; used entries are marked, expired ones removed by their owner.
 GRANT SELECT,INSERT,UPDATE,DELETE ON app_undo_entries TO trialy_runtime;
+-- 5.3: the person's own remembered working context per app (row security: own rows only).
+GRANT SELECT,INSERT,UPDATE,DELETE ON app_person_context TO trialy_runtime;
