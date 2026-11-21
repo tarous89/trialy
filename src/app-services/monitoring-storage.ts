@@ -44,7 +44,7 @@ export async function prepareResultStorage(db:Database,a:Actor,w:string,config:M
   if(next.readBindings.length>20)fail(400,'result_storage_limit','Select at most 20 read/result tables');
   const grants:StorageGrant[]=[];
   for(const binding of bindings){
-   const body=maintenanceSchema.parse({monitorId,autoWrite:true,expiresAt:config.expiresAt,projectId:app.project_id,purpose:config.objective.slice(0,1000),inclusionCriteria:config.instructions.slice(0,1000),sourcePolicy:config.sourcePolicy.slice(0,1000),basis:'repeated_actions',bindings:[{typeId:binding.typeId,fields:binding.fields,...(binding.dynamic?{dynamic:true as const,...(binding.exceptFields?{exceptFields:binding.exceptFields}:{})}:{})}],allowCreate:binding.allowCreate,allowUpdate:binding.allowUpdate,allowIdentityLinks:false,maxChanges:Math.min(config.maxChangesPerRun,200)});
+   const body=maintenanceSchema.parse({monitorId,autoWrite:true,expiresAt:config.expiresAt??'9999-12-31T00:00:00.000Z',projectId:app.project_id,purpose:config.objective.slice(0,1000),inclusionCriteria:config.instructions.slice(0,1000),sourcePolicy:config.sourcePolicy.slice(0,1000),basis:'repeated_actions',bindings:[{typeId:binding.typeId,fields:binding.fields,...(binding.dynamic?{dynamic:true as const,...(binding.exceptFields?{exceptFields:binding.exceptFields}:{})}:{})}],allowCreate:binding.allowCreate,allowUpdate:binding.allowUpdate,allowIdentityLinks:false,maxChanges:Math.min(config.maxChangesPerRun,200)});
    grants.push({body,schemaStamp:await f.scopeStamp(db,actor,w,body)});
   }
   return {config:next,grants};

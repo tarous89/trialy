@@ -18,8 +18,15 @@ const PERMISSION=/^(owner_required|app_owner_required|forbidden|monitoring_field
 const CONNECTION=/^(runner_[a-z_]+|run_source_connection|awaiting_[a-z_]+_connection|connector_[a-z_]+|credential_[a-z_]+|connection_[a-z_]+|subscription_[a-z_]+)$/;
 const SETUP=/^(disabled_or_changed|scope_changed|schema_changed|action_scope_changed|monitoring_expired|automation_expired|action_expired|result_storage_required|completion_link_changed|app_archived|monitoring_changed|automation_changed|invalid_calendar|setup_required)$/;
 
+/** T5 (6.4): what the running assistant's Data level means for an automation. */
+const CAUSES:Record<string,Failure>={
+ assistant_data_blocked:{kind:'permission',code:'assistant_data_blocked',cause:'The assistant it runs on is Blocked for data in this organization, so it cannot run.'},
+ assistant_data_view:{kind:'permission',code:'assistant_data_view',cause:'The assistant it runs on is View only for data, so it cannot save its results. Raise the level to Edit or remove the write.'},
+ write_setup_required:{kind:'setup',code:'write_setup_required',cause:'Set up again: it was saved to ask for review of each change, which no longer exists. Save it again to write directly.'}
+};
 export function classifyFailure(e:unknown):Failure{
  const err=e as any,code=String(err?.code??err?.message??'unknown').slice(0,80),status=Number(err?.status??0);
+ if(CAUSES[code])return CAUSES[code];
  if(status===429||/^(waiting_for_allowance|rate_limited|queue_capacity|timeout|version_moved|ETIMEDOUT|ECONNRESET|ECONNREFUSED|EAI_AGAIN)$/.test(code))return {kind:'temporary',code,cause:'A temporary problem. It is retried automatically.'};
  if(CONNECTION.test(code))return {kind:'connection',code,cause:'The connection this automation runs on is not ready. Reconnect it, then the automation continues.'};
  if(SETUP.test(code))return {kind:'setup',code,cause:code==='monitoring_expired'||code==='automation_expired'||code==='action_expired'?'Its end date has passed. Set a new end date or archive it.':'Its tables, fields or settings changed. Open it, review and save it again.'};

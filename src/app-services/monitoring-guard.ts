@@ -10,7 +10,7 @@ export async function monitoringRun(tx:Connection,a:Actor,w:string,runId:string,
  const monitor=(await tx.query('SELECT * FROM app_monitors WHERE id=$1 AND workspace_id=$2 AND user_id=$3',[run.monitor_id,w,a.userId])).rows[0];
  if(!monitor)fail(404,'not_found','Monitoring unavailable');
  const config=monitoringConfig.parse(monitor.config);
- if(active&&(!monitor.enabled||monitor.version!==run.monitor_version||run.status!=='running'||Date.parse(run.expires_at)<=Date.now()||Date.parse(config.expiresAt)<=Date.now()))fail(409,'monitoring_stopped','Monitoring changed, expired or stopped. Read its current configuration before continuing.');
+ if(active&&(!monitor.enabled||monitor.version!==run.monitor_version||run.status!=='running'||Date.parse(run.expires_at)<=Date.now()||!!config.expiresAt&&Date.parse(config.expiresAt)<=Date.now()))fail(409,'monitoring_stopped','Monitoring changed, expired or stopped. Read its current configuration before continuing.');
  if(active&&config.automation){
   const allowed=process.env.APP_AUTOMATIONS_ENABLED!=='false'&&(await tx.query(`SELECT o.id FROM automation_occurrences o JOIN automation_runners r ON r.id=o.runner_id
    JOIN automation_subscriptions s ON s.runner_id=r.id AND s.enabled AND s.expires_at>now()

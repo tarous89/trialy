@@ -168,7 +168,19 @@ export class AutomationManagement{
   }
   return new AppActions(db).control(a,w,automationId,!enabled);
  });}
- async history(a:Actor,w:string,kind:'research'|'action',automationId:string,offset=0){const r=await this.read(a,w,kind,automationId);
+ /** T5 (6.4): run history shows what each run Applied (saved record changes) and Delivered (its email or connector step). */
+ async history(a:Actor,w:string,kind:'research'|'action',automationId:string,offset=0){const page=await this.historyPage(a,w,kind,automationId,offset);
+  const ids=page.rows.map((x:any)=>x.id);if(!ids.length)return page;
+  const label=(j:any)=>!j?null:j.delivery_status==='email.delivered'?'Delivered':j.delivery_status?.startsWith('email.')?j.delivery_status.slice(6).replace(/_/g,' '):j.status==='succeeded'?'Sent':j.status==='unknown'?'Not confirmed':['queued','running','waiting'].includes(j.status)?'Pending':j.status==='failed'?'Failed':j.status;
+  if(kind==='research'){
+   const applied=new Map((await this.db.query("SELECT id,coalesce((result->>'savedChanges')::int,0) AS n FROM app_monitor_runs WHERE id=ANY($1::uuid[])",[ids])).rows.map((x:any)=>[x.id,x.n]));
+   const sent=new Map((await this.db.query("SELECT o.run_id,j.status,j.delivery_status FROM automation_occurrences o JOIN app_action_runs ar ON ar.occurrence='automation:'||o.id::text JOIN app_action_effects e ON e.run_id=ar.id JOIN app_service_jobs j ON j.id=e.job_id WHERE o.run_id=ANY($1::uuid[]) ORDER BY j.created_at",[ids])).rows.map((x:any)=>[x.run_id,x]));
+   return {...page,rows:page.rows.map((x:any)=>({...x,applied:applied.get(x.id)??0,delivered:label(sent.get(x.id))}))};
+  }
+  const sent=new Map((await this.db.query('SELECT e.run_id,j.status,j.delivery_status FROM app_action_effects e JOIN app_service_jobs j ON j.id=e.job_id WHERE e.run_id=ANY($1::uuid[]) ORDER BY j.created_at',[ids])).rows.map((x:any)=>[x.run_id,x]));
+  return {...page,rows:page.rows.map((x:any)=>({...x,applied:null,delivered:label(sent.get(x.id))}))};
+ }
+ private async historyPage(a:Actor,w:string,kind:'research'|'action',automationId:string,offset=0):Promise<{rows:any[];nextOffset:number|null}>{const r=await this.read(a,w,kind,automationId);
   if(kind==='research'){
    if(r.mine)return new AppMonitoring(this.db).runs(a,w,automationId,offset);
    // A7: co-owners see every run; results only while the run's fields are readable to them now.

@@ -20,7 +20,8 @@ export const monitoringConfig=z.object({
  readBindings:z.array(z.object({typeId:id,fields:z.array(text(64)).min(1).max(100),...dynamicFields}).strict()).max(20).default([]),
  writeScopes:z.array(z.object({scopeId:id,version}).strict()).max(20).default([]),
  maxRunsPerDay:z.number().int().min(1).max(24).default(24),maxChangesPerRun:z.number().int().min(1).max(1000).default(100),
- expiresAt:z.iso.datetime({offset:true}),automation:sharedAutomation.optional(),authoringKey:text(100).optional()
+ // D31: an end date is optional. When one passes, the automation shows Needs attention.
+ expiresAt:z.iso.datetime({offset:true}).optional(),automation:sharedAutomation.optional(),authoringKey:text(100).optional()
 }).strict().superRefine((v,c)=>{
  if(new Set(v.readBindings.map(b=>b.typeId)).size!==v.readBindings.length||v.readBindings.some(b=>new Set(b.fields).size!==b.fields.length)||new Set(v.writeScopes.map(s=>s.scopeId)).size!==v.writeScopes.length||v.writeBindings&&(new Set(v.writeBindings.map(b=>b.typeId)).size!==v.writeBindings.length||v.writeBindings.some(b=>new Set(b.fields).size!==b.fields.length)))c.addIssue({code:'custom',message:'Bindings, fields and write scopes must be unique'});
 });

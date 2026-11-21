@@ -52,7 +52,7 @@ export class AppActions{
   const scoped={...a,accessToolId:config.appId};return withActor(scoped,async()=>{
    const c=await this.f.component(this.db,scoped,w,config.appId);if(c.archived||c.project_archived)fail(409,'app_changed','Review the current app revision');
    await validateRunSource(this.db,scoped,w,config);
-   if(Date.parse(config.expiresAt)<=Date.now())fail(403,'action_expired','Action authorization expired');
+   if(!!config.expiresAt&&Date.parse(config.expiresAt)<=Date.now())fail(403,'action_expired','Action authorization expired');
    let table:any=null;if(config.recordTypeId){const b=c.bindings.find((b:any)=>b.typeId===config.recordTypeId);const {type,policy}=await typeAccess(this.db,scoped,w,config.recordTypeId);const fields=visibleFields(type.fields,policy,scoped);if(!b||config.fields.some(k=>!b.fields.includes(k)||!fields.some(f=>f.key===k)))fail(403,'action_scope','Action fields exceed app access');table={id:type.id,version:type.version,fields:type.fields};}
    for(const step of config.steps){
     if(step.kind==='email'&&step.summary)await validateSummary(this.db,scoped,w,c,step.summary);
