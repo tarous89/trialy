@@ -6,6 +6,7 @@ import {appRole} from '../domain/app-roles.js';
 import {AppTemplates} from './app-templates.js';
 import {catalogBody} from './catalog-source.js';
 import type {WorkspaceFoundation} from './service.js';
+import {recentSpeedUpdate} from './speed-updates.js';
 
 /* Updating an installed catalog app to a newer published version of the same app (and, 7.1, upgrading it to a new major version).
  * Offered only when nothing but the template code would change: the saved code is exactly an approved
@@ -63,13 +64,16 @@ async function resolve(f:WorkspaceFoundation,a:Actor,w:string,componentId:string
 /** What the open app could be updated to. Never changes anything. */
 export async function readAppUpdate(f:WorkspaceFoundation,a:Actor,w:string,componentId:string){
  const r=await resolve(f,a,w,id.parse(componentId));
- if('none' in r)return {available:false as const,reason:r.none};
+ // 7.2 (P11): an automatic speed update shows once in the header while the app is at the version it produced.
+ const recent=await recentSpeedUpdate(f.db,w,r.c.id,r.c.version);
+ if('none' in r)return {available:false as const,reason:r.none,...(recent?{recent}:{})};
  const p=await access(f.db,a,w);
  const settings=r.kind==='upgrade'?carryConfiguration(savedConfiguration(r.c.source),r.to):null;
  return {available:true as const,componentId:r.c.id,expectedVersion:r.c.version,templateId:r.to.id,name:r.to.name,fromVersion:r.from.version,toVersion:r.to.version,toDigest:r.to.digest,
   // A3: a catalog update changes the app's code, so it is offered to the app's owners.
   canUpdate:!p.archived&&await appRole(f.db,a,p,r.c.id)==='owner',
   // 7.1 (D41): a new major version. Records, table connections and settings carry across; settings it no longer has are listed.
+  ...(recent?{recent}:{}),
   ...(settings?{kind:'upgrade' as const,settings:{kept:settings.kept,added:settings.added,removed:settings.removed}}:{})};
 }
 

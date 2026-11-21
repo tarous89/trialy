@@ -1,6 +1,7 @@
 import {useApproveChange} from './PendingChanges.js';
 import React,{useContext,useEffect,useRef,useState} from 'react';
 import {AppPlatform} from './AppPlatform.js';
+import {usePlatformChrome} from './PlatformChrome.js';
 import {SystemNotice} from './SystemNotice.js';
 import type {WorkspaceRequestOptions} from './workspace-request.js';
 type Call=(name:string,args:any,options?:WorkspaceRequestOptions)=>Promise<any>;
@@ -9,12 +10,14 @@ type Call=(name:string,args:any,options?:WorkspaceRequestOptions)=>Promise<any>;
  * Website only for now: the embedded hosts have no update tools, so nothing is asked of them. */
 export function useAppUpdate(component:any,call:Call){
  const platform=useContext(AppPlatform),website=!platform.readTemplateMedia&&!platform.useTemplate;
- const [offer,setOffer]=useState<any>(null);
+ const [offer,setOffer]=useState<any>(null),chrome=usePlatformChrome(),shown=useRef(false);
  useEffect(()=>{
   setOffer(null);if(!website||!component?.id||component.format!=='frontend-js')return;let live=true;
   // Quiet: an app without an update, or a failed check, shows nothing and never delays the app.
-  void call('read_app_update',{componentId:component.id},{background:true}).then(o=>{if(live&&o?.available&&o.canUpdate)setOffer(o);}).catch(()=>{});
-  return()=>{live=false;};
+  void call('read_app_update',{componentId:component.id},{background:true}).then(o=>{if(!live)return;if(o?.available&&o.canUpdate)setOffer(o);
+   // 7.2 (P11): the platform updated this app to a faster version on its own; say so quietly in the header.
+   if(o?.recent){shown.current=true;chrome.setAppStatus({label:`Updated to faster version ${o.recent.toVersion}`});}}).catch(()=>{});
+  return()=>{live=false;if(shown.current){shown.current=false;chrome.setAppStatus(null);}};
  },[website,component?.id,component?.version]);
  return offer;
 }
