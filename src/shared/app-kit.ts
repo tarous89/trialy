@@ -115,8 +115,8 @@ export const KIT_SOURCE=String.raw`const kit=(()=>{'use strict';
  const picker=(o)=>'<label class="k-picker"><span>'+esc(o.label)+'</span><select'+attr('data-action',o.action||'context')+'>'+o.options.map(x=>'<option'+attr('value',x.value)+attr('selected',x.value===o.value)+'>'+esc(x.label)+'</option>').join('')+'</select></label>';
  /** Business choices for the app's owners (G6). Returns nothing for editors and viewers. */
  const settings=(o,input)=>input&&input.appRole!=='owner'?'':'<form class="k-card"'+attr('data-action',o.action||'settings:save')+'>'+o.fields.map(f=>'<label class="k-field"><span>'+esc(f.label)+'</span>'+(f.options?'<select'+attr('name',f.name)+'>'+f.options.map(x=>'<option'+attr('selected',x===f.value)+'>'+esc(x)+'</option>').join('')+'</select>':'<input'+attr('name',f.name)+attr('value',f.value??'')+'>')+'</label>').join('')+'<button type="submit" class="k-button k-button--primary">Save</button></form>';
- /** Undo for the person's own last actions in this open app (G8): pass tools.call('undo.list').entries. */
- const undo=(entries)=>entries&&entries.length?button('Undo '+String(entries[0].label||'last change').toLowerCase(),'undo:'+entries[0].undoId):'';
+ /** Undo for the person's own last actions in this open app (G8): pass tools.call('undo.list').actions (or the whole result). */
+ const undo=(list)=>{const entries=Array.isArray(list)?list:list&&(list.actions||list.entries);return entries&&entries.length?button('Undo '+String(entries[0].label||'last change').toLowerCase(),'undo:'+entries[0].undoId):'';};
  /** The platform message (U2): return it as output.notice. */
  const notice=(kind,message)=>({kind,message:String(message)});
  const stat=(label,value)=>'<div class="k-stat"><b>'+esc(value)+'</b><span>'+esc(label)+'</span></div>';

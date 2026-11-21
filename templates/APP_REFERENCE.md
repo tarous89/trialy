@@ -80,7 +80,7 @@ Limits per event: 100 capability calls, a 4 MB read budget, 15 seconds.
 | `kit.pager({offset, limit, total, action})` | Paging. |
 | `kit.picker({label, options, value, action})` | The working-context picker. |
 | `kit.settings({fields, action}, input)` | A Settings form, shown to owners only. |
-| `kit.undo(entries)` | An Undo button for the person's last action (`undo.list`). |
+| `kit.undo(list)` | An Undo button for the person's last action: pass the result of `undo.list` (`{actions}`) or its `actions`. |
 | `kit.notice(kind, message)` | The value for `output.notice`. |
 | `kit.stat(label, value)`, `kit.button(label, action, {primary})`, `kit.esc(text)` | Small parts. |
 
