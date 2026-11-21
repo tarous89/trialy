@@ -1,3 +1,4 @@
+import {settle,settleCommand,tookEffect} from './settle.js';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {PGlite} from '@electric-sql/pglite';
@@ -47,22 +48,22 @@ test('installed Runway 2.2.0: tables, roles, recommended automations, and comman
   // Commands: listed, run, and confirmed only through the ordinary review.
   const list=await listAppCommands(f,actor,w,{appId:c.id});assert.equal(list.commands.length,37);
   const settings=await runAppCommand(f,actor,w,{appId:c.id,expectedVersion:c.version,command:'settings.save',input:{fields:{reporting_currency:'EUR',opening_balance:500000,opening_date:'2026-10-31',runway_target_months:18,trailing_window_months:3,loaded_cost_pct:0,min_cash_reserve:0,enabled_currencies:'EUR',categories:''}},requestKey:randomUUID()});
-  assert.equal(settings.ok,true,settings.error);assert.ok(settings.proposal);
-  await f.confirm(actor,w,settings.proposal!.previewId,settings.proposal!.digest);
+  assert.equal(settings.ok,true,settings.error);assert.ok(tookEffect(settings));
+  await settleCommand(f,actor,w,settings);
   const line=await runAppCommand(f,actor,w,{appId:c.id,expectedVersion:c.version,command:'line.save',input:{fields:{name:'Burn',direction:'spend',category:'G&A',driver:'monthly',amount:50000,currency:'EUR',start_month:'2026-11',status:'committed'}},requestKey:randomUUID()});
-  assert.equal(line.ok,true,line.error);await f.confirm(actor,w,line.proposal!.previewId,line.proposal!.digest);
+  assert.equal(line.ok,true,line.error);await settleCommand(f,actor,w,line);
   const sum=await runAppCommand(f,actor,w,{appId:c.id,expectedVersion:c.version,command:'summary.read',input:{},requestKey:randomUUID()});
   assert.equal(sum.result.runway.months,10);assert.equal(sum.result.runway.cash_out,'2027-09');
   // An assistant runs the same commands; its proposals still need the person's confirmation.
   const ai={...actor,origin:'ai' as const};
   const ms=await runAppCommand(f,ai,w,{appId:c.id,expectedVersion:c.version,command:'milestone.save',input:{fields:{name:'IND filing',end_date:'2027-03'}},requestKey:randomUUID()});
-  assert.equal(ms.ok,true,ms.error);assert.equal((await pg.query<any>('SELECT count(*)::int n FROM records WHERE type_id=$1',[map['programs.plan_items'].typeId])).rows[0].n,0);
-  await f.confirm(actor,w,ms.proposal!.previewId,ms.proposal!.digest);
+  assert.equal(ms.ok,true,ms.error);assert.equal((await pg.query<any>('SELECT count(*)::int n FROM records WHERE type_id=$1',[map['programs.plan_items'].typeId])).rows[0].n,1,'A4 (4.4): the assistant command saved directly');
+  await settleCommand(f,actor,w,ms);
   const after=await runAppCommand(f,ai,w,{appId:c.id,expectedVersion:c.version,command:'summary.read',input:{},requestKey:randomUUID()});
   assert.deepEqual(after.result.milestones.map((m:any)=>[m.name,m.month]),[['IND filing','2027-03']]);
   // Layout through a command is a presentation-only review of the same app.
   const lay=await runAppCommand(f,ai,w,{appId:c.id,expectedVersion:c.version,command:'layout.save',input:{labels:{'line_form:name':'Line name'}},requestKey:randomUUID()});
-  assert.equal(lay.ok,true,lay.error);assert.ok(lay.proposal);
+  assert.equal(lay.ok,true,lay.error);assert.ok(tookEffect(lay));
  }finally{await pg.close();}
 });
 

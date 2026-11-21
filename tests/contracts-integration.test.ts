@@ -37,7 +37,7 @@ test('Contracts alone with own milestones; Programs added later is offered, chos
   await x.approve(w,await x.run(w,app,msOpen.state,{kind:'submit',action:'save-record',form:{name:'Phase 1 topline data',program_id:prog,item_type:'milestone',end_date:'2028-03-31',status:'planned',is_key:'true'}}));
   const agOpen=await x.run(w,app,{section:'register'},{kind:'click',action:'add:agreements'});
   const created=await x.run(w,app,agOpen.state,{kind:'submit',action:'save-record',form:{name:'Supply agreement — Corvane',agreement_type:'cmo_supply',counterparty_id:org,status:'active',program_id:prog,effective_date:'2025-10-01',expiry_date:'2027-09-30',total_value:'2400000',currency:'EUR'}});
-  assert.equal((await x.rows(map.agreements.typeId)).length,0,'nothing written before approval');await x.approve(w,created);
+  assert.equal((await x.rows(map.agreements.typeId)).length,1,'D16 (4.4): saved directly');await x.approve(w,created);
   const agId=(await x.rows(map.agreements.typeId))[0].id;
   // The starting key terms follow once the agreement has its ID: notice deadline stored on save (30 Sep 2027 − 180 d = 3 Apr 2027).
   await x.approve(w,await x.run(w,app,created.state,{kind:'click',action:'pending-save:0'}));

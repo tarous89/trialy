@@ -1,3 +1,18 @@
+## 20 November 2026 — Platform decisions, session 4: data path and server speed
+
+Fourth of seven build sessions for the [platform decisions of 19 November](docs/scopes/PLATFORM_DECISIONS_IMPLEMENTATION_2026-11-19.md). Decision codes refer to the [snapshot](docs/scopes/PLATFORM_DECISIONS_SNAPSHOT_2026-11-19.md).
+
+- **Validation on every write (X3, P6).** One parser and value check (`src/shared/validation.ts`) for forms, imports, app saves, external submissions, automations and tracked exchange writes. Every problem is reported by field (and row) in `details.issues`. Tables can declare ranges, formats (email, web address, phone, code), formatting rules applied on save (X4) and combined unique keys. Ambiguous numbers and dates (1,5 or 11/12/2026) are refused, not guessed.
+- **Import report (X4).** `check_import` and the import dialog check every row on the server first: ready, needs fixing, already there, or conflicting values. Nothing is written or merged; only ready rows are offered.
+- **App data without the sandbox (P3, P8).** `AppCapabilities` is the single authority for what an app reads; `read_app_data` serves reads with one check and no queue; `records.summarize` gives totals over all matching records.
+- **Instant edits (P5, B3, A6, D16, D17).** Record edits in apps save directly in one request, with no review dialog, for people and for assistants with Data = Edit (also through app commands). A retry never saves twice. Edits to different fields both save; an edit to a value someone else changed first is refused with the newer value. Changes made while an app opens and records sent out with an exchange keep their review.
+- **Standard tracker.** Cell edits no longer lock the app; a failed edit brings the earlier value back with a message. Add, duplicate and delete save directly.
+- **Undo and delete in apps (G8, A10, D18, D19).** Delete is an archive for anyone who can edit the whole record. Undo (migration 089) covers your own actions in the open app for 60 minutes and the last 20 actions, in reverse order, and is refused when a record changed since. Apps place it with `undo.list` / `undo.run`; the standard tracker shows it after add, duplicate and delete.
+- **Show first, no waiting (P2, P7, P8).** The app frame is a cached file at a fingerprinted address and appears at once; an app's last screen is remembered in memory for two minutes; record saves no longer take the workspace lock exclusively.
+- **Guidance 1.3.37**, the workspace guide and the tool descriptions describe direct saves, the checks, Undo and summaries.
+
+Tests: `tests/validation.test.ts`, `tests/app-data-path.test.ts` (including the restricted database role), the frame cache test, and catalog tests moved from "propose then confirm" to direct saves (`tests/settle.ts`).
+
 ## 20 November 2026 — Platform decisions, session 3: app lifecycle and installation
 
 Third of seven build sessions for the [platform decisions of 19 November](docs/scopes/PLATFORM_DECISIONS_IMPLEMENTATION_2026-11-19.md). Decision codes refer to the [snapshot](docs/scopes/PLATFORM_DECISIONS_SNAPSHOT_2026-11-19.md).

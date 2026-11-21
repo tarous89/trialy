@@ -8,7 +8,7 @@ export const FRAME_SCRIPT=String.raw`(()=>{'use strict';
  const renderTracker=function(config,theme,input,tools){${trackerRenderer}};
  const host=window.parent,root=document.getElementById('surface'),sheet=document.getElementById('appearance');
  let channel=null,model=null,uiState=null,controls=[],connected=false,detailScroll=0;
- let pending=Object.create(null),original=Object.create(null),savingCell=false;
+ let pending=Object.create(null),original=Object.create(null),savingCell=false,inflight=Object.create(null),failed=[],failedMessage='',held=[];
  document.documentElement.classList.add('trialy-responsive-toolbar');
  let optionsOpen=false,optionsTab=null,toolbarObserver=null;
  function setOptionsOpen(open,focus=false){
@@ -34,7 +34,8 @@ export const FRAME_SCRIPT=String.raw`(()=>{'use strict';
  }
  function commitCell(){
   if(!model?.saved||!model?.writable||savingCell||!Object.keys(pending).length)return;
-  savingCell=true;root.inert=true;post('trialy.approve',{action:'bound-batch'});footerAction('save-edits');
+  // P5 (4.5): the new value stays on screen while it saves; the rest of the app stays usable.
+  savingCell=true;inflight={...pending};post('trialy.approve',{action:'bound-batch'});footerAction('save-edits');
  }
  function activateCell(button){const holder=button.parentElement,editor=holder.querySelector('.cell-input,.example-input');if(!editor)return;editor._before={pending:{...pending},examples:{...uiState?.examples}};button.hidden=true;editor.hidden=false;editor.querySelector('input,textarea,select')?.focus({preventScroll:true});}
  function showValue(el,c,value,edited){
@@ -81,11 +82,19 @@ export const FRAME_SCRIPT=String.raw`(()=>{'use strict';
   }}walk(template.content);return template.content;
  }
 
+ // P2, P5 (4.4): what a person typed into a form field survives a new screen, unless the server changed that field's own value.
+ const typed=new Map();
+ const fieldKey=el=>{const name=el.getAttribute('name');if(!name||el.matches('[data-ui-state],[data-action^="bound:"]'))return null;const owner=el.closest('[data-action]');return (owner?owner.getAttribute('data-action'):'')+'|'+name;};
+ const isTextField=el=>el instanceof HTMLTextAreaElement||el instanceof HTMLSelectElement||(el instanceof HTMLInputElement&&!['checkbox','radio','file','submit','button','hidden'].includes(el.type));
+ const defaultOf=el=>el instanceof HTMLSelectElement?([...el.options].find(o=>o.defaultSelected)??el.options[0])?.value??'':el.defaultValue;
+ function rememberTyped(el){if(!isTextField(el))return;const key=fieldKey(el);if(key)typed.set(key,{value:el.value,base:defaultOf(el)});}
+ function restoreTyped(){for(const [key,t] of typed){const [owner,name]=key.split('|');const scope=owner?[...root.querySelectorAll('[data-action]')].find(e=>e.getAttribute('data-action')===owner):root;const el=scope&&[...scope.querySelectorAll('[name]')].find(e=>e.getAttribute('name')===name&&isTextField(e));
+  if(!el||defaultOf(el)!==t.base){typed.delete(key);continue;}if(el.value!==t.value)el.value=t.value;}}
  function paint(html,css){
   document.body.classList.toggle('standard',!!model);
   const horizontalScroll=root.querySelector('.scroll')?.scrollLeft||0;
   const focused=document.activeElement,focusAction=focused?.getAttribute('data-action'),focusGrip=focused?.hasAttribute('data-reorder')?focused.getAttribute('aria-label'):null,selection=focused?.selectionStart,editBefore=focused?.closest('.example-input')?._before;
-  root.replaceChildren(clean(html));sheet.textContent=css;
+  root.replaceChildren(clean(html));sheet.textContent=css;restoreTyped();
   if(optionsTab!==uiState?.tab){optionsOpen=false;optionsTab=uiState?.tab;}
   toolbarObserver?.disconnect();fitToolbar();const toolbar=root.querySelector('.tracker-toolbar');
   if(toolbar){toolbarObserver=new ResizeObserver(fitToolbar);toolbarObserver.observe(toolbar);}
@@ -154,6 +163,8 @@ export const FRAME_SCRIPT=String.raw`(()=>{'use strict';
   }catch{return false;}
  }
  function dispatch(event){
+  // P5 (4.5): while a cell edit saves, other actions wait for the saved screen and then run; nothing is dropped.
+  if(savingCell&&Object.keys(inflight).length&&event.action!=='bound-batch'){if(held.length<20)held.push(event);return;}
   if((Object.keys(pending).length||uiState?.newRow)&&['tracker:add','tracker:layout','settings'].includes(event.action)){post('trialy.notice',{message:'Save or cancel your current changes first.'});return;}
   if(local(event))return;
   if(Object.keys(pending).length&&!['bound-batch'].includes(event.action)){post('trialy.notice',{message:'Save or ignore your current edits before this action.'});return;}
@@ -162,19 +173,37 @@ export const FRAME_SCRIPT=String.raw`(()=>{'use strict';
  }
  function footerAction(action){
   if(action==='save-edits')dispatch({kind:'submit',action:'bound-batch',value:null,form:{...pending}});
-  else if(action==='discard-edits'){pending=Object.create(null);if(!local({kind:'change',action:'discard-edits'})){for(const el of root.querySelectorAll('[data-action]')){const k=el.getAttribute('data-action');if(k in original){if(el.type==='checkbox')el.checked=original[k];else el.value=original[k];el.style.background='';}}footer();}}
+  else if(action==='discard-edits'){pending=Object.create(null);typed.clear();if(!local({kind:'change',action:'discard-edits'})){for(const el of root.querySelectorAll('[data-action]')){const k=el.getAttribute('data-action');if(k in original){if(el.type==='checkbox')el.checked=original[k];else el.value=original[k];el.style.background='';}}footer();}}
   else if(action==='save-layout'||action==='discard-layout')dispatch({kind:'click',action,value:null,form:{}});
  }
  window.addEventListener('message',event=>{
   if(event.source!==host||typeof event.data?.channel!=='string')return;
   const v=event.data;if(channel!==null&&v.channel!==channel)return;
   if(v.kind==='trialy.cache'){if(model&&v.tracker){model=v.tracker;}return;}
-  if(v.kind==='trialy.save-start'){savingCell=true;root.inert=true;return;}
+  if(v.kind==='trialy.save-start'){savingCell=true;if(!v.cells)root.inert=true;return;}
+  // A cell save failed: its earlier value comes back with the next render and the cell is marked; edits made meanwhile are kept.
+  if(v.kind==='trialy.save-failed'){
+   // The frame redraws its current screen without the unsaved values (as Discard edits does) and marks the cells that did not save.
+   const lost=Object.keys(inflight);for(const k of lost){if(pending[k]===inflight[k])delete pending[k];}inflight=Object.create(null);savingCell=false;root.inert=false;
+   const message=String(v.message||'Not saved').slice(0,200),prefix=k=>k.split(':').slice(0,3).join(':'),marks=lost.map(prefix);
+   if(!local({kind:'change',action:'discard-edits'})){for(const el of root.querySelectorAll('[data-action]')){const k=el.getAttribute('data-action');if(lost.includes(k)&&k in original){if(el.type==='checkbox')el.checked=original[k];else el.value=original[k];el.style.background='';}}footer();}
+   for(const el of root.querySelectorAll('[data-action]')){const k=el.getAttribute('data-action');if(k&&marks.includes(prefix(k))){const holder=el.closest('td,.cell,label')||el;holder.style.background='#fdecea';holder.title=message;}}
+   const waiting=held;held=[];for(const e of waiting)dispatch(e);
+   return;}
   if(v.kind==='trialy.save-idle'){savingCell=false;root.inert=!!v.blocked;return;}
   if(v.kind==='trialy.action'){footerAction(v.action);return;}
   if(v.kind!=='trialy.render'||typeof v.html!=='string'||v.html.length>200000||typeof v.css!=='string'||v.css.length>50000)return;
   navigationOnly=!!v.navigationOnly;appLinks=!!v.appLinks;appOrigin=v.appOrigin||'';linkContext=v.linkContext||null;channel=v.channel;model=v.tracker||null;uiState=v.state;controls=Array.isArray(v.controls)?v.controls:[];connected=v.connected;
-  savingCell=false;root.inert=false;pending=Object.create(null);original=Object.create(null);paint(v.html,v.css);post('trialy.rendered');
+  if(v.fresh)typed.clear();
+  const carried=Object.entries(pending).filter(([k,val])=>!(k in inflight)||inflight[k]!==val),marks=failed,markMessage=failedMessage;
+  inflight=Object.create(null);failed=[];failedMessage='';
+  savingCell=false;root.inert=false;pending=Object.create(null);original=Object.create(null);paint(v.html,v.css);
+  const prefix=k=>k.split(':').slice(0,3).join(':'),cells=k=>[...root.querySelectorAll('[data-action]')].filter(el=>el.getAttribute('data-action')===k);
+  for(const k of Object.keys(original))if(marks.includes(prefix(k)))for(const el of cells(k)){const holder=el.closest('td,.cell,label')||el;holder.style.background='#fdecea';holder.title=markMessage;}
+  // P5 (4.5): edits made while the previous save ran are kept (their record may have a new version) and saved next.
+  if(carried.length&&model?.saved){for(const [k,val] of carried){const now=Object.keys(original).find(x=>prefix(x)===prefix(k));if(!now)continue;pending[now]=val;for(const el of cells(now)){if(el.type==='checkbox')el.checked=val;else el.value=val;el.style.background='#e5f6e9';}}if(Object.keys(pending).length){footer();setTimeout(commitCell,0);}}
+  post('trialy.rendered');
+  const waiting=held;held=[];for(const e of waiting)dispatch(e);
  });
  function send(kind,target){
   const trigger=target.closest('[data-action]');if(!trigger||!channel)return;const action=trigger.getAttribute('data-action');if(!action||action.length>200)return;
@@ -197,7 +226,7 @@ export const FRAME_SCRIPT=String.raw`(()=>{'use strict';
   if(b&&b.type==='submit'&&b.form){e.preventDefault();send('submit',b);return;}
   if(target.closest('[data-action]')&&!target.matches('input,textarea,select,option')){e.preventDefault();send('click',target);}
  });
- root.addEventListener('input',e=>{if(appLinks&&!model)post('trialy.dirty',{dirty:true});if(e.target instanceof Element&&(e.target.matches('input[data-ui-state],textarea[data-ui-state]')||e.target.getAttribute('data-action')?.startsWith('bound:')))send('change',e.target);});
+ root.addEventListener('input',e=>{if(e.target instanceof Element)rememberTyped(e.target);if(appLinks&&!model)post('trialy.dirty',{dirty:true});if(e.target instanceof Element&&(e.target.matches('input[data-ui-state],textarea[data-ui-state]')||e.target.getAttribute('data-action')?.startsWith('bound:')))send('change',e.target);});
  root.addEventListener('change',e=>{if(e.target instanceof Element&&!e.target.matches('input[data-ui-state],textarea[data-ui-state]'))send('change',e.target);});
  root.addEventListener('focusout',e=>{const editor=e.target.closest('.example-input');if(editor)queueMicrotask(()=>{if(!editor.contains(document.activeElement)){editor.hidden=true;editor.previousElementSibling.hidden=false;}});});
  root.addEventListener('submit',e=>{e.preventDefault();if(e.target instanceof Element)send('submit',e.target);});

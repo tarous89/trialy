@@ -1,3 +1,4 @@
+import './frontend-runtime.css';
 import {useApproveChange} from './PendingChanges.js';
 import {withWorkspaceActivity} from './WorkspaceActivity.js';
 import {UxTimer} from './ux-timing.js';
@@ -21,6 +22,19 @@ import {AppUnavailable} from './AppUnavailable.js';
 import {IntegrationDialog} from './IntegrationDialog.js';
 import {DocumentUploadDialog} from './DocumentUploadDialog.js';
 type Call=(name:string,args:Record<string,unknown>,options?:WorkspaceRequestOptions)=>Promise<any>;
+/**
+ * P2, D20 (4.7): show first, fill in after. The frame address and each app's last screen are kept in memory only
+ * (never on the device), for two minutes, so reopening an app shows its last screen at once and refreshes it right away.
+ */
+let knownFrameUrl='';
+const remembered=new Map<string,{output:any;at:number}>(),REMEMBER_MS=120000;
+/** P5 (4.4): one save key per explicit action. Retrying the same action reuses it, so a save whose response was lost is never made twice. */
+const actionKeys=new WeakMap<object,string>();
+const actionKey=(event:any)=>{let key=actionKeys.get(event);if(!key){key=crypto.randomUUID();actionKeys.set(event,key);}return key;};
+const rememberKey=(c:any)=>c?.id&&c.workspace_id?c.workspace_id+':'+c.id+':'+c.version:null;
+function rememberOutput(c:any,output:any){const key=rememberKey(c);if(!key||!output||output.proposal||output.temporary)return;remembered.delete(key);remembered.set(key,{output,at:Date.now()});while(remembered.size>8)remembered.delete(remembered.keys().next().value!);}
+function recall(c:any){const key=rememberKey(c),hit=key?remembered.get(key):undefined;if(!hit)return null;if(Date.now()-hit.at>REMEMBER_MS){remembered.delete(key!);return null;}return hit.output;}
+export function forgetRememberedApps(){remembered.clear();}
 const navigationRead=(event:any)=>event.kind==='open'||/^(tab:|next$|prev$|previous$|filter:|sort:|sort-field:|sort$|search$|query$|overview-next$|overview-previous$|overview-panel$)/.test(event.action??'');
 export function FrontendCodeRuntime({active=true,component,previewId,initialOutput,call,onProposal,onUnavailable,onHome,onAccess,onLayout,onBusyChange,onRendered,onUpdated}:{active?:boolean;component?:any;previewId?:string;initialOutput?:any;call:Call;onProposal:(p:any)=>void;onUnavailable?:(message:string)=>void;onHome?:()=>void;onAccess?:()=>void;onLayout?:()=>void;onBusyChange?:(busy:boolean)=>void;onRendered?:()=>void;onUpdated?:(component:any)=>void}){
  const approve=useApproveChange();
@@ -34,9 +48,9 @@ export function FrontendCodeRuntime({active=true,component,previewId,initialOutp
  if(!ux.current)ux.current=new UxTimer(platform.reportUx,platform.uxHost??'web');
  useEffect(()=>()=>ux.current?.flush(),[]);
  const frame=useRef<HTMLIFrameElement>(null),output=useRef<any>(null),state=useRef<any>(null),busyRef=useRef(false),channel=useRef(crypto.randomUUID()),live=useRef(true),current=useRef(component);
- const [recordReview,setRecordReview]=useState<any>(null);
+ const [recordReview,setRecordReview]=useState<any>(null),[undo,setUndo]=useState<{undoId:string;label:string}|null>(null);
  const [detailsOpen,setDetailsOpen]=useState(false),[standard,setStandard]=useState(false),[ready,setReady]=useState(false),[height,setHeight]=useState(620),[adding,setAdding]=useState(component?.resource_kind==='form'),[footer,setFooter]=useState<any>(null);
- const [frameUrl,setFrameUrl]=useState(''),[error,setError]=useState(''),[busy,setBusy]=useState(false),[proposal,setProposal]=useState<any>(null);
+ const [frameUrl,setFrameUrlState]=useState(knownFrameUrl),setFrameUrl=(url:string)=>{if(url)knownFrameUrl=url;setFrameUrlState(url);},[error,setError]=useState(''),[busy,setBusy]=useState(false),[proposal,setProposal]=useState<any>(null);
  const [reviewProposal,setReviewProposal]=useState(false);
  const [loadFailed,setLoadFailed]=useState(false);
  const [retryEvent,setRetryEvent]=useState<any>(null);
@@ -71,7 +85,7 @@ export function FrontendCodeRuntime({active=true,component,previewId,initialOutp
    const read=await call('read_project_component',{componentId:current.current.id}),next=read.component;
    const result=await readFrontend({componentId:next.id,expectedVersion:next.version,event:{kind:'open'},...(navigationRef.current?{route:navigationRef.current.route}:{})});
    if(!live.current||afterSave&&saveReceipt.current!==receipt)return false;
-   current.current=next;output.current=mergeTrackerSnapshot(null,result);state.current=result.state;setStandard(!!result.tracker);setFrameUrl(result.frameUrl);setProposal(result.proposal);setConnectorReviews(result.connectorReviews??[]);setFooter(null);setRecordReview(null);setCustomDirty(false);saveReceipt.current=null;setSavedPhase(null);blocked.current=!!result.proposal;eventQueue.current=[];setPublishedUpdate(false);setConfirmUpdate(false);setReviewProposal(false);setError('');setRetryEvent(null);setLoadFailed(false);setSchemaChanged(false);send();prefetch(result);onUpdated?.(next);return true;
+   current.current=next;output.current=mergeTrackerSnapshot(null,result);state.current=result.state;setStandard(!!result.tracker);setFrameUrl(result.frameUrl);setProposal(result.proposal);setConnectorReviews(result.connectorReviews??[]);setFooter(null);setRecordReview(null);setCustomDirty(false);saveReceipt.current=null;setSavedPhase(null);blocked.current=!!result.proposal;eventQueue.current=[];setPublishedUpdate(false);setConfirmUpdate(false);setReviewProposal(false);setError('');setRetryEvent(null);setLoadFailed(false);setSchemaChanged(false);freshScreen.current=true;send();prefetch(result);onUpdated?.(next);return true;
   }catch(e){if(afterSave)throw e;if(live.current){setConfirmUpdate(false);setSchemaChanged((e as any)?.code==='manifest_stale');if(unavailable(e)){revoke();}else {setLoadFailed(!output.current);setError((e as Error).message||'The latest version could not load. Your work is still here.');}}}
   finally{busyRef.current=false;if(live.current){setBusy(false);if(eventQueue.current.length&&!blocked.current)void run(eventQueue.current.shift());}}
  }
@@ -98,18 +112,21 @@ export function FrontendCodeRuntime({active=true,component,previewId,initialOutp
    frame.current?.contentWindow?.postMessage({kind:'trialy.cache',channel:channel.current,tracker:merged.tracker},'*');
   }catch{/* Optional prefetch does not replace the view. */}}},150);
  }
- const send=()=>{if(output.current)frame.current?.contentWindow?.postMessage({kind:'trialy.render',channel:channel.current,html:output.current.html,css:output.current.css,controls:output.current.controls,connected:output.current.connected,state:output.current.state,tracker:output.current.tracker,navigationOnly:embedded,appLinks:platformRef.current.enabled,appOrigin:platformRef.current.origin,linkContext:navigationRef.current?.location??parseAppUrl(location.pathname+location.search)??(component?{appId:component.id,workspaceId:component.workspace_id,source:'component'}:null)},'*');};
+ const paintPending=useRef(false),freshScreen=useRef(false);
+ const send=()=>{paintPending.current=false;queueMicrotask(()=>{freshScreen.current=false;});if(output.current&&current.current&&!previewId)rememberOutput(current.current,output.current);if(output.current)frame.current?.contentWindow?.postMessage({kind:'trialy.render',channel:channel.current,fresh:freshScreen.current,html:output.current.html,css:output.current.css,controls:output.current.controls,connected:output.current.connected,state:output.current.state,tracker:output.current.tracker,navigationOnly:embedded,appLinks:platformRef.current.enabled,appOrigin:platformRef.current.origin,linkContext:navigationRef.current?.location??parseAppUrl(location.pathname+location.search)??(component?{appId:component.id,workspaceId:component.workspace_id,source:'component'}:null)},'*');};
  useEffect(()=>{if(ready)send();},[platform.enabled,platform.origin]);
  async function run(event:any={kind:'open'}){
   if(event.action==='tracker:layout'){onLayout?.();return;}if(event.action==='tracker:access'){onAccess?.();return;}
-  if(blocked.current)return;if(busyRef.current){if(/^tab:/.test(event.action||''))eventQueue.current=eventQueue.current.filter(e=>!/^tab:/.test(e.action||''));if(eventQueue.current.length<50)eventQueue.current.push(event);return;}cancelPrefetch();busyRef.current=true;setBusy(true);onBusyChange?.(true);setError('');if(event.action==='bound-batch')frame.current?.contentWindow?.postMessage({kind:'trialy.save-start',channel:channel.current},'*');
+  if(blocked.current)return;if(busyRef.current){if(/^tab:/.test(event.action||''))eventQueue.current=eventQueue.current.filter(e=>!/^tab:/.test(e.action||''));if(eventQueue.current.length<50)eventQueue.current.push(event);return;}cancelPrefetch();busyRef.current=true;setBusy(true);onBusyChange?.(true);setError('');if(event.action==='bound-batch')frame.current?.contentWindow?.postMessage({kind:'trialy.save-start',channel:channel.current,cells:true},'*');
+  const runStarted=performance.now();
   try{
    const c=current.current,explicitApproval=approvedAction.current===event.action;approvedAction.current=null;
    if(['tracker:create'].includes(event.action)||/^tracker:(duplicate|delete):/.test(event.action)){
     if(!c||!output.current?.tracker?.writable)throw Error('This tracker is read-only.');
     const model=output.current.tracker,tab=model.config.tabs[state.current?.newRow?.tab??state.current?.tab];
     if(!tab)throw Error('Select a table first.');
-    let p:any;
+    // P5, D16, D19 (4.4, 4.6): adding, duplicating and deleting a row save directly, without a review dialog. A delete is an archive; Undo brings it back.
+    let changes:any[];const deletion=event.action.startsWith('tracker:delete:');
     if(event.action==='tracker:create'){
      const raw=JSON.parse(event.form.data),data:Record<string,unknown>={};
      for(const f of tab.columns.filter((f:any)=>f.editable)){
@@ -118,21 +135,22 @@ export function FrontendCodeRuntime({active=true,component,previewId,initialOutp
       else if(['number','money'].includes(f.kind))v=Number(v);
       data[f.field]=v;
      }
-     p=await call('prepare_workspace_change',{operation:{kind:'apply_component_records',...viewRequest(c),changes:[{kind:'create_record',typeId:tab.typeId,data}]}});
+     changes=[{kind:'create_record',typeId:tab.typeId,data}];
     }else{
      const recordId=event.action.split(':')[2],row=model.pages.filter((p:any)=>p.request.typeId===tab.typeId).flatMap((p:any)=>p.result.rows).find((r:any)=>r.id===recordId);
      if(!row)throw Error('Record unavailable; reopen the table.');
-     if(event.action.startsWith('tracker:delete:'))p=await call('prepare_change',{operation:{kind:'database_changes',typeId:tab.typeId,updates:[],deletions:[{recordId,expectedVersion:row.version}]}});
-     else{
-      const data=Object.fromEntries(tab.columns.filter((f:any)=>f.editable&&Object.hasOwn(row.data,f.field)).map((f:any)=>[f.field,row.data[f.field]]));
-      p=await call('prepare_workspace_change',{operation:{kind:'apply_component_records',...viewRequest(c),changes:[{kind:'create_record',typeId:tab.typeId,data}]}});
-     }
+     changes=deletion?[{kind:'archive_record',recordId,expectedVersion:row.version}]:[{kind:'create_record',typeId:tab.typeId,data:Object.fromEntries(tab.columns.filter((f:any)=>f.editable&&Object.hasOwn(row.data,f.field)).map((f:any)=>[f.field,row.data[f.field]]))}];
     }
-    if(event.action==='tracker:create'&&explicitApproval){saveReceipt.current={proposal:p};await finishSave();}
-    else setRecordReview({proposal:p,deletion:event.action.startsWith('tracker:delete:')});
+    const started=performance.now(),saved=await call('save_app_records',{request:{...viewRequest(c),requestKey:crypto.randomUUID(),changes}},{background:true});
+    ux.current?.record('save',performance.now()-started);
+    if(!live.current)return;
+    setAdding(false);setUndo(saved.undoId?{undoId:saved.undoId,label:deletion?'Record deleted':event.action==='tracker:create'?'Record added':'Record duplicated'}:null);
+    const next=await readFrontend({...viewRequest(c),...(navigationRef.current?{route:navigationRef.current.route}:{}),state:{...state.current,newRow:null,...(deletion?{detail:null}:{})},event:{kind:'open'}});
+    if(!live.current)return;
+    const merged=mergeTrackerSnapshot(output.current,next);output.current=merged;state.current=merged.state;send();prefetch(merged);
     return;
    }
-   const request:any={...(previewId?{previewId}:viewRequest(c)),state:state.current,event,...(navigationRef.current?{route:navigationRef.current.route}:{})};
+   const request:any={...(previewId?{previewId}:viewRequest(c)),...(!previewId&&['click','change','submit'].includes(event.kind)&&!navigationRead(event)?{requestKey:actionKey(event)}:{}),state:state.current,event,...(navigationRef.current?{route:navigationRef.current.route}:{})};
    let result;
    try{result=await readFrontend(request);}catch(e){
     // Renew only navigation reads. Never replay a write or discard a local draft.
@@ -140,6 +158,8 @@ export function FrontendCodeRuntime({active=true,component,previewId,initialOutp
     const {viewId,...renewed}=request;result=await readFrontend(renewed);
    }
    setRetryEvent(null);
+   // P10: a direct save is timed from the edit to the saved screen.
+   if(result.saved)ux.current?.record('save',performance.now()-runStarted);
    if(!live.current)return;
    // A completed tracker cell edit or explicit app action approves the visible edits. The server still validates a precise proposal and its digest before committing.
    if(result.proposal&&explicitApproval&&(event.action==='bound-batch'||event.action==='save-layout'&&output.current?.tracker)){
@@ -150,12 +170,28 @@ export function FrontendCodeRuntime({active=true,component,previewId,initialOutp
    // fields visible instead of rendering the pre-save database values over them.
    if(result.proposal){setProposal(result.proposal);setReviewProposal(true);blocked.current=true;eventQueue.current=[];return;}
    result=mergeTrackerSnapshot(output.current,result);output.current=result;state.current=result.state;setStandard(!!result.tracker);setFrameUrl(result.frameUrl);setProposal(result.proposal);setConnectorReviews(result.connectorReviews??[]);setCustomDirty(false);setLoadFailed(false);setSchemaChanged(false);
-   if(result.proposal){blocked.current=true;eventQueue.current=[];}send();prefetch(result);
+   if(result.proposal){blocked.current=true;eventQueue.current=[];}
+   // P5 (4.4): while more of the person's actions are waiting, an earlier screen is not painted: it would replace what they typed since, and the next action would read and save the old value. The latest action's screen is shown.
+   if(!eventQueue.current.length||result.tracker||result.proposal)send();else paintPending.current=true;prefetch(result);
   }catch(e){if(live.current){setSchemaChanged((e as any)?.code==='manifest_stale');if(navigationRead(event)){
    if(unavailable(e)){clearOutput();setLoadFailed(true);onUnavailable?.('No app is available');}
    else if(!output.current&&current.current&&(e as any)?.code!=='runtime_busy')await loadPublished();
    else {setLoadFailed(!output.current);if(['app_view_expired','component_changed','app_view_incompatible'].includes((e as any)?.code))setPublishedUpdate(true);else {actionError(e);setRetryEvent(event);}}
-  }else {actionError(e);if(event.action==='bound-batch'&&!saveReceipt.current)setRetryEvent(event);}}}finally{busyRef.current=false;onBusyChange?.(false);if(live.current){setBusy(false);frame.current?.contentWindow?.postMessage({kind:'trialy.save-idle',channel:channel.current,blocked:!!saveReceipt.current||!!proposal},'*');if(eventQueue.current.length&&!blocked.current)void run(eventQueue.current.shift());}}
+  }else if(event.action==='bound-batch'){
+   frame.current?.contentWindow?.postMessage({kind:'trialy.save-failed',channel:channel.current,message:(e as Error).message||'Not saved'},'*');
+   setError((e as any)?.code==='stale_value'?'Someone changed this value first. The newer value is shown; your edit was not saved.':((e as Error).message||'Your edit could not be saved. The earlier value is back.'));
+   if((e as any)?.code==='stale_value'||(e as any)?.code==='stale_version')void run({kind:'open'});
+  }else{actionError(e);const code=(e as any)?.code,status=(e as any)?.status;if(current.current&&['click','change','submit'].includes(event.kind)&&(!status||status>=500||code==='temporary'))setRetryEvent(event);}}}finally{busyRef.current=false;onBusyChange?.(false);if(live.current){setBusy(false);frame.current?.contentWindow?.postMessage({kind:'trialy.save-idle',channel:channel.current,blocked:!!saveReceipt.current||!!proposal},'*');if(eventQueue.current.length&&!blocked.current)void run(eventQueue.current.shift());else if(paintPending.current)send();}}
+ }
+ /** G8 (4.6): the standard tracker offers Undo for the last add, duplicate or delete, while the app stays open. */
+ async function undoLast(){
+  const c=current.current,u=undo;if(!c||!u||busyRef.current||!output.current?.viewId)return;busyRef.current=true;setBusy(true);
+  try{
+   await call('undo_app_change',{request:{componentId:c.id,viewId:output.current.viewId,undoId:u.undoId}},{background:true});setUndo(null);
+   const next=await readFrontend({...viewRequest(c),...(navigationRef.current?{route:navigationRef.current.route}:{}),state:state.current,event:{kind:'open'}});
+   if(!live.current)return;const merged=mergeTrackerSnapshot(output.current,next);output.current=merged;state.current=merged.state;send();prefetch(merged);
+  }catch(e){setUndo(null);setError((e as Error).message||'This action can no longer be undone.');}
+  finally{busyRef.current=false;if(live.current)setBusy(false);}
  }
  function finishSave(){
   if(saveTask.current)return saveTask.current;
@@ -197,7 +233,7 @@ export function FrontendCodeRuntime({active=true,component,previewId,initialOutp
   setSavedPhase(null);setAdding(false);blocked.current=false;saveReceipt.current=null;frame.current?.contentWindow?.postMessage({kind:'trialy.save-idle',channel:channel.current,blocked:false},'*');return true;
  }
  async function retrySaved(latest=false){if(busyRef.current)return;if(latest&&saveReceipt.current?.saved)saveReceipt.current.reloadLatest=true;busyRef.current=true;setBusy(true);try{await finishSave();}catch(e){actionError(e);}finally{busyRef.current=false;if(live.current)setBusy(false);}}
- useEffect(()=>{live.current=true;if(requests.current.signal.aborted)requests.current=new AbortController();if(initialOutput){output.current=mergeTrackerSnapshot(null,initialOutput);state.current=initialOutput.state;setStandard(!!initialOutput.tracker);setFrameUrl(initialOutput.frameUrl);setProposal(initialOutput.proposal);onBusyChange?.(false);prefetch(output.current);}else void run();return()=>{live.current=false;cancelPrefetch();requests.current.abort();};},[]);
+ useEffect(()=>{live.current=true;if(requests.current.signal.aborted)requests.current=new AbortController();if(initialOutput){output.current=mergeTrackerSnapshot(null,initialOutput);state.current=initialOutput.state;setStandard(!!initialOutput.tracker);setFrameUrl(initialOutput.frameUrl);setProposal(initialOutput.proposal);onBusyChange?.(false);prefetch(output.current);}else{const last=!previewId?recall(component):null;if(last){output.current=last;state.current=last.state;setStandard(!!last.tracker);setFrameUrl(last.frameUrl);}void run();}return()=>{live.current=false;cancelPrefetch();requests.current.abort();};},[]);
  const [integration,setIntegration]=useState<{role:string}|null>(null);
  const [upload,setUpload]=useState<{context:string}|null>(null);
  const routeKey=JSON.stringify([navigation?.route,navigation?.reset]),lastRoute=useRef(routeKey),lastReset=useRef(navigation?.reset);
@@ -235,7 +271,7 @@ export function FrontendCodeRuntime({active=true,component,previewId,initialOutp
  return <section className={`ty-tracker-surface ${standard?'ty-tracker--standard':''} ${detailsOpen?'ty-tracker--details':''}`} aria-label={platform.enabled?"App":"Tracker"}>{integration&&current.current&&<IntegrationDialog call={call} appId={current.current.id} role={integration.role} onClose={()=>setIntegration(null)} onChanged={()=>void loadPublished()}/>}
  {upload&&current.current&&<DocumentUploadDialog call={call} onClose={()=>setUpload(null)} onSaved={(versionId)=>{const context=upload.context;setUpload(null);void run({kind:'change',action:'document:uploaded'+(context?':'+context:''),value:versionId,form:{}});}}/>}
  {schemaChanged&&ready&&<div role="status">The saved app is still here. Its connected fields changed and need review.</div>}
- {error&&<SystemNotice error message={error} onDismiss={()=>setError('')}/>}{retryEvent&&<div className="ty-actions"><button className="ty-button" disabled={busy} onClick={()=>{if(retryEvent.action==='bound-batch')approvedAction.current='bound-batch';void run(retryEvent);}}>{retryEvent.action==='bound-batch'?'Retry save':'Retry loading'}</button></div>}{saveReceipt.current&&!saveReceipt.current.saved&&!busy&&<div className="ty-runtime-recovery"><button onClick={()=>void retrySaved()}>Retry save</button></div>}
+ {error&&<SystemNotice error message={error} onDismiss={()=>setError('')}/>}{undo&&standard&&<div className="ty-undo" role="status"><span>{undo.label}</span><button type="button" className="ty-button" disabled={busy} onClick={()=>void undoLast()}>Undo</button><button type="button" className="ty-undo-dismiss" aria-label="Dismiss" onClick={()=>setUndo(null)}>×</button></div>}{retryEvent&&<div className="ty-actions"><button className="ty-button" disabled={busy} onClick={()=>{if(retryEvent.action==='bound-batch')approvedAction.current='bound-batch';void run(retryEvent);}}>{retryEvent.action==='bound-batch'||!navigationRead(retryEvent)?'Retry':'Retry loading'}</button></div>}{saveReceipt.current&&!saveReceipt.current.saved&&!busy&&<div className="ty-runtime-recovery"><button onClick={()=>void retrySaved()}>Retry save</button></div>}
  {!adding&&<SavedRefreshNotice phase={savedPhase} onRetry={()=>void retrySaved()}/>}
  {publishedUpdate&&<div ref={updateBanner} className="ty-app-update" role="status"><span>This app has been updated. Refresh when you’re ready.</span><button disabled={busy} onClick={()=>saveReceipt.current?.saved?void retrySaved(true):localEditsRef.current?setConfirmUpdate(true):void loadPublished()}>Refresh to latest version</button></div>}
  {confirmUpdate&&<div className="ty-content-overlay"><section className="ty-confirm-dialog" role="alertdialog" aria-modal="true" aria-label="Load published update"><h2>Discard your unsaved edits?</h2><p>Your local edits will be discarded when the published update loads.</p><button onClick={()=>setConfirmUpdate(false)}>Keep editing</button><button disabled={busy} onClick={()=>void loadPublished()}>Discard edits and load update</button></section></div>}
@@ -245,7 +281,7 @@ export function FrontendCodeRuntime({active=true,component,previewId,initialOutp
  {connectorReviews[0]&&embedded?<div className="ty-actions"><a className="ty-button ty-button--primary" href={connectorReviews[0].reviewUrl} target="_blank" rel="noopener noreferrer">Review request in TrialAgents</a></div>:connectorReviews[0]&&<ConnectorReview reviewId={connectorReviews[0].reviewId} call={call} onClose={()=>setConnectorReviews(r=>r.slice(1))} onConfirmed={result=>{setConnectorReviews(r=>r.slice(1));void run({kind:'click',action:'connector:completed',form:{result:JSON.stringify(result)}});}}/>}
  {reviewProposal&&proposal&&<div className="ty-content-overlay"><section className="ty-confirm-dialog" role="dialog" aria-modal="true" aria-label="Review app changes"><h2>Review changes</h2><ChangeSummary value={proposal.summary??proposal.body}/><button disabled={busy} onClick={async()=>{try{await call('discard_workspace_preview',{previewId:proposal.id});setProposal(null);setReviewProposal(false);blocked.current=false;}catch(e){actionError(e);}}}>Keep editing</button><button disabled={busy} onClick={async()=>{setBusy(true);try{saveReceipt.current??={proposal};await finishSave();setError('');}catch(e){setReviewProposal(false);actionError(e);}finally{setBusy(false);}}}>Save changes</button></section></div>}
  {!ready&&(loadFailed?<div role="status">The app is taking longer to load. <button onClick={retryLoad}>Retry loading</button></div>:<div className="ty-runtime-loading" aria-busy="true" aria-label="Loading app"/>)}
- {frameUrl&&<iframe inert={adding||!!recordReview||!!savedPhase} ref={frame} title="Saved frontend code" sandbox={platform.enabled?"allow-scripts allow-popups allow-popups-to-escape-sandbox":"allow-scripts"} referrerPolicy="no-referrer" src={platform.frameDocument?undefined:frameUrl} srcDoc={platform.frameDocument} onLoad={send} style={{width:'100%',height:detailsOpen?'100%':height+'px',border:0,display:'block'}}/>}
+ {(frameUrl||platform.frameDocument)&&<iframe inert={adding||!!recordReview||!!savedPhase} ref={frame} title="Saved frontend code" sandbox={platform.enabled?"allow-scripts allow-popups allow-popups-to-escape-sandbox":"allow-scripts"} referrerPolicy="no-referrer" src={platform.frameDocument?undefined:frameUrl} srcDoc={platform.frameDocument} onLoad={send} style={{width:'100%',height:detailsOpen?'100%':height+'px',border:0,display:'block'}}/>}
  </section>;
 }
 

@@ -1,3 +1,4 @@
+import {settle,tookEffect} from './settle.js';
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
 import {randomUUID} from 'node:crypto';
@@ -44,7 +45,7 @@ test('connected resources enforce schema/value separation, shared edits, project
  const c=await change({kind:'save_component',projectId:project.id,content});
  const first=await f.runFrontend(ai,w.id,{componentId:c.id,expectedVersion:0});assert.equal((first.state as any).total,1);assert.ok('controls' in first);assert.equal(first.controls?.[0].value,'Vendor one');
  const other=await change({kind:'save_component',projectId:project.id,content:{...content,name:'Second tracker'}});
- const edit=await f.runFrontend(ai,w.id,{componentId:c.id,expectedVersion:0,event:{kind:'change',action:`bound:vendor_name:${row}:0`,value:'Updated vendor'}});assert.ok(edit.proposal);await f.confirm(owner,w.id,edit.proposal!.id,edit.proposal!.digest);
+ const edit=await f.runFrontend(ai,w.id,{componentId:c.id,expectedVersion:0,event:{kind:'change',action:`bound:vendor_name:${row}:0`,value:'Updated vendor'}});assert.ok(tookEffect(edit));await settle(f,owner,w.id,edit);
  const second=await f.runFrontend(ai,w.id,{componentId:other.id,expectedVersion:0});assert.ok('controls' in second);assert.equal(second.controls?.[0].value,'Updated vendor');
  await assert.rejects(f.runFrontend(ai,w.id,{componentId:c.id,expectedVersion:0,event:{kind:'change',action:`bound:vendor_name:${row}:0`,value:'Stale'}}),/changed/);
  await assert.rejects(f.runFrontend(ai,w.id,{componentId:c.id,expectedVersion:0,event:{kind:'change',action:`bound:vendor_name:${outside}:0`,value:'Wrong project'}}),/outside/);
@@ -59,7 +60,7 @@ test('connected resources enforce schema/value separation, shared edits, project
  const stillOpen=await f.runFrontend(ai,w.id,{componentId:c.id,expectedVersion:0});assert.equal(stillOpen.controls?.[0].value,'Updated vendor');
  assert.equal((await f.readComponent(ai,w.id,c.id)).component.version,0);
  const afterExtension=await f.runFrontend(ai,w.id,{componentId:c.id,expectedVersion:0,event:{kind:'change',action:`bound:vendor_name:${row}:1`,value:'Works after adding columns'}});
- await f.confirm(owner,w.id,afterExtension.proposal!.id,afterExtension.proposal!.digest);
+ await settle(f,owner,w.id,afterExtension);
  assert.equal((await f.runFrontend(ai,w.id,{componentId:c.id,expectedVersion:0})).controls?.[0].value,'Works after adding columns');
  await assert.rejects(f.runFrontend(member,w.id,{componentId:c.id,expectedVersion:0}));
  await save({kind:'update_type',typeId:table,expectedVersion:1,name:'Vendors renamed',fields:extended.map(field=>({...field,name:field.name+' changed'}))});

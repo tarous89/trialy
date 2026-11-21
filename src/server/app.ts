@@ -1,3 +1,4 @@
+import {importReport} from '../domain/import-report.js';
 import {withResponseCancellation} from './response-cancellation.js';
 import {recordUxTiming} from './ux-timing.js';
 import {homeRevision} from '../workspace/home-revision.js';
@@ -5,6 +6,7 @@ import {CLAUDE_MCP_PATH} from './local-oauth.js';
 import {addSubscription} from './subscription.js';
 import {addPublicAppServices} from './app-services.js';
 import {bundledAppFont} from '../workspace/design-quality.js';
+import {frameVersion} from '../workspace/frame-url.js';
 import {appPublicUrl,oauthPublicUrl} from '../shared/public-url.js';
 import {createRequestMetrics,metricSummary,withRequestMetrics} from '../db/metrics.js';
 import {withReadBatch} from '../db/database.js';
@@ -36,10 +38,12 @@ import { templates } from '../domain/templates.js';
 export function baseApp(requestsPerMinute=180) {
  const app=express();app.disable('x-powered-by');app.use(helmet({contentSecurityPolicy:{directives:{defaultSrc:["'self'"],scriptSrc:["'self'"],styleSrc:["'self'","'unsafe-inline'"],imgSrc:["'self'","data:","blob:"],frameSrc:["'self'",...new Set([new URL(appPublicUrl()).origin,oauthPublicUrl()]),"blob:"],frameAncestors:["'self'"]}}}));
  // Public stateless frame shell. HTTP sandbox also protects direct navigation.
- app.get('/frontend/frame',async(_req,res)=>{
+ let frameDocument:Promise<string>|null=null;
+ app.get('/frontend/frame',async(req,res)=>{
   const hash=createHash('sha256').update(FRAME_SCRIPT).digest('base64');
   res.removeHeader('X-Frame-Options');res.set('Content-Security-Policy',`sandbox allow-scripts${process.env.SIMPLE_APPS_ENABLED==='true'?' allow-popups allow-popups-to-escape-sandbox':''}; default-src 'none'; script-src 'sha256-${hash}'; style-src 'unsafe-inline'; img-src data:; font-src data:; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'`);
-  res.set('Cache-Control','public, max-age=0, must-revalidate');res.set('Cross-Origin-Resource-Policy','cross-origin');res.type('html').send(await frontendFrameDocument(bundledAppFont));
+  // P2 (4.7): the fingerprinted address is cached for good; the bare address (older clients) is revalidated.
+  res.set('Cache-Control',req.query.v===frameVersion()?'public, max-age=31536000, immutable':'public, max-age=0, must-revalidate');res.set('Cross-Origin-Resource-Policy','cross-origin');res.type('html').send(await (frameDocument??=frontendFrameDocument(bundledAppFont)));
  });
  app.use(express.json({verify:(req,_res,buffer)=>{if(req.url==='/notifications/webhook')(req as any).rawBody=Buffer.from(buffer);},limit:'36mb'}));app.use(rateLimit({windowMs:60000,limit:requestsPerMinute,standardHeaders:'draft-8',legacyHeaders:false,skip:req=>req.path===CLAUDE_MCP_PATH&&!!req.get('authorization')}));
  app.use((req,res,next)=>{
@@ -48,7 +52,7 @@ export function baseApp(requestsPerMinute=180) {
    const mcp=path==='/mcp'||path===CLAUDE_MCP_PATH;
    console.log(JSON.stringify({requestId,method:req.method,path,
     ...(mcp&&['events/list','events/subscribe','events/unsubscribe'].includes(req.body?.method)?{mcpMethod:req.body.method}:{}),
-    ...(mcp&&req.body?.method==='tools/call'&&['run_component_frontend','prepare_tool_layout','confirm_workspace_change','read_project_component','check_component_access','read_account_home','check_account_home'].includes(req.body.params?.name)?{tool:req.body.params.name}:{}),
+    ...(mcp&&req.body?.method==='tools/call'&&['run_component_frontend','read_app_data','save_app_records','undo_app_change','prepare_tool_layout','confirm_workspace_change','read_project_component','check_component_access','read_account_home','check_account_home'].includes(req.body.params?.name)?{tool:req.body.params.name}:{}),
     durationMs:Math.round(performance.now()-started),...metricSummary(metrics),status:res.statusCode,time:new Date().toISOString()}));
   }});withRequestMetrics(metrics,()=>withReadBatch(next));
  });
@@ -98,6 +102,7 @@ export function addApi(app:express.Express,s:Service,human:RequestHandler) {
  app.get('/api/workspaces/:workspaceId/views',async(req,res)=>res.json(await s.views(req.actor!,String(req.params.workspaceId))));
  app.get('/api/workspaces/:workspaceId/previews',async(req,res)=>res.json(await s.pendingChanges(req.actor!,id.parse(req.params.workspaceId))));
  app.get('/api/workspaces/:workspaceId/field-changes',async(req,res)=>res.json(await s.fieldChanges(req.actor!,id.parse(req.params.workspaceId),fieldChangeQuerySchema.parse(req.query))));
+ app.post('/api/workspaces/:workspaceId/import-check',async(req,res)=>res.json(await importReport(s,req.actor!,id.parse(req.params.workspaceId),req.body)));
  app.post('/api/workspaces/:workspaceId/previews',async(req,res)=>res.status(201).json(await s.preview(req.actor!,String(req.params.workspaceId),req.body)));
  app.post('/api/previews/:previewId/commit',async(req,res)=>{const body=z.object({digest:z.string().length(64),confirmed:z.literal(true)}).parse(req.body);res.json(await s.commit(req.actor!,id.parse(req.params.previewId),body.digest));});
  app.delete('/api/previews/:previewId',async(req,res)=>res.json(await s.discard(req.actor!,id.parse(req.params.previewId))));

@@ -44,10 +44,13 @@ test('Connector configuration, credential replacement and removal use trusted co
  await page.getByRole('tab',{name:'Details',exact:true}).click();await page.getByRole('button',{name:'Replace credential',exact:true}).click();await page.getByLabel('New credential',{exact:true}).fill('synthetic-fixture-secret');await page.getByRole('button',{name:'Save credential',exact:true}).click();await expect(page.getByText(/^Configured/)).toBeVisible();await expect(page.getByLabel('New credential',{exact:true})).toHaveCount(0);await expect(page.locator('body')).not.toContainText('synthetic-fixture-secret');
  await page.getByRole('button',{name:'Remove',exact:true}).click();await page.getByRole('button',{name:'Confirm',exact:true}).click();await expect(page.getByRole('heading',{name:'Connectors',exact:true})).toBeVisible();await expect(page.getByRole('button',{name:'Open Second service',exact:true})).toHaveCount(0);
 });
-for(const width of [1440,390])test(`App changes stay proposals below the platform header at ${width}px`,async({page})=>{
+// D16 (4.4): a record edit inside an app saves directly: no review dialog, no footer, and it is there after a reload.
+for(const width of [1440,390])test(`Record edits in an app save directly below the platform header at ${width}px`,async({page})=>{
  await page.setViewportSize({width,height:1000});
  const f=await (await page.request.get(base+'/fixture/apps')).json();await page.goto(base+f.url.replace('?',`/company?recordId=${f.recordId}&`));const frame=page.frameLocator('iframe[title="Saved frontend code"]');
- await frame.getByRole('button',{name:'Rename company',exact:true}).click();const mark=await page.locator('.ty-platform-brand').boundingBox();await expect(page.locator('.ty-action-footer')).toHaveCount(0);const review=page.getByRole('dialog',{name:'Review app changes'});await expect(review).toContainText('Updated company');const box=await review.boundingBox();expect(box.y).toBeGreaterThanOrEqual(mark.y+mark.height);await review.getByRole('button',{name:'Save changes',exact:true}).click();await expect(review).toHaveCount(0);await expect(frame.getByText('Updated company',{exact:true})).toBeVisible();await page.reload();await expect(frame.getByText('Updated company',{exact:true})).toBeVisible();
+ await frame.getByRole('button',{name:'Rename company',exact:true}).click();await expect(page.locator('.ty-action-footer')).toHaveCount(0);
+ await expect(frame.getByText('Updated company',{exact:true})).toBeVisible();await expect(page.getByRole('dialog',{name:'Review app changes'})).toHaveCount(0);
+ await page.reload();await expect(frame.getByText('Updated company',{exact:true})).toBeVisible();
 });
 
 test('Embedded app navigates safely and offers only the TrialAgents platform link',async({page})=>{

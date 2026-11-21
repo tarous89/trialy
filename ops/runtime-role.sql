@@ -114,3 +114,5 @@ GRANT INSERT,UPDATE ON ux_timing_daily TO trialy_runtime;
 GRANT INSERT,UPDATE ON app_access_requests TO trialy_runtime;
 -- Assistant levels (migration 085): a person keeps their own limit; the organization maximum is a column on workspaces.
 GRANT SELECT,INSERT,UPDATE ON assistant_limits TO trialy_runtime;
+-- App Undo (migration 089): a person's own Undo entries; used entries are marked, expired ones removed by their owner.
+GRANT SELECT,INSERT,UPDATE,DELETE ON app_undo_entries TO trialy_runtime;

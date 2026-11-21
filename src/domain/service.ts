@@ -9,19 +9,23 @@ import {requireCurrentAction,requireHuman,setWriteAuthorization,type WriteAuthor
 import {DataService} from './data-service.js';
 import {checksum,audit,revision} from './evidence.js';
 import {columnRetired} from './legacy-restrictions.js';
+import {checkValue,uniqueKeys,keyValue,normalizeData,type ValidationIssue} from '../shared/validation.js';
+import {throwIssues,rowIssues,byRow} from './validation-issues.js';
 export {checksum,audit} from './evidence.js';
 import {templateDiff,adoptionDiff} from './template-upgrades.js';
 import {nextDaily} from '../shared/schedules.js';
 import {calculate,formulaOrder,editableData,derived} from '../shared/formulas.js';
 import { randomUUID, createHash } from 'node:crypto';
 import type { Connection, Database } from '../db/database.js';
-import { operationSchema, reversalOperationSchema, viewFields, viewConfigSchema, fail, type Actor, type Field, type Operation, type RecordQuery } from '../shared/schema.js';
+import { operationSchema, reversalOperationSchema, viewFields, viewConfigSchema, fail, AppError, type Actor, type Field, type Operation, type RecordQuery } from '../shared/schema.js';
 import { access, typeAccess, visibleFields, projectData, folderAllowed } from './permissions.js';
 import {requireAssistantChange} from './assistant-levels.js';
 import {PostgresOriginalStore,type OriginalStore} from '../db/originals.js';
 import { templates, templateLinks } from './templates.js';
 import {assertUntracked} from './exchange-room-model.js';
 export type FileOperation={kind:'save_document';filename:string;mime:string;bytes:Buffer;ai:boolean;documentId?:string;expectedVersion?:number;submissionFileId?:string};
+/** A record change an app saves (4.4); restore_record is produced only by Undo (4.6). */
+export type RecordChange={kind:'create_record';typeId:string;data:Record<string,any>}|{kind:'update_record';recordId:string;expectedVersion:number;data:Record<string,any>;reason?:string}|{kind:'archive_record';recordId:string;expectedVersion:number}|{kind:'restore_record';recordId:string;expectedVersion:number;state:string};
 type Preview={id:string;actorId:string;workspaceId:string;operation:Operation|FileOperation;digest:string;expires:number;schemaFingerprint?:string;migrationFingerprint?:string};
 const json=(v:unknown)=>JSON.stringify(v);
 export class Service extends DataService {
@@ -68,33 +72,72 @@ export class Service extends DataService {
   if(Buffer.byteLength(json(changed))>1024*1024)fail(409,'migration_limit','Migration preview exceeds 1 MiB; use smaller tables');
   return {before:type,records:changed,fingerprint:checksum(json(records.map(r=>[r.id,r.version])))};
  }
+ /**
+  * X3 (4.1): every deterministic check on record values, collected rather than stopped at the first.
+  * Access problems (an unknown, hidden or read-only field) still stop at once. Value problems are gathered and thrown
+  * together: the error keeps the first problem's code, status and message, and lists all of them as
+  * details.issues ({field,row,code,message}). Callers that check several rows add the row number.
+  */
  async validateData(tx:Connection,a:Actor,w:string,type:any,policy:any,data:Record<string,any>,partial=false,recordId?:string) {
+  throwIssues(await this.dataIssues(tx,a,w,type,policy,data,partial,recordId));
+ }
+ /** The problems validateData would report, without throwing. Used by the import report and batch checks. */
+ async dataIssues(tx:Connection,a:Actor,w:string,type:any,policy:any,data:Record<string,any>,partial=false,recordId?:string):Promise<ValidationIssue[]> {
   policy=await applyTypePolicy(tx,a,policy,type);
   const fields=visibleFields(type.fields,policy,a);
   if(recordId)await assertRecordScope(tx,policy,recordId);assertWritable(policy,Object.keys(data));
   if(!partial&&type.fields.some((f:any)=>f.required&&!derived(f)&&!fields.some(v=>v.key===f.key)))fail(403,'required_field_unavailable','A required creation field is unavailable');
   for(const key of Object.keys(data)) if(!fields.some(f=>f.key===key&&!derived(f)))fail(400,'invalid_field','A field is unavailable or unknown');
+  const issues:ValidationIssue[]=[];const add=(f:Field,code:string,message:string,status=400)=>issues.push({field:f.key,row:null,code,message,status});
+  const one=async(f:Field,v:any)=>{
+   const local=checkValue(f,v);if(local.length){for(const x of local)issues.push({...x,row:null,status:400});return;}
+   if(f.kind==='table'){try{await typeAccess(tx,a,w,String(v));}catch(e){if(e instanceof AppError&&[403,404].includes(e.status))add(f,'invalid_reference',`${f.name}: the table is unavailable`);else throw e;}}
+   if(f.kind==='field'){const t=await typeAccess(tx,a,w,f.targetTypeId!);if(!visibleFields(t.type.fields,t.policy,a).some(x=>x.key===v))add(f,'invalid_reference','Field is unavailable');}
+   if(f.kind==='person'){const person=(await tx.query('SELECT u.id FROM users u JOIN memberships m ON m.user_id=u.id WHERE u.id::text=$1 AND m.tenant_id=$2',[v,policy.tenant_id])).rows[0];if(!person)add(f,'invalid_reference','Person is not a member of this organisation');}
+   if(f.kind==='document'){await this.documentPermission(tx,a,w,String(v),true);if(!policy.document_scope)fail(403,'restricted_documents','Document references are unavailable for this access scope');const doc=(await tx.query('SELECT id FROM document_versions WHERE id::text=$1 AND workspace_id=$2 AND ($3=false OR ai_enabled=true)',[v,w,a.origin==='ai'])).rows[0];if(!doc)add(f,'invalid_reference','Document version is unavailable');}
+   if(f.kind==='relationship'){const r=(await tx.query("SELECT id,type_id FROM records WHERE id::text=$1 AND workspace_id=$2 AND state NOT IN ('archived','superseded')",[v,w])).rows[0];if(!r||(f.targetTypeId&&r.type_id!==f.targetTypeId)){add(f,'invalid_reference','Related record is unavailable');return;}const target=await typeAccess(tx,a,w,r.type_id);await assertRecordScope(tx,target.policy,r.id);}
+  };
   for(const f of fields){if(derived(f))continue;const v=data[f.key];if(partial&&v===undefined)continue;
-   if(v===undefined||v===null||v===''){if(f.required)fail(400,'required_field',`${f.name} is required`);continue;}
+   if(v===undefined||v===null||v===''){if(f.required)add(f,'required_field',`${f.name} is required`);continue;}
    if(f.multiple&&Array.isArray(v)){
-    if(v.length>100||new Set(v).size!==v.length||v.some(x=>!['string','number'].includes(typeof x)))fail(400,'invalid_value','Use up to 100 distinct values');
-    if(f.required&&!v.length)fail(400,'required_field',`${f.name} is required`);
-    for(const value of v)await this.validateData(tx,a,w,{...type,fields:[{...f,multiple:false,required:false,unique:false}]},policy,{[f.key]:value},true,recordId);
+    if(v.length>100||new Set(v).size!==v.length||v.some(x=>!['string','number'].includes(typeof x))){add(f,'invalid_value','Use up to 100 distinct values');continue;}
+    if(f.required&&!v.length){add(f,'required_field',`${f.name} is required`);continue;}
+    const single={...f,multiple:false,required:false,unique:false};for(const value of v)await one(single,value);
     continue;
    }
-   if(f.kind==='table')await typeAccess(tx,a,w,String(v));
-   if(f.kind==='field'){const t=await typeAccess(tx,a,w,f.targetTypeId!);if(!visibleFields(t.type.fields,t.policy,a).some(x=>x.key===v))fail(400,'invalid_reference','Field is unavailable');}
-   if(['number','money'].includes(f.kind)&&typeof v!=='number')fail(400,'invalid_value',`${f.name} must be a number`);
-   if(f.kind==='boolean'&&typeof v!=='boolean')fail(400,'invalid_value',`${f.name} must be true or false`);
-   if(!['number','money','boolean'].includes(f.kind)&&typeof v!=='string')fail(400,'invalid_value',`${f.name} must be text`);
-   if(f.kind==='date'&&(!/^\d{4}-\d{2}-\d{2}$/.test(v)||Number.isNaN(Date.parse(v))||new Date(v).toISOString().slice(0,10)!==v))fail(400,'invalid_value',`${f.name} must be a date`);
-   if(f.kind==='select'&&!f.options?.includes(v))fail(400,'invalid_value',`${f.name} has an invalid option`);
-   if(f.unique){const duplicate=(await tx.query("SELECT id FROM records WHERE workspace_id=$1 AND type_id=$2 AND data->$3::text=$4::jsonb AND ($5::uuid IS NULL OR id<>$5) LIMIT 1",[w,type.id,f.key,json(v),recordId??null])).rows[0];if(duplicate)fail(409,'duplicate_value',`${f.name} must be unique`);}
-   if(f.kind==='person'){const person=(await tx.query('SELECT u.id FROM users u JOIN memberships m ON m.user_id=u.id WHERE u.id::text=$1 AND m.tenant_id=$2',[v,policy.tenant_id])).rows[0];if(!person)fail(400,'invalid_reference','Person is not a member of this organisation');}
-   if(f.kind==='document'){await this.documentPermission(tx,a,w,String(v),true);if(!policy.document_scope)fail(403,'restricted_documents','Document references are unavailable for this access scope');const doc=(await tx.query('SELECT id FROM document_versions WHERE id::text=$1 AND workspace_id=$2 AND ($3=false OR ai_enabled=true)',[v,w,a.origin==='ai'])).rows[0];if(!doc)fail(400,'invalid_reference','Document version is unavailable');}
-   if(f.kind==='relationship'){const r=(await tx.query("SELECT id,type_id FROM records WHERE id::text=$1 AND workspace_id=$2 AND state NOT IN ('archived','superseded')",[v,w])).rows[0];if(!r||(f.targetTypeId&&r.type_id!==f.targetTypeId))fail(400,'invalid_reference','Related record is unavailable');const target=await typeAccess(tx,a,w,r.type_id);await assertRecordScope(tx,target.policy,r.id);}
+   await one(f,v);
+  }
+  // Unique keys, alone or combined (uniqueWith). An update is checked as the record will be after the change.
+  const keys=uniqueKeys(type.fields).filter(k=>k.keys.some(key=>Object.hasOwn(data,key))&&k.keys.every(key=>fields.some(f=>f.key===key)));
+  if(keys.length&&!issues.some(i=>keys.some(k=>k.keys.includes(i.field!)))){
+   const current=recordId?(await tx.query('SELECT data FROM records WHERE id=$1 AND workspace_id=$2',[recordId,w])).rows[0]?.data??{}:{};
+   const merged={...current,...data};
+   for(const k of keys){
+    if(keyValue(k.keys,merged)===null)continue;
+    if(await this.keyTaken(tx,w,type.id,k.keys,merged,recordId)){const f=type.fields.find((x:Field)=>x.key===k.keys[0])!;add(f,'duplicate_value',k.keys.length>1?`${k.name} must be unique together`:`${f.name} must be unique`,409);}
+   }
   }
   if(!partial && type.fields.some((f:Field)=>f.required&&!fields.some(x=>x.key===f.key)))fail(403,'restricted_required','Creation requires a field you cannot access');
+  return issues;
+ }
+ /** Rows of one batch that repeat a declared unique key among themselves (each row on its own was checked against saved records). */
+ private async batchKeys(tx:Connection,w:string,changes:readonly any[]):Promise<ValidationIssue[]>{
+  const seen=new Map<string,number>(),issues:ValidationIssue[]=[],types=new Map<string,any>();
+  for(const [i,change] of changes.entries()){
+   let typeId=change.typeId,before:Record<string,unknown>={};
+   if(change.kind==='update_record'){const r=(await tx.query('SELECT type_id,data FROM records WHERE id=$1 AND workspace_id=$2',[change.recordId,w])).rows[0];if(!r)continue;typeId=r.type_id;before=r.data;}
+   if(!types.has(typeId))types.set(typeId,(await tx.query('SELECT fields FROM entity_types WHERE id=$1',[typeId])).rows[0]?.fields??[]);
+   const fields=types.get(typeId),data={...before,...change.data};
+   for(const k of uniqueKeys(fields)){const v=keyValue(k.keys,data);if(v===null)continue;const id=typeId+':'+k.keys.join('+')+':'+v;const earlier=seen.get(id);
+    if(earlier!==undefined)issues.push({field:k.keys[0]!,row:i+1,code:'duplicate_value',message:`${k.name} repeats row ${earlier}`,status:409});else seen.set(id,i+1);}
+  }
+  return issues;
+ }
+ /** Whether another live record of the table already holds this key (text compared trimmed and case-insensitively). */
+ async keyTaken(tx:Connection,w:string,typeId:string,keys:readonly string[],data:Record<string,unknown>,recordId?:string|null):Promise<string|null>{
+  const cond=keys.map((_,i)=>`(CASE WHEN jsonb_typeof(data->$${4+i*2})='string' THEN to_jsonb(lower(btrim(data->>$${4+i*2}))) ELSE data->$${4+i*2} END)=(CASE WHEN jsonb_typeof($${5+i*2}::jsonb)='string' THEN to_jsonb(lower(btrim($${5+i*2}::jsonb#>>'{}'))) ELSE $${5+i*2}::jsonb END)`).join(' AND ');
+  const row=(await tx.query(`SELECT id FROM records WHERE workspace_id=$1 AND type_id=$2 AND state NOT IN ('archived','superseded') AND ($3::uuid IS NULL OR id<>$3) AND ${cond} LIMIT 1`,[w,typeId,recordId??null,...keys.flatMap(key=>[key,json(data[key])])])).rows[0];
+  return row?.id??null;
  }
  async validate(tx:Connection,a:Actor,w:string,op:Operation|FileOperation,draft?:{schemas:ReadonlyMap<string,Field[]>;ownTypeId?:string}) {
   const p=await access(tx,a,w,op.kind!=='set_workspace_policy');
@@ -106,7 +149,8 @@ export class Service extends DataService {
    const changes=[...op.updates,...op.deletions],ids=changes.map(c=>c.recordId);
    if(!ids.length||ids.length>100||new Set(ids).size!==ids.length)fail(400,'database_batch','Choose up to 100 distinct records');
    for(const change of changes){const r=(await tx.query('SELECT * FROM records WHERE workspace_id=$1 AND id=$2',[w,change.recordId])).rows[0];if(!r||r.type_id!==op.typeId)fail(404,'not_found','Record not found in this table');if(r.version!==change.expectedVersion)fail(409,'stale_version','A record changed. Discard or review your edits before saving again');}
-   for(const change of op.updates){await this.validate(tx,a,w,change);for(const field of type.fields.filter((f:Field)=>f.kind==='relationship')){const v=change.data[field.key];if(op.deletions.some(d=>(Array.isArray(v)?v:[v]).includes(d.recordId)))fail(409,'record_dependencies','An update cannot reference a record being deleted');}}
+   throwIssues(byRow([...await rowIssues(op.updates,change=>this.validate(tx,a,w,change)),...await this.batchKeys(tx,w,op.updates)]));
+   for(const change of op.updates){for(const field of type.fields.filter((f:Field)=>f.kind==='relationship')){const v=change.data[field.key];if(op.deletions.some(d=>(Array.isArray(v)?v:[v]).includes(d.recordId)))fail(409,'record_dependencies','An update cannot reference a record being deleted');}}
    for(const change of op.deletions){
     const r=(await tx.query('SELECT * FROM records WHERE workspace_id=$1 AND id=$2',[w,change.recordId])).rows[0];
     await assertUntracked(tx,r.type_id,{},r,true);
@@ -174,7 +218,8 @@ export class Service extends DataService {
   if(op.kind==='archive_created_record'||op.kind==='restore_archived_creation')await this.creationArchive(tx,a,w,op);
   if(op.kind==='reverse_field_change'||op.kind==='reverse_field_changes')await this.reverseBatch(tx,a,w,op);
   if(op.kind==='update_type'){const {type}=await typeAccess(tx,a,w,op.typeId,true);if(a.origin==='ai'&&type.fields.some((f:Field)=>!f.ai))fail(403,'restricted_configuration','Edit tables containing model-restricted fields in the standalone application');if(type.version!==op.expectedVersion)fail(409,'stale_version','Table changed; preview again');if(type.fields.some((f:Field)=>op.fields.some(n=>n.key===f.key&&(n.description??'')!==(f.description??''))))fail(409,'context_change','Change existing descriptions with set_field_context before editing the schema');const populated=Number((await tx.query('SELECT count(*) AS n FROM records WHERE type_id=$1 AND workspace_id=$2',[op.typeId,w])).rows[0].n)>0;if(populated){for(const old of type.fields){const next=op.fields.find(f=>f.key===old.key);if(!next||next.kind!==old.kind||json([next.formula?.operator,next.formula?.fields])!==json([old.formula?.operator,old.formula?.fields])||json(next.options)!==json(old.options)||next.targetTypeId!==old.targetTypeId||!!next.multiple!==!!old.multiple||!!next.computed!==!!old.computed||!!next.lookup!==!!old.lookup||(!old.required&&next.required))fail(409,'migration_required','Existing data requires an explicit field migration; use an optional new field instead');}if(op.fields.some(f=>(f.required||f.formula)&&!type.fields.some((old:Field)=>old.key===f.key)))fail(409,'migration_required','New fields on populated tables must be optional');}}
-  if(op.kind==='bulk_records'){for(const change of op.changes)await this.validate(tx,a,w,change);}
+  // X3, X4 (4.1): every row is checked and every problem reported by row; rows that repeat a declared key are reported too.
+  if(op.kind==='bulk_records')throwIssues(byRow([...await rowIssues(op.changes,change=>this.validate(tx,a,w,change)),...await this.batchKeys(tx,w,op.changes)]));
   if(op.kind==='update_type'){for(const f of op.fields.filter(f=>f.unique)){const rows=(await tx.query("SELECT 1 FROM records WHERE workspace_id=$1 AND type_id=$2 AND data->$3::text IS NOT NULL AND data->$3::text NOT IN ('null'::jsonb,'\"\"'::jsonb) GROUP BY data->$3::text HAVING count(*)>1 LIMIT 1",[w,op.typeId,f.key])).rows;if(rows.length)fail(409,'duplicate_value','Existing values must be unique before enabling this rule');}}
   if(op.kind==='create_record'){const t=await typeAccess(tx,a,w,op.typeId,true);await assertUntracked(tx,op.typeId,op.data);await this.validateData(tx,a,w,t.type,t.policy,op.data);}
   if(op.kind==='update_record'){const r=(await tx.query('SELECT * FROM records WHERE id=$1 AND workspace_id=$2',[op.recordId,w])).rows[0];if(!r)fail(404,'not_found','Record not found');const t=await typeAccess(tx,a,w,r.type_id,true);if(r.version!==op.expectedVersion)fail(409,'stale_version','The record changed. Refresh and preview again.');if(['archived','superseded'].includes(r.state))fail(409,'controlled_record','Controlled record requires a new reviewed revision; direct editing is disabled');await assertUntracked(tx,r.type_id,op.data,r);await this.validateData(tx,a,w,t.type,t.policy,op.data,true,op.recordId);}
@@ -280,7 +325,21 @@ export class Service extends DataService {
   const visible=[];for(const r of rows){try{const {type,policy}=await typeAccess(this.db,a,w,r.type_id);await assertRecordScope(this.db,policy,r.record_id);const field=visibleFields(type.fields,policy,a).find(f=>f.key===r.field_key);if(!field&&!(a.origin==='human'&&policy.role==='owner'&&!type.fields.some((f:Field)=>f.key===r.field_key)))continue;visible.push({...r,typeName:type.name,fieldName:field?.name??r.field_key,derived:!!field?.formula});}catch{}}
   return {changes:visible,nextOffset:rows.length===25?offset+25:null};
  }
- async preview(a:Actor,w:string,input:unknown) {const op=operationSchema.parse(input);return this.prepare(a,w,op);}
+ async preview(a:Actor,w:string,input:unknown) {const op=await this.normalizeOperation(w,operationSchema.parse(input));return this.prepare(a,w,op);}
+ /** X4 (4.1): apply each table's declared formatting rules to the values a record write carries, before it is checked and reviewed. Nothing is guessed. */
+ async normalizeOperation<T extends Operation>(w:string,op:T):Promise<T>{
+  const types=new Map<string,Field[]>();
+  const fieldsOf=async(typeId:string|null|undefined)=>{if(!typeId)return [];if(!types.has(typeId))types.set(typeId,(await this.db.query('SELECT fields FROM entity_types WHERE id=$1 AND workspace_id=$2',[typeId,w])).rows[0]?.fields??[]);return types.get(typeId)!;};
+  const typeOfRecord=async(id:string)=>(await this.db.query('SELECT type_id FROM records WHERE id=$1 AND workspace_id=$2',[id,w])).rows[0]?.type_id;
+  const one=async(c:any):Promise<any>=>{
+   if(c.kind==='create_record'||c.kind==='accept_submission')return {...c,data:normalizeData(await fieldsOf(c.typeId),c.data)};
+   if(c.kind==='update_record')return {...c,data:normalizeData(await fieldsOf(await typeOfRecord(c.recordId)),c.data)};
+   return c;
+  };
+  if(op.kind==='bulk_records')return {...op,changes:await Promise.all(op.changes.map(one))};
+  if(op.kind==='database_changes')return {...op,updates:await Promise.all(op.updates.map(one))};
+  return one(op);
+ }
  /** Internal (A10): reversal previews are built by the server for an app's own session Undo. No tool, route or history screen reaches this. */
  async prepareReversal(a:Actor,w:string,input:unknown) {return this.prepare(a,w,reversalOperationSchema.parse(input));}
  async previewFile(a:Actor,w:string,input:{filename:string;mime:string;bytes:Buffer;ai:boolean;documentId?:string;expectedVersion?:number;submissionFileId?:string}) {
@@ -355,6 +414,58 @@ export class Service extends DataService {
    await tx.query('INSERT INTO commit_receipts(preview_id,actor_id,workspace_id,digest,result) VALUES($1,$2,$3,$4,$5)',[id,a.userId,p.workspaceId,digest,json(result)]);
    await tx.query('DELETE FROM data_previews WHERE id=$1',[id]);return result;
   });return result;
+ }
+ /**
+  * P5, P6, B3, D19 (4.4, 4.6): apply record changes in the caller's transaction, validated exactly once, with no
+  * preview row. Used by an app's direct save, its Undo and a reviewed app record change. Changes are create, update,
+  * archive (an app's delete) and, for Undo only, restore. Returns what was saved and the reverse change of each step,
+  * computed here from the saved state, so the client never supplies earlier values.
+  */
+ async applyRecordChanges(tx:Connection,a:Actor,w:string,changes:RecordChange[],authorization:WriteAuthorization):Promise<{objects:any[];inverse:RecordChange[];policy:any}>{
+  const writes=changes.filter((c):c is Extract<RecordChange,{kind:'create_record'|'update_record'}>=>c.kind==='create_record'||c.kind==='update_record');
+  const normalized=writes.length?(await this.normalizeOperation(w,{kind:'bulk_records',changes:writes})).changes:[];
+  const policy=writes.length?await this.validate(tx,a,w,{kind:'bulk_records',changes:normalized}):await access(tx,a,w,true);
+  if(!writes.length)requireAssistantChange(policy,a,'bulk_records');
+  for(const c of changes)if(c.kind==='archive_record'||c.kind==='restore_record')await this.stateChangeCheck(tx,a,w,c);
+  await setWriteAuthorization(tx,a,authorization);
+  const objects:any[]=[],inverse:RecordChange[]=[];let next=0;
+  for(const change of changes){
+   if(change.kind==='create_record'||change.kind==='update_record'){
+    const c=normalized[next++]!;
+    const before=c.kind==='update_record'?(await tx.query('SELECT data FROM records WHERE id=$1 AND workspace_id=$2 FOR UPDATE',[c.recordId,w])).rows[0]:null;
+    const [saved]=await this.apply(tx,a,w,c,policy);objects.push(saved);
+    inverse.unshift(c.kind==='create_record'?{kind:'archive_record',recordId:saved.id,expectedVersion:saved.version}:{kind:'update_record',recordId:c.recordId,expectedVersion:saved.version,data:Object.fromEntries(Object.keys(c.data).map(k=>[k,before.data[k]??null]))});
+    continue;
+   }
+   const r=(await tx.query('SELECT * FROM records WHERE id=$1 AND workspace_id=$2 FOR UPDATE',[change.recordId,w])).rows[0],version=r.version+1;
+   const state=change.kind==='archive_record'?'archived':change.state;
+   await tx.query('UPDATE records SET state=$2,version=$3,updated_at=now() WHERE id=$1',[r.id,state,version]);
+   await revision(tx,a,w,r.id,'record',version,{data:r.data,state});
+   await audit(tx,a,policy,change.kind==='archive_record'?'record.archived':'record.archive_undone',r.id,{state:r.state,version:r.version},{state,version,retained:true,authorization});
+   objects.push({id:r.id,kind:'record',version,state});
+   inverse.unshift(change.kind==='archive_record'?{kind:'restore_record',recordId:r.id,expectedVersion:version,state:r.state}:{kind:'archive_record',recordId:r.id,expectedVersion:version});
+  }
+  return {objects,inverse,policy};
+ }
+ /** D19: archiving (an app's delete) needs the whole record: every field visible and writable. Undo restores the earlier state. */
+ private async stateChangeCheck(tx:Connection,a:Actor,w:string,c:Extract<RecordChange,{kind:'archive_record'|'restore_record'}>){
+  const r=(await tx.query('SELECT * FROM records WHERE id=$1 AND workspace_id=$2',[c.recordId,w])).rows[0];if(!r)fail(404,'not_found','Record not found');
+  // "Whole record" means the person's own rights on the table, not the fields one app shows: an archive changes no value.
+  const {accessToolId:ignored,...person}=a;
+  const {type,policy}=await typeAccess(tx,person,w,r.type_id,true);await assertRecordScope(tx,policy,r.id);
+  const editable=type.fields.filter((f:Field)=>!derived(f)).map((f:Field)=>f.key);
+  if(visibleFields(type.fields,policy,person).length!==type.fields.length||editable.some((k:string)=>!policy.write_fields.includes(k)))fail(403,'full_record_required','Deleting needs edit access to every field of the record');
+  if(r.version!==c.expectedVersion)fail(409,'stale_version','The record changed. Refresh and try again.');
+  await assertUntracked(tx,r.type_id,{},r,true);
+  if(c.kind==='archive_record'){
+   if(['archived','superseded'].includes(r.state))fail(409,'controlled_record','This record is already deleted or replaced');
+   if(policy.legal_hold||(policy.retention_until&&new Date(policy.retention_until).getTime()>Date.now()))fail(409,'retention_protected','Retention policy prevents deletion');
+  }else{
+   if(r.state!=='archived')fail(409,'stale_version','The record is no longer deleted');
+   if(!['draft','in_review','approved'].includes(c.state))fail(400,'invalid_state','Unknown record state');
+   // Restoring re-checks the values against the table as it is now.
+   await this.validateData(tx,a,w,type,policy,editableData(type.fields,r.data),false,r.id);
+  }
  }
  /** Create a reviewed graph atomically; temporary IDs never become record references. */
  async createTypeBundle(tx:Connection,a:Actor,w:string,tables:{id:string;name:string;fields:Field[]}[],authorization:WriteAuthorization){

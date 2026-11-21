@@ -58,20 +58,18 @@ test('commands are declared as data, listed, validated and run through the same 
   await assert.rejects(runAppCommand(f,actor,w,{appId,expectedVersion:version,command:'item.add',input:{name:'A',color:'red'},requestKey:randomUUID()}),/not an input of this command/);
   await assert.rejects(runAppCommand(f,actor,w,{appId,expectedVersion:version,command:'nope',input:{},requestKey:randomUUID()}),/no such command/);
   await assert.rejects(runAppCommand(f,actor,w,{appId,expectedVersion:version+1,command:'items.count',input:{},requestKey:randomUUID()}),/app changed/);
-  // Propose: a review that is not saved until a person confirms it.
+  // A4, D16 (4.4): a write command's record changes save directly, as the same click would.
   const key=randomUUID(),run=await runAppCommand(f,actor,w,{appId,expectedVersion:version,command:'item.add',input:{name:'Vials',qty:3},requestKey:key});
-  assert.equal(run.ok,true);assert.ok(run.proposal?.previewId);
-  assert.equal((await db.query("SELECT count(*)::int n FROM records WHERE type_id=$1",[typeId])).rows[0].n,0,'nothing is written by the command');
-  // The click path proposes exactly the same change.
+  assert.equal(run.ok,true);assert.equal(run.proposal,null);assert.equal(run.saved.rows[0].data.name,'Vials');
+  assert.equal((await db.query("SELECT count(*)::int n FROM records WHERE type_id=$1",[typeId])).rows[0].n,1,'the command saved the record');
+  // The click path saves exactly the same change.
   const click=await f.runFrontend(actor,w,{componentId:appId,expectedVersion:version,state:null,event:{kind:'submit',action:'add',value:null,form:{name:'Vials',qty:'3'}}});
-  const opOf=async(previewId:string)=>(await db.query('SELECT body FROM workspace_previews WHERE id=$1',[previewId])).rows[0].body.operation.changes;
-  assert.deepEqual(await opOf(run.proposal!.previewId),await opOf(click.proposal.id));
-  // Replaying the same request returns the same review; a different input with the same key is refused.
+  assert.deepEqual(click.saved.rows.map((r:any)=>r.data),run.saved.rows.map((r:any)=>r.data));
+  // Replaying the same request returns the first result and saves nothing more; a different input with the same key is refused.
   const again=await runAppCommand(f,actor,w,{appId,expectedVersion:version,command:'item.add',input:{name:'Vials',qty:3},requestKey:key});
-  assert.equal(again.proposal!.previewId,run.proposal!.previewId);assert.equal(again.requestReused,true);
+  assert.equal(again.requestReused,true);assert.deepEqual(again.saved,run.saved);
   await assert.rejects(runAppCommand(f,actor,w,{appId,expectedVersion:version,command:'item.add',input:{name:'Other'},requestKey:key}),/different command or input/);
-  await f.confirm(actor,w,run.proposal!.previewId,run.proposal!.digest);
-  assert.equal((await runAppCommand(f,actor,w,{appId,expectedVersion:version,command:'items.count',input:{},requestKey:randomUUID()})).result.count,1);
+  assert.equal((await runAppCommand(f,actor,w,{appId,expectedVersion:version,command:'items.count',input:{},requestKey:randomUUID()})).result.count,2);
   // App errors come back as a failed command, not a crash.
   const empty=await runAppCommand(f,actor,w,{appId,expectedVersion:version,command:'item.add',input:{name:''},requestKey:randomUUID()}).catch(e=>e);
   assert.match(String(empty.message??empty.error),/too short|Name is required/);

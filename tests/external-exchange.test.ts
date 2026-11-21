@@ -1,3 +1,4 @@
+import {settle,tookEffect} from './settle.js';
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
 import {randomUUID} from 'node:crypto';
@@ -184,7 +185,7 @@ test('External exchange: per-recipient links, drafts and deadline, gates, messag
  const rendered:any=await run(owner,()=>f.runFrontend(owner,w.id,{componentId:appId,expectedVersion:0}));assert.ok(rendered.html.includes('2 groups'),rendered.html);
  await pg.query("UPDATE workspace_components SET source=$2,version=version+1 WHERE id=$1",[appId,"if(input.event.kind==='click'){tools.call('exchange.reply',{exchangeId:'"+exA.id+"',body:'From the app',notify:false});}return {html:'<button data-action=\"reply\">Reply</button>'};"]);
  const staged:any=await run(owner,()=>f.runFrontend(owner,w.id,{componentId:appId,expectedVersion:1,event:{kind:'click',action:'reply',value:null,form:{}}}));assert.equal(staged.proposal.body.kind,'reply_exchange');assert.equal(staged.proposal.exchangeReview.exchangeId,exA.id);
- await run(owner,()=>f.confirm(owner,w.id,staged.proposal.id,staged.proposal.digest));assert.ok((await a.get('/messages')).body.messages.some((m:any)=>m.body==='From the app'));
+ await run(owner,()=>settle(f,owner,w.id,staged));assert.ok((await a.get('/messages')).body.messages.some((m:any)=>m.body==='From the app'));
  const tools=new Map<string,any>();addWorkspaceMcp({registerTool:(name:string,config:any,handler:any)=>tools.set(name,{config,handler})} as any,f,ai,(fn:any)=>fn,{});
  for(const name of ['list_exchanges','list_exchange_submissions','list_exchange_messages','read_exchange_email_default','prepare_exchange_email','list_exchange_emails','list_exchange_notifications'])assert.ok(tools.has(name),name);
  const mcpList:any=await run(ai,()=>tools.get('list_exchanges').handler({workspaceId:w.id,appId}));assert.equal(mcpList.groups.length,2);assert.ok(!JSON.stringify(mcpList).includes(tokenA),'assistants never see links');

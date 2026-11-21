@@ -1,3 +1,4 @@
+import {settle,tookEffect} from '../settle.js';
 import {readFile} from 'node:fs/promises';
 import {randomUUID} from 'node:crypto';
 import {execute} from '../../src/foundation/runtime.js';
@@ -85,7 +86,7 @@ export async function dataRoomSuite(){
   submit:(action:string,form:any={})=>view.ev({kind:'submit',action,form}),
   /* The trusted review: a person confirms exactly the proposal the host shows. */
   confirmations:0,
-  async approve(out:any=view.last,who2:any=actor){if(!out?.proposal)throw Error('No proposal: '+(out?.state?.notice??''));const r=await f.confirm(who2,w,out.proposal.id,out.proposal.digest);view.confirmations++;await view.ev({kind:'open',action:''});return r;}};return view;};
+  async approve(out:any=view.last,who2:any=actor){if(!tookEffect(out))throw Error('No proposal: '+(out?.state?.notice??''));const r=await settle(f,who2,w,out);view.confirmations++;await view.ev({kind:'open',action:''});return r;}};return view;};
  const rows=async(typeId:string)=>(await pg.query<any>("SELECT id,version,data FROM records WHERE type_id=$1 AND state<>'archived' ORDER BY created_at,id",[typeId])).rows;
  const save=async(w:string,typeId:string,data:any)=>{const p=await s.preview(actor,w,{kind:'create_record',typeId,data});return (await s.commit(actor,p.id,p.digest)).objects[0].id as string;};
  const doc=async(w:string,filename:string,body:string,aiReadable=false)=>{const p=await s.previewFile(actor,w,{filename,mime:'application/pdf',bytes:Buffer.from(body),ai:aiReadable});return (await s.commit(actor,p.id,p.digest)).objects[0].versionId as string;};

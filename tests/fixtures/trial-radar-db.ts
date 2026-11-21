@@ -1,3 +1,4 @@
+import {settle,tookEffect} from '../settle.js';
 import assert from 'node:assert/strict';
 import {randomUUID} from 'node:crypto';
 import {readFile,readdir} from 'node:fs/promises';
@@ -37,7 +38,7 @@ export async function suite(){
  const app=(w:string,id:string,who:Actor=human)=>{let state:any={asOf:null};const v:any={html:'',last:null,state:()=>state,
   async ev(event:any){const c=await comp(w,id);const out:any=await f.runFrontend(who,w,{componentId:c.id,expectedVersion:c.version,state,event:{value:null,form:{},...event}});state=out.state;v.html=out.html;v.last=out;return out;},
   open:(st:any={})=>{state={...state,...st};return v.ev({kind:'open',action:''});},click:(a:string)=>v.ev({kind:'click',action:a}),change:(a:string,value:any)=>v.ev({kind:'change',action:a,value}),submit:(a:string,form:any={})=>v.ev({kind:'submit',action:a,form}),
-  async approve(out:any=v.last){if(!out?.proposal)throw Error('No proposal: '+(out?.state?.notice??''));const r=await f.confirm(human,w,out.proposal.id,out.proposal.digest);await v.ev({kind:'open',action:''});return r;}};return v;};
+  async approve(out:any=v.last){if(!tookEffect(out))throw Error('No proposal: '+(out?.state?.notice??''));const r=await settle(f,human,w,out);await v.ev({kind:'open',action:''});return r;}};return v;};
  const rows=async(typeId:string)=>(await pg.query<any>("SELECT id,version,data FROM records WHERE type_id=$1 AND state<>'archived' ORDER BY created_at,id",[typeId])).rows;
  const save=async(w:string,typeId:string,data:any)=>{const p=await s.preview(human,w,{kind:'create_record',typeId,data});return (await s.commit(human,p.id,p.digest)).objects[0].id as string;};
  const workspace=async(name:string)=>{const w=(await s.createWorkspace(human,name)).id;await s.setAi(human,w,true);return w;};

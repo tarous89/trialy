@@ -1,3 +1,4 @@
+import {settle,tookEffect,settleCommand} from './settle.js';
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
 import {randomUUID,randomBytes} from 'node:crypto';
@@ -49,7 +50,7 @@ async function suite(){
  const app=(w:string,id:string,who:Actor=human)=>{let state:any={};const v:any={html:'',last:null,state:()=>state,
   async ev(event:any){const c=await comp(w,id);const out:any=await f.runFrontend(who,w,{componentId:c.id,expectedVersion:c.version,state,event:{value:null,form:{},...event}});state=out.state;v.html=out.html;v.last=out;return out;},
   open:(st:any={})=>{state={...state,...st};return v.ev({kind:'open',action:''});},click:(a:string)=>v.ev({kind:'click',action:a}),change:(a:string,value:any)=>v.ev({kind:'change',action:a,value}),submit:(a:string,form:any={})=>v.ev({kind:'submit',action:a,form}),
-  async approve(out:any=v.last){if(!out?.proposal)throw Error('No proposal: '+(out?.state?.notice??''));const r=await f.confirm(human,w,out.proposal.id,out.proposal.digest);await v.ev({kind:'open',action:''});return r;}};return v;};
+  async approve(out:any=v.last){if(!tookEffect(out))throw Error('No proposal: '+(out?.state?.notice??''));const r=await settle(f,human,w,out);await v.ev({kind:'open',action:''});return r;}};return v;};
  const rows=async(typeId:string)=>(await pg.query<any>("SELECT id,version,data FROM records WHERE type_id=$1 AND state<>'archived' ORDER BY created_at,id",[typeId])).rows;
  const save=async(w:string,typeId:string,data:any)=>{const p=await s.preview(human,w,{kind:'create_record',typeId,data});return (await s.commit(human,p.id,p.digest)).objects[0].id as string;};
  const workspace=async(name:string)=>{const w=(await s.createWorkspace(human,name)).id;await s.setAi(human,w,true);return w;};
@@ -124,10 +125,8 @@ test('Acceptance 2, 6 and 8: after-meeting log with stage history through the re
   // One message after the meeting: one review with the activity (materials with versions), the stage change with history and two follow-ups.
   await ui.click('panel:log:'+opp.id);await ui.change('f:log:to','non_confidential');
   await ui.submit('save-log',{kind:'meeting',occurred_on:'2026-11-12',organization_id:org,opportunity_id:opp.id,team:'Marc',summary:'Deck walk-through.',['p_'+liam]:'on',to:'non_confidential',fu1_title:'Send CMC summary',fu1_owner:'Anna',fu1_due:'2026-11-17',fu2_title:'Book a call',fu2_owner:'Marc',fu2_due:'2026-11-20'});
-  const proposal=ui.last.proposal;assert.ok(proposal,ui.last.state.notice);
-  // Nothing is written before approval, and an assistant cannot approve it.
-  assert.equal((await x.rows(T('partnerships.activities'))).length,0);
-  await assert.rejects(()=>x.f.confirm(x.ai,w,proposal.id,proposal.digest));
+  // D16 (4.4): the person's log saves directly, with its stage history, in one step.
+  assert.ok(ui.last.saved,ui.last.state.notice);assert.equal((await x.rows(T('partnerships.activities'))).length,1);
   await ui.approve(ui.last);
   const hist=(await x.rows(T('partnerships.stage_history'))).map((h:any)=>[h.data.from_stage,h.data.to_stage,h.data.opportunity_id]);
   assert.deepEqual(hist,[['identified','contacted',opp.id],['contacted','non_confidential',opp.id]]);
@@ -135,20 +134,20 @@ test('Acceptance 2, 6 and 8: after-meeting log with stage history through the re
   assert.equal((await x.rows(T('partnerships.opportunities')))[0].data.stage,'non_confidential');
   // Funnel from the stored history: identified 1, contacted 1, non-confidential 1, then 0.
   await ui.open({section:'pipeline',mode:'funnel',panel:null});assert.match(text(ui.html),/Identified 1 Contacted 1 100% Non-confidential 1 100% CDA 0 0%/);
-  // An assistant running the app gets a proposal it cannot confirm; a person confirms it.
-  const bot=x.app(w,id,x.ai);await bot.open({});await bot.click('open:opp:'+opp.id);await bot.submit('move-stage',{to:'lost',on:'2026-11-14',reason:'No budget'});
-  assert.ok(bot.last.proposal);await assert.rejects(()=>x.f.confirm(x.ai,w,bot.last.proposal.id,bot.last.proposal.digest));assert.equal((await x.rows(T('partnerships.opportunities')))[0].data.stage,'non_confidential');
+  // A4 (4.4): an assistant with Data = View only cannot change records through the app; with Edit its change saves directly.
+  await x.pg.query("INSERT INTO assistant_limits(workspace_id,user_id,assistant,data_level,apps_level) VALUES($1,$2,'chatgpt','view','edit') ON CONFLICT(workspace_id,user_id,assistant) DO UPDATE SET data_level='view'",[w,x.human.userId]);
+  const bot=x.app(w,id,x.ai);await bot.open({});await bot.click('open:opp:'+opp.id);
+  await assert.rejects(()=>bot.submit('move-stage',{to:'lost',on:'2026-11-14',reason:'No budget'}),/View only/);assert.equal((await x.rows(T('partnerships.opportunities')))[0].data.stage,'non_confidential');
+  await x.pg.query("UPDATE assistant_limits SET data_level='edit' WHERE workspace_id=$1 AND user_id=$2",[w,x.human.userId]);
   // 2.2.0 app commands on the real path: listed, run as the assistant, confirmed only by the person; reads are the app's own results.
   const c=await x.comp(w,id),cl=await listAppCommands(x.f,x.ai,w,{appId:c.id});assert.equal(cl.commands.length,50);
   const run=(command:string,input:any,who:Actor=x.ai)=>runAppCommand(x.f,who,w,{appId:c.id,expectedVersion:c.version,command,input,requestKey:randomUUID()});
-  const mv=await run('opportunity.move_stage',{opportunity_id:opp.id,to:'cda',on:'2026-11-14',note:'CDA sent'});assert.equal(mv.ok,true,mv.error);assert.ok(mv.proposal);
-  assert.equal((await x.rows(T('partnerships.opportunities')))[0].data.stage,'non_confidential','nothing changes before the person confirms');
-  await assert.rejects(()=>x.f.confirm(x.ai,w,mv.proposal!.previewId,mv.proposal!.digest));await x.f.confirm(x.human,w,mv.proposal!.previewId,mv.proposal!.digest);
+  const mv=await run('opportunity.move_stage',{opportunity_id:opp.id,to:'cda',on:'2026-11-14',note:'CDA sent'});assert.equal(mv.ok,true,mv.error);assert.ok(mv.saved,'A4 (4.4): saved directly with Data = Edit');assert.equal(mv.proposal,null);
   assert.equal((await x.rows(T('partnerships.opportunities')))[0].data.stage,'cda');assert.deepEqual((await x.rows(T('partnerships.stage_history'))).at(-1).data.to_stage,'cda');
-  const fu=await run('follow_up.complete',{follow_up_id:(await x.rows(T('partnerships.follow_ups')))[0].id});assert.equal(fu.ok,true,fu.error);await x.f.confirm(x.human,w,fu.proposal!.previewId,fu.proposal!.digest);
+  const fu=await run('follow_up.complete',{follow_up_id:(await x.rows(T('partnerships.follow_ups')))[0].id});assert.equal(fu.ok,true,fu.error);await settleCommand(x.f,x.human,w,fu);
   const read=await run('opportunity.read',{opportunity_id:opp.id});assert.equal(read.ok,true,read.error);assert.equal(read.result.stage,'cda');assert.equal(read.result.follow_ups.filter((f:any)=>f.status==='done').length,1);
   const ov=await run('overview.read',{});assert.equal(ov.result.funnel.reached.cda,1);
-  const lay=await run('layout.save',{hide:['pipeline.fit']});assert.equal(lay.ok,true,lay.error);assert.ok(lay.proposal,'presentation-only layout review');
+  const lay=await run('layout.save',{hide:['pipeline.fit']});assert.equal(lay.ok,true,lay.error);assert.ok(tookEffect(lay),'presentation-only layout review');
  });}finally{await x.pg.close();}
 });
 

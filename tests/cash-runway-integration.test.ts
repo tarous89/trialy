@@ -1,3 +1,4 @@
+import {settle,tookEffect} from './settle.js';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {cashFixture} from './fixtures/cash-runway.js';
@@ -17,13 +18,13 @@ test('installed Runway uses the real manifest, reviewed writes and versioned nat
   const initial=await run();assert.equal(initial.connected,true);assert.match(initial.html,/Cash lasts until Jul 2027/);assert.match(initial.html,/10 months/);
   const add=await run({section:'plan'},{kind:'click',action:'add:lines'});
   const proposal=await run(add.state,{kind:'submit',action:'save-record',form:{name:'Assay',direction:'spend',category:'Research',program_id:x.program,driver:'one_off',amount:'250',currency:'EUR',start_month:'2026-11',status:'committed'}});
-  assert.ok(proposal.proposal,proposal.state?.notice);assert.equal((await lines()).length,1);
-  await f.confirm(actor,w.id,proposal.proposal.id,proposal.proposal.digest);
+  assert.ok(tookEffect(proposal),proposal.state?.notice);assert.equal((await lines()).length,2,'D16 (4.4): saved directly');
+  await settle(f,actor,w.id,proposal);
   const rows=await lines();assert.equal(rows.length,2);const record=rows.find((r:any)=>r.data.name==='Assay')!;
   assert.equal(record.data.start_month,'2026-11-01');assert.equal(record.data.program_id,x.program);
   assert.match((await run()).html,/Cash lasts until Apr 2027/);
-  const archive=await run({section:'plan',confirm:{kind:'archive',role:'lines',id:record.id,version:record.version}},{kind:'click',action:'confirm-archive'});assert.ok(archive.proposal);
-  await f.confirm(actor,w.id,archive.proposal.id,archive.proposal.digest);assert.equal((await lines()).find((r:any)=>r.id===record.id)?.data.archived,true);
+  const archive=await run({section:'plan',confirm:{kind:'archive',role:'lines',id:record.id,version:record.version}},{kind:'click',action:'confirm-archive'});assert.ok(tookEffect(archive));
+  await settle(f,actor,w.id,archive);assert.equal((await lines()).find((r:any)=>r.id===record.id)?.data.archived,true);
   const profile=readCustomLayout(component.source)!.profile;profile.tabs.reverse();profile.cols.lines.reverse();profile.heading='Board runway';
   const request={componentId:component.id,expectedVersion:component.version,name:profile.heading,description:'',customLayout:profile};
   const preview=await prepareToolLayout(f,actor,w.id,request);
@@ -62,7 +63,7 @@ test('the 2.1.0 catalog entry (approved in deployed catalogs) replaces 2.0.0 and
   assert.match(out.html,/Set up your first runway/);assert.doesNotMatch(out.html,/not bound|could not be calculated/);
   const settings=await x.f.runFrontend(x.actor,w.id,{componentId:c.id,expectedVersion:c.version,state:{section:'settings'},event:{kind:'click',action:'edit-settings'}});
   const p=await x.f.runFrontend(x.actor,w.id,{componentId:c.id,expectedVersion:c.version,state:settings.state,event:{kind:'submit',action:'save-record',form:{reporting_currency:'EUR',opening_balance:'5000',opening_date:'2026-10-31',runway_target_months:'18',trailing_window_months:'3'}}});
-  assert.ok(p.proposal,p.state?.notice);await x.f.confirm(x.actor,w.id,p.proposal.id,p.proposal.digest);
+  assert.ok(tookEffect(p),p.state?.notice);await settle(x.f,x.actor,w.id,p);
   assert.match((await x.f.runFrontend(x.actor,w.id,{componentId:c.id,expectedVersion:c.version,event:{kind:'open'}})).html,/Cash lasts beyond Oct 2031/);
  }finally{await x.pg.close();}
 });

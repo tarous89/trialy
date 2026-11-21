@@ -1,3 +1,4 @@
+import {settle,settleCommand,tookEffect} from './settle.js';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {randomUUID} from 'node:crypto';
@@ -134,11 +135,11 @@ test('real platform: list_app_commands and run_app_command as the assistant, a p
   assert.ok(map['croselection.settings'].fields.preferences,'new installs bind preferences');
   const c=await x.comp(w,id);const list=await listAppCommands(f,ai,w,{appId:id});assert.equal(list.commands.length,27);
   const run=async(command:string,input:any,who:any=ai)=>{const cc=await x.comp(w,id);return runAppCommand(f,who,w,{appId:id,expectedVersion:cc.version,command,input,requestKey:randomUUID()});};
-  const confirm=async(out:any)=>{assert.equal(out.ok,true,out.error);assert.ok(out.proposal,'a review');return f.confirm(actor,w,out.proposal.previewId,out.proposal.digest);};
+  const confirm=async(out:any)=>{assert.equal(out.ok,true,out.error);assert.ok(tookEffect(out),'saved or a review');return settleCommand(f,actor,w,out);};
   const helix=await x.save(w,tid('organizations'),{name:'Helix Clinical Research GmbH (fictional)',org_type:'cro',archived:false});
-  // The assistant sets up a quick quote; nothing is written until the person confirms each review.
+  // A4 (4.4): the assistant (Data = Edit) sets up a quick quote; its record changes save directly.
   const mk=await run('record.save',{role:'requests',fields:{name:'Tox quote (fictional)',mode:'quick_quote',service_type:'preclinical_study',scope:'28-day GLP tox (fictional).',currency:'EUR',cda_option:'none',response_deadline:'2026-12-31',assumptions:{notes:'Rats (fictional).',baseline:[{category:'In-life phase',amount:100000}]}}});
-  assert.equal((await x.rows(tid('croselection.requests'))).length,0);await confirm(mk);const rq=(await x.rows(tid('croselection.requests')))[0];
+  assert.equal((await x.rows(tid('croselection.requests'))).length,1,'A4 (4.4): saved directly');await confirm(mk);const rq=(await x.rows(tid('croselection.requests')))[0];
   assert.deepEqual(JSON.parse(rq.data.assumptions).baseline,[{category:'In-life phase',amount:100000}]);
   await confirm(await run('longlist.add',{request_id:rq.id,organization_id:helix,recipient_emails:['lab@helix.invalid']}));
   const inv=(await x.rows(tid('croselection.invitations')))[0];
@@ -152,7 +153,7 @@ test('real platform: list_app_commands and run_app_command as the assistant, a p
   const award=(await x.rows(tid('croselection.awards')))[0];assert.deepEqual([award.data.organization_id,award.data.total,award.data.currency],[helix,98000,'EUR']);
   assert.equal((await x.rows(tid('croselection.invitations')))[0].data.status,'selected');
   // Layout through a command is a presentation-only review of the same app.
-  const lay=await run('layout.save',{hide:['vendors:country']});assert.equal(lay.ok,true,lay.error);assert.ok(lay.proposal);
+  const lay=await run('layout.save',{hide:['vendors:country']});assert.equal(lay.ok,true,lay.error);assert.ok(tookEffect(lay));
   // Runway 2.2.0 connects the croselection.awards role to CRO Selection's awards (platform dialog, a person) and offers it in Plan.
   await x.pg.query("UPDATE app_template_catalog SET status='approved' WHERE template_id='life.cash-runway' AND version='2.2.1'");
   const R=await new (await import('../src/workspace/app-templates.js')).AppTemplates(undefined,x.db).read({templateId:'life.cash-runway',version:'2.2.1'});

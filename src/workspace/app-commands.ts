@@ -119,7 +119,7 @@ export async function listAppCommands(f:WorkspaceFoundation,a:Actor,w:string,inp
   howToRun:'run_app_command with this version. Read commands return the app\'s own results. Propose and layout commands return a review; confirm it with confirm_workspace_change only after the user agrees to that exact change.'};
 }
 
-/** run_app_command: runs the saved app with {kind:"command"} and returns its result or its exact proposal for review. */
+/** run_app_command: runs the saved app with {kind:"command"} and returns its result. Record changes save directly (saved.rows); changes that send something out return their exact review. */
 export async function runAppCommand(f:WorkspaceFoundation,a:Actor,w:string,input:unknown,signal?:AbortSignal){
  if(!enabled())fail(404,'app_commands_disabled','App commands are not enabled in this workspace yet.');
  const v=commandRun.parse(input),{c,actor,writable}=await openApp(f,a,w,v.appId);
@@ -135,7 +135,8 @@ export async function runAppCommand(f:WorkspaceFoundation,a:Actor,w:string,input
   const saved=(await f.db.query("SELECT result FROM workspace_receipts WHERE workspace_id=$1 AND user_id=$2 AND result->>'commandRequestKey'=$3",[w,a.userId,v.requestKey])).rows[0];
   if(saved){if(saved.result.fingerprint!==fingerprint)fail(409,'request_conflict','This request key was used for a different command or input. Use a new request key.');return {...saved.result.response,requestReused:true};}
  }
- const output=await f.runFrontend(actor,w,{componentId:c.id,expectedVersion:c.version,state:null,event:{kind:'command',action:command.id,value:serialized,form:{}}},signal);
+ // A4, D16 (4.4): record changes of a write command save directly for a person or an assistant with Data = Edit; the request key keeps a retry from saving twice.
+ const output=await f.runFrontend(actor,w,{componentId:c.id,expectedVersion:c.version,state:null,...(command.mode!=='read'?{requestKey:v.requestKey}:{}),event:{kind:'command',action:command.id,value:serialized,form:{}}},signal);
  const reply=output?.state&&typeof output.state==='object'?(output.state as any).command:undefined;
  if(!reply||typeof reply!=='object')fail(502,'command_no_result','The app did not answer this command. It may need an update.');
  let result=reply.result??null;
@@ -144,9 +145,10 @@ export async function runAppCommand(f:WorkspaceFoundation,a:Actor,w:string,input
  if(command.mode==='read'&&proposal)fail(500,'command_contract','A read command proposed changes; the app must be fixed.');
  const response={appId:c.id,version:c.version,command:command.id,mode:command.mode,ok:reply.ok!==false&&!reply.error,result,...(reply.error?{error:String(reply.error).slice(0,1000)}:{}),
   proposal:proposal?{previewId:proposal.id,digest:proposal.digest,reviewState:proposal.reviewState,summary:proposal.summary??null,changes:proposal.changes??proposal.operation?.changes??null}:null,
+  ...(output.saved?{saved:{rows:output.saved.rows,savedAt:output.saved.savedAt}}:{}),
   ...(proposal?{nextStep:'Show the user exactly what this review changes. Confirm it with confirm_workspace_change (previewId, digest) only after the user agrees; otherwise leave it unconfirmed.'}:{})};
  const policy=await access(f.db,actor,w);
- await audit(f.db,actor,policy,'app.command',c.id,null,{command:command.id,mode:command.mode,ok:response.ok,proposal:proposal?.id??null});
+ await audit(f.db,actor,policy,'app.command',c.id,null,{command:command.id,mode:command.mode,ok:response.ok,proposal:proposal?.id??null,saved:!!output.saved});
  if(command.mode!=='read')await f.db.query('INSERT INTO workspace_receipts(id,workspace_id,user_id,digest,result) VALUES($1,$2,$3,$4,$5)',[randomUUID(),w,a.userId,fingerprint,JSON.stringify({commandRequestKey:v.requestKey,fingerprint,response})]);
  return response;
 }

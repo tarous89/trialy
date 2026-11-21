@@ -166,8 +166,8 @@ test('Shared backend: access, committed history, original preservation and retri
  });
  await t.test('bulk saves are atomic; calendar and aggregates cover full matching data',async()=>{
   const type=(await save({kind:'create_type',name:'Bulk checks',fields:[{key:'name',name:'Name',kind:'text',unique:true},{key:'cost',name:'Cost',kind:'money'},{key:'due',name:'Due',kind:'date'},{key:'team',name:'Team',kind:'text'}]})).objects[0].id;
-  const pending=await s.preview(owner,w.id,{kind:'bulk_records',changes:[1,2].map(n=>({kind:'create_record',typeId:type,data:{name:'Duplicate',cost:n}}))});
-  await assert.rejects(s.commit(owner,pending.id,pending.digest),error('duplicate_value'));
+  // X3 (4.1): a batch that repeats a unique value is refused before anything is prepared, with the row that repeats it.
+  await assert.rejects(s.preview(owner,w.id,{kind:'bulk_records',changes:[1,2].map(n=>({kind:'create_record',typeId:type,data:{name:'Duplicate',cost:n}}))}),(e:any)=>e.code==='duplicate_value'&&e.details.issues[0].row===2&&e.details.issues[0].field==='name');
   assert.equal((await s.records(owner,w.id,type)).total,0);
   await save({kind:'bulk_records',changes:[{name:'A',cost:2,due:'2026-11-02',team:'Ops'},{name:'B',cost:8,due:'2026-10-02',team:'Ops'},{name:'C',cost:3,due:'2026-11-15',team:'Med'}].map(data=>({kind:'create_record',typeId:type,data}))});
   const calendar=await s.records(owner,w.id,type,{dateField:'due',month:'2026-11',limit:1});assert.equal(calendar.total,2);assert.equal(calendar.rows.length,1);

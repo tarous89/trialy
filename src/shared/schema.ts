@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import {FIELD_FORMATS,NORMALIZE_RULES,fieldValidationProblems} from './validation.js';
 export const id = z.string().uuid();
 export const rendererSchema=z.object({
  kind:z.enum(['text','badge','progress','number','code']),
@@ -8,11 +9,14 @@ export const rendererSchema=z.object({
  decimals:z.number().int().min(0).max(8).optional()
 }).strict();
 export const fieldSchema = z.object({ key: z.string().regex(/^[a-z][a-z0-9_]{0,63}$/), name: z.string().min(1).max(100), description:z.string().trim().max(2000).optional(), kind: z.enum(['text','number','money','date','boolean','select','relationship','person','document','table','field']), required: z.boolean().default(false), ai: z.boolean().default(true), options: z.array(z.string().max(100)).max(100).optional(), targetTypeId: id.optional(), unique:z.boolean().optional(), multiple:z.boolean().optional(),
+ // X3, X4 (4.1): declared checks and formatting rules. See src/shared/validation.ts.
+ range:z.object({min:z.union([z.number().finite(),z.string().max(10)]).optional(),max:z.union([z.number().finite(),z.string().max(10)]).optional()}).strict().optional(),
+ format:z.enum(FIELD_FORMATS).optional(),normalize:z.array(z.enum(NORMALIZE_RULES)).max(4).optional(),uniqueWith:z.array(z.string().regex(/^[a-z][a-z0-9_]{0,63}$/)).max(4).optional(),
  computed:z.object({source:z.string().min(1).max(10000),fields:z.array(z.string()).max(100)}).strict().optional(),
  lookup:z.object({reference:z.string(),field:z.string(),aggregate:z.enum(['first','sum','count','min','max','join']).default('first')}).strict().optional(),
  renderer:rendererSchema.optional(), formula:z.object({operator:z.enum(['sum','product','difference','ratio']),fields:z.array(z.string()).min(2).max(10)}).strict().optional() }).strict();
 export const dataConceptSchema=z.enum(['person','organization','project','location']).nullable().optional();
-export const fieldsSchema = z.array(fieldSchema).min(1).max(100).refine(f => new Set(f.map(x=>x.key)).size===f.length, 'Duplicate field keys');
+export const fieldsSchema = z.array(fieldSchema).min(1).max(100).refine(f => new Set(f.map(x=>x.key)).size===f.length, 'Duplicate field keys').superRefine((f,ctx)=>{for(const message of fieldValidationProblems(f as any))ctx.addIssue({code:'custom',message});});
 export type Field = z.infer<typeof fieldSchema>;
 export const defaultMultiple=(f:Partial<Field>)=>!['date','boolean'].includes(f.kind??'text')&&!/\bstatus\b/i.test((f.key??'').replace(/_/g,' ')+' '+(f.name??''))&&!f.formula&&!f.computed&&!f.lookup&&!f.unique;
 export const newFieldsSchema=fieldsSchema.transform((fields):Field[]=>fields.map(f=>({...f,multiple:f.multiple??(defaultMultiple(f)&&!fields.some(d=>d.formula?.fields.includes(f.key)))})));
