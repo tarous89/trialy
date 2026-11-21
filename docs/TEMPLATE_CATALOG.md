@@ -78,3 +78,10 @@ On 18 November 2026 the owner approved a batched-read patch release of all 16 sw
 - the screens are unchanged, so each new version's gallery image is its predecessor's.
 
 Installed apps keep their saved source and keep working; they gain the faster reads only when their source is updated to the new version.
+
+## Session 7 rebuild (21 November 2026, drafts)
+
+Every switched-on app has a rebuilt major version on the kit and the v2 contract: Bio Radars 2.0.0 (Literature Radar 3.0.0, radar kit 2.0.0), Runway 3.0.0, Contracts 2.0.0, Fundraise 3.0.0, Partnerships 3.0.0, Data Room 2.0.0, Investor Updates 2.0.0, Programs 3.0.0 and CRO Selection 3.0.0. They are drafts: the seed still names the earlier versions. Each keeps its predecessor's installer schema, helpers, recommended automations, output contracts and commands, and lists the versions it upgrades in `upgradeFrom`, so owners of installed copies can upgrade them (see [APP_PUBLICATION.md](APP_PUBLICATION.md#upgrading-to-a-new-major-version-71-a3-d41)). The predecessors are archived byte-identical under `archive/<version>/` and their installer entries point there.
+
+To approve one (O4): name it in `templates/catalog-seed.json` (the sync after migrations imports it approved), generate its gallery media and card, and keep the earlier versions approved until installed copies have moved (`D41`; do not list them in `catalog-retirements.json` yet).
+

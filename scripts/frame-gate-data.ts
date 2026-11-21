@@ -1,7 +1,8 @@
 // 5.8: prints, for each switched-on catalog app, what the server would send the frame with the first screen (code,
 // seeded reads, styles) and what the server renders for every screen, as JSON. Read by tests/visual/frame-runtime.spec.cjs.
 import {execute} from '../src/foundation/runtime.js';
-import {CATALOG_APPS,catalogDemo} from './lib/catalog-demo.js';
+import {CATALOG_APPS,REBUILT_APPS,catalogDemo} from './lib/catalog-demo.js';
+import {existsSync} from 'node:fs';
 import {runtimeStyles,sourceDigest,runtimeCssFor,effectiveSource} from '../src/workspace/browser-runtime.js';
 import {readKey} from '../src/frame-engine/engine-core.js';
 import {V2_EXAMPLE_SOURCE,v2ExampleAnswer} from './lib/v2-example.js';
@@ -14,6 +15,14 @@ for(const app of CATALOG_APPS.filter(a=>!only||only.includes(a.id))){
  for(const id of d.screens){const o:any=await execute(d.source,{...base,state:open.state??null,event:{kind:'click',action:'nav:'+id,value:null,form:{}}},answer);screens.push({action:'nav:'+id,html:o.html});}
  out.push({id:d.id,version:d.version,open:{html:open.html,css:runtimeCssFor(d.source,open.html)+(open.css??''),state:open.state??null},screens,
   browser:{mode:'compat',version:'v1',digest:sourceDigest(d.source),reads,reset:false,input:base,styles:runtimeStyles(d.source),source:d.source},answers:[...all.values()]});
+}
+// 7.5: the rebuilt catalog apps (v2), as an owner sees them; their screens are the navigation the first screen offers.
+for(const app of REBUILT_APPS.filter(a=>(!only||only.includes(a.id+'@'+a.version))&&existsSync(`templates/apps/${a.id}-${a.version}.json`))){
+ const d=await catalogDemo(app),code=effectiveSource(d.source),base={saved:true,writable:true,appRole:'owner',context:null},reads:any[]=[],all=new Map<string,any>(),answer=table(d.answer,all);
+ const open:any=await execute(code,{...base,state:null,event:{kind:'open',action:'',value:null,form:{}}},async(name,input)=>{try{const result=d.answer(name,input);reads.push({name,input:input??{},result});return result;}catch(e){reads.push({name,input,error:(e as Error).message});throw e;}});
+ const screens:any[]=[];for(const action of [...new Set([...String(open.html).matchAll(/data-action="(nav:[^"]+)"/g)].map(m=>m[1]))]){const o:any=await execute(code,{...base,state:open.state??null,event:{kind:'click',action,value:null,form:{}}},answer);screens.push({action,html:o.html});}
+ out.push({id:d.id,version:d.version,open:{html:open.html,css:runtimeCssFor(d.source,open.html)+(open.css??''),state:open.state??null},screens,
+  browser:{mode:'v2',version:'v2',digest:sourceDigest(code),reads,reset:false,input:base,styles:runtimeStyles(d.source),source:code},answers:[...all.values()],rebuilt:true});
 }
 if(!only||only.includes('v2-example')){
  const code=effectiveSource(V2_EXAMPLE_SOURCE),base={saved:true,writable:true,appRole:'editor',context:null},reads:any[]=[],all=new Map<string,any>(),answer=table(v2ExampleAnswer,all);

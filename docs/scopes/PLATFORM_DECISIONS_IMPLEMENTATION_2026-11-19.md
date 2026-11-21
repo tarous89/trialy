@@ -1,6 +1,6 @@
 # Implementation scope for the platform decisions of 19 November 2026
 
-**Status:** being built. Sessions 1 to 6 are merged. See the progress table (section 9).
+**Status:** built. Sessions 1 to 7 are merged; the rebuilt catalog versions wait for the owner's approval (O4). See the progress table (section 9).
 **Decisions:** [snapshot with codes](PLATFORM_DECISIONS_SNAPSHOT_2026-11-19.md) (72 records: 69 in scope, 3 backlog or draft).
 **Evidence:** six code reviews in [`platform-decisions-2026-11-19/`](platform-decisions-2026-11-19/), read at commit `376f29d`. They hold the file and line references for every item below.
 **How to cite:** decisions by code (`R3`, `A6`, `P5`); work packages by number (`2.3` = session 2, package 3).
@@ -422,7 +422,7 @@ Updated at the end of every session.
 | 4 · Data path and server speed | Built and merged, 20 November 2026 | [#199](https://github.com/tarous89/trialy/pull/199) | 4.1 to 4.7, with the changes listed under "Session 4 notes" | Listed under "Session 4 notes" |
 | 5 · Browser runtime, style and guide | Built and merged, 21 November 2026 | [#200](https://github.com/tarous89/trialy/pull/200) | 5.1 to 5.8, with the changes listed under "Session 5 notes" | Listed under "Session 5 notes" |
 | 6 · Automations and external sharing | Built and merged, 21 November 2026 | see HISTORY.md | 6.1 to 6.9, with the changes listed under "Session 6 notes" | Listed under "Session 6 notes" |
-| 7 · Catalog rebuild | Not started | | | |
+| 7 · Catalog rebuild | Built and merged, 21 November 2026; new versions are drafts until approved (O4) | see HISTORY.md | 7.1 to 7.5, with the changes listed under "Session 7 notes" | Listed under "Session 7 notes" |
 
 **Spike result (package 1.9):** run on 20 November 2026; full write-up in [7-frame-engine-spike.md](platform-decisions-2026-11-19/7-frame-engine-spike.md).
 
@@ -579,4 +579,26 @@ Carried over, with the package that takes it:
 - **Email alerts.** Alerts are in-app (Automations page, one per run or cause). Emailing them is a later choice within the notification guardrails.
 - **Record rules creation (D25).** Unassigned items are listed and can be attached or archived; the old `create_automation` record-rule operation still exists for tests and older flows and should be retired with the guidance in session 7.
 - **Owner actions.** Run migrations 091 to 097 at a quiet time after reviewing their reports (O7; 095 builds an index on the event table, 096 reports groups that now verify email and public edit links made read-only). Decide on a malware-scanning service (O6). Publish the plugin versions with the new automation and sharing wording (O3). Update the *Platform Capability Review* app (needs the owner's approval of that workspace change).
+
+### Session 7 notes
+
+Start of session: no decision changed since session 6 (the snapshot was used as is). The nine codebases were rebuilt in parallel, one per build agent, on one shared brief; each was merged and checked on the session branch.
+
+How it is built (so later work does not redo it):
+
+- **Upgrade (7.1).** A catalog entry may list `upgradeFrom` (earlier versions with the same installer schema and helpers). `src/workspace/app-update.ts` offers, for the newest approved version that qualifies, either an update (only the code changes) or an upgrade (a new major version: code and options). The upgrade is owner-only (`app_owner_required` before anything is prepared), keeps the bindings line and `tableMap`, keeps every saved option the new version still has with a value of the right type, gives new options their defaults, drops removed ones (listed in the dialog) and always starts the layout profile again. It is the ordinary reviewed app save. Every rebuilt version keeps its predecessor's installer schema, helpers, recommended automations, output contracts and command names, so installed copies can move by upgrade without losing records or connections.
+- **Speed-only updates (7.2).** `speedOnly: true` on an entry, approved with the version (D15). `speedOnlyCompatible` (same engine, schema, options, defaults, helpers) is the machine check; `applySpeedUpdates` runs hourly in the worker and moves only copies whose code is exactly an earlier approved version (D14), with a revision (`catalogOrigin`) and an audit entry `component.speed_updated` (origin `platform`, under an owner of the app). `readAppUpdate` returns `recent` for seven days and the header shows "Updated to faster version X".
+- **Rebuilt versions (7.3).** Bio Radars 2.0.0 (Literature 3.0.0) on radar kit 2.0.0, Runway 3.0.0, Contracts 2.0.0, Fundraise 3.0.0, Partnerships 3.0.0, Data Room 2.0.0, Investor Updates 2.0.0, Programs 3.0.0 and CRO Selection 3.0.0. All declare `'use trialagents v2'`, use the kit, save with `records.save` and the version captured when editing started, return `notice` and `context`, show Settings to owners only with business choices only, move data lists to their own screens, read per screen in one batched call and show pending reads as loading. Each predecessor is archived byte-identical under `archive/<version>/`, its installer entry points there and its builder still verifies it. None is in the seed: the owner approves each (O4), and the earlier versions stay approved until installed copies have moved (D41).
+- **Platform fixes found by the rebuild.** The frame sanitizer dropped `platform:` links before the link check; a direct save's notice was lost when the app re-rendered from saved data; the kit's side layout let its content column overflow narrow screens (`.k-layout>div{min-width:0}`); `kit.undo` now takes the `undo.list` result as it is (`{actions}`).
+- **Checks (7.4, 7.5).** Rebuilt (v2) catalog code is held to the current design rules (G1 bars, three widths, every screen); only unchanged v1 catalog code keeps the rules it was published under. Each rebuilt version has unit tests (marker, no `records.propose`, no own header, direct saves with versions, owner-only settings, empty states, pending reads, notices) and an install-and-run integration test; most also run the design check at 1440, 400 and 390 in their tests. The browser speed gate covers every rebuilt version at three widths (`REBUILT_APPS` in `scripts/lib/catalog-demo.ts`): no server run on a screen change, at most one batched read, the screen the server renders, and no horizontal overflow (hard).
+
+Carried over, with the package or person that takes it:
+
+- **Owner actions.** Approve each rebuilt version (O4): name it in `templates/catalog-seed.json`, regenerate gallery media (`scripts/build-template-screenshots.mjs`) and add its gallery card. Old versions stay approved until copies have moved. Publish plugin versions (O3). Update the *Platform Capability Review* app.
+- **Source size.** Partnerships (186k characters), Runway (205k), Investor Updates (206k), Data Room (168k) are under the 240k cap but not much smaller than before: most of what remains is command declarations and business logic, not styles. Cutting further means cutting features.
+- **Browser scripts.** The per-app `scripts/test-*-browser.ts` scripts still exercise the earlier versions; the rebuilt versions are covered by their unit, integration and design tests and the speed gate.
+- **Members in apps.** There is no capability to list workspace members, so linking a team member for notifications (Programs, Partnerships) is done by an assistant through the app's commands.
+- **Layout screens.** The layout schema allows at most eight screens, so a few new list screens (Runway's exchange rates, programs and organizations; Programs' cash forecast) cannot be reordered through `layout.save`.
+- **Contrast.** The kit's muted text and tab colours give contrast warnings (about 3.7–3.9:1); some apps darken them locally. Darkening the kit tokens is a style decision for the owner.
+- **Measurements.** Real speed numbers for the rebuilt apps exist only after approval and use (P1, P10).
 
