@@ -48,7 +48,7 @@ export function approve(rows:Row[],changes:any[]){for(const c of changes){if(c.k
 export const text=(html:string)=>html.replace(/<[^>]+>/g,' ').replace(/&amp;/g,'&').replace(/&#39;/g,"'").replace(/&quot;/g,'"').replace(/&lt;/g,'<').replace(/&gt;/g,'>').replace(/\s+/g,' ');
 
 /* ---------- integration: disposable database, real catalog, installer, reviewed writes, exchange and supplier pages ---------- */
-export async function croSelectionSuite(){
+export async function croSelectionSuite(selVersion='2.1.1'){
  const {PGlite}=await import('@electric-sql/pglite');const {readdir}=await import('node:fs/promises');
  const {WorkspaceFoundation}=await import('../../src/workspace/service.js');const {Service}=await import('../../src/domain/service.js');
  const {AppTemplates}=await import('../../src/workspace/app-templates.js');const {syncTemplateCatalog,installCatalogApp}=await import('../../src/workspace/template-catalog.js');
@@ -68,9 +68,9 @@ export async function croSelectionSuite(){
  const f=new WorkspaceFoundation(db),s=new Service(db);
  await syncTemplateCatalog(db);
  // CRO Selection 2.1.0 is approved by the seed; the other versions used here are approved only inside this disposable database.
- await pg.query("UPDATE app_template_catalog SET status='approved' WHERE (template_id='life.cro-selection' AND version='2.1.1') OR (template_id='life.contracts' AND version='1.0.0') OR (template_id='life.cash-runway' AND version='2.1.0') OR (template_id='life.project-oversight' AND version='2.1.0')");
+ await pg.query("UPDATE app_template_catalog SET status='approved' WHERE (template_id='life.cro-selection' AND version=$1) OR (template_id='life.contracts' AND version='1.0.0') OR (template_id='life.cash-runway' AND version='2.1.0') OR (template_id='life.project-oversight' AND version='2.1.0')",[selVersion]);
  const catalog=new AppTemplates(undefined,db);
- const T={sel:await catalog.read({templateId:'life.cro-selection',version:'2.1.1'}),contracts:await catalog.read({templateId:'life.contracts',version:'1.0.0'}),programs:await catalog.read({templateId:'life.project-oversight',version:'2.1.0'}),runway:await catalog.read({templateId:'life.cash-runway',version:'2.1.0'})};
+ const T={sel:await catalog.read({templateId:'life.cro-selection',version:selVersion}),contracts:await catalog.read({templateId:'life.contracts',version:'1.0.0'}),programs:await catalog.read({templateId:'life.project-oversight',version:'2.1.0'}),runway:await catalog.read({templateId:'life.cash-runway',version:'2.1.0'})};
  const install=async(w:string,t:any,name:string,connections:Record<string,string>={})=>{const target={install:{templateId:t.id,version:t.version,digest:t.digest,name,requestKey:randomUUID()}};const step=await dataAccessStep(f,actor,w,target);
   return {step,receipt:step.needed?await confirmDataAccess(f,actor,w,{...target,connections,stepDigest:step.digest}):await installCatalogApp(f,actor,w,target.install)};};
  const comp=async(w:string,id:string)=>(await f.readComponent(actor,w,id)).component;

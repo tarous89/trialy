@@ -1,24 +1,41 @@
-# Fundraise 2.0.0 (`life.investor-crm`)
+# Fundraise 3.0.0 (`life.investor-crm`)
 
-Investor pipeline for a round, from first contact to signed commitment. Scope: [FUNDRAISE.md](../../../docs/product/app-template-blueprints/apps/FUNDRAISE.md). It follows [modular apps and shared data](../../../docs/product/MODULAR_APPS_AND_SHARED_DATA.md) (§4 core contract, §6 archive first, §7 role-based connections and in-app integrations) and template guidance 1.3.20, revised on 14 November 2026 for 1.3.27–1.3.30 (install recommendations, results saved in the app, run-time fields, installed app helpers) and AI-native customization. It replaces Investor CRM 1.0.1 as a new major version; the released 1.0.1 catalog JSON is unchanged and its source package is archived byte-for-byte under [`archive/1.0.1/`](archive/1.0.1/). Saved 1.0.1 apps are not migrated.
+Investor pipeline for a round, from first contact to signed commitment. Scope: [FUNDRAISE.md](../../../docs/product/app-template-blueprints/apps/FUNDRAISE.md). It follows [modular apps and shared data](../../../docs/product/MODULAR_APPS_AND_SHARED_DATA.md) and, since 3.0.0, the app guide ([`templates/APP_GUIDE.md`](../../APP_GUIDE.md)) and the v2 contract with the platform kit ([`templates/APP_REFERENCE.md`](../../APP_REFERENCE.md)).
 
-**Catalog status:** **published** (owner approval, 14 November 2026). `templates/catalog-seed.json` names 2.0.0, so the catalog sync after migrations imports it approved; migration 072 withdraws Investor CRM 1.0.1 once. The 1.0.1 JSON and digest are unchanged and its package is archived under `archive/1.0.1/`; installed 1.0.1 apps keep working. Gallery: `resources/template-gallery/life.investor-crm@2.0.0.jpg` and its manifest entry.
+**Catalog status:** 3.0.0 is a **draft** (session 7, package 7.3; decisions G2–G8, G11, G14, P3–P5). It is not in `templates/catalog-seed.json`; the owner approves it (O4). The seed still names 2.0.1, which stays approved for installed copies. 3.0.0 declares `upgradeFrom: ["2.0.0","2.0.1"]`, so an owner can upgrade an installed 2.0.x copy (package 7.1): the installer schema, helpers, automations and output contracts are identical. Gallery media for 3.0.0 is not generated yet (the preview HTML is).
+
+## 3.0.0: rebuilt on the kit and the v2 contract
+
+| Before (2.0.1) | 3.0.0 |
+| --- | --- |
+| Own header (eyebrow, `<h1>`, as-of pill, layout gear), footer line, rail footer | None: the platform header shows the app name. Side navigation from `kit.nav`/`kit.layout` (tabs on phone and panel widths). |
+| 14 banners (notice, preview, partial data, as-of control, currency flags, editor hints) | Messages are `output.notice` (`kit.notice`). Partial data and excluded amounts are short notes next to the totals they qualify. |
+| Every write a `records.propose` review ("Nothing changes until you approve it") | `records.save` from the person's own click, change or submit, with the version captured when the value was drawn. Inline values (`kit.cell`), a side panel only to create a record, delete = `archive_record`, Undo (`undo.list` on open/refresh, `undo.run` on click). |
+| Pipeline: Move opened a reviewed stage dialog | `kit.board` drag and drop with a move menu on every card; interest edited on the card; moving to Passed asks the pass reason in a panel. |
+| 7 Settings panels incl. "Where data comes from", "Access, automations and links", Customization and layout notes | Settings has only the business choices (default currency, stale threshold, stages, pass reasons, fit lists) in `kit.settings`, for app owners only (`input.appRole`). Research runs link `platform:automations`. |
+| All twelve tables read on every screen | Each screen reads only its tables in one `records.readMany` (the rest of a long table in a second call); a side panel's extra tables in their own call; pending reads show Loading. Integrations are read only on Round and Engagement. |
+| Round picker in state | The selected round is the working context (`output.context` / `input.context`). |
+| Options `heading`, `layoutProfile`, `demoLabel` | Dropped (they served the old header, gear and preview label). `tableMap`, `pageSize`, `readOnly`, `asOfOverride` stay. |
+
+Kept unchanged: all calculations below, the activity and engagement screens (business records, D42), the integration lines, custom fields, stage labels and preferences, the two automations and both helpers.
+
+Build: `node scripts/build-investor-template.mjs` writes `templates/apps/life.investor-crm-3.0.0.json` and `fundraise.preview.html` (labelled fictional demo, D40) from this folder, and rebuilds 2.0.1 byte-identically from [`archive/2.0.1/`](archive/2.0.1/). The builder inserts `const FUNDRAISE_CSS=…` after the `'use trialagents v2';` marker line. Tests: `tests/fundraise-v2.test.ts`, `tests/fundraise-v2-integration.test.ts`.
+
+The sections below describe the data and calculation contracts, which are unchanged since 2.0.0; the 2.0.x screens and files are documented in `archive/2.0.1/README.md`.
 
 ## Files
 
 | File | Purpose |
 | --- | --- |
-| `fundraise.source.js` | The `frontend-js` renderer: seven screens, round thermometer, funnel, stale and due, pipeline board, investors with proposals, lead and syndicate, offer comparison, tranches and milestones, activity, pass patterns, data-room engagement, integration lines; reviewed `records.propose` writes. It starts with the single-line `templateLayoutSchema` declaration. |
-| `fundraise.css` | Vivid forest theme (`#087B58`) with a dark-teal hero and rail (`#243B40`), light canvas, one page scroll, the pipeline board scrolling inside its card, responsive 390–1440 px. |
-| `catalog.metadata.json` | Catalog fields: options, instructions and the MCP-served documentation (data and interaction contracts, lifecycle, limitations, examples, tasks). |
-| `schema.example.json` | Installer schema, registered in `templates/catalog-installers.json` (see roles below). |
+| `fundraise.source.js` | The v2 app (first line `'use trialagents v2';`): seven screens on the kit, direct saves, Undo, working context. |
+| `fundraise.css` | The few app-specific styles (thermometer, funnel, notes, pills, cards), written against the kit's `--k-*` tokens. |
+| `catalog.metadata.json` | Catalog fields: options, `upgradeFrom`, instructions and the MCP-served documentation. |
+| `schema.example.json` | Installer schema, byte-identical to 2.0.1, registered in `templates/catalog-installers.json`. |
 | `demo_data.json` | Fictional preview records only (also the hand-checked dataset in the tests). Never seed it into a workspace. |
-| `fundraise.preview.html` | Generated offline preview, fixed as of 11 Nov 2026. |
-| `QA.md` | Commands, results, hand calculations, acceptance criteria and unverified boundaries. |
-| `functions/round_digest.js`, `functions/research_brief.js` | Read-only app helpers (E7) inlined into the catalog entry by the build: the weekly digest text and the investor research brief. |
-| `AUTOMATION_RECIPES.md` | The two install recommendations, why there are two, and the no-automation path. |
-
-Edit the source, CSS, helpers and metadata, then run `node scripts/build-investor-template.mjs`. This regenerates `templates/apps/life.investor-crm-2.0.0.json` and the preview; `--check` runs in `npm run build`. Do not edit a released version: publish a new version and archive the previous package first.
+| `fundraise.preview.html` | Generated offline gallery preview with labelled fictional data, fixed as of 11 Nov 2026. |
+| `functions/round_digest.js`, `functions/research_brief.js` | Read-only app helpers (E7), identical to 2.0.1. |
+| `QA.md`, `AUTOMATION_RECIPES.md` | Validation notes; the two install recommendations. |
+| `archive/<version>/` | The released 1.0.1, 2.0.0 and 2.0.1 packages, unchanged. |
 
 ## Roles (installer schema, section 5 of the scope)
 
@@ -61,8 +78,8 @@ Each change is one reviewed proposal; records, IDs, bindings and access are kept
 
 | What | How |
 | --- | --- |
-| Screens and columns | Layout gear (`tracker:layout` → `prepare_tool_layout`): order, labels and visibility of the seven screens and the investors and activity columns. |
+| Screens and columns | An app revision through an assistant, approved by a person (3.0.0 has no layout gear). |
 | Business settings | Reviewed update of the `fundraise.settings` row: stages, pass reasons, fit vocabularies, stale threshold, default currency. |
 | Stage labels | `settings.stage_labels` JSON `{stage:label}`; stored keys never change. |
 | Preferences | `settings.preferences` JSON `{default_screen, page_size, overview_hidden}` (`funnel`, `stale_due`, `engagement`). |
-| Custom fields | (a) schema change adds the field to opportunities, investor profiles, rounds, activities, organizations or people; (b) app revision adds it to the role's table map (`fields`, `writableFields`), the `templateBindings` line, the binding and the manifest, keeping execution and helpers; (c) register it in `settings.custom_fields` as `{table,key,label,kind,options}`. It then shows in editors and details; select and yes/no fields on opportunities filter the Pipeline. Core and contract fields can never be shadowed. |
+| Custom fields | (a) schema change adds the field to opportunities, investor profiles, rounds, activities, organizations or people; (b) app revision adds it to the role's table map (`fields`, `writableFields`), the `templateBindings` line, the binding and the manifest, keeping execution and helpers; (c) register it in `settings.custom_fields` as `{table,key,label,kind,options}`. It then shows in create and detail panels; select and yes/no fields on opportunities filter the Pipeline. Core and contract fields can never be shadowed. |

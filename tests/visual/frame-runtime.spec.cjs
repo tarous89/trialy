@@ -11,11 +11,11 @@ const WIDTHS=[{name:'browser',width:1440,height:900},{name:'assistant panel',wid
 const hostPage=`<!doctype html><html><head><meta charset="utf-8"></head><body style="margin:0"><iframe id="f" sandbox="allow-scripts" title="App" style="width:100vw;height:100vh;border:0;display:block" src="${base}/frontend/frame"></iframe><script>
  const canon=v=>Array.isArray(v)?v.map(canon):v&&typeof v==='object'?Object.fromEntries(Object.keys(v).sort().map(k=>[k,canon(v[k])])):v;
  const key=(n,i)=>n+'|'+JSON.stringify(canon(i===undefined?{}:i));
- window.msgs=[];window.answers=new Map();window.requests={events:0,reads:0};
+ window.msgs=[];window.answers=new Map();window.requests={events:0,reads:0,screenReads:0};
  // The host's side of read_app_data: every missing read is one request, answered from the platform's data.
  addEventListener('message',e=>{if(e.source!==f.contentWindow)return;const m=e.data;window.msgs.push(m);
   if(m.kind==='trialy.event')window.requests.events++;
-  if(m.kind==='trialy.reads'){window.requests.reads++;f.contentWindow.postMessage({kind:'trialy.reads-result',channel:m.channel,id:m.id,results:m.reads.map(r=>{const a=window.answers.get(key(r.name,r.input));return a?a:{...r,error:'Capability unavailable'};})},'*');}
+  if(m.kind==='trialy.reads'){window.requests.reads++;if(!m.prefetch)window.requests.screenReads++;f.contentWindow.postMessage({kind:'trialy.reads-result',channel:m.channel,id:m.id,results:m.reads.map(r=>{const a=window.answers.get(key(r.name,r.input));return a?a:{...r,error:'Capability unavailable'};})},'*');}
  });
  window.send=m=>f.contentWindow.postMessage(m,'*');
 </script></body></html>`;
@@ -41,7 +41,7 @@ async function act(page,frame,selector,how){
  return {events:after.events-before.events,reads:after.reads-before.reads,local:after.local};
 }
 
-for(const viewport of WIDTHS)for(const app of data.filter(a=>a.browser.version==='v1'))test(`${app.id} ${app.version} at ${viewport.name} width: screen changes make no request and match the server`,async({page})=>{
+for(const viewport of WIDTHS)for(const app of data.filter(a=>a.browser.version==='v1'&&!a.rebuilt))test(`${app.id} ${app.version} at ${viewport.name} width: screen changes make no request and match the server`,async({page})=>{
  const frame=await openApp(page,app,viewport),times=[];
  for(const screen of app.screens){
   const r=await act(page,frame,`[data-action="${screen.action}"]`,{kind:'dispatchEvent',args:['click']});
@@ -58,6 +58,29 @@ for(const viewport of WIDTHS)for(const app of data.filter(a=>a.browser.version==
  expect(worst,'soft gate: no screen change takes 2.5 s').toBeLessThan(2500);
 });
 
+// 7.5 (P1, P9, P10): every rebuilt catalog app at the three widths. Changing screens never runs the app on the server; a
+// screen that needs data it has not loaded makes at most one batched read; the screen ends as the server renders it; and
+// nothing is wider than the frame (a hard rule for rebuilt apps). The soft time gate is the same as for v1.
+async function settle(page,n){let last=-1;for(let i=0;i<40;i++){const now=await page.evaluate(()=>window.msgs.length);if(now===last)break;last=now;await page.waitForTimeout(150);}return page.evaluate(n=>({msgs:window.msgs.slice(n)}),n);}
+for(const viewport of WIDTHS)for(const app of data.filter(a=>a.rebuilt))test(`${app.id} ${app.version} (rebuilt) at ${viewport.name} width: screens run in the frame, at most one read, no overflow`,async({page})=>{
+ const frame=await openApp(page,app,viewport),times=[],widthClass=viewport.width<480?'phone':viewport.width<800?'panel':'wide';
+ for(const screen of app.screensBy[widthClass]){
+  const before=await page.evaluate(()=>({...window.requests,n:window.msgs.length}));
+  await frame.locator(`[data-action="${screen.action}"]`).first().dispatchEvent('click');
+  await page.waitForFunction(n=>window.msgs.slice(n).some(m=>m.kind==='trialy.local'||m.kind==='trialy.event'),before.n);
+  const {msgs}=await settle(page,before.n),after=await page.evaluate(()=>window.requests);
+  expect(after.events-before.events,`${screen.action}: no server run`).toBe(0);
+  // Background preparation of linked screens (prefetch) is not the screen waiting for data.
+  expect(after.screenReads-before.screenReads,`${screen.action}: at most one batched read`).toBeLessThanOrEqual(1);
+  const local=msgs.filter(m=>m.kind==='trialy.local');expect(local.length,`${screen.action}: made in the frame`).toBeGreaterThan(0);
+  expect(local.at(-1).html,`${screen.action}: the screen the server renders`).toBe(screen.html);
+  times.push(local[0].ms);
+  const overflow=await frame.locator('body').evaluate(b=>b.scrollWidth-b.clientWidth);
+  expect(overflow,`${screen.action}: no wider than the ${viewport.width}px frame`).toBeLessThanOrEqual(1);
+ }
+ test.info().annotations.push({type:'speed',description:`screen changes (ms): ${times.map(t=>t.toFixed(1)).join(', ')}`});
+ expect(Math.max(0,...times),'soft gate: no screen change takes 2.5 s').toBeLessThan(2500);
+});
 test('v2 example: filtering makes no request, an edit makes one and shows at once, a failed save comes back, the board moves by menu',async({page})=>{
  const app=data.find(a=>a.id==='v2-example'),frame=await openApp(page,app,WIDTHS[0]);
  let r=await act(page,frame,'select[data-action="filter:stage"]',{kind:'selectOption',args:['Won']});

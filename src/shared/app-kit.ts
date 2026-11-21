@@ -33,7 +33,7 @@ button,input,select,textarea{font:inherit;color:inherit}a{color:var(--k-accent)}
 .k-nav{display:flex;gap:4px;border-bottom:1px solid var(--k-line);overflow-x:auto;scrollbar-width:thin;margin:0 0 16px}
 .k-nav button{border:0;background:none;min-height:44px;padding:0 12px;white-space:nowrap;color:var(--k-muted);font-weight:650;border-bottom:3px solid transparent;cursor:pointer}
 .k-nav button[aria-current=page]{color:var(--k-accent);border-bottom-color:var(--k-accent)}
-.k-layout{display:grid;grid-template-columns:220px minmax(0,1fr);gap:20px}.k-layout>.k-nav{flex-direction:column;border:0;margin:0}.k-layout>.k-nav button{text-align:left;border-bottom:0;border-left:3px solid transparent}.k-layout>.k-nav button[aria-current=page]{border-left-color:var(--k-accent)}
+.k-layout{display:grid;grid-template-columns:220px minmax(0,1fr);gap:20px}.k-layout>div{min-width:0}.k-layout>.k-nav{flex-direction:column;border:0;margin:0}.k-layout>.k-nav button{text-align:left;border-bottom:0;border-left:3px solid transparent}.k-layout>.k-nav button[aria-current=page]{border-left-color:var(--k-accent)}
 .k-table-wrap{overflow-x:auto;background:var(--k-paper);border:1px solid var(--k-line);border-radius:var(--k-radius)}
 .k-table{border-collapse:collapse;width:100%}.k-table th{font-size:12px;color:var(--k-muted);text-align:left;font-weight:650;padding:10px 12px;border-bottom:1px solid var(--k-line);background:#fbfcfb}
 .k-table td{padding:10px 12px;border-bottom:1px solid var(--k-line);vertical-align:top;overflow-wrap:anywhere}.k-table tr:last-child td{border-bottom:0}
@@ -115,8 +115,8 @@ export const KIT_SOURCE=String.raw`const kit=(()=>{'use strict';
  const picker=(o)=>'<label class="k-picker"><span>'+esc(o.label)+'</span><select'+attr('data-action',o.action||'context')+'>'+o.options.map(x=>'<option'+attr('value',x.value)+attr('selected',x.value===o.value)+'>'+esc(x.label)+'</option>').join('')+'</select></label>';
  /** Business choices for the app's owners (G6). Returns nothing for editors and viewers. */
  const settings=(o,input)=>input&&input.appRole!=='owner'?'':'<form class="k-card"'+attr('data-action',o.action||'settings:save')+'>'+o.fields.map(f=>'<label class="k-field"><span>'+esc(f.label)+'</span>'+(f.options?'<select'+attr('name',f.name)+'>'+f.options.map(x=>'<option'+attr('selected',x===f.value)+'>'+esc(x)+'</option>').join('')+'</select>':'<input'+attr('name',f.name)+attr('value',f.value??'')+'>')+'</label>').join('')+'<button type="submit" class="k-button k-button--primary">Save</button></form>';
- /** Undo for the person's own last actions in this open app (G8): pass tools.call('undo.list').entries. */
- const undo=(entries)=>entries&&entries.length?button('Undo '+String(entries[0].label||'last change').toLowerCase(),'undo:'+entries[0].undoId):'';
+ /** Undo for the person's own last actions in this open app (G8): pass tools.call('undo.list').actions (or the whole result). */
+ const undo=(list)=>{const entries=Array.isArray(list)?list:list&&(list.actions||list.entries);return entries&&entries.length?button('Undo '+String(entries[0].label||'last change').toLowerCase(),'undo:'+entries[0].undoId):'';};
  /** The platform message (U2): return it as output.notice. */
  const notice=(kind,message)=>({kind,message:String(message)});
  const stat=(label,value)=>'<div class="k-stat"><b>'+esc(value)+'</b><span>'+esc(label)+'</span></div>';

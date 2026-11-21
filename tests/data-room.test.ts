@@ -15,12 +15,12 @@ test('package: catalog entry, seven screens, limits, build --check, installer an
  // 1.0.0 stays byte-identical (catalog JSON and archived source package).
  assert.ok(appTemplateEntry.safeParse(JSON.parse(await readFile('templates/apps/life.data-room-1.0.0.json','utf8'))).success);
  assert.equal(JSON.parse(await readFile('templates/apps/life.data-room-1.0.0.json','utf8')).version,'1.0.0');
- const layout=JSON.parse(/^const templateLayoutSchema=(.+);$/m.exec(await readFile('templates/source/data-room/data-room.source.js','utf8'))![1]);
+ const layout=JSON.parse(/^const templateLayoutSchema=(.+);$/m.exec(await readFile('templates/source/data-room/archive/1.1.1/data-room.source.js','utf8'))![1]);
  assert.deepEqual(layout.screens.map((s:any)=>s.id),['overview','rooms','index','parties','activity','qa','settings']);
  assert.ok(entry.source!.length<=240000,"source "+entry.source!.length);assert.ok(Buffer.byteLength(await readFile('templates/apps/life.data-room-1.1.1.json'))<=300000);
  assert.match(execFileSync('node',['scripts/build-data-room-template.mjs','--check'],{encoding:'utf8'}),/verified/);
  const installers=JSON.parse(await readFile('templates/catalog-installers.json','utf8'));
- assert.equal(installers['life.data-room@1.1.1'],'templates/source/data-room/schema.example.json');assert.equal(installers['life.data-room@1.0.0'],'templates/source/data-room/archive/1.0.0/schema.example.json');
+ assert.equal(installers['life.data-room@1.1.1'],'templates/source/data-room/archive/1.1.1/schema.example.json');assert.equal(installers['life.data-room@1.0.0'],'templates/source/data-room/archive/1.0.0/schema.example.json');
  assert.equal(JSON.parse(await readFile('templates/catalog-seed.json','utf8'))['life.data-room'].version,'1.1.1','published (owner approval, 15 November 2026)');
  const reg=JSON.parse(await readFile('templates/contracts/outputs.json','utf8'));
  for(const role of ['dataroom.access_grants','dataroom.engagement']){
@@ -33,7 +33,7 @@ test('package: catalog entry, seven screens, limits, build --check, installer an
  assert.deepEqual(Object.keys(schema).sort(),['agreements','dataroom.access_grants','dataroom.engagement','dataroom.items','dataroom.levels','dataroom.questions','dataroom.rooms','dataroom.sections','dataroom.settings','dataroom.templates','organizations','people','programs'].sort());
  for(const [role,def] of Object.entries(schema) as any)if(role.startsWith('dataroom.'))assert.equal(def.contract,'dataroom.v1');
  assert.deepEqual(['people','programs','agreements'].map(r=>!!schema[r].optional),[true,true,true]);
- const m=JSON.parse(await readFile('templates/source/data-room/catalog.metadata.json','utf8'));
+ const m=JSON.parse(await readFile('templates/source/data-room/archive/1.1.1/catalog.metadata.json','utf8'));
  assert.match(m.documentation.dataContract,/dataroom\.access_grants[\s\S]*dataroom\.engagement/);assert.equal(m.documentation.tasks.mode,'optional');
  for(const r of demo.records as any[])for(const v of Object.values(r.data))if(typeof v==='string'&&v.includes('@'))assert.match(v,/\.invalid$/,'fictional emails only');
 });

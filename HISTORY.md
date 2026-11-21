@@ -1,3 +1,15 @@
+## 21 November 2026 — Platform decisions, session 7: catalog rebuild
+
+Last of seven build sessions for the [platform decisions of 19 November](docs/scopes/PLATFORM_DECISIONS_IMPLEMENTATION_2026-11-19.md). Decision codes refer to the [snapshot](docs/scopes/PLATFORM_DECISIONS_SNAPSHOT_2026-11-19.md).
+
+- **Upgrade to a new major version (A3, D41).** A rebuilt catalog version lists the versions it upgrades (`upgradeFrom`). The app's owners see **Upgrade to version X** on the website: records, table connections and settings carry across, settings the new version no longer has are listed, the old layout starts again. Editors are refused.
+- **Automatic speed updates (P11, D14, D15).** A version its publisher declares speed-only, and that changes nothing but the code, reaches unchanged installed copies by itself (hourly), with a revision and an audit entry; customized copies are skipped; the header says "Updated to faster version X".
+- **Every switched-on catalog app rebuilt (G14, G2–G8, G11, P3–P5, P9).** New drafts, waiting for the owner's approval: the eight Bio Radars 2.0.0 (Literature 3.0.0), Runway 3.0.0, Contracts 2.0.0, Fundraise 3.0.0, Partnerships 3.0.0, Data Room 2.0.0, Investor Updates 2.0.0, Programs 3.0.0 and CRO Selection 3.0.0. No own header, banners, footer or layout gear; values edited where they are shown and saved at once; boards with drag and drop for stages; side panels only to create or edit many fields; Settings for owners with business choices only; data lists on their own screens; each screen reads only its data; every empty screen offers its first action; Undo after a save; the working context is remembered. The single confirmation before something goes to people outside stays. Tables, helpers, automations and commands are unchanged, so copies upgrade without losing data.
+- **Platform fixes.** Links to Access, Logs and Automations work inside the app frame; a save's message is no longer lost when the app shows the saved data; the kit's side layout fits narrow screens; `kit.undo` takes the `undo.list` result.
+- **Checks.** Rebuilt catalog code is held to the current design rules; the browser speed gate covers every rebuilt version at three widths with no horizontal overflow allowed.
+
+Tests: `app-update` (upgrade), `speed-updates`, per-app `*-v2` and `*-v2-integration` tests for all nine codebases, and the rebuilt-app gate in `tests/visual/frame-runtime.spec.cjs`.
+
 ## 21 November 2026 — Platform decisions, session 6: automations and external sharing
 
 Sixth of seven build sessions for the [platform decisions of 19 November](docs/scopes/PLATFORM_DECISIONS_IMPLEMENTATION_2026-11-19.md). Decision codes refer to the [snapshot](docs/scopes/PLATFORM_DECISIONS_SNAPSHOT_2026-11-19.md).

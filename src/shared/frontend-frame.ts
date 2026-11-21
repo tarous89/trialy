@@ -75,7 +75,7 @@ export const FRAME_SCRIPT=String.raw`(()=>{'use strict';
     if(name==='type'&&tag==='input'){if(!inputTypes.has(attr.value.toLowerCase()))node.setAttribute('type','text');continue;}
     if(name==='type'&&tag==='button'){node.setAttribute('type',['button','submit','reset'].includes(attr.value)?attr.value:'button');continue;}
     if(name==='src'&&tag==='img'&&/^data:image\/(png|jpeg|gif|webp);base64,[a-z0-9+/=]+$/i.test(attr.value))continue;
-    if(name==='href'&&tag==='a'&&appLinks){const href=attr.value;if(href.length<=2000&&!/[\\\u0000-\u0020]/.test(href)&&!href.startsWith('//')&&(!/^[a-z][a-z0-9+.-]*:/i.test(href)||/^(https?:|mailto:|tel:)/i.test(href))){node.dataset.appHref=href;continue;}}
+    if(name==='href'&&tag==='a'&&appLinks){const href=attr.value;if(href.length<=2000&&!/[\\\u0000-\u0020]/.test(href)&&!href.startsWith('//')&&(!/^[a-z][a-z0-9+.-]*:/i.test(href)||/^(https?:|mailto:|tel:)/i.test(href)||/^platform:(access|logs|automations)$/.test(href))){node.dataset.appHref=href;continue;}}
     if(!attrs.has(name)&&!/^aria-[a-z-]+$/.test(name))node.removeAttribute(attr.name);
    }
    if(tag==='a'&&node.dataset.appHref){const target=linkTarget(node.dataset.appHref,appOrigin,linkContext);if(!target){node.removeAttribute('href');delete node.dataset.appHref;}else if(target.external){node.href=target.href;node.target='_blank';node.rel='noopener noreferrer';node.dataset.external='true';}else node.setAttribute('href','#');}
@@ -176,7 +176,9 @@ export const FRAME_SCRIPT=String.raw`(()=>{'use strict';
  const runtimeCss=html=>styles?styles.base+(styles.shell&&/\bta-[a-z-]+/.test(html)?styles.shell:''):'';
  function applyBrowser(b,v){
   store??=Engine.createStore();store.seed(b.reads,!!b.reset);styles=b.styles||styles;
-  for(const k of Object.keys(localInput))delete localInput[k];Object.assign(localInput,b.input||{});if(b.version==='v2'&&viewportClass)localInput.viewport={width:viewportClass,coarse};
+  for(const k of Object.keys(localInput))delete localInput[k];Object.assign(localInput,b.input||{});
+  // 7.5: the first screen is checked against the input the server used; the frame's own width class applies after that check.
+  const ownViewport=b.version==='v2'&&viewportClass&&!(b.input&&b.input.viewport)?{width:viewportClass,coarse}:null;
   if(browserApp&&browserApp.digest!==b.digest&&!b.source){try{browserApp.app.dispose();}catch{}browserApp=null;}
   const verify=v.verify&&v.verify.event&&v.verify.event.kind==='open'?{state:v.verify.state,event:v.verify.event,html:v.html,state2:JSON.stringify(v.state??null)}:null;
   if(b.source&&(!browserApp||browserApp.digest!==b.digest)){const code=b.source,digest=b.digest,version=b.version;
@@ -184,9 +186,10 @@ export const FRAME_SCRIPT=String.raw`(()=>{'use strict';
     if(browserApp){try{browserApp.app.dispose();}catch{}}const app=api.load(code);browserApp={digest,version,app,run:Engine.createLocalApp({app,version,store,input:localInput})};localOff=false;
     // The first screen came from the server: made again here, it must be identical, or this view stays on server mode.
     if(verify){const r=browserApp.run.run(verify.state,verify.event);if(r.kind==='painted'&&(r.output.html!==verify.html||JSON.stringify(r.output.state)!==verify.state2)){localOff=true;host.postMessage({kind:'trialy.engine',status:'mismatch',digest},'*');return;}}
+    if(ownViewport)localInput.viewport=ownViewport;
     host.postMessage({kind:'trialy.engine',status:'loaded',digest,version},'*');warm();
    }catch(e){browserApp=null;host.postMessage({kind:'trialy.engine',status:'unavailable',reason:'load'},'*');}},0);});
-  }else if(browserApp)setTimeout(warm,0);
+  }else if(browserApp){if(ownViewport)localInput.viewport=ownViewport;setTimeout(warm,0);}
  }
  /** After a screen is shown, the screens it links to are made once in the background; reads they lack come in one request. */
  let warmed='';
@@ -201,7 +204,7 @@ export const FRAME_SCRIPT=String.raw`(()=>{'use strict';
    idle(step);};
   idle(step);
  }
- function requestReads(reads,context){const id=++readSeq;pendingReads.set(id,{...context,seq:eventSeq});post('trialy.reads',{id,reads:reads.slice(0,12)});}
+ function requestReads(reads,context){const id=++readSeq;pendingReads.set(id,{...context,seq:eventSeq});post('trialy.reads',{id,reads:reads.slice(0,12),...(context&&context.prefetch?{prefetch:true}:{})});}
  function paintLocal(output,event,t0){
   controls=[];connected=false;uiState=output.state;paint(output.html,runtimeCss(output.html)+output.css);
   post('trialy.local',{ms:t0?performance.now()-t0:null,event:{kind:event.kind,action:event.action},state:uiState,html:output.html,css:runtimeCss(output.html)+output.css,...(output.notice?{notice:output.notice}:{}),...('context' in output?{context:output.context}:{})});post('trialy.rendered');

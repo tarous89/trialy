@@ -80,7 +80,7 @@ Limits per event: 100 capability calls, a 4 MB read budget, 15 seconds.
 | `kit.pager({offset, limit, total, action})` | Paging. |
 | `kit.picker({label, options, value, action})` | The working-context picker. |
 | `kit.settings({fields, action}, input)` | A Settings form, shown to owners only. |
-| `kit.undo(entries)` | An Undo button for the person's last action (`undo.list`). |
+| `kit.undo(list)` | An Undo button for the person's last action: pass the result of `undo.list` (`{actions}`) or its `actions`. |
 | `kit.notice(kind, message)` | The value for `output.notice`. |
 | `kit.stat(label, value)`, `kit.button(label, action, {primary})`, `kit.esc(text)` | Small parts. |
 
@@ -351,7 +351,7 @@ Contract: `src/automations/recipes-schema.ts`. Requires `APP_AUTOMATION_RECIPES_
 
 ## Template package requirements
 
-- Catalog JSON lives at `templates/apps/<id>-<version>.json` with stable IDs and semantic versions; changes ship as new versions. The raw-file digest protects preparation. Installed apps keep their source and configuration and are never silently migrated.
+- Catalog JSON lives at `templates/apps/<id>-<version>.json` with stable IDs and semantic versions; changes ship as new versions. The raw-file digest protects preparation. Installed apps keep their source and configuration and are never migrated without their owners, with one exception: a version its publisher declares `speedOnly` and that changes nothing but the code (same tables, options, defaults and helpers) reaches unchanged copies automatically, with a revision and an audit entry. A new major version lists the versions it upgrades in `upgradeFrom` (same tables and helpers); an owner of an installed copy upgrades it on the website, and its records, table connections and settings carry across.
 - Required: `id`, `version`, `name`, `description`, `tags`, `whenToUse`, `whenNotToUse`, `engine`, validated `options`/`defaults` or tracker configuration schema, and `source` when the engine needs it.
 - `instructions`: discovery, setup, configuration, preview, approval, update and recovery, referring to the usage and automation guides. Everything an assistant needs is in `instructions` and `documentation`; repo-only files are not available over MCP.
 - `documentation.quickStart` (ordered steps, inputs, defaults); `dataContract` (fields, relationships, scalar or multiple, required fields, display names versus IDs, persistence, bindings, section IDs and inheritance, or that there is no database); `interactionContract` (supported controls, confirmation, cancellation; automations managed on the platform); `lifecycle` (preview versus saved app, revisions, stable identities, retries and receipts, disabled state, archive suspension, no automatic resume); `limitations` (unsupported features, pending activation, model settings, delivery dependencies, fallbacks); `examples` (at most five, with expected behaviour); `tasks` (`mode` `optional` or `none`, scenarios, reads, outputs, trigger, sources, deduplication, scope, limits, completion, and `promptExample`, required even for `mode:"none"`). Task metadata is never an active definition or authorization.

@@ -11,6 +11,16 @@ export const CATALOG_APPS:{id:string;directory:string}[]=[
  {id:'life.market-radar',directory:'radars/market-radar'},{id:'life.patent-radar',directory:'radars/patent-radar'},{id:'life.pipeline-radar',directory:'radars/pipeline-radar'},
  {id:'life.regulatory-radar',directory:'radars/regulatory-radar'},{id:'life.trial-radar',directory:'radars/trial-radar'},
 ];
+/** 7.5: the rebuilt (v2) versions of the same apps, drafts until the owner approves them (O4). Checked by the browser
+ * speed gate at three widths with hard layout rules (no horizontal overflow). */
+export const REBUILT_APPS:{id:string;directory:string;version:string}[]=[
+ {id:'life.cash-runway',directory:'cash-runway',version:'3.0.0'},{id:'life.contracts',directory:'contracts',version:'2.0.0'},{id:'life.cro-selection',directory:'cro-selection',version:'3.0.0'},
+ {id:'life.data-room',directory:'data-room',version:'2.0.0'},{id:'life.investor-crm',directory:'investor-crm',version:'3.0.0'},{id:'life.investor-updates',directory:'investor-updates',version:'2.0.0'},
+ {id:'life.partnership-tracker',directory:'partnership-tracker',version:'3.0.0'},{id:'life.project-oversight',directory:'project-oversight',version:'3.0.0'},
+ {id:'life.deal-radar',directory:'radars/deal-radar',version:'2.0.0'},{id:'life.funding-radar',directory:'radars/funding-radar',version:'2.0.0'},{id:'life.literature-radar',directory:'radars/literature-radar',version:'3.0.0'},
+ {id:'life.market-radar',directory:'radars/market-radar',version:'2.0.0'},{id:'life.patent-radar',directory:'radars/patent-radar',version:'2.0.0'},{id:'life.pipeline-radar',directory:'radars/pipeline-radar',version:'2.0.0'},
+ {id:'life.regulatory-radar',directory:'radars/regulatory-radar',version:'2.0.0'},{id:'life.trial-radar',directory:'radars/trial-radar',version:'2.0.0'},
+];
 /** Platform answers for the demo records, shaped as the platform answers them (filters, search and sort before paging). */
 export function demoAnswers(demo:any){
  const rows=demo.records,X=demo.exchange,documents=demo.documents??[];
@@ -39,11 +49,11 @@ export function demoAnswers(demo:any){
  };
 }
 /** One catalog app at its seeded version, as installed with the demo schema, and its screens. */
-export async function catalogDemo(app:{id:string;directory:string}){
+export async function catalogDemo(app:{id:string;directory:string;version?:string}){
  const seed=JSON.parse(await readFile('templates/catalog-seed.json','utf8'));
  const root=`templates/source/${app.directory}`,schema=JSON.parse(await readFile(`${root}/schema.example.json`,'utf8'));
  const demo=JSON.parse(await readFile(`${root}/demo_data.json`,'utf8'));
- const entry=await appTemplates.read({templateId:app.id,version:seed[app.id].version});
+ const entry=await appTemplates.read({templateId:app.id,version:app.version??seed[app.id].version});
  const roles=Object.entries(schema) as [string,{logicalFields:Record<string,string>;readOnly?:boolean}][];
  const bindings=roles.map(([role,s])=>({typeId:role,fields:Object.values(s.logicalFields)}));
  const tableMap=Object.fromEntries(roles.map(([role,s])=>[role,{typeId:role,fields:s.logicalFields,writableFields:s.readOnly?[]:Object.keys(s.logicalFields)}]));

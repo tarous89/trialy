@@ -1,36 +1,38 @@
-# CRO Selection 2.1.0 (`life.cro-selection`)
+# CRO Selection 3.0.0 (`life.cro-selection`)
 
-Choose CROs, CDMOs and labs: from the need to a signed award and a clean handover. Scope: [CRO_SELECTION.md](../../../docs/product/app-template-blueprints/apps/CRO_SELECTION.md) (BT2-05). New major version of `life.cro-selection`. It replaces CRO Selection 1.0.1 and Sponsor RFP Management 1.0.1. Both are marked for catalog archival in [`templates/catalog-retirements.json`](../../catalog-retirements.json), and the withdrawal happens when the owner approves 2.1.0. Built against template guidance 1.3.31, in particular "External exchange from apps", "Platform documents inside apps" and "App commands", and against the contract registry. The owner's decisions of 13 November 2026 (simplification) and 15 November 2026 (platform changes and AI-native control) are recorded in the scope, [§14](../../../docs/product/app-template-blueprints/apps/CRO_SELECTION.md#14-cro-selection-210--platform-changes-and-ai-native-control).
+Choose CROs, CDMOs and labs: from the need to a signed award and a clean handover. Scope: [CRO_SELECTION.md](../../../docs/product/app-template-blueprints/apps/CRO_SELECTION.md) (BT2-05). 3.0.0 is the rebuild on the TrialAgents kit and the v2 app contract (platform decisions of 19 November 2026, session 7, package 7.3: G2–G8, G11, G14, P3–P5, P9). It is a **draft**: it is not in `templates/catalog-seed.json`; the owner approves versions (O4). 2.1.1 stays published and byte for byte.
 
-**What 2.1.0 changes from the 2.0.0 draft** (archived unchanged under `archive/2.0.0/`; imported drafts are immutable, so the revision is a new version):
+**What stays identical to 2.1.1** (so the owner-approved upgrade, package 7.1, carries the data across; `upgradeFrom: ["2.1.0","2.1.1"]`): the installer schema (`schema.example.json`, byte for byte), the 27 app commands with their ids, modes and inputs, the `croselection.awards` output contract, the calculation rules, the exchange rules, and the options `tableMap`, `pageSize`, `layoutProfile`, `readOnly` and `asOfOverride`. The layout screens keep their 2.x ids, so a saved layout profile stays valid. There are no helper functions and no recommended automations, before or after.
 
-- **App commands.** 27 commands (`appCommands`, line 2 of the source): 6 read, 20 propose, 1 layout. Every record action a person can click is a command that replays the same events through one handler (`handle`), so a command and a click produce the same proposal. Read commands return the app's own figures. Supplier communication is never a command.
-- **Award by the user, in the app or through the assistant.** `decision.record` prepares the same award, statuses and stage as Record the decision; a person approves the review. Notices are sent by a person (Notify all).
-- **Customization.** Additional fields (`extraFields` and `writableExtra` in the table map) appear in forms and details; other bound fields show read-only. Form layout for eight forms (order, hidden, labels, defaults), vendor columns, stage names and the opening screen (`settings.preferences`). The layout gear's `group:field` visibility keys now work (2.0.0 read `group.field`, so hiding a column had no effect).
-- **Runway.** The handoff no longer prepares Runway spend lines: Runway 2.2.0 reads `croselection.awards` itself, with source tracking.
-- **No automations** (see `AUTOMATION_RECIPES.md`). The award agreement's status is labelled as kept in Contracts.
-- Editing a request no longer rewrites its unchanged assumptions (a JSON formatting difference was reported as a change).
+**What 3.0.0 changes:**
 
-**Catalog status:** published (owner approval, 15 November 2026). `templates/catalog-seed.json` names 2.1.0; migration 077 withdraws CRO Selection 1.0.1 and Sponsor RFP Management 1.0.1. The 2.0.0 draft stays a draft.
+- **v2 contract.** `'use trialagents v2';` is line 1. The kit (`kit.page`, `kit.nav`/`kit.layout`, `kit.table` styles, `kit.cell`/`kit.edit`, `kit.panel`, `kit.board`/`kit.move`, `kit.empty`, `kit.pager`, `kit.picker`, `kit.undo`, `kit.notice`, `kit.stat`) and the platform styles come from the runtime; `cro-selection.css` holds only the bid grid, chips, messages and a few layout rules, written against `--k-*` tokens (about 6 KB instead of 14 KB).
+- **No own header or messages.** No header, title, eyebrow, "As of" pill, layout gear, side-rail footer or banners. Messages are the platform's one notice (`output.notice`); an error about a value comes back as that notice. Partial or missing data is still said, in a line on the screen it concerns.
+- **Direct saving (P5, G5).** Every record edit is `records.save` from a person's own click, change or submit, with the version captured when editing started. Values are edited where they are shown (`kit.cell`): request budget, deadlines and owner; vendor name, type and country; criterion weight and mandatory; checklist status, owner and due date; proposal line amounts; the award's start date. Side panels only add a record or edit many fields. Requests move stage by drag and drop on the Overview board (or the menu on each card). Archive is `archive_record`. After a save, the app offers Undo for the person's last action (`undo.list`, `undo.run`). Every "prepared for review", "(reviewed)" and "nothing changes until approved" wording is gone.
+- **The one confirmation stays.** Exchange operations that reach suppliers (send, reminders, replies, clarifications, acceptances, notices, extend and stop with notice) keep the platform's single confirmation; record changes made by the same click (invited, submitted, selected, stage, award) travel with it and commit in the same transaction.
+- **Screens.** Overview, Requests, Vendors, Messages, Proposals, Evaluation, Decision, Emails (new: invitation texts per request kind, the workspace invitation default and the decision notices, moved out of Settings) and Settings (owners only, `input.appRole`: default currency, question-deadline default, confidentiality text, blind scoring). The Display panel (opening screen, stage names) and the Access and automations panel are gone; stage names saved earlier still show.
+- **Per-screen reads (P3, P4).** Each screen reads only its own tables in one `records.readMany` batch whose reads are always the same for that screen; app commands read every table. A read still on its way (`pending`, in the frame) shows the screen as loading, never as empty or zero; so does exchange data on its way.
+- **Working context (G4).** The chosen request is `output.context` and comes back as `input.context` on the next visit.
+- **Empty screens** each offer their first action (new quick quote or full selection, add vendor, create the round, apply the criteria set, record the decision).
+- **Commands** save directly when an assistant with Data level Edit runs them (`saved` instead of `prepared` in the result). `layout.save` remains an app change the owner approves.
+- Options `heading` and `demoLabel` are dropped (they served the old header and preview label).
 
 ## Files
 
 | File | Purpose |
 | --- | --- |
-| `cro-selection.source.js` | The canonical, readable `frontend-js` renderer: eight screens, calculations, exchange calls, reviewed `records.propose` writes and app commands. Line 1 is the single-line `templateLayoutSchema` declaration (screens, column groups and form groups); line 2 is the single-line `appCommands` declaration. |
-| `cro-selection.css` | Vivid kit, theme **ocean** (`#175B94`) with the dark rail `#182C35`; one page scroll; responsive 390–1440 px. |
-| `catalog.metadata.json` | Catalog fields: options, instructions (exchange mapping and the assistant contract) and the MCP-served documentation. |
-| `schema.example.json` | Installer schema, registered in `templates/catalog-installers.json`: roles exactly as in scope §7. |
-| `demo_data.json` | Fictional records plus a fictional imitation of exchange state, used by the offline preview and the unit tests. Never seed it into a workspace. |
-| `cro-selection.preview.html` | Generated offline preview, fixed as of 13 Nov 2026. It contacts nobody; exchange writes show an alert. |
-| `QA.md` | Commands, results, hand calculations, acceptance criteria 1–9 and what was not verified. |
-| `AUTOMATION_RECIPES.md` | Why 2.1.0 has no automations, and where reminders and mapping live instead. |
-| `../../../tests/external-exchange-confirmation.test.ts` | Platform test of the one-confirmation rule this app relies on. |
-| `archive/1.0.1/` | The released 1.0.1 package, unchanged (built by `scripts/build-selection-template.mjs`). |
-| `archive/2.0.0/` | The 2.0.0 draft package, unchanged; its catalog JSON `templates/apps/life.cro-selection-2.0.0.json` is kept byte for byte. |
-| `../../../tests/cro-selection-commands.test.ts` | Commands: parity with clicks, read results, award, exchange boundary, customization, and a real-platform run with Runway 2.2.0. |
+| `cro-selection.source.js` | The canonical, readable `frontend-js` source. Line 1: the v2 marker; line 2: `templateLayoutSchema` (screens, column groups and form groups for `layout.save`); line 3: `appCommands`. |
+| `cro-selection.css` | The few app-specific styles, on kit tokens. |
+| `catalog.metadata.json` | Catalog fields: options, `upgradeFrom`, instructions and the documentation served to assistants. |
+| `schema.example.json` | Installer schema, identical to 2.1.1; `templates/catalog-installers.json` names it for 3.0.0 and the archived copy for 2.1.1. |
+| `demo_data.json` | Fictional records and exchange state for the preview and the tests. Never seeded into a workspace. |
+| `cro-selection.preview.html` | Generated offline preview of 3.0.0 with the kit and labelled fictional data. It contacts nobody. |
+| `QA.md` | Commands, results and what was not verified. |
+| `archive/2.1.1/` | The released 2.1.1 package, unchanged; the builder rebuilds its catalog JSON and preview from here and `--check` proves them byte for byte. |
+| `archive/1.0.1/`, `archive/2.0.0/`, `archive/2.1.0/` | Earlier packages, unchanged. |
+| `../../../tests/cro-selection-v2.test.ts`, `../../../tests/cro-selection-v2-integration.test.ts` | 3.0.0 unit tests (every screen, reads, saving, notices, settings, empty screens, loading, commands) and the install-and-run test on the real platform. The 2.1.1 tests are unchanged. |
 
-Edit the source, CSS and metadata, then run `node scripts/build-cro-selection-template.mjs`. This regenerates `templates/apps/life.cro-selection-2.1.0.json` and the preview, and `--check` runs in `npm run build`. The catalog copy of the source is the canonical file with whitespace and redundant syntax removed by esbuild; identifiers and lines 1 and 2 are unchanged. This keeps the entry well under the 240,000-character catalog limit, with room for the configuration the host prepends. Do not edit a released version: publish a new version and archive the package first.
+Edit the source, CSS and metadata, then run `node scripts/build-cro-selection-template.mjs` (it builds 2.1.1 from the archive and 3.0.0 from this folder; `--check` runs in `npm run build`). The catalog copy is the canonical file with whitespace and redundant syntax removed by esbuild; lines 1 to 3 are kept verbatim and the CSS constant follows them.
 
 ## Roles (scope §7)
 
@@ -74,14 +76,14 @@ Assistants never confirm, and for them every exchange operation is a review. Rec
 
 ## Handoff
 
-"Prepare the handoff" (`handoff.prepare`) is one reviewed save:
+"Prepare the handoff" (`handoff.prepare`) is one save:
 
 - It writes a draft agreement in the shared agreements table, which Contracts shows in its pipeline. Contracts completes it, and "Link it to the award" stores the agreement ID.
 - It stores the prepared Programs milestones as JSON in `croselection.awards.handoff_status`, with `runway: {state: "read_by_runway"}`.
 
 CRO Selection never writes another app's own tables. Runway 2.2.0 reads `croselection.awards` itself (Plan → From other sources → Add to plan, which keeps the source and flags later changes), so no Runway lines are prepared: a line proposed from the award would bypass that tracking and could be counted twice. The user's assistant proposes the milestones in Programs through its reviewed path. With none of these apps the award simply stays. CRO Oversight and Trial Finance read `croselection.awards` too.
 
-## App commands (2.1.0)
+## App commands (2.1.0; in 3.0.0 their record changes save directly)
 
 | Kind | Commands |
 | --- | --- |
@@ -90,8 +92,8 @@ CRO Selection never writes another app's own tables. Runway 2.2.0 reads `crosele
 | Decision and award | `decision.record`, `award.save`, `onboarding.update`, `handoff.prepare`, `award.link_agreement` |
 | Settings and layout | `settings.save` (including opening screen and stage names), `invitation_text.save`, `invitation_text.reset`, `layout.save` |
 
-Each propose command replays the click and submit events through `handle`, the same function the screens use, so validation, version capture and the proposal are the same; the tests compare them. Exchange actions (rounds, links, documents, emails, replies, clarifications, acceptances, extend, stop, Notify all) are not commands: `xwrite` refuses them in a command run, and the platform refuses exchange writes outside a person's click.
+Each propose command replays the click and submit events through `handle`, the same function the screens use, so validation, version capture and the saved changes are the same. Exchange actions (rounds, links, documents, emails, replies, clarifications, acceptances, extend, stop, Notify all) are not commands: `xwrite` refuses them in a command run, and the platform refuses exchange writes outside a person's click.
 
 ## Revision contract
 
-A reviewed code revision of this app keeps: the role keys; the `croselection.awards` output contract (croselection.v1, writer `life.cro-selection`); the calculation rules above; the exchange rules (one exchange call per click, no links or exchange IDs in records); `data-ui-state` and stable `data-action` on every input; every command id with its click parity; and bounded reads. A revision that drops a command says so in the review.
+A reviewed code revision of this app keeps: the role keys; the `croselection.awards` output contract (croselection.v1, writer `life.cro-selection`); the calculation rules above; the exchange rules (one exchange call per click, no links or exchange IDs in records); stable `data-action` on every input; every command id with its click parity; the v2 contract (marker, kit, `records.save`, no own header, banners or review wording); and per-screen, bounded reads. A revision that drops a command says so in the review.

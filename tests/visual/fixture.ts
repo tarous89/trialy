@@ -71,7 +71,9 @@ export async function fixture(){
  app.get('/fixture/app-display',async(req,res)=>res.json(await openApp(f,actor,{workspaceId:w.id,appId:String(req.query.appId),source:'component',route:{path:String(req.query.path??'/')}})));
  app.get('/fixture/app-draft',async(_req,res)=>res.json(await prepareRenderedApp(f,actor,w.id,{requestKey:randomUUID(),content:{name:'Embedded draft',source:"return {html:'<h1>'+(input.route?.path==='/details'?'Draft details':'Embedded draft')+'</h1><a href=\"/details\">Details</a><button data-action=\"inspect\">Inspect page</button>'};",bindings:[]}})));
  app.get('/fixture/calls',(_req,res)=>res.json(calls));
- app.get('/fixture/initial',async(_req,res)=>{const current=(await f.readComponent(actor,w.id,component.id)).component;res.json({screen:'tracker',workspaceId:w.id,component:current,initialOutput:await f.runFrontend(actor,w.id,{componentId:current.id,expectedVersion:current.version})});});
+ // The test runner starts once /fixture/initial answers: it waits until every fixture below is set up.
+ let fixturesReady!:()=>void;const ready=new Promise<void>(r=>{fixturesReady=r;});
+ app.get('/fixture/initial',async(_req,res)=>{await ready;const current=(await f.readComponent(actor,w.id,component.id)).component;res.json({screen:'tracker',workspaceId:w.id,component:current,initialOutput:await f.runFrontend(actor,w.id,{componentId:current.id,expectedVersion:current.version})});});
  app.get('/vivid-catalog',async(_req,res)=>{res.removeHeader('Content-Security-Policy');res.type('html').send(await readFile('resources/tracker-design/assets/vivid-template/catalog.html','utf8'));});
  app.get('/reference',async(_req,res)=>{res.removeHeader('Content-Security-Policy');res.type('html').send(await readFile('resources/tracker-design/assets/approved-theme2-reference.html','utf8'));});
  app.use(session({secret:'synthetic-visual-auth-session-secret-only',resave:false,saveUninitialized:false}));
@@ -86,6 +88,7 @@ export async function fixture(){
  const listPending=WorkspaceFoundation.prototype.pendingAppChanges;
  WorkspaceFoundation.prototype.pendingAppChanges=async function(this:WorkspaceFoundation,...args:Parameters<typeof listPending>){const r=await listPending.apply(this,args);return {...r,changes:r.changes.filter((c:any)=>!fixturePending.includes(c.previewId))};};
  app.post('/fixture/reset-pending',async(_req,res)=>{await db.query("DELETE FROM workspace_previews WHERE change_class<>'other' AND NOT (id=ANY($1::uuid[]))",[fixturePending]);res.json({ok:true});});
+ fixturesReady();
  return {base,component,w,f,actor,close:async()=>{server.closeAllConnections();await new Promise<void>(r=>server.close(()=>r()));await db.close();}};
 }
 
