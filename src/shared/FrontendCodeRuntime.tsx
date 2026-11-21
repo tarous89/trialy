@@ -27,12 +27,16 @@ type Call=(name:string,args:Record<string,unknown>,options?:WorkspaceRequestOpti
  * (never on the device), for two minutes, so reopening an app shows its last screen at once and refreshes it right away.
  */
 let knownFrameUrl='';
+/** 5.1: whether this browser's app frame can run apps itself (null until a frame has said). Memory only. */
+let engineAvailable:boolean|null=null;
 const remembered=new Map<string,{output:any;at:number}>(),REMEMBER_MS=120000;
 /** P5 (4.4): one save key per explicit action. Retrying the same action reuses it, so a save whose response was lost is never made twice. */
 const actionKeys=new WeakMap<object,string>();
 const actionKey=(event:any)=>{let key=actionKeys.get(event);if(!key){key=crypto.randomUUID();actionKeys.set(event,key);}return key;};
 const rememberKey=(c:any)=>c?.id&&c.workspace_id?c.workspace_id+':'+c.id+':'+c.version:null;
-function rememberOutput(c:any,output:any){const key=rememberKey(c);if(!key||!output||output.proposal||output.temporary)return;remembered.delete(key);remembered.set(key,{output,at:Date.now()});while(remembered.size>8)remembered.delete(remembered.keys().next().value!);}
+function rememberOutput(c:any,output:any){const key=rememberKey(c);if(!key||!output||output.proposal||output.temporary)return;remembered.delete(key);
+ // The frame's seeded reads are not remembered: a reopened app gets fresh ones with its first screen.
+ const {browser,verify,...screen}=output;remembered.set(key,{output:screen,at:Date.now()});while(remembered.size>8)remembered.delete(remembered.keys().next().value!);}
 function recall(c:any){const key=rememberKey(c),hit=key?remembered.get(key):undefined;if(!hit)return null;if(Date.now()-hit.at>REMEMBER_MS){remembered.delete(key!);return null;}return hit.output;}
 export function forgetRememberedApps(){remembered.clear();}
 const navigationRead=(event:any)=>event.kind==='open'||/^(tab:|next$|prev$|previous$|filter:|sort:|sort-field:|sort$|search$|query$|overview-next$|overview-previous$|overview-panel$)/.test(event.action??'');
@@ -49,7 +53,7 @@ export function FrontendCodeRuntime({active=true,component,previewId,initialOutp
  useEffect(()=>()=>ux.current?.flush(),[]);
  const frame=useRef<HTMLIFrameElement>(null),output=useRef<any>(null),state=useRef<any>(null),busyRef=useRef(false),channel=useRef(crypto.randomUUID()),live=useRef(true),current=useRef(component);
  const [recordReview,setRecordReview]=useState<any>(null),[undo,setUndo]=useState<{undoId:string;label:string}|null>(null);
- const [detailsOpen,setDetailsOpen]=useState(false),[standard,setStandard]=useState(false),[ready,setReady]=useState(false),[height,setHeight]=useState(620),[adding,setAdding]=useState(component?.resource_kind==='form'),[footer,setFooter]=useState<any>(null);
+ const [detailsOpen,setDetailsOpen]=useState(false),[standard,setStandard]=useState(false),[fill,setFill]=useState(false),[ready,setReady]=useState(false),[height,setHeight]=useState(620),[adding,setAdding]=useState(component?.resource_kind==='form'),[footer,setFooter]=useState<any>(null);
  const [frameUrl,setFrameUrlState]=useState(knownFrameUrl),setFrameUrl=(url:string)=>{if(url)knownFrameUrl=url;setFrameUrlState(url);},[error,setError]=useState(''),[busy,setBusy]=useState(false),[proposal,setProposal]=useState<any>(null);
  const [reviewProposal,setReviewProposal]=useState(false);
  const [loadFailed,setLoadFailed]=useState(false);
@@ -66,6 +70,9 @@ export function FrontendCodeRuntime({active=true,component,previewId,initialOutp
  const localEditsRef=useRef(localEdits);localEditsRef.current=localEdits;
  const checking=useRef(false),eventQueue=useRef<any[]>([]),blocked=useRef(false),saveReceipt=useRef<any>(null),approvedAction=useRef<string|null>(null);
  const navigationReads=useRef(new FrontendReads());
+ // 5.1: the app code the frame has loaded (app id and version), the browser payload last sent, and the frame's width class.
+ const engineLoaded=useRef<string|null>(null),browserSent=useRef<any>(null),viewport=useRef<{width:string;coarse:boolean}|null>(null);
+ const browserRequest=(c:any)=>!previewId&&c&&engineAvailable!==false&&!output.current?.tracker?{browser:{source:engineLoaded.current!==c.id+':'+c.version},...(viewport.current?{viewport:viewport.current}:{})}:{};
  const requests=useRef(new AbortController());
  // Track each foreground waiter, including a click joining an optional prefetch.
  const readFrontend=(request:any,options:WorkspaceRequestOptions={})=>{
@@ -83,9 +90,9 @@ export function FrontendCodeRuntime({active=true,component,previewId,initialOutp
   cancelPrefetch();busyRef.current=true;setBusy(true);
   try{
    const read=await call('read_project_component',{componentId:current.current.id}),next=read.component;
-   const result=await readFrontend({componentId:next.id,expectedVersion:next.version,event:{kind:'open'},...(navigationRef.current?{route:navigationRef.current.route}:{})});
+   const result=await readFrontend({componentId:next.id,expectedVersion:next.version,event:{kind:'open'},...(navigationRef.current?{route:navigationRef.current.route}:{}),...browserRequest(next)});
    if(!live.current||afterSave&&saveReceipt.current!==receipt)return false;
-   current.current=next;output.current=mergeTrackerSnapshot(null,result);state.current=result.state;setStandard(!!result.tracker);setFrameUrl(result.frameUrl);setProposal(result.proposal);setConnectorReviews(result.connectorReviews??[]);setFooter(null);setRecordReview(null);setCustomDirty(false);saveReceipt.current=null;setSavedPhase(null);blocked.current=!!result.proposal;eventQueue.current=[];setPublishedUpdate(false);setConfirmUpdate(false);setReviewProposal(false);setError('');setRetryEvent(null);setLoadFailed(false);setSchemaChanged(false);freshScreen.current=true;send();prefetch(result);onUpdated?.(next);return true;
+   current.current=next;output.current=mergeTrackerSnapshot(null,result);state.current=result.state;setStandard(!!result.tracker);setFill(!!result.tracker||result.runtime==='trialy-frontend-js-v2');setFrameUrl(result.frameUrl);setProposal(result.proposal);setConnectorReviews(result.connectorReviews??[]);setFooter(null);setRecordReview(null);setCustomDirty(false);saveReceipt.current=null;setSavedPhase(null);blocked.current=!!result.proposal;eventQueue.current=[];setPublishedUpdate(false);setConfirmUpdate(false);setReviewProposal(false);setError('');setRetryEvent(null);setLoadFailed(false);setSchemaChanged(false);freshScreen.current=true;send();prefetch(result);onUpdated?.(next);return true;
   }catch(e){if(afterSave)throw e;if(live.current){setConfirmUpdate(false);setSchemaChanged((e as any)?.code==='manifest_stale');if(unavailable(e)){revoke();}else {setLoadFailed(!output.current);setError((e as Error).message||'The latest version could not load. Your work is still here.');}}}
   finally{busyRef.current=false;if(live.current){setBusy(false);if(eventQueue.current.length&&!blocked.current)void run(eventQueue.current.shift());}}
  }
@@ -113,12 +120,12 @@ export function FrontendCodeRuntime({active=true,component,previewId,initialOutp
   }catch{/* Optional prefetch does not replace the view. */}}},150);
  }
  const paintPending=useRef(false),freshScreen=useRef(false);
- const send=()=>{paintPending.current=false;queueMicrotask(()=>{freshScreen.current=false;});if(output.current&&current.current&&!previewId)rememberOutput(current.current,output.current);if(output.current)frame.current?.contentWindow?.postMessage({kind:'trialy.render',channel:channel.current,fresh:freshScreen.current,html:output.current.html,css:output.current.css,controls:output.current.controls,connected:output.current.connected,state:output.current.state,tracker:output.current.tracker,navigationOnly:embedded,appLinks:platformRef.current.enabled,appOrigin:platformRef.current.origin,linkContext:navigationRef.current?.location??parseAppUrl(location.pathname+location.search)??(component?{appId:component.id,workspaceId:component.workspace_id,source:'component'}:null)},'*');};
+ const send=()=>{paintPending.current=false;const browser=output.current&&browserSent.current!==output.current?output.current.browser:undefined;if(output.current)browserSent.current=output.current;queueMicrotask(()=>{freshScreen.current=false;});if(output.current&&current.current&&!previewId)rememberOutput(current.current,output.current);if(output.current)frame.current?.contentWindow?.postMessage({kind:'trialy.render',channel:channel.current,fresh:freshScreen.current,html:output.current.html,css:output.current.css,controls:output.current.controls,connected:output.current.connected,state:output.current.state,tracker:output.current.tracker,navigationOnly:embedded,fill:output.current.runtime==='trialy-frontend-js-v2',...(browser?{browser,verify:output.current.verify}:{}),appLinks:platformRef.current.enabled,appOrigin:platformRef.current.origin,linkContext:navigationRef.current?.location??parseAppUrl(location.pathname+location.search)??(component?{appId:component.id,workspaceId:component.workspace_id,source:'component'}:null)},'*');};
  useEffect(()=>{if(ready)send();},[platform.enabled,platform.origin]);
  async function run(event:any={kind:'open'}){
   if(event.action==='tracker:layout'){onLayout?.();return;}if(event.action==='tracker:access'){onAccess?.();return;}
   if(blocked.current)return;if(busyRef.current){if(/^tab:/.test(event.action||''))eventQueue.current=eventQueue.current.filter(e=>!/^tab:/.test(e.action||''));if(eventQueue.current.length<50)eventQueue.current.push(event);return;}cancelPrefetch();busyRef.current=true;setBusy(true);onBusyChange?.(true);setError('');if(event.action==='bound-batch')frame.current?.contentWindow?.postMessage({kind:'trialy.save-start',channel:channel.current,cells:true},'*');
-  const runStarted=performance.now();
+  const runStarted=performance.now();let serverFailed=false;
   try{
    const c=current.current,explicitApproval=approvedAction.current===event.action;approvedAction.current=null;
    if(['tracker:create'].includes(event.action)||/^tracker:(duplicate|delete):/.test(event.action)){
@@ -150,7 +157,7 @@ export function FrontendCodeRuntime({active=true,component,previewId,initialOutp
     const merged=mergeTrackerSnapshot(output.current,next);output.current=merged;state.current=merged.state;send();prefetch(merged);
     return;
    }
-   const request:any={...(previewId?{previewId}:viewRequest(c)),...(!previewId&&['click','change','submit'].includes(event.kind)&&!navigationRead(event)?{requestKey:actionKey(event)}:{}),state:state.current,event,...(navigationRef.current?{route:navigationRef.current.route}:{})};
+   const request:any={...(previewId?{previewId}:viewRequest(c)),...browserRequest(c),...(!previewId&&['click','change','submit'].includes(event.kind)&&!navigationRead(event)?{requestKey:actionKey(event)}:{}),state:state.current,event,...(navigationRef.current?{route:navigationRef.current.route}:{})};
    let result;
    try{result=await readFrontend(request);}catch(e){
     // Renew only navigation reads. Never replay a write or discard a local draft.
@@ -169,11 +176,13 @@ export function FrontendCodeRuntime({active=true,component,previewId,initialOutp
    // A proposal has not changed persisted data yet. Keep the user's submitted
    // fields visible instead of rendering the pre-save database values over them.
    if(result.proposal){setProposal(result.proposal);setReviewProposal(true);blocked.current=true;eventQueue.current=[];return;}
-   result=mergeTrackerSnapshot(output.current,result);output.current=result;state.current=result.state;setStandard(!!result.tracker);setFrameUrl(result.frameUrl);setProposal(result.proposal);setConnectorReviews(result.connectorReviews??[]);setCustomDirty(false);setLoadFailed(false);setSchemaChanged(false);
+   if(result.browser&&request.event?.kind==='open')result={...result,verify:{state:request.state,event:request.event}};
+   if(result.notice)chrome.notify(result.notice);
+   result=mergeTrackerSnapshot(output.current,result);output.current=result;state.current=result.state;setStandard(!!result.tracker);setFill(!!result.tracker||result.runtime==='trialy-frontend-js-v2');setFrameUrl(result.frameUrl);setProposal(result.proposal);setConnectorReviews(result.connectorReviews??[]);setCustomDirty(false);setLoadFailed(false);setSchemaChanged(false);
    if(result.proposal){blocked.current=true;eventQueue.current=[];}
    // P5 (4.4): while more of the person's actions are waiting, an earlier screen is not painted: it would replace what they typed since, and the next action would read and save the old value. The latest action's screen is shown.
    if(!eventQueue.current.length||result.tracker||result.proposal)send();else paintPending.current=true;prefetch(result);
-  }catch(e){if(live.current){setSchemaChanged((e as any)?.code==='manifest_stale');if(navigationRead(event)){
+  }catch(e){serverFailed=true;if(live.current){setSchemaChanged((e as any)?.code==='manifest_stale');if(navigationRead(event)){
    if(unavailable(e)){clearOutput();setLoadFailed(true);onUnavailable?.('No app is available');}
    else if(!output.current&&current.current&&(e as any)?.code!=='runtime_busy')await loadPublished();
    else {setLoadFailed(!output.current);if(['app_view_expired','component_changed','app_view_incompatible'].includes((e as any)?.code))setPublishedUpdate(true);else {actionError(e);setRetryEvent(event);}}
@@ -181,7 +190,7 @@ export function FrontendCodeRuntime({active=true,component,previewId,initialOutp
    frame.current?.contentWindow?.postMessage({kind:'trialy.save-failed',channel:channel.current,message:(e as Error).message||'Not saved'},'*');
    setError((e as any)?.code==='stale_value'?'Someone changed this value first. The newer value is shown; your edit was not saved.':((e as Error).message||'Your edit could not be saved. The earlier value is back.'));
    if((e as any)?.code==='stale_value'||(e as any)?.code==='stale_version')void run({kind:'open'});
-  }else{actionError(e);const code=(e as any)?.code,status=(e as any)?.status;if(current.current&&['click','change','submit'].includes(event.kind)&&(!status||status>=500||code==='temporary'))setRetryEvent(event);}}}finally{busyRef.current=false;onBusyChange?.(false);if(live.current){setBusy(false);frame.current?.contentWindow?.postMessage({kind:'trialy.save-idle',channel:channel.current,blocked:!!saveReceipt.current||!!proposal},'*');if(eventQueue.current.length&&!blocked.current)void run(eventQueue.current.shift());else if(paintPending.current)send();}}
+  }else{actionError(e);const code=(e as any)?.code,status=(e as any)?.status;if(current.current&&['click','change','submit'].includes(event.kind)&&(!status||status>=500||code==='temporary'))setRetryEvent(event);}}}finally{busyRef.current=false;onBusyChange?.(false);if(live.current){setBusy(false);frame.current?.contentWindow?.postMessage({kind:'trialy.save-idle',channel:channel.current,blocked:!!saveReceipt.current||!!proposal},'*');if(!output.current?.tracker)frame.current?.contentWindow?.postMessage({kind:'trialy.server-idle',channel:channel.current,failed:serverFailed},'*');if(eventQueue.current.length&&!blocked.current)void run(eventQueue.current.shift());else if(paintPending.current)send();}}
  }
  /** G8 (4.6): the standard tracker offers Undo for the last add, duplicate or delete, while the app stays open. */
  async function undoLast(){
@@ -213,7 +222,7 @@ export function FrontendCodeRuntime({active=true,component,previewId,initialOutp
   try{
    if(p.body?.kind==='save_component'||receipt.reloadLatest){if(!await loadPublished(true))return false;}
    else{
-    receipt.reloadRequest??={...viewRequest(),...(navigationRef.current?{route:navigationRef.current.route}:{}),state:{...state.current,settings:false,layoutDraft:null,detail:null,newRow:null},event:{kind:'open'}};
+    receipt.reloadRequest??={...viewRequest(),...browserRequest(current.current),...(navigationRef.current?{route:navigationRef.current.route}:{}),state:{...state.current,settings:false,layoutDraft:null,detail:null,newRow:null},event:{kind:'open'}};
     let result;
     try{result=await readFrontend(receipt.reloadRequest);}catch(e){
      // Renew an expired read lease without replaying the acknowledged action or
@@ -233,14 +242,17 @@ export function FrontendCodeRuntime({active=true,component,previewId,initialOutp
   setSavedPhase(null);setAdding(false);blocked.current=false;saveReceipt.current=null;frame.current?.contentWindow?.postMessage({kind:'trialy.save-idle',channel:channel.current,blocked:false},'*');return true;
  }
  async function retrySaved(latest=false){if(busyRef.current)return;if(latest&&saveReceipt.current?.saved)saveReceipt.current.reloadLatest=true;busyRef.current=true;setBusy(true);try{await finishSave();}catch(e){actionError(e);}finally{busyRef.current=false;if(live.current)setBusy(false);}}
- useEffect(()=>{live.current=true;if(requests.current.signal.aborted)requests.current=new AbortController();if(initialOutput){output.current=mergeTrackerSnapshot(null,initialOutput);state.current=initialOutput.state;setStandard(!!initialOutput.tracker);setFrameUrl(initialOutput.frameUrl);setProposal(initialOutput.proposal);onBusyChange?.(false);prefetch(output.current);}else{const last=!previewId?recall(component):null;if(last){output.current=last;state.current=last.state;setStandard(!!last.tracker);setFrameUrl(last.frameUrl);}void run();}return()=>{live.current=false;cancelPrefetch();requests.current.abort();};},[]);
+ useEffect(()=>{live.current=true;if(requests.current.signal.aborted)requests.current=new AbortController();if(initialOutput){output.current=mergeTrackerSnapshot(null,initialOutput);state.current=initialOutput.state;setStandard(!!initialOutput.tracker);setFill(!!initialOutput.tracker||initialOutput.runtime==='trialy-frontend-js-v2');setFrameUrl(initialOutput.frameUrl);setProposal(initialOutput.proposal);onBusyChange?.(false);prefetch(output.current);}else{const last=!previewId?recall(component):null;if(last){output.current=last;state.current=last.state;setStandard(!!last.tracker);setFill(!!last.tracker||last.runtime==='trialy-frontend-js-v2');setFrameUrl(last.frameUrl);}void run();}return()=>{live.current=false;cancelPrefetch();requests.current.abort();};},[]);
  const [integration,setIntegration]=useState<{role:string}|null>(null);
  const [upload,setUpload]=useState<{context:string}|null>(null);
  const routeKey=JSON.stringify([navigation?.route,navigation?.reset]),lastRoute=useRef(routeKey),lastReset=useRef(navigation?.reset);
  useEffect(()=>{if(lastRoute.current!==routeKey){lastRoute.current=routeKey;if(lastReset.current!==navigation?.reset){lastReset.current=navigation?.reset;state.current=null;blocked.current=false;setProposal(null);setFooter(null);setRecordReview(null);}setCustomDirty(false);void run();}},[routeKey]);
  useEffect(()=>{navigation?.setDirty(localEdits);return()=>navigation?.setDirty(false);},[localEdits,navigation?.setDirty]);
  useEffect(()=>{if(component&&component!==current.current){current.current=component;void run();}},[component]);
- useEffect(()=>{const receive=(e:MessageEvent)=>{if(e.source!==frame.current?.contentWindow)return;if(e.data?.kind==='trialy.ready'){setReady(true);send();}
+ useEffect(()=>{const receive=(e:MessageEvent)=>{if(e.source!==frame.current?.contentWindow)return;if(e.data?.kind==='trialy.ready'){browserSent.current=null;engineLoaded.current=null;setReady(true);send();}
+  // 5.1: the frame says whether it can run the app itself; a host that refuses WebAssembly stays on server mode (D21).
+  else if(e.data?.kind==='trialy.engine'){const c=current.current;if(e.data.status==='unavailable')engineAvailable=false;else if(e.data.status==='loaded'){engineAvailable=true;if(c)engineLoaded.current=c.id+':'+c.version;}else if(e.data.status==='mismatch')engineLoaded.current=null;}
+  else if(e.data?.kind==='trialy.viewport'&&['phone','panel','wide'].includes(e.data.width))viewport.current={width:e.data.width,coarse:!!e.data.coarse};
   else if(e.data.channel===channel.current){
    if(saveReceipt.current?.saved&&!['trialy.rendered','trialy.resize'].includes(e.data.kind))return;
    // U4: platform:access opens the app's own Access panel, the same as the Access item in the app's settings.
@@ -252,16 +264,26 @@ export function FrontendCodeRuntime({active=true,component,previewId,initialOutp
    else if(e.data.kind==='trialy.dirty'){if(e.data.dirty)navigationRef.current?.setDirty(true);setCustomDirty(!!e.data.dirty);}
    else if(e.data.kind==='trialy.approve'&&output.current?.tracker&&['bound-batch','tracker:create','save-layout'].includes(e.data.action))approvedAction.current=e.data.action;
    else if(e.data.kind==='trialy.notice')setError(e.data.message);
+   // 5.1: a screen the frame made itself. The host keeps it as the current screen; no request was made.
+   else if(e.data.kind==='trialy.local'&&output.current&&!output.current.tracker){const next={...output.current,html:String(e.data.html??''),css:String(e.data.css??''),state:e.data.state};output.current=next;browserSent.current=next;state.current=e.data.state;if(current.current)rememberOutput(current.current,next);if(typeof e.data.ms==='number')ux.current?.record('interaction',e.data.ms,'browser');
+    if(e.data.notice&&['info','success','error'].includes(e.data.notice.kind))chrome.notify({kind:e.data.notice.kind,message:String(e.data.notice.message).slice(0,300)});
+    if('context' in e.data&&current.current&&JSON.stringify(e.data.context)!==JSON.stringify(output.current.browser?.input?.context??null)){const c=current.current;void call('set_app_context',{request:{componentId:c.id,context:e.data.context}},{background:true}).catch(()=>{});if(output.current.browser?.input)output.current.browser.input.context=e.data.context;}}
+   // 5.1: reads a screen made in the frame still needs, filled in one request without running the app.
+   else if(e.data.kind==='trialy.reads'&&Array.isArray(e.data.reads)&&current.current&&output.current&&!output.current.tracker){const c=current.current,id=e.data.id,reads=e.data.reads.slice(0,12).map((r:any)=>({name:String(r.name),input:r.input}));
+    void call('read_app_data',{request:{componentId:c.id,expectedVersion:c.version,...(output.current.viewId?{viewId:output.current.viewId}:{}),reads}},{background:true}).then((r:any)=>{if(!live.current)return;if(r?.version!==c.version){setPublishedUpdate(true);throw Error('version');}
+     frame.current?.contentWindow?.postMessage({kind:'trialy.reads-result',channel:channel.current,id,results:reads.map((x:any,i:number)=>r.results[i]?.ok?{...x,result:r.results[i].value}:{...x,error:r.results[i]?.error?.message??'Capability unavailable'})},'*');})
+     .catch(()=>{if(live.current)frame.current?.contentWindow?.postMessage({kind:'trialy.reads-result',channel:channel.current,id,failed:true},'*');});}
    else if(e.data.kind==='trialy.rendered'){const now=performance.now();if(opened.current!==null){ux.current?.record('open',now-opened.current);opened.current=null;}else if(interaction.current!==null)ux.current?.record('interaction',now-interaction.current);interaction.current=null;onRendered?.();}
    else if(e.data.kind==='trialy.footer')setFooter(e.data.footer);
    else if(e.data.kind==='trialy.state'){const old=state.current,next=e.data.state;state.current=next;if(old?.tab!==next?.tab||old?.settings!==next?.settings)setViewRevision(n=>n+1);setDetailsOpen(!!next?.detail);if(output.current&&(old?.tab!==next?.tab||JSON.stringify(old?.offsets)!==JSON.stringify(next?.offsets)||JSON.stringify(old?.filters)!==JSON.stringify(next?.filters))){cancelPrefetch();prefetch({...output.current,state:next});}}
-   else if(e.data.kind==='trialy.resize'&&!output.current?.tracker&&Number.isFinite(e.data.height))setHeight(Math.max(200,Math.min(20000,e.data.height)));
+   else if(e.data.kind==='trialy.resize'&&!output.current?.tracker&&output.current?.runtime!=='trialy-frontend-js-v2'&&Number.isFinite(e.data.height))setHeight(Math.max(200,Math.min(20000,e.data.height)));
    else if(e.data.kind==='trialy.event'&&!proposal){state.current=e.data.state??state.current;interaction.current=performance.now();void run(e.data.event);}
   }
  };window.addEventListener('message',receive);return()=>window.removeEventListener('message',receive);},[proposal]);
  useEffect(()=>{if(!detailsOpen)return;const previous=document.body.style.overflow;document.body.style.overflow='hidden';return()=>{document.body.style.overflow=previous;};},[detailsOpen]);
  useEffect(()=>{const banner=updateBanner.current,workspace=banner?.closest<HTMLElement>('.ty-workspace');if(!banner||!workspace)return;const resize=()=>{workspace.style.setProperty('--ty-update-space',Math.ceil(banner.getBoundingClientRect().height+16)+'px');if(standard&&frame.current)setHeight(Math.max(200,window.innerHeight-frame.current.getBoundingClientRect().top));};resize();const observer=new ResizeObserver(resize);observer.observe(banner);return()=>{observer.disconnect();workspace.style.removeProperty('--ty-update-space');};},[publishedUpdate,standard]);
- useEffect(()=>{if(!standard||!frame.current)return;const size=()=>{const top=frame.current?.getBoundingClientRect().top??72,workspace=frame.current?.closest<HTMLElement>('.ty-workspace'),review=workspace?.querySelector<HTMLElement>('.ty-preview-approval:not([hidden] *)'),bottom=review?review.getBoundingClientRect().top:window.innerHeight;setHeight(Math.max(200,bottom-top));};size();window.addEventListener('resize',size);const observer=new ResizeObserver(size);observer.observe(document.documentElement);return()=>{window.removeEventListener('resize',size);observer.disconnect();};},[standard,frameUrl,ready,adding,publishedUpdate,savedPhase]);
+ // P9 (5.4): standard trackers and v2 apps fill the space below the header and scroll inside the frame.
+ useEffect(()=>{if(!fill||!frame.current)return;const size=()=>{const top=frame.current?.getBoundingClientRect().top??72,workspace=frame.current?.closest<HTMLElement>('.ty-workspace'),review=workspace?.querySelector<HTMLElement>('.ty-preview-approval:not([hidden] *)'),bottom=review?review.getBoundingClientRect().top:window.innerHeight;setHeight(Math.max(200,bottom-top));};size();window.addEventListener('resize',size);const observer=new ResizeObserver(size);observer.observe(document.documentElement);return()=>{window.removeEventListener('resize',size);observer.disconnect();};},[fill,frameUrl,ready,adding,publishedUpdate,savedPhase]);
  // B1: only time the user can see counts towards a slow load, so a background tab no longer ends in "Retry loading".
  useEffect(()=>{if(!frameUrl||ready)return;let timer:ReturnType<typeof setTimeout>|undefined;const arm=()=>{clearTimeout(timer);if(document.visibilityState!=='hidden')timer=setTimeout(()=>setLoadFailed(true),8000);};arm();document.addEventListener('visibilitychange',arm);return()=>{clearTimeout(timer);document.removeEventListener('visibilitychange',arm);};},[frameUrl,ready]);
  // G2: the app's name lives in the platform header.

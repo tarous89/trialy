@@ -4,7 +4,7 @@
 
 ## Platform contract update — 1 November 2026
 
-All candidates use the deployed 0.2.39 app access/automation contract and [living authoring guidance](../../../templates/TEMPLATE_AUTHORING.md). Projects show apps by default with optional expandable supported sections. Automations are app-linked definitions managed in the platform, using one shared ChatGPT research connection and separate TrialAgents deterministic/email actions. Optional metadata/setup failures never block an app. The [shared build contract](DESIGN_AND_BUILD_CONTRACT.md) supersedes older per-app-task or worker-limitation wording in recipes; those recipes describe business intent, not host task architecture. Use the [catalog contract](../../TEMPLATE_CATALOG.md) and actual package/approval state for current availability.
+All candidates use the deployed 0.2.39 app access/automation contract and [living authoring guidance](../../../templates/TEMPLATE_AUTHORING.md). Projects show apps by default with optional expandable supported sections. Automations are app-linked definitions managed in the platform, using one shared ChatGPT research connection and separate TrialAgents deterministic/email actions. Optional metadata/setup failures never block an app. The [shared build contract](../../archive/guidance-2026-11/DESIGN_AND_BUILD_CONTRACT.md) supersedes older per-app-task or worker-limitation wording in recipes; those recipes describe business intent, not host task architecture. Use the [catalog contract](../../TEMPLATE_CATALOG.md) and actual package/approval state for current availability.
 
 ## Contents and audience
 
@@ -14,7 +14,7 @@ All candidates use the deployed 0.2.39 app access/automation contract and [livin
 | Sponsor clinical operations and study management | [Clinical operations](CLINICAL_OPERATIONS.md): RFP Management; CRO Oversight; Site Feasibility Management; Investigator CRM; Trial Regulatory Submission; Trial Monitoring & Pharmacovigilance | 6 |
 | CRO sales, bids, delivery, feasibility and resourcing | [CROs](CROS.md): RFP Management; Resource Planning; PI Network Management; Site Feasibility Management; Sponsor Updates; Client Signals & CRM | 6 |
 | Nonclinical laboratories, academic science and research management | [Research teams](RESEARCH_TEAMS.md): Experiment Notebook; Inventory Management; **Literature Radar**; **Grant Pipeline**; Publication Management | 5 |
-| Universal visual, data, AI and acceptance requirements | **[Shared design and build contract](DESIGN_AND_BUILD_CONTRACT.md)** | All 23 |
+| Universal visual, data, AI and acceptance requirements | **[Shared design and build contract](../../archive/guidance-2026-11/DESIGN_AND_BUILD_CONTRACT.md)** | All 23 |
 
 **Naming decisions:** “Grant Management” → **Grant Pipeline**; “Publication Radar” → **Literature Radar**. **Protocol Library is not a standalone shortlisted application** (protocol references may appear *within* Experiment Notebook). The total stays 23.
 
@@ -37,8 +37,8 @@ The original, separate [11-function showcase plan](../TEMPLATE_SHOWCASE_PLAN.md)
 ## Current platform context (as inspected)
 
 - [Dynamic app templates](../DYNAMIC_APP_TEMPLATES.md): versioned publisher-owned JSON templates in `templates/apps`, `list_app_templates` / `read_app_template` / `prepare_app_from_template`, reusable Vivid tracker or bounded `frontend-js`. New same-engine templates can be deployed server-side without changing plugin package.
-- [App design quality](../APP_DESIGN_QUALITY.md): `read_app_design` exposes Inter-first app defaults, semantic palettes and desktop/mobile readability checks. Requested theme changes may override style; never modify the authoritative Vivid stylesheet as a side effect of scoping.
-- [Vivid reuse contract](../../../resources/tracker-design/references/TEMPLATE_REUSE.md): headings, tabs, stat cards, editable tables, details drawer, forms, layout/access and semantic pills. Honor stable table fields and source provenance.
+- [App design quality](../../archive/guidance-2026-11/APP_DESIGN_QUALITY.md): `read_app_design` exposes Inter-first app defaults, semantic palettes and desktop/mobile readability checks. Requested theme changes may override style; never modify the authoritative Vivid stylesheet as a side effect of scoping.
+- [Vivid reuse contract](../../archive/guidance-2026-11/TEMPLATE_REUSE.md): headings, tabs, stat cards, editable tables, details drawer, forms, layout/access and semantic pills. Honor stable table fields and source provenance.
 - [Write authorization](../../WRITE_AUTHORIZATION.md) and [Execution](../../EXECUTION.md) govern saves and schedules.
 - [Application scope](../APP_PLATFORM_SCOPE.md): generic HTTPS connector exists, but workers cannot invoke it without a future explicit worker grant, and isolated functions have no network or LLM access.
 

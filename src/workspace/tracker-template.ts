@@ -20,7 +20,7 @@ export const trackerSetup=z.object({
  scope:z.enum(['workspace','project']).default('workspace'),
  tabs:z.array(z.object({accessId:key.optional(),name:z.string().min(1).max(60),icon:iconSchema.optional(),iconPath:z.string().regex(/^[MmLlHhVvCcSsQqTtAaZz0-9., +\-]+$/).max(2000).optional(),typeId:id,visible:z.boolean().default(true),filterMode:z.enum(['auto','custom','none']).optional(),filters:z.array(key).max(8).default([]),example:z.record(key,z.union([z.string().max(500),z.number(),z.boolean(),z.array(z.union([z.string().max(500),z.number()])).max(100),z.null()])).optional(),columns:z.array(z.object({field:key,label:z.string().min(1).max(100).optional(),visible:z.boolean().optional(),editable:z.boolean().default(true),display:columnDisplay.optional()}).strict()).min(1).max(100)}).strict()).min(1).max(8),
  example:z.record(key,z.union([z.string().max(500),z.number(),z.boolean(),z.array(z.union([z.string().max(500),z.number()])).max(100),z.null()])).optional(),
- showExample:z.boolean().default(true),omitSource:z.boolean().default(false)
+ showExample:z.boolean().default(false),omitSource:z.boolean().default(false)
 }).strict();
 export async function trackerOperation(f:WorkspaceFoundation,a:Actor,w:string,input:unknown){
  const v=trackerSetup.parse(input);if(new Set(v.tabs.filter(t=>t.accessId).map(t=>t.accessId)).size!==v.tabs.filter(t=>t.accessId).length)fail(400,'duplicate_section','Use unique accessId values');if(v.scope==='project'&&!v.projectId)fail(400,'project_required','Project-scoped data requires a project');

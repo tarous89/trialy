@@ -1,40 +1,26 @@
 import assert from 'node:assert/strict';
 import {test} from 'node:test';
-import {APP_SHELL_LIBRARY_VERSION,appShells,sharedComponents,shellSelection,appShellCss} from '../src/shared/app-shells.js';
-import {appDesignGuide,appDesignCss} from '../src/shared/app-design.js';
+import {appShellCss} from '../src/shared/app-shells.js';
+import {appDesignGuide,appDesignCss,appRuntimeCss} from '../src/shared/app-design.js';
+import {KIT_COMPONENTS,KIT_SOURCE,KIT_VERSION,kitCss,kitTokens} from '../src/shared/app-kit.js';
+import {GUIDE_VERSION} from '../src/workspace/guide.js';
 
-test('approved shells are optional distinct design recipes and not app templates',()=>{
- assert.equal(APP_SHELL_LIBRARY_VERSION,'1.0.0');
- assert.deepEqual(appShells.map(shell=>shell.id),['analytics','portfolio','records','decision']);
- assert.equal(new Set(appShells.map(shell=>shell.id)).size,4);
- for(const shell of appShells){
-  assert.ok(shell.whenToUse.length>20);
-  assert.ok(shell.whenNotToUse.length>20);
-  assert.ok(shell.recommendedSections.includes('Settings'));
-  assert.match(shell.example,/ta-shell/);
-  assert.ok(shell.components.length>=4);
- }
- assert.match(shellSelection.precedence,/template/i);
- assert.match(shellSelection.mandatory,/permissions/i);
-});
-test('the component vocabulary includes structured settings and interactive charts',()=>{
- const ids:string[]=sharedComponents.map(component=>component.id);
- assert.equal(new Set(ids).size,ids.length);
- for(const required of ['chart-card','settings-page','filter-toolbar','data-table','record-details','status-pill','evidence-checklist']){
-  assert.ok(ids.includes(required),required);
- }
- assert.match(sharedComponents.find(c=>c.id==='settings-page')?.usage??'',/full structured/i);
- assert.match(sharedComponents.find(c=>c.id==='chart-card')?.usage??'',/keyboard/i);
-});
-test('the design kit advertises four shells and responsive opt-in spacing',()=>{
+/* G10, G12, D38 (5.5, 5.6): one general style. read_app_design returns the kit (tokens, components, CSS) under the one
+ * guide version; there are no shells, required sections, palettes or pixel rules left in it. */
+test('read_app_design returns the kit under the guide version, with no shells or required sections',()=>{
  const design=appDesignGuide();
- assert.equal(design.version,'trialagents.design.v2');
- assert.equal(design.shellLibraryVersion,'1.0.0');
- assert.equal(design.shells.length,4);
- assert.equal(design.sharedComponents.length,sharedComponents.length);
- assert.match(design.css,/\.ta-card-grid/);
- assert.match(design.css,/\.ta-settings/);
- assert.match(design.css,/@media\(max-width:620px\)/);
- assert.match(appShellCss,/gap:var\(--ta-gap\)/);
- assert.match(appDesignCss,/@layer trialagents-defaults/);
+ assert.equal(design.version,GUIDE_VERSION);assert.equal(design.kit,KIT_VERSION);
+ assert.deepEqual(design.tokens,kitTokens);assert.equal(design.css,kitCss());
+ assert.deepEqual(design.components.map(c=>c.id),KIT_COMPONENTS.map(c=>c.id));
+ const text=JSON.stringify(design);
+ for(const old of ['shells','sharedComponents','businessAppDefaults','palettes','typography','Settings: working'])assert.ok(!text.includes(old),old);
+ assert.match(design.rules,/never draw a header, message bar, footer or sign-in form/);
+});
+test('every kit component names a helper that exists in the kit source',()=>{
+ for(const c of KIT_COMPONENTS)for(const helper of c.helper.split(' / '))assert.match(KIT_SOURCE,new RegExp('\\b'+helper.replace('kit.','')+'[=:]|,'+helper.replace('kit.','')+'[,}]'),helper);
+ assert.match(kitCss(),/@layer trialagents-kit/);assert.match(kitCss(),/@container \(max-width:720px\)/,'responsive by the app’s own width');
+ assert.doesNotMatch(kitCss(),/:hover/,'nothing depends on hover');
+});
+test('v1 apps keep their earlier low-priority defaults',()=>{
+ assert.match(appDesignCss,/@layer trialagents-defaults/);assert.ok(appRuntimeCss('<div class="ta-card">').endsWith(appShellCss));assert.ok(!appRuntimeCss('<p>').includes(appShellCss));
 });

@@ -70,10 +70,11 @@ test('current templates expose useful documentation and optional task contracts 
   assert.ok(['optional','none'].includes(t.documentation!.tasks.mode));assert.equal(t.guidance.tool,catalog.guidance.tool);
  }
  assert.equal((await appTemplates.read({templateId:'vivid.tracker',version:'1.1.0'})).version,'1.1.0');
- for(const resource of ['usage','authoring']){
+ // 5.6: guide and reference; the old names usage and authoring are aliases of the same two files.
+ for(const resource of ['guide','reference','usage','authoring']){
   let offset:number|null=0,text='',digest='';
   do{const page=await readTemplateGuidance({resource,offset});assert.ok(page.text.length<=12000);assert.equal(page.version,catalog.guidance.version);if(digest)assert.equal(page.sha256,digest);digest=page.sha256;text+=page.text;offset=page.nextOffset;}while(offset!==null);
-  const file=resource==='usage'?'TEMPLATE_USAGE.md':'TEMPLATE_AUTHORING.md';assert.equal(text,await readFile('templates/'+file,'utf8'));assert.match(text,new RegExp('^Version: '+catalog.guidance.version.replaceAll('.', '\\.')+'$','m'));
+  const file=['usage','reference'].includes(resource)?'APP_REFERENCE.md':'APP_GUIDE.md';assert.equal(text,await readFile('templates/'+file,'utf8'));assert.match(text,new RegExp('^Version: '+catalog.guidance.version.replaceAll('.', '\\.')+'$','m'));
  }
  await assert.rejects(readTemplateGuidance({resource:'../../secret'}));await assert.rejects(readTemplateGuidance({offset:999999}));
 });

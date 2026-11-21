@@ -1,6 +1,7 @@
 import {frameLinkTarget} from './app-links.js';
 import {SNAPSHOT_TTL} from './tracker-cache.js';
 import {trackerRenderer} from '../workspace/standard-tracker.js';
+import {FRAME_ENGINE_SCRIPT,frameEngineWasmBase64,sha256Base64} from './frame-engine.js';
 // Only the shipped renderer and this trusted bridge run in the frame. Custom code stays in QuickJS.
 export const FRAME_SCRIPT=String.raw`(()=>{'use strict';
  let navigationOnly=false,appLinks=false,appOrigin='',linkContext=null;
@@ -64,7 +65,7 @@ export const FRAME_SCRIPT=String.raw`(()=>{'use strict';
   slot.replaceChildren(button,editor);
  }
  const tags=new Set('div span p h1 h2 h3 h4 h5 h6 section article header footer main nav aside ul ol li dl dt dd table thead tbody tfoot tr th td caption colgroup col form label input textarea select option optgroup button fieldset legend output progress meter details summary br hr pre code blockquote strong em b i u s small sub sup a img svg g path rect circle ellipse line polyline polygon text tspan defs lineargradient radialgradient stop clippath title desc'.split(' '));
- const attrs=new Set('class id style title role tabindex name value placeholder disabled readonly required checked selected multiple min max step minlength maxlength rows cols colspan rowspan scope for width height alt viewbox d x y x1 y1 x2 y2 cx cy r rx ry points fill stroke stroke-width stroke-linecap stroke-linejoin opacity transform xmlns offset stop-color stop-opacity preserveaspectratio data-action data-trialy-integration data-trialy-open data-trialy-document data-trialy-example data-trialy-value data-trialy-slot data-ui-state data-reorder data-resize-column data-resize-row draggable inert hidden'.split(' '));
+ const attrs=new Set('class id style title role tabindex name value placeholder disabled readonly required checked selected multiple min max step minlength maxlength rows cols colspan rowspan scope for width height alt viewbox d x y x1 y1 x2 y2 cx cy r rx ry points fill stroke stroke-width stroke-linecap stroke-linejoin opacity transform xmlns offset stop-color stop-opacity preserveaspectratio data-action data-trialy-integration data-trialy-open data-trialy-document data-trialy-example data-trialy-value data-trialy-slot data-ui-state data-drag data-drop data-drop-action data-label data-reorder data-resize-column data-resize-row draggable inert hidden'.split(' '));
  const inputTypes=new Set('text number date datetime-local month week time email tel url checkbox radio range color hidden button submit reset'.split(' '));
  function clean(html){const template=document.createElement('template');template.innerHTML=html;
   function walk(parent){for(const node of Array.from(parent.childNodes)){
@@ -162,6 +163,78 @@ export const FRAME_SCRIPT=String.raw`(()=>{'use strict';
    return true;
   }catch{return false;}
  }
+ // P4, P2, P5 (5.1, 5.3): the app also runs here. The engine starts when the first screen of a browser-capable app
+ // arrives; until it is ready, and for anything with an outside effect, events go to the server as before.
+ const Engine=window.TrialyEngine;let engineState='off',engineReady=null,browserApp=null,store=null,styles=null,localInput={},serverBusy=false,localHeld=[],optimistic=null,readSeq=0,eventSeq=0,localOff=false;
+ const pendingReads=new Map();let viewportClass='',coarse=false;
+ function startEngine(){
+  if(engineReady)return engineReady;const binary=document.getElementById('trialy-engine-binary');
+  if(!Engine||!binary){engineState='missing';host.postMessage({kind:'trialy.engine',status:'unavailable',reason:'missing'},'*');return engineReady=Promise.resolve(null);}
+  engineState='starting';
+  return engineReady=Engine.start(binary.textContent).then(api=>{engineState='ready';binary.remove();return api;},e=>{engineState='unavailable';host.postMessage({kind:'trialy.engine',status:'unavailable',reason:String(e&&e.message||'failed').slice(0,40)},'*');return null;});
+ }
+ const runtimeCss=html=>styles?styles.base+(styles.shell&&/\bta-[a-z-]+/.test(html)?styles.shell:''):'';
+ function applyBrowser(b,v){
+  store??=Engine.createStore();store.seed(b.reads,!!b.reset);styles=b.styles||styles;
+  for(const k of Object.keys(localInput))delete localInput[k];Object.assign(localInput,b.input||{});if(b.version==='v2'&&viewportClass)localInput.viewport={width:viewportClass,coarse};
+  if(browserApp&&browserApp.digest!==b.digest&&!b.source){try{browserApp.app.dispose();}catch{}browserApp=null;}
+  const verify=v.verify&&v.verify.event&&v.verify.event.kind==='open'?{state:v.verify.state,event:v.verify.event,html:v.html,state2:JSON.stringify(v.state??null)}:null;
+  if(b.source&&(!browserApp||browserApp.digest!==b.digest)){const code=b.source,digest=b.digest,version=b.version;
+   startEngine().then(api=>{if(!api)return;setTimeout(()=>{try{
+    if(browserApp){try{browserApp.app.dispose();}catch{}}const app=api.load(code);browserApp={digest,version,app,run:Engine.createLocalApp({app,version,store,input:localInput})};localOff=false;
+    // The first screen came from the server: made again here, it must be identical, or this view stays on server mode.
+    if(verify){const r=browserApp.run.run(verify.state,verify.event);if(r.kind==='painted'&&(r.output.html!==verify.html||JSON.stringify(r.output.state)!==verify.state2)){localOff=true;host.postMessage({kind:'trialy.engine',status:'mismatch',digest},'*');return;}}
+    host.postMessage({kind:'trialy.engine',status:'loaded',digest,version},'*');warm();
+   }catch(e){browserApp=null;host.postMessage({kind:'trialy.engine',status:'unavailable',reason:'load'},'*');}},0);});
+  }else if(browserApp)setTimeout(warm,0);
+ }
+ /** After a screen is shown, the screens it links to are made once in the background; reads they lack come in one request. */
+ let warmed='';
+ // An idle slot, at the latest after 100 ms: some browsers (headless, hidden frames) never report idle time.
+ const idle=f=>window.requestIdleCallback?requestIdleCallback(f,{timeout:100}):setTimeout(f,16);
+ function warm(){
+  if(!browserApp||localOff||serverBusy)return;const actions=[...new Set([...root.querySelectorAll('[data-action]')].map(el=>el.getAttribute('data-action')).filter(a=>/^(nav|tab|screen|view):[\w-]{1,60}$/.test(a||'')))].slice(0,8);
+  const key=JSON.stringify([actions,uiState]);if(key===warmed)return;warmed=key;const from=uiState,seq=eventSeq,missing=[],seen=new Set();let i=0;
+  // When the linked screens are ready (their reads stored), the frame says so; the speed gate and diagnostics wait for it.
+  const step=()=>{if(seq!==eventSeq||!browserApp||i>=actions.length){if(missing.length&&seq===eventSeq)requestReads(missing,{prefetch:true});else if(seq===eventSeq)host.postMessage({kind:'trialy.engine',status:'warm'},'*');return;}
+   try{const r=browserApp.run.run(from,{kind:'click',action:actions[i++],value:null,form:{}});const reads=r.kind==='reads'?r.reads:r.kind==='painted'?r.misses:[];for(const x of reads){const k=Engine.readKey(x.name,x.input);if(!seen.has(k)&&missing.length<12){seen.add(k);missing.push(x);}}if(r.kind==='painted'&&r.rollback)store.restore(r.rollback);}catch{}
+   idle(step);};
+  idle(step);
+ }
+ function requestReads(reads,context){const id=++readSeq;pendingReads.set(id,{...context,seq:eventSeq});post('trialy.reads',{id,reads:reads.slice(0,12)});}
+ function paintLocal(output,event,t0){
+  controls=[];connected=false;uiState=output.state;paint(output.html,runtimeCss(output.html)+output.css);
+  post('trialy.local',{ms:t0?performance.now()-t0:null,event:{kind:event.kind,action:event.action},state:uiState,html:output.html,css:runtimeCss(output.html)+output.css,...(output.notice?{notice:output.notice}:{}),...('context' in output?{context:output.context}:{})});post('trialy.rendered');
+ }
+ /** Returns true when the event was handled here (painted, or waiting for its reads). */
+ function runLocal(event,from,round=0){
+  if(!browserApp||localOff||model)return false;
+  const t0=performance.now();let r;try{r=browserApp.run.run(from,event);}catch{return false;}
+  if(r.kind==='painted'){
+   const before={html:root.innerHTML,css:sheet.textContent,state:from};paintLocal(r.output,event,t0);
+   if(r.saves.length){optimistic={rollback:r.rollback,before};serverBusy=true;post('trialy.event',{event,state:from,optimistic:true});}
+   else if(r.misses.length)requestReads(r.misses,{event,from,v2:true});
+   else setTimeout(warm,0);
+   return true;
+  }
+  if(r.kind==='reads'&&round<3){requestReads(r.reads,{event,from,round});return true;}
+  return false;
+ }
+ function receiveReads(v){
+  const context=pendingReads.get(v.id);if(!context)return;pendingReads.delete(v.id);
+  if(!v.failed&&Array.isArray(v.results))store.seed(v.results);
+  if(context.prefetch){host.postMessage({kind:'trialy.engine',status:'warm'},'*');return;}
+  if(context.seq!==eventSeq)return;
+  if(v.failed){serverBusy=true;post('trialy.event',{event:context.event,state:context.from});return;}
+  if(!runLocal(context.event,context.from,(context.round||0)+1)){serverBusy=true;post('trialy.event',{event:context.event,state:context.from});}
+ }
+ function serverIdle(v){
+  serverBusy=false;
+  // A v2 save that did not go through: the earlier values and screen come back; the platform shows why.
+  if(optimistic&&v.failed){store.restore(optimistic.rollback);root.innerHTML='';uiState=optimistic.before.state;paint(optimistic.before.html,optimistic.before.css);}
+  optimistic=null;const waiting=localHeld;localHeld=[];for(const e of waiting)dispatch(e);
+ }
+ function reportViewport(){const w=document.documentElement.clientWidth,next=w<480?'phone':w<800?'panel':'wide',c=matchMedia('(pointer: coarse)').matches;if(next===viewportClass&&c===coarse)return;viewportClass=next;coarse=c;if(browserApp?.version==='v2')localInput.viewport={width:next,coarse:c};host.postMessage({kind:'trialy.viewport',width:next,coarse:c},'*');}
  function dispatch(event){
   // P5 (4.5): while a cell edit saves, other actions wait for the saved screen and then run; nothing is dropped.
   if(savingCell&&Object.keys(inflight).length&&event.action!=='bound-batch'){if(held.length<20)held.push(event);return;}
@@ -169,6 +242,10 @@ export const FRAME_SCRIPT=String.raw`(()=>{'use strict';
   if(local(event))return;
   if(Object.keys(pending).length&&!['bound-batch'].includes(event.action)){post('trialy.notice',{message:'Save or ignore your current edits before this action.'});return;}
   if(uiState?.newRow&&event.action!=='tracker:create'){post('trialy.notice',{message:'Save or cancel the new row before this action.'});return;}
+  eventSeq++;
+  // 5.1: a browser-capable app makes the screen here; while the server works on an earlier action, v1 apps wait for it.
+  if(!model&&browserApp&&!localOff){if(serverBusy&&(browserApp.version!=='v2'||optimistic)){if(localHeld.length<20)localHeld.push(event);return;}if(runLocal(event,uiState))return;}
+  if(!model&&browserApp)serverBusy=true;
   post('trialy.event',{event,state:uiState});
  }
  function footerAction(action){
@@ -190,6 +267,8 @@ export const FRAME_SCRIPT=String.raw`(()=>{'use strict';
    for(const el of root.querySelectorAll('[data-action]')){const k=el.getAttribute('data-action');if(k&&marks.includes(prefix(k))){const holder=el.closest('td,.cell,label')||el;holder.style.background='#fdecea';holder.title=message;}}
    const waiting=held;held=[];for(const e of waiting)dispatch(e);
    return;}
+  if(v.kind==='trialy.reads-result'){receiveReads(v);return;}
+  if(v.kind==='trialy.server-idle'){serverIdle(v);return;}
   if(v.kind==='trialy.save-idle'){savingCell=false;root.inert=!!v.blocked;return;}
   if(v.kind==='trialy.action'){footerAction(v.action);return;}
   if(v.kind!=='trialy.render'||typeof v.html!=='string'||v.html.length>200000||typeof v.css!=='string'||v.css.length>50000)return;
@@ -202,11 +281,16 @@ export const FRAME_SCRIPT=String.raw`(()=>{'use strict';
   for(const k of Object.keys(original))if(marks.includes(prefix(k)))for(const el of cells(k)){const holder=el.closest('td,.cell,label')||el;holder.style.background='#fdecea';holder.title=markMessage;}
   // P5 (4.5): edits made while the previous save ran are kept (their record may have a new version) and saved next.
   if(carried.length&&model?.saved){for(const [k,val] of carried){const now=Object.keys(original).find(x=>prefix(x)===prefix(k));if(!now)continue;pending[now]=val;for(const el of cells(now)){if(el.type==='checkbox')el.checked=val;else el.value=val;el.style.background='#e5f6e9';}}if(Object.keys(pending).length){footer();setTimeout(commitCell,0);}}
+  if(!model)document.body.classList.toggle('trialy-fill',!!v.fill);
+  if(!model&&v.browser&&v.browser.mode&&v.browser.mode!=='server'&&Engine)applyBrowser(v.browser,v);
+  if(!model){serverBusy=false;optimistic=null;}
   post('trialy.rendered');
   const waiting=held;held=[];for(const e of waiting)dispatch(e);
+  const later=localHeld;localHeld=[];for(const e of later)dispatch(e);
  });
  function send(kind,target){
   const trigger=target.closest('[data-action]');if(!trigger||!channel)return;const action=trigger.getAttribute('data-action');if(!action||action.length>200)return;
+  if(!model)trigger.setAttribute('data-trialy-pressed','');
   if(action==='save-layout'&&model?.saved){post('trialy.approve',{action:'save-layout'});footerAction(action);return;}
   if(action==='save-edits'){post('trialy.approve',{action:'bound-batch'});footerAction(action);return;}
   if(action==='save-new'){post('trialy.approve',{action:'tracker:create'});dispatch({kind:'submit',action:'tracker:create',form:{data:JSON.stringify(uiState.newRow?.data??{})}});return;}
@@ -244,10 +328,10 @@ export const FRAME_SCRIPT=String.raw`(()=>{'use strict';
   if(e.target.matches('.drawer-resizer')&&['ArrowLeft','ArrowRight'].includes(e.key)){e.preventDefault();document.documentElement.style.setProperty('--drawer-width',Math.max(365,Math.min(innerWidth,root.querySelector('.drawer').offsetWidth+(e.key==='ArrowLeft'?20:-20)))+'px');}
  });
  let dragged=null;
- root.addEventListener('dragstart',e=>{const h=e.target.closest('[data-reorder]');if(h&&model?.saved){dragged=h.dataset.reorder;e.dataTransfer.setData('text/plain',dragged);}else e.preventDefault();});
- root.addEventListener('dragover',e=>{const row=e.target.closest('.layout-entry');if(dragged&&row){e.preventDefault();row.classList.add('drag-over');}});
+ root.addEventListener('dragstart',e=>{const card=!model&&e.target.closest?.('[data-drag]');if(card){dragged='card:'+card.getAttribute('data-drag');e.dataTransfer.setData('text/plain',dragged);return;}const h=e.target.closest('[data-reorder]');if(h&&model?.saved){dragged=h.dataset.reorder;e.dataTransfer.setData('text/plain',dragged);}else e.preventDefault();});
+ root.addEventListener('dragover',e=>{const zone=dragged?.startsWith('card:')&&e.target.closest('[data-drop]');if(zone){e.preventDefault();for(const z of root.querySelectorAll('[data-trialy-over]'))if(z!==zone)z.removeAttribute('data-trialy-over');zone.setAttribute('data-trialy-over','');return;}const row=e.target.closest('.layout-entry');if(dragged&&row){e.preventDefault();row.classList.add('drag-over');}});
  root.addEventListener('dragleave',e=>e.target.closest('.layout-entry')?.classList.remove('drag-over'));
- root.addEventListener('drop',e=>{e.preventDefault();const target=e.target.closest('.layout-entry')?.querySelector('[data-reorder]')?.dataset.reorder;if(dragged&&target){const from=dragged.split(':'),to=target.split(':');if(from[0]===to[0]&&(from[0]==='tab'||from[1]===to[1]))dispatch({kind:'click',action:'reorder-'+dragged+':'+to.at(-1)});}dragged=null;});
+ root.addEventListener('drop',e=>{e.preventDefault();const zone=dragged?.startsWith('card:')&&e.target.closest('[data-drop]');if(zone){const action=zone.getAttribute('data-drop-action'),value=dragged.slice(5)+'>'+zone.getAttribute('data-drop');dragged=null;zone.removeAttribute('data-trialy-over');if(action&&action.length<=200&&value.length<=200)dispatch({kind:'change',action,value,form:{}});return;}const target=e.target.closest('.layout-entry')?.querySelector('[data-reorder]')?.dataset.reorder;if(dragged&&target){const from=dragged.split(':'),to=target.split(':');if(from[0]===to[0]&&(from[0]==='tab'||from[1]===to[1]))dispatch({kind:'click',action:'reorder-'+dragged+':'+to.at(-1)});}dragged=null;});
  root.addEventListener('pointerdown',e=>{const handle=e.target.closest('[data-resize-column],[data-resize-row]');if(!handle||!model)return;e.preventDefault();const column=handle.hasAttribute('data-resize-column'),key=column?handle.dataset.resizeColumn:handle.dataset.resizeRow,start=column?e.clientX:e.clientY,initial=Number(handle.getAttribute('aria-valuenow'));let value=initial;
   const table=handle.closest('table'),row=handle.closest('tr'),col=column?table.querySelectorAll('col')[handle.closest('th').cellIndex]:null,total=table.offsetWidth;
   handle.setPointerCapture(e.pointerId);
@@ -257,12 +341,15 @@ export const FRAME_SCRIPT=String.raw`(()=>{'use strict';
  });
  root.addEventListener('pointerdown',e=>{if(!e.target.matches('.drawer-resizer'))return;e.preventDefault();const move=ev=>document.documentElement.style.setProperty('--drawer-width',Math.max(365,Math.min(innerWidth,innerWidth-ev.clientX))+'px');const up=()=>{window.removeEventListener('pointermove',move);window.removeEventListener('pointerup',up);};window.addEventListener('pointermove',move);window.addEventListener('pointerup',up);});
  document.addEventListener('pointerdown',e=>{if(optionsOpen&&!e.target.closest('.tracker-toolbar'))setOptionsOpen(false);});
- new ResizeObserver(()=>{if(!model)post('trialy.resize',{height:Math.ceil(root.getBoundingClientRect().height)+32});}).observe(document.body);
- host.postMessage({kind:'trialy.ready'},'*');
+ new ResizeObserver(()=>{if(!model&&!document.body.classList.contains('trialy-fill'))post('trialy.resize',{height:Math.ceil(root.getBoundingClientRect().height)+32});}).observe(document.body);
+ new ResizeObserver(reportViewport).observe(document.documentElement);
+ host.postMessage({kind:'trialy.ready'},'*');reportViewport();
 })();`;
-export async function frontendFrameDocument(fontCss=''){
- const bytes=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(FRAME_SCRIPT));
- const hash=btoa(String.fromCharCode(...new Uint8Array(bytes)));
- return `<!doctype html><html><head><meta charset="utf-8"><meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-${hash}'; style-src 'unsafe-inline'; img-src data:; font-src data:; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'"><meta name="viewport" content="width=device-width,initial-scale=1"><style>${fontCss}@layer trialagents-defaults{body{font:15px Inter,Arial,sans-serif;margin:0;color:#183d32}*{box-sizing:border-box}}input,button,select,textarea{font:inherit}.cell-input[hidden],.cell-display[hidden]{display:none!important}.multi-value-editor{display:grid;gap:5px;min-width:150px}.multi-value-row{display:flex;gap:4px;align-items:center}.multi-value-row input,.multi-value-row select{width:100%;min-width:0}.multi-value-editor>button{justify-self:start;width:auto}.multi-value-editor button{font-size:12px;padding:3px 6px;color:#253c40;background:#f8faf9;border:1px solid #dce5e1;border-radius:6px;text-align:left}</style><style id="appearance"></style></head><body><div id="surface"></div><script>${FRAME_SCRIPT}</script></body></html>`;
+/** The frame policy: two trusted scripts by hash, WebAssembly for the engine (5.1), no eval, no network, no forms. */
+export function framePolicy(){
+ return `default-src 'none'; script-src 'sha256-${sha256Base64(FRAME_ENGINE_SCRIPT)}' 'sha256-${sha256Base64(FRAME_SCRIPT)}' 'wasm-unsafe-eval'; style-src 'unsafe-inline'; img-src data:; font-src data:; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'`;
 }
-
+export async function frontendFrameDocument(fontCss=''){
+ // 5.1: the engine binary travels as a data block (never executed as script); the engine script reads it once at start.
+ return `<!doctype html><html><head><meta charset="utf-8"><meta http-equiv="Content-Security-Policy" content="${framePolicy()}"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><style>${fontCss}@layer trialagents-defaults{body{font:15px Inter,Arial,sans-serif;margin:0;color:#183d32}*{box-sizing:border-box}}input,button,select,textarea{font:inherit}.cell-input[hidden],.cell-display[hidden]{display:none!important}.multi-value-editor{display:grid;gap:5px;min-width:150px}.multi-value-row{display:flex;gap:4px;align-items:center}.multi-value-row input,.multi-value-row select{width:100%;min-width:0}.multi-value-editor>button{justify-self:start;width:auto}.multi-value-editor button{font-size:12px;padding:3px 6px;color:#253c40;background:#f8faf9;border:1px solid #dce5e1;border-radius:6px;text-align:left}[data-trialy-pressed]{opacity:.72;transition:opacity .08s}body.trialy-fill{height:100vh;overflow:hidden}body.trialy-fill #surface{height:100%;overflow:auto;padding-bottom:env(safe-area-inset-bottom)}</style><style id="appearance"></style></head><body><div id="surface"></div><script type="application/x-trialy-engine" id="trialy-engine-binary">${frameEngineWasmBase64()}</script><script>${FRAME_ENGINE_SCRIPT}</script><script>${FRAME_SCRIPT}</script></body></html>`;
+}

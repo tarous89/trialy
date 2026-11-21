@@ -84,3 +84,8 @@
 @media(max-width:420px){.ty-workspace--embedded .ty-host-open svg{display:none}.ty-workspace--embedded .ty-host-open{gap:4px}.ty-workspace--embedded .ty-topbar-left{gap:6px}}
 
 .ty-workspace .ty-main-column{position:relative}.ty-platform-shell .ty-workspace-progress{top:0}.ty-workspace-progress{position:absolute;z-index:80;top:var(--shell-header,64px);left:0;right:0;height:4px;overflow:hidden;background:#264b3c;pointer-events:none}.ty-workspace-progress>span{display:block;height:100%;width:35%;background:linear-gradient(90deg,#2eac79,#84d9cb);animation:ty-workspace-progress 1.25s ease-in-out infinite}@keyframes ty-workspace-progress{from{transform:translateX(-100%)}to{transform:translateX(390%)}}@media(prefers-reduced-motion:reduce){.ty-workspace-progress>span{animation:none;width:100%;opacity:.75}}
+
+/* 5.4 (P9): at phone width the header keeps the navigation toggle, the app name and its status; the rest folds away. */
+@media(max-width:420px){.ty-platform-header .ty-platform-brand strong{display:none}.ty-platform-header .ty-header-app{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.ty-header-status>span{display:none}.ty-header-status::before{content:'';width:8px;height:8px;border-radius:50%;background:currentColor;flex:none}.ty-header-status:has(button)::before{display:none}.ty-workspace .ty-shell-toggle{min-width:44px;min-height:44px}}
+/* 5.4: inside an assistant the workspace never exceeds the width the host gives it; fullscreen uses the whole height. */
+html[data-ty-display] .ty-workspace--embedded{max-width:var(--ty-host-width,100%);margin:0 auto}html[data-ty-display=fullscreen] .ty-workspace--embedded{min-height:var(--ty-host-height,100dvh)}

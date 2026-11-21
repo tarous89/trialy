@@ -3,10 +3,7 @@
   "approved-theme2-screenshot.png": "446561179899fd5b80e9173435802f41cbff7f3c4c933d9254b0062a29321af8",
   "connected-tracker.css": "76d612534fa749645ee5ab1a886aab0066780c70638bcf3e060ec2147e329ca5",
   "connected-tracker.js": "d70dee71084023b68a216625482f9889b89636caf9b94ef1afda8ec471439bac",
-  "vivid-template/catalog.html": "477990d1cc40d96ef2adf30299d898594387a3b1d640fe7db0dbdb7b270232cc",
   "vivid-template/components.json": "7527da070995f4065396615ae9a9a3ac104869c9bc01341ea0c0f8ea55da83e0",
   "vivid-template/engine.js": "f9342b6991c49838745d389b61a940507a7d1fbd9f2e2f2d72451bddf693e6e9",
-  "vivid-template/manifest.json": "541c63a51258e0ab4ff0b985534cf6cbe15a9a2d488791117c0e797c5f3a6d14",
-  "vivid-template/runtime.js": "fd744dbb3948b3784f3f05d6dfa59462a5b26301d779233a34245bb55bbc3794",
-  "vivid-template/theme.css": "e9314f6705fa06b5951e971e593ea4d9d8847a38abb8c0210d539de876ff2655"
+  "vivid-template/runtime.js": "fd744dbb3948b3784f3f05d6dfa59462a5b26301d779233a34245bb55bbc3794"
 }

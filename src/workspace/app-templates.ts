@@ -6,6 +6,7 @@ import {readFile,readdir} from 'node:fs/promises';
 import {createHash} from 'node:crypto';
 import {z} from 'zod';
 import {appPreparationFields} from '../shared/app-design.js';
+import {GUIDE_VERSION,guideFiles} from './guide.js';
 import {fail,id,type Actor} from '../shared/schema.js';
 import {componentContent} from './schema.js';
 import {trackerSetup,trackerOperation} from './tracker-template.js';
@@ -18,15 +19,16 @@ const documentation=z.object({quickStart:items,dataContract:prose,interactionCon
 export const appTemplateEntry=z.object({...recipeDeclarations,...functionDeclarations,id:key,version,name:z.string().min(1).max(100),description:z.string().min(1).max(1000),tags:z.array(z.string().max(50)).max(20),whenToUse:z.string().min(1).max(2000),whenNotToUse:z.string().min(1).max(2000),instructions:z.string().min(1).max(20000),documentation:documentation.optional(),engine:z.enum(['tracker','frontend-js']),defaults:z.record(z.string(),z.unknown()).default({}),options:z.record(z.string().regex(/^[a-z][a-zA-Z0-9_]{0,63}$/),option).default({}),source:z.string().max(240000).optional(),examples:z.array(z.record(z.string(),z.unknown())).max(5).default([]),deprecated:z.boolean().default(false)}).strict();
 export const templateQuery=z.object({query:z.string().max(200).default(''),offset:z.number().int().min(0).default(0),limit:z.number().int().min(1).max(50).default(20)}).strict();
 export const templateRead=z.object({templateId:key,version:version.optional(),includeFunctionSource:z.boolean().default(false)}).strict();
-export const templateGuidanceRequest=z.object({resource:z.enum(['authoring','usage','contracts']).default('usage'),offset:z.number().int().min(0).default(0)}).strict();
-export const templateGuidance={tool:'read_app_template_guidance',version:'1.3.37',resources:['usage','authoring','contracts'],hostedAttribution:'Apps open inside TrialAgents under its fixed header. The platform sidebar is expanded on platform tabs and collapsed for individual apps. Keep every app control within the available content viewport below the header; do not add a duplicate platform header, sidebar or attribution badge. Use the host navigation adapter for same-tab app links and the Apps destination.',usage:'Read usage guidance and the template documentation before preparation; read authoring guidance when building or extending templates; read contracts (the role contract registry) before declaring roles on a custom app.'};
+/** 5.6: guide (design) and reference (technical); authoring and usage are the old names of the same two, kept as aliases. */
+export const templateGuidanceRequest=z.object({resource:z.enum(['guide','reference','authoring','usage','contracts']).default('guide'),offset:z.number().int().min(0).default(0)}).strict();
+export const templateGuidance={tool:'read_app_template_guidance',version:GUIDE_VERSION,resources:['guide','reference','contracts'],aliases:{authoring:'guide',usage:'reference'},hostedAttribution:'Apps open inside TrialAgents below its header, which shows the app name and status. Add no header, sidebar, message bar, footer or attribution badge of your own; use the host navigation adapter for same-tab app links and the Apps destination.',usage:'Read the guide (design principles) before designing or changing an app, and the reference (runtime, data, saving, installation) before writing code or installing; read contracts (the role contract registry) before declaring roles on a custom app.'};
 export async function readTemplateGuidance(input:unknown={}){
- const {resource,offset}=templateGuidanceRequest.parse(input),file=resource==='authoring'?'TEMPLATE_AUTHORING.md':'TEMPLATE_USAGE.md';
+ const {resource:asked,offset}=templateGuidanceRequest.parse(input),resource=asked==='authoring'?'guide':asked==='usage'?'reference':asked;
  // contracts: the read-only role contract registry (core contract v1 and every published app output contract), as JSON text.
- const source=resource==='contracts'?JSON.stringify(await contractRegistry(),null,1):await readFile(new URL('../../templates/'+file,import.meta.url),'utf8');
+ const files=guideFiles(),source=resource==='contracts'?JSON.stringify(await contractRegistry(),null,1):resource==='guide'?files.guide:files.reference;
  if(offset>source.length)fail(400,'guidance_offset','Offset exceeds guidance length');
  const text=source.slice(offset,offset+12000),end=offset+text.length;
- return {...templateGuidance,resource,sha256:createHash('sha256').update(source).digest('hex'),offset,totalCharacters:source.length,nextOffset:end<source.length?end:null,text};
+ return {...templateGuidance,resource,...(asked!==resource?{alias:asked}:{}),guideChecksum:files.checksum,sha256:createHash('sha256').update(source).digest('hex'),offset,totalCharacters:source.length,nextOffset:end<source.length?end:null,text};
 }
 export const templatePrepare=z.object({...appPreparationFields,templateId:key,version,digest:z.string().regex(/^[a-f0-9]{64}$/),name:z.string().trim().min(1).max(100),projectId:id.nullable().default(null),configuration:z.record(z.string(),z.unknown()).default({}),bindings:componentContent.shape.bindings,manifest:componentContent.shape.manifest}).strict();
 const directory=new URL('../../templates/apps/',import.meta.url);

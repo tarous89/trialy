@@ -3,7 +3,7 @@
   "source": "../approved-theme2-reference.html",
   "sourceSha256": "83b6b5d1b29bea60a27b225c04f37b9c4c23a7cd5e3a78f13e8b255b2e9f11e4",
   "stylesheet": "theme.css",
-  "stylesheetSha256": "e9314f6705fa06b5951e971e593ea4d9d8847a38abb8c0210d539de876ff2655",
+  "stylesheetSha256": "da7a4de64afb6cff1eede1254e48ba830b5b045d96a71e4e255a5cd330453de8",
   "components": "components.json",
   "componentNames": [
     "page",
@@ -61,5 +61,6 @@
     "badge tone from catalog",
     "records from authorized sources"
   ],
-  "exampleData": "None. Original HTML is retained only as a visual fixture; its script is never loaded."
+  "exampleData": "None. Original HTML is retained only as a visual fixture; its script is never loaded.",
+  "kit": "trialagents.kit.1"
 }

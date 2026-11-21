@@ -104,9 +104,10 @@ export function PendingChangesFooter(){
  useLayoutEffect(()=>{
   const element=footer.current,workspace=element?.closest<HTMLElement>('.ty-workspace');
   if(!shown||!element||!workspace)return;
-  const resize=()=>{if(!element.getClientRects().length)return;workspace.style.setProperty('--preview-footer-height',Math.ceil(element.getBoundingClientRect().height)+'px');window.dispatchEvent(new Event('resize'));};
+  // 5.4: the footer's height is the platform's footer inset; the shared message sits above it (it lives outside the workspace element).
+  const root=document.documentElement,resize=()=>{if(!element.getClientRects().length)return;const h=Math.ceil(element.getBoundingClientRect().height)+'px';workspace.style.setProperty('--preview-footer-height',h);root.style.setProperty('--preview-footer-height',h);window.dispatchEvent(new Event('resize'));};
   const observer=new ResizeObserver(resize);observer.observe(element);resize();
-  return()=>{observer.disconnect();workspace.style.removeProperty('--preview-footer-height');window.dispatchEvent(new Event('resize'));};
+  return()=>{observer.disconnect();workspace.style.removeProperty('--preview-footer-height');root.style.removeProperty('--preview-footer-height');window.dispatchEvent(new Event('resize'));};
  },[shown]);
  useEffect(()=>{setError('');},[review?.previewId]);
  if(!value||!shown)return null;
