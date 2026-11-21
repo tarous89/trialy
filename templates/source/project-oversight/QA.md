@@ -8,7 +8,7 @@ Validated in the build container on 21 November 2026 with fictional data and dis
 | `node --import tsx scripts/check-app-functions.ts`, `npx tsc --noEmit` | Passed |
 | `node --import tsx --test tests/programs-v2.test.ts` | 14/14 passed, including the design check under current rules (`APP_DESIGN_CHROMIUM=/opt/pw-browsers/chromium`) on 18 screens and panels at 1440, 400 and 390 px: no issues; warnings only for the kit's muted text and navigation colour contrast |
 | `node --import tsx --test tests/programs-v2-integration.test.ts` | 1/1 passed |
-| 2.x suites (`programs*.test.ts`, `project-*.test.ts`) and `template-catalog`, `frame-engine`, `app-update`, `app-templates` | See the commit message of the 7.3 change |
+| 2.x suites (`programs*.test.ts`, `project-*.test.ts`) and `template-catalog`, `frame-engine`, `app-update`, `app-templates` | 99/99 passed with `APP_DESIGN_CHROMIUM=/opt/pw-browsers/chromium` (without it, the three design-inspector tests of 1.0.1, 2.1.0 and 2.2.x cannot start Chromium in this container) |
 
 Not verified here: the browser frame (local renders and optimistic saves) on real hosts, the owner-approved upgrade of an installed 2.2.x copy (package 7.1), and the gallery screenshot for 3.0.0 (not generated; the gallery keeps 2.2.1 until approval).
 
