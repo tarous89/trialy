@@ -548,5 +548,8 @@ Carried over, with the package that takes it:
 - **v1 apps at narrow widths → 7.3.** The browser gate reports (does not fail) horizontal overflow of v1 catalog screens at panel and phone widths; the rebuild on the kit fixes them.
 - **Embedded carry-overs from sessions 2 and 3 → 6.8.** The no-access page and role changes inside an assistant, and the sharing screen for app owners who are not organization owners, move with Publish / Collect / Disclose.
 - **Per-screen data in catalog apps → 7.3.** v1 catalog apps still read whole tables per screen; the frame makes that fast once loaded, but the first open still reads everything.
+- **Catalog code and the new checks → 7.3.** Unchanged catalog code is checked as it was published (browser and phone widths, without the G1 bar and sign-in rules); new and custom apps get the current rules. At the assistant-panel width Contracts 1.1.1 has overlapping controls on one review screen; the switched-off CO06 and CR05 draw their own fixed bars. The rebuild brings switched-on apps under the current rules.
 - **Header status from apps.** Apps cannot set the header status themselves; the platform sets it. A `status` output can be added when a rebuilt app needs one.
+
+Environment note: `npm test` here ran the real design checks for the first time (`APP_DESIGN_CHROMIUM=/opt/pw-browsers/chromium`): 927 passed; the remaining failures were fixed except CO06's design test, which fails identically on `main` in this container (font rendering). In the browser suite (`pw-local` config with the same Chromium), 16 screenshot and timing tests fail identically on `main` here; every other test, including the 49 new frame-runtime gates, passes. The pull request's checks are the authority for screenshots.
 
