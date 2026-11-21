@@ -8,11 +8,14 @@
 export const KIT_VERSION='trialagents.kit.1';
 /** Vivid's values, named once. The standard tracker reads the same names (src/workspace/standard-tracker.ts). */
 export const kitTokens={
- ink:'#20383d',muted:'#5f7479',accent:'#0a8065',accentInk:'#ffffff',accentStrong:'#086b55',line:'#e5ece9',light:'#f8faf9',paper:'#ffffff',soft:'#ecf6f2',
+ ink:'#20383d',muted:'#71858b',accent:'#0a8065',accentInk:'#ffffff',accentStrong:'#086b55',line:'#e5ece9',light:'#f8faf9',paper:'#ffffff',soft:'#ecf6f2',
  danger:'#b3261e',dangerSoft:'#fdecea',warning:'#8a5a00',warningSoft:'#fff4dc',focus:'#30ae8b',
  radius:'10px',radiusSmall:'7px',space:'16px',font:'Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif',
 } as const;
 const cssName=(k:string)=>'--k-'+k.replace(/[A-Z]/g,c=>'-'+c.toLowerCase());
+/** The standard tracker's names for the same values (the Vivid stylesheet's first rule is generated from this). */
+export const vividTokenNames={ink:'ink',muted:'muted',accent:'accent',line:'line',light:'light',paper:'paper',soft:'soft'} as const;
+export const vividRootCss=':root{'+Object.entries(kitTokens).map(([k,v])=>`${cssName(k)}:${v}`).join(';')+';'+Object.entries(vividTokenNames).map(([vivid,k])=>`--${vivid}:var(${cssName(k)})`).join(';')+'}';
 export const kitTokensCss=':root{'+Object.entries(kitTokens).map(([k,v])=>`${cssName(k)}:${v}`).join(';')+'}';
 const components=`
 *{box-sizing:border-box}html,body{height:100%}body{margin:0;background:var(--k-light);color:var(--k-ink);font:15px/1.5 var(--k-font)}

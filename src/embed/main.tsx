@@ -58,7 +58,11 @@ function requestFullscreen(ctx:any=bridge.getHostContext()){
 // Only the Claude widget resource carries this marker; ChatGPT never shows Claude-only controls.
 const claudeHost=(()=>{try{return JSON.parse(document.getElementById('trialy-host')?.textContent||'null')==='claude';}catch{return false;}})();
 const displayListeners=new Set<()=>void>();
-bridge.onhostcontextchanged=ctx=>{requestFullscreen({...bridge.getHostContext(),...ctx});displayListeners.forEach(f=>f());};
+/** 5.4 (P9): follow the host's display (inline or fullscreen) and the width and height it gives the view. */
+function applyHostDisplay(ctx:any){const root=document.documentElement,mode=ctx?.displayMode==='fullscreen'?'fullscreen':'inline',d=ctx?.containerDimensions??{};
+ root.dataset.tyDisplay=mode;for(const [name,value] of [['--ty-host-width',d.width??d.maxWidth],['--ty-host-height',d.height??d.maxHeight]] as const){if(typeof value==='number'&&value>0)root.style.setProperty(name,value+'px');else root.style.removeProperty(name);}}
+applyHostDisplay(bridge.getHostContext());
+bridge.onhostcontextchanged=ctx=>{const merged={...bridge.getHostContext(),...ctx};applyHostDisplay(merged);requestFullscreen(merged);displayListeners.forEach(f=>f());};
 /** Claude only: offer Expand while the workspace is shown inline and the host supports full screen. */
 function useCanExpand(){
  const read=()=>{const ctx:any=bridge.getHostContext();return claudeHost&&ctx?.displayMode!=='fullscreen'&&!!ctx?.availableDisplayModes?.includes('fullscreen');};
