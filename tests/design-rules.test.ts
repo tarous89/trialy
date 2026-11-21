@@ -8,7 +8,7 @@ import {V2_EXAMPLE_SOURCE,v2ExampleAnswer} from '../scripts/lib/v2-example.js';
 /* 5.7 (G1, G13, D22): the checks match the new rules. A browser is needed; where none can start (some build
  * containers), the test is skipped and the pull request's checks run it. */
 async function inspect(t:any,frames:{name:string;html:string;css:string}[]){
- try{return await inspectAppDesign(frames);}catch(e){if((e as any).code==='design_check_unavailable'){t.skip('no browser for the design check here');return null;}throw e;}
+ try{return await inspectAppDesign(frames,'current');}catch(e){if((e as any).code==='design_check_unavailable'){t.skip('no browser for the design check here');return null;}throw e;}
 }
 test('5.7: own header, footer, message bar and sign-in forms block; small text and contrast only warn; three widths',async t=>{
  assert.deepEqual([...DESIGN_WIDTHS],[1440,400,390]);
