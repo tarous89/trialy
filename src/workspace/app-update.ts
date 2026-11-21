@@ -29,7 +29,8 @@ export function carryConfiguration(saved:Record<string,unknown>,to:{options:Reco
  const configuration:Record<string,unknown>={},kept:string[]=[],added:string[]=[];
  for(const [name,o] of Object.entries(to.options)){
   const v=saved[name],fits=v!==undefined&&typeof v===o.type&&!(typeof v==='number'&&!Number.isFinite(v))&&!(typeof v==='string'&&(v.length>10000||(o.enum&&!o.enum.includes(v))));
-  if(fits){configuration[name]=v;kept.push(name);continue;}
+  // A layout saved for the earlier major version describes its screens, not the rebuilt ones: it starts again from the default.
+  if(fits&&name!=='layoutProfile'){configuration[name]=v;kept.push(name);continue;}
   const d=to.defaults?.[name]??o.default;if(d!==undefined)configuration[name]=d;added.push(name);
  }
  return {configuration,kept,added,removed:Object.keys(saved).filter(k=>!Object.hasOwn(to.options,k)).sort()};
