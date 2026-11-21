@@ -77,7 +77,7 @@ test('Frontend code: read-only drafts, bound reads, reviewed atomic writes, stal
 test('Frame shell uses a hash-only trusted script and an HTTP sandbox without same-origin or forms',async()=>{
  const {baseApp}=await import('../src/server/app.js');const {default:request}=await import('supertest');const {createHash}=await import('node:crypto');const {FRAME_SCRIPT}=await import('../src/shared/frontend-frame.js');
  const response=await request(baseApp()).get('/frontend/frame').expect(200);
- const hash=createHash('sha256').update(FRAME_SCRIPT).digest('base64');assert.ok(response.headers['content-security-policy'].includes(`script-src 'sha256-${hash}'`));
+ const hash=createHash('sha256').update(FRAME_SCRIPT).digest('base64');const policy=response.headers['content-security-policy'];assert.match(policy,new RegExp(`script-src 'sha256-[^']+' 'sha256-${hash.replace(/[+/]/g,c=>'\\'+c)}' 'wasm-unsafe-eval';`),'the engine script, the bridge script and WebAssembly only (5.1)');assert.ok(!policy.includes("'unsafe-eval'"));
  assert.ok(response.headers['content-security-policy'].includes('sandbox allow-scripts;'));assert.ok(response.headers['content-security-policy'].includes("form-action 'none'"));assert.equal(response.headers['x-frame-options'],undefined);assert.ok(!response.headers['content-security-policy'].includes('allow-same-origin'));assert.ok(response.text.includes(FRAME_SCRIPT));
 });
 

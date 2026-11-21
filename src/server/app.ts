@@ -50,7 +50,7 @@ export function baseApp(requestsPerMinute=180) {
    const mcp=path==='/mcp'||path===CLAUDE_MCP_PATH;
    console.log(JSON.stringify({requestId,method:req.method,path,
     ...(mcp&&['events/list','events/subscribe','events/unsubscribe'].includes(req.body?.method)?{mcpMethod:req.body.method}:{}),
-    ...(mcp&&req.body?.method==='tools/call'&&['run_component_frontend','read_app_data','save_app_records','undo_app_change','prepare_tool_layout','confirm_workspace_change','read_project_component','check_component_access','read_account_home','check_account_home'].includes(req.body.params?.name)?{tool:req.body.params.name}:{}),
+    ...(mcp&&req.body?.method==='tools/call'&&['run_component_frontend','read_app_data','set_app_context','save_app_records','undo_app_change','prepare_tool_layout','confirm_workspace_change','read_project_component','check_component_access','read_account_home','check_account_home'].includes(req.body.params?.name)?{tool:req.body.params.name}:{}),
     durationMs:Math.round(performance.now()-started),...metricSummary(metrics),status:res.statusCode,time:new Date().toISOString()}));
   }});withRequestMetrics(metrics,()=>withReadBatch(next));
  });

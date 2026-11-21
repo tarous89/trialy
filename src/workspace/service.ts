@@ -356,6 +356,14 @@ export class WorkspaceFoundation {
      layoutProposal={kind:'save_component',componentId:request.componentId,expectedVersion:version,projectId:content.project_id,content:{name:update.name,source:update.source,format:content.format,sourceAccess:content.source_access,resourceKind:content.resource_kind,manifest:update.manifest,bindings:content.bindings,assets:content.assets??[],execution:content.execution??[]}};
      return {status:'proposed'};
     }
+    // 5.3 (v2): records.save is a direct save from a person's own click, edit or form (or an app command with a request
+    // key). The frame shows the value at once; this run saves it with the same checks as every direct save.
+    if(name==='records.save'){
+     if(!v2)fail(403,'capability_unavailable','records.save belongs to the v2 app contract; use records.propose');
+     if(!request.componentId)fail(403,'preview_read_only','Unsaved app previews cannot save records');
+     if(!(['click','change','submit'].includes(request.event.kind)||request.event.kind==='command'&&request.requestKey))fail(403,'save_interaction','Save records from a person\'s own click, edit or form');
+     const v=z.object({changes:componentRecordChanges}).strict().parse(value);if(changes.length+v.changes.length>50)fail(400,'change_limit','Too many record changes');changes.push(...v.changes);return {status:'saving',count:v.changes.length};
+    }
     if(name==='records.propose'){
 
      if(!request.componentId)fail(403,'preview_read_only','Unsaved interface previews cannot propose database changes');
@@ -448,7 +456,7 @@ export class WorkspaceFoundation {
  async setAppContext(a:Actor,w:string,input:unknown):Promise<{saved:true}>{
   const v=appContextRequest.parse(input),raw=J(v.context??null);if(Buffer.byteLength(raw)>4096)fail(400,'context_limit','The remembered context is limited to 4 KB');
   a={...a,accessToolId:v.componentId};
-  return withActor(a,()=>this.db.transaction(async tx=>{await this.runtimeComponent(tx,a,w,v.componentId,undefined);
+  return withActor(a,()=>this.db.transaction(async tx=>{await new WorkspaceFoundation(adapter(tx)).component(tx,a,w,v.componentId);
    await tx.query('INSERT INTO app_person_context(workspace_id,app_id,user_id,context) VALUES($1,$2,$3,$4) ON CONFLICT(app_id,user_id) DO UPDATE SET context=excluded.context,updated_at=now()',[w,v.componentId,a.userId,raw]);return {saved:true as const};}));
  }
  async readAppData(a:Actor,w:string,input:unknown):Promise<any>{
