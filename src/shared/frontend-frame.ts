@@ -204,7 +204,7 @@ export const FRAME_SCRIPT=String.raw`(()=>{'use strict';
    idle(step);};
   idle(step);
  }
- function requestReads(reads,context){const id=++readSeq;pendingReads.set(id,{...context,seq:eventSeq});post('trialy.reads',{id,reads:reads.slice(0,12)});}
+ function requestReads(reads,context){const id=++readSeq;pendingReads.set(id,{...context,seq:eventSeq});post('trialy.reads',{id,reads:reads.slice(0,12),...(context&&context.prefetch?{prefetch:true}:{})});}
  function paintLocal(output,event,t0){
   controls=[];connected=false;uiState=output.state;paint(output.html,runtimeCss(output.html)+output.css);
   post('trialy.local',{ms:t0?performance.now()-t0:null,event:{kind:event.kind,action:event.action},state:uiState,html:output.html,css:runtimeCss(output.html)+output.css,...(output.notice?{notice:output.notice}:{}),...('context' in output?{context:output.context}:{})});post('trialy.rendered');

@@ -11,11 +11,11 @@ const WIDTHS=[{name:'browser',width:1440,height:900},{name:'assistant panel',wid
 const hostPage=`<!doctype html><html><head><meta charset="utf-8"></head><body style="margin:0"><iframe id="f" sandbox="allow-scripts" title="App" style="width:100vw;height:100vh;border:0;display:block" src="${base}/frontend/frame"></iframe><script>
  const canon=v=>Array.isArray(v)?v.map(canon):v&&typeof v==='object'?Object.fromEntries(Object.keys(v).sort().map(k=>[k,canon(v[k])])):v;
  const key=(n,i)=>n+'|'+JSON.stringify(canon(i===undefined?{}:i));
- window.msgs=[];window.answers=new Map();window.requests={events:0,reads:0};
+ window.msgs=[];window.answers=new Map();window.requests={events:0,reads:0,screenReads:0};
  // The host's side of read_app_data: every missing read is one request, answered from the platform's data.
  addEventListener('message',e=>{if(e.source!==f.contentWindow)return;const m=e.data;window.msgs.push(m);
   if(m.kind==='trialy.event')window.requests.events++;
-  if(m.kind==='trialy.reads'){window.requests.reads++;f.contentWindow.postMessage({kind:'trialy.reads-result',channel:m.channel,id:m.id,results:m.reads.map(r=>{const a=window.answers.get(key(r.name,r.input));return a?a:{...r,error:'Capability unavailable'};})},'*');}
+  if(m.kind==='trialy.reads'){window.requests.reads++;if(!m.prefetch)window.requests.screenReads++;f.contentWindow.postMessage({kind:'trialy.reads-result',channel:m.channel,id:m.id,results:m.reads.map(r=>{const a=window.answers.get(key(r.name,r.input));return a?a:{...r,error:'Capability unavailable'};})},'*');}
  });
  window.send=m=>f.contentWindow.postMessage(m,'*');
 </script></body></html>`;
@@ -70,7 +70,8 @@ for(const viewport of WIDTHS)for(const app of data.filter(a=>a.rebuilt))test(`${
   await page.waitForFunction(n=>window.msgs.slice(n).some(m=>m.kind==='trialy.local'||m.kind==='trialy.event'),before.n);
   const {msgs}=await settle(page,before.n),after=await page.evaluate(()=>window.requests);
   expect(after.events-before.events,`${screen.action}: no server run`).toBe(0);
-  expect(after.reads-before.reads,`${screen.action}: at most one batched read`).toBeLessThanOrEqual(1);
+  // Background preparation of linked screens (prefetch) is not the screen waiting for data.
+  expect(after.screenReads-before.screenReads,`${screen.action}: at most one batched read`).toBeLessThanOrEqual(1);
   const local=msgs.filter(m=>m.kind==='trialy.local');expect(local.length,`${screen.action}: made in the frame`).toBeGreaterThan(0);
   expect(local.at(-1).html,`${screen.action}: the screen the server renders`).toBe(screen.html);
   times.push(local[0].ms);

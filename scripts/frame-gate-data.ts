@@ -24,6 +24,9 @@ for(const app of REBUILT_APPS.filter(a=>(!only||only.includes(a.id+'@'+a.version
  const screens:any[]=[],screensBy:any={};
  for(const width of ['wide','panel','phone']){screensBy[width]=[];for(const action of [...new Set([...String(open.html).matchAll(/data-action="(nav:[^"]+)"/g)].map(m=>m[1]))]){const o:any=await execute(code,{...base,viewport:{width,coarse:false},state:open.state??null,event:{kind:'click',action,value:null,form:{}}},answer);screensBy[width].push({action,html:o.html});}}
  screens.push(...screensBy.wide);
+ // The frame prepares the screens each screen links to in the background; the platform answers those reads too.
+ const navs=[...new Set([...String(open.html).matchAll(/data-action="(nav:[^"]+)"/g)].map(m=>m[1]))];
+ for(const width of ['wide','panel','phone'])for(const from of navs){const o:any=await execute(code,{...base,viewport:{width,coarse:false},state:open.state??null,event:{kind:'click',action:from,value:null,form:{}}},answer);for(const to of navs)await execute(code,{...base,viewport:{width,coarse:false},state:o.state??null,event:{kind:'click',action:to,value:null,form:{}}},answer);}
  out.push({id:d.id,version:d.version,open:{html:open.html,css:runtimeCssFor(d.source,open.html)+(open.css??''),state:open.state??null},screens,
   browser:{mode:'v2',version:'v2',digest:sourceDigest(code),reads,reset:false,input:base,styles:runtimeStyles(d.source),source:code},answers:[...all.values()],rebuilt:true,screensBy});
 }
