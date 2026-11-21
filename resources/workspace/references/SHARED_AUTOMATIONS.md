@@ -1,6 +1,6 @@
 # Shared app automations
 
-Contract version: 1.4.6.
+Contract version: 1.5.0.
 
 Apps may expose pre-built recipes when the deployment enables them. Use `read_app_automation_features` for the specific app, `read_app_automation_feature_contexts` when an entry is required, then `prepare_app_automation_feature` and the existing exact `confirm_app_service_review`. An already authorized request to add that automation is sufficient; preserve assistant ownership and current scope checks. New setup is asynchronous: `list_app_automation_setups` distinguishes pending/Needs setup from live definitions. Do not claim an automation is active until the saved definition and readiness checks confirm it. Never replace missing setup with a separate per-app host task. Installation approvals select complete offers by default; later connection or restore never enables missed or paused work automatically.
 
@@ -167,3 +167,12 @@ A completion email is **Database trigger → Research runs → Status becomes co
 Connection setup/status belongs in Connectors → ChatGPT, not the automation editor. Until subscription and background verification are ready, the connector and its dependent research/email cards display Disabled. Management returns `effectiveEnabled` for this operational status, separately from the saved `enabled` intent; a temporary connection failure must not silently rewrite approved definitions or re-enable an intentionally paused rule. Verify the full workflow with readiness, not either flag alone.
 
 If a still-enabled connection temporarily loses subscription/verification, pending completion emails wait and retry under the same run/job identity. They do not consume provider attempts while waiting. Current permission checks and delivery deadlines still apply; an explicit pause or access revocation stops delivery.
+
+## Session 6 rules (21 November 2026)
+
+- **Ownership.** An automation belongs to its app. Every owner of the app sees and manages it; the person it runs as is its linked owner. Changing or switching on an automation linked to someone else returns `move_required`: the user moves it with Move to my account on the website, then it runs on their own connection and rights.
+- **Failures.** Temporary failures retry the same run at 5, 15 and 60 minutes; the automation stays on. Permission and connection failures show `needsAttention` with the cause and one alert, and runs resume once a check passes. If it was approved for tables or settings that changed, it is switched off with the cause: prepare and save it again.
+- **What can write.** Research runs only when the running assistant's Data level is not Blocked, and saves results only with Edit. "Review each change" permissions no longer write: set the automation up again. End dates (`expiresAt`) are optional.
+- **Copies.** A copied automation has no grants and stays off until the user opens and saves it (`copy_review_required`).
+- **Schedules.** Prefer calendar schedules. The organization's minimum research interval (default 60 minutes) applies to after-success schedules and spaces database-triggered research.
+- **Older monitors.** Never create or link a per-app assistant task. Move each older monitor with `read_legacy_monitors` and `migrate_legacy_monitor` after the user agrees to its verification report.

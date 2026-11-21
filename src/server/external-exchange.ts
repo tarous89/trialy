@@ -1,3 +1,4 @@
+import {requireScreened} from '../domain/file-screening.js';
 import type {Express} from 'express';
 import {randomUUID,randomBytes,randomInt} from 'node:crypto';
 import {z} from 'zod';
@@ -103,6 +104,11 @@ export function addExternalExchange(app:Express,s:Service){
     series:x.g.series?{name:x.g.series_name??null,archive}:null};
  }
  app.get('/external-exchange',async(req,res)=>res.json(await s.db.transaction(async tx=>{const x=await load(tx,req);if(x.needsVerification)return {mode:x.g.kind,endsAt:x.e.expires_at,verification:{required:true,verified:false},title:x.g.title,sender:{name:x.g.sender_name,company:x.g.sender_company,logo:!!x.g.logo_version_id},deadline:x.e.expires_at,closed:x.closed,privacyNotice:x.g.privacy_notice,poweredBy:'TrialAgents'};await opened(tx,x);return x.g.kind==='room'?roomModel(tx,x):model(tx,x);})));
+ // X2 (6.9): what a reviewer sent back, with the reason, so the recipient knows to send it again.
+ app.get('/external-exchange/returned',async(req,res)=>res.json(await s.db.transaction(async tx=>{const x=await load(tx,req);requireVerified(x);
+  const rows=(await tx.query(`SELECT r.object_kind AS kind,r.object_id AS id,r.reason,r.created_at AS "returnedAt",f.filename FROM external_rejections r LEFT JOIN exchange_submissions s ON r.object_kind='exchange_submission' AND s.id=r.object_id LEFT JOIN exchange_files f ON r.object_kind='exchange_file' AND f.id=r.object_id
+   WHERE r.workspace_id=$1 AND (s.exchange_id=$2 OR f.exchange_id=$2) ORDER BY r.created_at DESC LIMIT 50`,[x.e.workspace_id,x.e.id])).rows;
+  return {returned:rows.map((r:any)=>({...r,retry:true}))};})));
  app.post('/external-exchange/verify',async(req,res)=>{
   const input=z.object({email:z.string().trim().toLowerCase().email().max(200)}).parse(req.body);
   res.json(await s.db.transaction(async tx=>{const x=await load(tx,req);if(!x.g.verify_email)return {sent:false,reason:'not_required'};
@@ -184,7 +190,9 @@ export function addExternalExchange(app:Express,s:Service){
    if(input.slot){const level=(x.g.levels as any[]).find(l=>l.entry==='signed_document'&&l.slot===input.slot);if(!(x.g.slots as any[]).some(sl=>sl.key===input.slot)||(level&&!(x.e.levels as string[]).includes(level.key)))fail(404,'not_found','Unknown document slot');}
    else{if(!x.g.type_id)fail(400,'no_form','This exchange has no response form');const n=Number((await tx.query('SELECT count(*) AS n FROM exchange_files WHERE exchange_id=$1 AND submission_id IS NULL AND slot IS NULL AND removed_at IS NULL',[x.e.id])).rows[0].n);if(n>=x.g.max_files)fail(400,'file_limit',`Attach at most ${x.g.max_files} files`);}
    const total=Number((await tx.query('SELECT coalesce(sum(byte_size),0) AS n FROM exchange_files WHERE exchange_id=$1',[x.e.id])).rows[0].n);if(total+bytes.length>500*1024*1024)fail(413,'file_capacity','This page has reached its file capacity');
-   const fileId=randomUUID();await tx.query('INSERT INTO exchange_files(id,workspace_id,exchange_id,slot,filename,mime,byte_size,checksum,bytes) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9)',[fileId,x.e.workspace_id,x.e.id,input.slot??null,input.filename,input.mime,bytes.length,checksum(bytes),bytes]);
+   // X2, D35 (6.9): screened on arrival. A refused file is not stored; the sender is told to try again with another file.
+   requireScreened({filename:input.filename,mime:input.mime,bytes},MAX_FILE);
+   const fileId=randomUUID();await tx.query('INSERT INTO exchange_files(id,workspace_id,exchange_id,slot,filename,mime,byte_size,checksum,bytes,screening_status) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,\'passed\')',[fileId,x.e.workspace_id,x.e.id,input.slot??null,input.filename,input.mime,bytes.length,checksum(bytes),bytes]);
    const label=input.slot?(x.g.slots as any[]).find(sl=>sl.key===input.slot)?.label:null;await logExchange(tx,x.e,'uploaded',{fileId,filename:input.filename,byteSize:bytes.length,slot:input.slot??null,label});return {id:fileId,filename:input.filename,byteSize:bytes.length,slot:input.slot??null};}));
  });
  app.delete('/external-exchange/files/:fileId',async(req,res)=>{const fileId=id.parse(req.params.fileId);res.json(await s.db.transaction(async tx=>{const x=await load(tx,req);requireVerified(x);requireOpen(x);const r=(await tx.query('UPDATE exchange_files SET removed_at=now() WHERE id=$1 AND exchange_id=$2 AND submission_id IS NULL AND slot IS NULL AND removed_at IS NULL RETURNING id',[fileId,x.e.id])).rows[0];if(!r)fail(404,'not_found','Draft file not found');return {removed:true};}));});

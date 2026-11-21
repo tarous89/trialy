@@ -118,3 +118,13 @@ GRANT SELECT,INSERT,UPDATE ON assistant_limits TO trialy_runtime;
 GRANT SELECT,INSERT,UPDATE,DELETE ON app_undo_entries TO trialy_runtime;
 -- 5.3: the person's own remembered working context per app (row security: own rows only).
 GRANT SELECT,INSERT,UPDATE,DELETE ON app_person_context TO trialy_runtime;
+
+-- Session 6 (6.3): automation alerts for the owners of an app, and the organization's minimum research interval.
+GRANT SELECT,INSERT,UPDATE ON automation_alerts TO trialy_runtime;
+GRANT UPDATE(automation_min_interval_minutes) ON tenants TO trialy_runtime;
+-- Session 6 (6.5): the delivery ledger is append-only for the runtime.
+GRANT SELECT,INSERT ON automation_deliveries TO trialy_runtime;
+-- Session 6 (6.9): reviewers record rejections; screening status is written once per file.
+GRANT SELECT,INSERT ON external_rejections TO trialy_runtime;
+GRANT UPDATE(screening_status,screening_reason) ON submission_files,exchange_files TO trialy_runtime;
+GRANT UPDATE(intake) ON external_links TO trialy_runtime;

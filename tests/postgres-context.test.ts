@@ -53,7 +53,10 @@ test('worker dispatch uses the authorizing owner through the production adapter 
  assert.equal((await pg.query('SELECT id FROM app_notification_batches WHERE action_id=$1',[action.id])).rows.length,1);
  await withActor(a,()=>s.setAi(a,w.id,false));await pg.query('UPDATE app_actions SET next_at=now() WHERE id=$1',[action.id]);
  await withDatabaseContext({service:'worker'},()=>dispatchAppActions(db));
- assert.equal((await pg.query<any>('SELECT paused FROM app_actions WHERE id=$1',[action.id])).rows[0].paused,true);
+ // T3 (6.3): a permission failure fails closed without switching the automation off: nothing more is sent and it needs attention.
+ const after=(await pg.query<any>('SELECT paused,needs_attention_cause,last_error FROM app_actions WHERE id=$1',[action.id])).rows[0];
+ assert.equal((await pg.query('SELECT id FROM app_notification_batches WHERE action_id=$1',[action.id])).rows.length,1,JSON.stringify(after));
+ assert.ok(after.paused||after.needs_attention_cause,JSON.stringify(after));
 } );
 
 test('app archive suspends and permanent deletion retires every owners automation under runtime RLS without affecting other apps',async t=>{

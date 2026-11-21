@@ -73,7 +73,8 @@ test('External exchange: per-recipient links, drafts and deadline, gates, messag
  // 4. Drafts, files (10 × 25 MB) and versioned resubmission until the deadline; lockout afterwards.
  assert.equal((await a.post('/draft',{data:{name:'Alpha CRO',price:120000,secret:'x'}})).status,400);
  assert.equal((await a.post('/draft',{data:{name:'Alpha CRO',price:120000}})).status,200);
- const file=(text:string,filename='bid.txt')=>({filename,mime:'text/plain',base64:Buffer.from(text).toString('base64')});
+ // D35 (6.9): files are screened, so a .pdf must look like a PDF.
+ const file=(text:string,filename='bid.txt')=>({filename,mime:'text/plain',base64:Buffer.from((filename.toLowerCase().endsWith('.pdf')?'%PDF-1.4\n':'')+text).toString('base64')});
  assert.equal((await a.post('/files',{...file(''),base64:''})).status,413);
  const upload=await a.post('/files',file('Alpha bid v1'));assert.equal(upload.status,200,upload.text);
  const draftPage=await a.get();assert.equal(draftPage.body.draft.data.price,120000);assert.equal(draftPage.body.draft.files.length,1);
@@ -109,15 +110,19 @@ test('External exchange: per-recipient links, drafts and deadline, gates, messag
 
  // 6. Signed document required: other documents unlock only after the owner accepts the signed upload; unaccepted uploads stay out of AI reach.
  const signedGroup=(await change(owner,{kind:'create_exchange_group',config:{appId,title:'CDA first',typeId:bids,fields:['name','price','notes'],documents:[cdaDoc,rfpDoc],gateDocument:cdaDoc,gate:'signed_document',gateSlot:'signed_cda',slots:[{key:'signed_cda',label:'Signed CDA',required:true}],verifyEmail:false}})).group;
- const exC=(await change(owner,{kind:'invite_exchange',groupId:signedGroup.id,recipients:[{emails:['cara@gamma.invalid'],name:'Cara',company:'Gamma CRO'}],days:14})).exchanges[0],c=api(exC.url.split('#')[1]);
- const pageC=await c.get();assert.equal(pageC.status,200,pageC.text);assert.equal(pageC.body.verification.required,false);assert.deepEqual(pageC.body.documents.map((d:any)=>[d.filename,d.locked]),[['CDA.pdf',false],['RFP pack.pdf',true]]);assert.equal(pageC.body.slots[0].status,'requested');
+ // X1 (6.8): confidential documents always ask for email verification, even when the sender switched it off.
+ assert.equal(signedGroup.verify_email??signedGroup.verifyEmail??true,true);
+ const exC=(await change(owner,{kind:'invite_exchange',groupId:signedGroup.id,recipients:[{emails:['cara@gamma.invalid'],name:'Cara',company:'Gamma CRO'}],days:14})).exchanges[0],tokenC=exC.url.split('#')[1];
+ assert.equal((await api(tokenC).get()).body.verification.required,true);
+ const codeC=await api(tokenC).post('/verify',{email:'cara@gamma.invalid'}),sessionC=(await api(tokenC).post('/verify/confirm',{verificationId:codeC.body.verificationId,code:codeC.body.code})).body.session,c=api(tokenC,sessionC);
+ const pageC=await c.get();assert.equal(pageC.status,200,pageC.text);assert.equal(pageC.body.verification.required,true);assert.deepEqual(pageC.body.documents.map((d:any)=>[d.filename,d.locked]),[['CDA.pdf',false],['RFP pack.pdf',true]]);assert.equal(pageC.body.slots[0].status,'requested');
  assert.equal((await c.get('/documents/'+rfpDoc)).status,403);assert.equal((await c.get('/documents/'+cdaDoc)).status,200);
  assert.equal((await c.post('/files',{...file('signed','CDA signed.pdf'),slot:'missing'})).status,404);
  const signed=await c.post('/files',{...file('signed by Cara','CDA signed.pdf'),slot:'signed_cda'});assert.equal(signed.status,200,signed.text);assert.equal((await c.get()).body.slots[0].status,'received');assert.equal((await c.get('/documents/'+rfpDoc)).status,403);
  assert.equal((await run(ai,()=>s.documents(ai,w.id))).length,0,'unaccepted upload is not a document');
  const acceptFile=await prepare(owner,{kind:'accept_exchange_file',fileId:signed.body.id,ai:false});await assert.rejects(run(ai,()=>f.confirm({...ai,actionConfirmed:true},w.id,acceptFile.id,acceptFile.digest)),/cannot approve/);
  const accepted=await run(owner,()=>f.confirm(owner,w.id,acceptFile.id,acceptFile.digest));assert.ok(accepted.versionId);
- assert.equal((await run(owner,()=>s.original(owner,w.id,accepted.versionId))).bytes.toString(),'signed by Cara');assert.equal((await run(ai,()=>s.documents(ai,w.id))).length,0,'accepted without AI access stays hidden from AI');
+ assert.equal((await run(owner,()=>s.original(owner,w.id,accepted.versionId))).bytes.toString(),'%PDF-1.4\nsigned by Cara','the original is kept exactly as it arrived');assert.equal((await run(ai,()=>s.documents(ai,w.id))).length,0,'accepted without AI access stays hidden from AI');
  assert.equal((await c.get()).body.slots[0].status,'accepted');assert.equal((await c.get('/documents/'+rfpDoc)).status,200);
  const statusC=(await run(owner,()=>listExchanges(db,owner,w.id,{groupId:signedGroup.id}))).groups[0]!.exchanges[0]!.status;assert.equal(statusC.documentsBack[0].status,'accepted');
 

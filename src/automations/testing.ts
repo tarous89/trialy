@@ -1,3 +1,4 @@
+import {requireAutomationManager} from './app-owners.js';
 import {randomUUID} from 'node:crypto';
 import {z} from 'zod';
 import type {Database} from '../db/database.js';
@@ -18,7 +19,7 @@ import {readRunData} from './run-data.js';
 export const testInput=z.object({kind:z.enum(['research','action']),automationId:id,expectedVersion:z.number().int().min(0),requestKey:id}).strict();
 
 async function definition(db:Database,a:Actor,w:string,kind:string,automationId:string,version:number){
- const permission=await access(db,a,w);if(permission.role!=='owner')fail(403,'owner_required','Only the owner can test automations');
+ const permission=await requireAutomationManager(db,a,w,null,false);
  const service=kind==='research'?new AppMonitoring(db):new AppActions(db),row=await service.row(a,w,automationId);
  if(row.user_id!==a.userId||row.version!==version)fail(409,'automation_changed','Reload this automation before testing');
  const exec=asOwner(a,ownedBy(row)),checked=kind==='research'?await (service as AppMonitoring).validate(exec,w,row.config):await (service as AppActions).validate(exec,w,row.config,row.scope_stamp);

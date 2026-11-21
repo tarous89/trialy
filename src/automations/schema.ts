@@ -7,7 +7,8 @@ export const schedule=z.discriminatedUnion('kind',[
  z.object({kind:z.literal('calendar'),frequency:z.enum(['daily','weekly','monthly']),time:clock,timeZone,
   anchor:z.iso.date(),interval:z.number().int().min(1).max(52).default(1),weekdays:z.array(z.number().int().min(0).max(6)).min(1).max(7).default([1]),
   monthDay:z.number().int().min(1).max(31).default(1),monthEnd:z.enum(['skip','last_day']).default('last_day'),monthRule:actionTrigger.options[2].shape.monthRule}).strict(),
- z.object({kind:z.literal('after_success'),minutes:z.number().int().min(60).max(525600)}).strict(),
+ // D30: the organization's minimum interval (default 60) is checked when the automation is saved and run.
+ z.object({kind:z.literal('after_success'),minutes:z.number().int().min(15).max(525600)}).strict(),
  z.object({kind:z.literal('once'),at:z.iso.datetime({offset:true})}).strict(),
  actionTrigger.options[4],actionTrigger.options[5].refine(t=>!t.source,'Research triggers use app records; completed run data is for downstream actions')
 ]);

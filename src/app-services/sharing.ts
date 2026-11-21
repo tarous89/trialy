@@ -13,7 +13,9 @@ import {WorkspaceFoundation} from '../workspace/service.js';
 import {appPublicUrl} from '../shared/public-url.js';
 import {enqueueServiceJob} from './jobs.js';
 const J=JSON.stringify;
-export const sharingConfig=z.object({appId:id,appVersion:z.number().int().min(0),kind:z.enum(['email','public']),email:z.email().optional(),mode:z.enum(['view','edit']).default('view'),days:z.number().int().min(1).max(365).default(30),reviewedSource:z.literal(true)}).strict().refine(v=>v.kind!=='email'||!!v.email,'An invited email is required');
+export const sharingConfig=z.object({appId:id,appVersion:z.number().int().min(0),kind:z.enum(['email','public']),email:z.email().optional(),mode:z.enum(['view','edit']).default('view'),days:z.number().int().min(1).max(365).default(30),reviewedSource:z.literal(true)}).strict().refine(v=>v.kind!=='email'||!!v.email,'An invited email is required')
+ // X1, D32 (6.8): a public link publishes. It is read-only; editing through a public link is removed.
+ .refine(v=>v.kind!=='public'||v.mode==='view','A public link is read-only. Invite people to the team to let them edit');
 export class AppSharing{
  constructor(readonly db:Database){}
  async owner(a:Actor,w:string,appId:string,version?:number,validateBindings=true){const p=await access(this.db,a,w,true);await requireAppOwner(this.db,a,p,appId,'Only an owner of this app can share it');const c=await new WorkspaceFoundation(this.db).component(this.db,a,w,appId,validateBindings);if(c.archived||c.project_archived||version!==undefined&&c.version!==version)fail(409,'app_changed','Review the current app');if(c.source_access!=='bindings')fail(409,'source_review','Review and save this app with sourceAccess bindings before sharing its complete code');if(c.allowed_users!==null)fail(409,'app_audience','This app has a restricted audience. Include the recipient before sharing.');let parent=c.project_id;while(parent){const n=(await this.db.query('SELECT parent_id,allowed_users FROM workspace_nodes WHERE id=$1',[parent])).rows[0];if(n?.allowed_users!==null)fail(409,'project_audience','The parent project has a restricted audience');parent=n?.parent_id;}return {p,c};}

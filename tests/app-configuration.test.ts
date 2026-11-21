@@ -163,9 +163,11 @@ test('app duplication optionally copies disabled definitions, remaps follow-ups,
  assert.equal((await db.query('SELECT monitor_id FROM automation_dispatch WHERE monitor_id=$1',[m.id])).rows.length,1);
  assert.equal((await db.query('SELECT id FROM automation_occurrences WHERE monitor_id=$1',[m.id])).rows.length,0);
  assert.equal((await db.query('SELECT enabled FROM app_monitors WHERE id=$1',[monitor])).rows[0].enabled,true);
- // Enabling a valid copied email still runs the existing permission and recipient checks.
- const emailCopy=actionCopies.find(r=>r.config.authoringKey==='email');await actions.control(a,w,emailCopy.id,false);assert.equal((await actions.row(a,w,manual.id)).paused,false);
- await s.share(a,w,b.userId,'editor',[],null,true);await assert.rejects(f.preview(b,w,{...op,copyAutomations:true}),/Only the owner/);
+ // T6 (6.5): a copy stays off until it is opened and saved again; then enabling still runs the permission and recipient checks.
+ assert.ok(actionCopies.every(r=>r.copy_review_required)&&copies.every(r=>r.copy_review_required));
+ const emailCopy=actionCopies.find(r=>r.config.authoringKey==='email');await assert.rejects(actions.control(a,w,emailCopy.id,false),(e:any)=>e.code==='copy_review_required');
+ await db.query('UPDATE app_actions SET copy_review_required=false WHERE id=$1',[emailCopy.id]);await actions.control(a,w,emailCopy.id,false);assert.equal((await actions.row(a,w,manual.id)).paused,false);
+ await s.share(a,w,b.userId,'editor',[],null,true);await assert.rejects(f.preview(b,w,{...op,copyAutomations:true}),/Only (the|an) owner/);
 });
 
 test('generic apps save layout changes without requiring a legacy type or changing data permissions',async t=>{

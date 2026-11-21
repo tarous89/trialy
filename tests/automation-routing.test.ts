@@ -34,7 +34,7 @@ test('MCP routes older clients to the shared guide and rejects unscheduled new r
  assert.equal(page.resource,'monitoring');assert.match(guide,/update my tracker weekly/);assert.match(guide,/Never silently fall back/);
  while(page.nextOffset!==null){page=await read(undefined,page.nextOffset);guide+=page.text;}
  assert.match(guide,/claim_automation_work/);assert.match(guide,/read_app_monitor_records/);
- const legacy=await read('legacy');assert.equal(legacy.resource,'legacy-monitoring');assert.match(legacy.text,/Do not use this document to create a new per-app ChatGPT task/);assert.match(legacy.text,/start_app_monitor_run/);
+ const legacy=await read('legacy');assert.equal(legacy.resource,'legacy-monitoring');assert.match(legacy.text,/Never create, update or link a per-app ChatGPT or Claude task/);assert.match(legacy.text,/start_app_monitor_run/);
  for(const name of ['Update my tracker weekly','Run this every Friday']){
   const r=await rpc('tools/call',{name:'prepare_app_monitoring',arguments:{workspaceId,config:{...config,name}}});
   assert.equal(r.body.result.isError,true);assert.equal(r.body.result.structuredContent.code,'automation_setup_required');assert.match(r.body.result.content[0].text,/read_automation_setup/);

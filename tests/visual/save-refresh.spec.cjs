@@ -27,7 +27,8 @@ async function open(page,host,f){
 async function saveValue(root,frame,value,page){if(page)await page.waitForLoadState('networkidle');await frame.getByLabel('Value',{exact:true}).fill(value);await frame.getByRole('button',{name:'Save value',exact:true}).click();}
 const version=async(page,f)=>(await(await page.request.get(base+`/api/workspaces/${f.workspaceId}/types/${f.typeId}/records`)).json()).rows[0].version;
 
-for(const host of ['web','embedded','public']){
+// D32 (6.8): public links are read-only, so saving is tested on the web and embedded hosts only.
+for(const host of ['web','embedded']){
  test(`A record save is one request, saves once and needs no reload (${host})`,async({page})=>{
   const f=await(await page.request.post(base+'/fixture/publication')).json(),{root,frame}=await open(page,host,f);let saves=0,confirms=0;
   await intercept(page,async(route,op)=>{if(['confirm_workspace_change','approve_workspace_change'].includes(op.name))confirms++;if(op.name==='run_component_frontend'&&op.args?.request?.event?.kind==='submit')saves++;});

@@ -123,7 +123,7 @@ test('monitoring is optional, independent of templates and guarded by production
    await assert.rejects(m.confirm(owner,w.id,stale.id,stale.digest),(e:any)=>e.code==='result_storage_required');
    assert.equal(Number((await pg.query<any>('SELECT count(*) AS n FROM maintenance_scopes')).rows[0].n),before+1);
    await pg.query("UPDATE workspaces SET permission_rules='[]'::jsonb WHERE id=$1",[w.id]);
-   const copied=await change({kind:'copy_component',sourceComponentId:resultApp.id,expectedVersion:0,projectId:project.id,name:'Copied results app',copyAutomations:true}),copiedMonitor=(await pg.query<any>('SELECT * FROM app_monitors WHERE app_id=$1',[copied.id])).rows[0];assert.equal(copiedMonitor.enabled,false);assert.deepEqual(copiedMonitor.config.writeScopes,[]);await assert.rejects(m.control(owner,w.id,copiedMonitor.id,0,true),(e:any)=>e.code==='result_storage_required');
+   const copied=await change({kind:'copy_component',sourceComponentId:resultApp.id,expectedVersion:0,projectId:project.id,name:'Copied results app',copyAutomations:true}),copiedMonitor=(await pg.query<any>('SELECT * FROM app_monitors WHERE app_id=$1',[copied.id])).rows[0];assert.equal(copiedMonitor.enabled,false);assert.deepEqual(copiedMonitor.config.writeScopes,[]);assert.equal(copiedMonitor.copy_review_required,true);await assert.rejects(m.control(owner,w.id,copiedMonitor.id,0,true),(e:any)=>e.code==='copy_review_required');await pg.query('UPDATE app_monitors SET copy_review_required=false WHERE id=$1',[copiedMonitor.id]);await assert.rejects(m.control(owner,w.id,copiedMonitor.id,0,true),(e:any)=>e.code==='result_storage_required');
    await f.revoke(owner,w.id,grant.scopeId);assert.equal((await m.read(ai,w.id,saved.id)).availability,'authorization_required');
    await assert.rejects(m.prepare(owner,w.id,{config:config({storeResults:true})}),(e:any)=>e.code==='result_storage_required','No destination means needs setup, never proposal-only activation');
   });
@@ -131,7 +131,7 @@ test('monitoring is optional, independent of templates and guarded by production
    const draft=await m.prepare(owner,w.id,{config:config({readBindings:[{typeId:table,fields:['name']}]})});
    await save({kind:'update_type',typeId:table,expectedVersion:0,name:'Evidence',fields:[{key:'name',name:'Reinterpreted field',kind:'text'},{key:'url',name:'Source',kind:'text'},{key:'notes',name:'Notes',kind:'text'},{key:'secret',name:'Private',kind:'text',ai:false}]});
    await assert.rejects(m.confirm(owner,w.id,draft.id,draft.digest),/changed/);
-   const guide=await readTrackerDesign({resource:'legacy-monitoring'});assert.match(guide.text,/ANY saved app/);assert.match(guide.text,/read_app_monitor_records/);
+   const guide=await readTrackerDesign({resource:'legacy-monitoring'});assert.match(guide.text,/migrate_legacy_monitor/);assert.match(guide.text,/read_app_monitor_records/);
   });
  });}finally{await pg.close();}
 });

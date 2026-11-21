@@ -37,7 +37,7 @@ export class AccessGrid{
   const trees=await f.nodes(a,w),components=await f.components(a,w);
   const projects=trees.nodes.filter(n=>!n.effective_archived),tools=components.filter(c=>!c.archived&&!c.project_archived);
   const sectionApps=(await this.db.query('SELECT id,source FROM workspace_components WHERE workspace_id=$1 AND archived=false',[w])).rows;
-  const automations=(await this.db.query("SELECT id,config->>'name' AS name,app_id,user_id FROM app_monitors WHERE workspace_id=$1 AND deleted_at IS NULL AND archived_with_app_at IS NULL UNION ALL SELECT id,config->>'name' AS name,app_id,user_id FROM app_actions WHERE workspace_id=$1 AND deleted_at IS NULL AND archived_with_app_at IS NULL",[w])).rows;
+  const automations=(await this.db.query("SELECT id,config->>'name' AS name,app_id,user_id FROM app_monitors WHERE workspace_id=$1 AND deleted_at IS NULL AND archived_with_app_at IS NULL AND archived_at IS NULL UNION ALL SELECT id,config->>'name' AS name,app_id,user_id FROM app_actions WHERE workspace_id=$1 AND deleted_at IS NULL AND archived_with_app_at IS NULL AND archived_at IS NULL",[w])).rows;
   // A2: a table added for an app follows each person's role on that app.
   const appTables=new Map<string,string>((await this.db.query('SELECT t.id,c.name FROM entity_types t JOIN workspace_components c ON c.id=t.origin_app_id WHERE t.workspace_id=$1',[w])).rows.map(r=>[r.id,r.name]));
   // D1: older column restrictions are listed for owners only; the names are restricted information.

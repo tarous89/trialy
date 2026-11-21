@@ -32,7 +32,7 @@ export async function dispatchSchedules(db:Database){
    const next=row.trigger?.kind==='daily'?nextDaily(row.trigger,new Date()):new Date(Date.now()+(row.trigger?.kind==='event'?60:row.interval_minutes*60)*1000);
    await tx.query('UPDATE foundation_schedules SET next_at=$2,event_cursor=$3 WHERE id=$1',[row.id,next,active?row.event_cursor:cursor]);
    await tx.query('RELEASE SAVEPOINT schedule_dispatch');
-  }catch{await tx.query('ROLLBACK TO SAVEPOINT schedule_dispatch');await tx.query('UPDATE foundation_schedules SET paused=true WHERE id=$1',[row.id]);}
+  }catch{await tx.query('ROLLBACK TO SAVEPOINT schedule_dispatch');await tx.query("UPDATE foundation_schedules SET paused=true,off_reason='Switched off: its access or function changed. Set it up again.' WHERE id=$1",[row.id]);}
   return true;
  });
 }
@@ -76,6 +76,12 @@ export async function runFoundation(db:Database){
   await f.checkComponent(actor,row.workspace_id,row.component_context,row.revision_id,row.grant_id);
   const after=await f.stamps(actor,row.workspace_id);if(after.data!==before.data||after.access!==before.access)throw new Error('data_changed');
   const digest=changes.length?checksum(J({runId:row.id,sourceDigest:row.source_digest,changes,stamp:before})):null;
+  // D28 (6.4): a schedule never leaves unsaved proposals. Without a write grant, changes are not kept and the schedule waits to be set up again.
+  if(row.schedule_id&&!row.grant_id&&changes.length){
+   await db.query("UPDATE foundation_runs SET status='failed',result=$3,diagnostic='write_setup_required',finished_at=now(),lease_until=NULL WHERE id=$1 AND lease_token=$2 AND status='running'",[row.id,token,J(result)]);
+   await db.query("UPDATE foundation_schedules SET paused=true,off_reason='Set up again: this schedule changes records but has no write permission. Changes are no longer kept for review.' WHERE id=$1",[row.schedule_id]);
+   return true;
+  }
   await db.query("UPDATE foundation_runs SET status='succeeded',result=$3,proposal=$4,proposal_digest=$5,data_stamp=$6,access_stamp=$7,finished_at=now(),lease_until=NULL WHERE id=$1 AND lease_token=$2 AND status='running' AND NOT cancel_requested",[row.id,token,J(result),changes.length?J(changes):null,digest,before.data,before.access]);
  }catch(e){const allowed=['execution_timeout','execution_failed','execution_interrupted','output_limit','capability_limit','contract_mismatch','data_changed','access_changed','grant_unavailable'];const diagnostic=e instanceof Error&&allowed.includes(e.message)?e.message:'execution_unavailable';await db.query("UPDATE foundation_runs SET status='failed',diagnostic=$3,finished_at=now(),lease_until=NULL WHERE id=$1 AND lease_token=$2 AND status='running'",[row.id,token,diagnostic]);}
  finally{clearInterval(poll);controller.abort();}

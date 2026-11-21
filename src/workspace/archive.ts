@@ -44,13 +44,17 @@ export async function archivedItems(f:WorkspaceFoundation,a:Actor,w:string,input
    const automations=Number((await db.query('SELECT (SELECT count(*) FROM app_monitors WHERE app_id=$1 AND deleted_at IS NULL)+(SELECT count(*) FROM app_actions WHERE app_id=$1 AND deleted_at IS NULL) AS n',[r.id])).rows[0].n);
    items.push({kind:'app',id:r.id,name:r.name,version:r.version,archivedAt:r.archived_at,canRestore:true,canDelete:owner&&human,deleteBlockedReason:owner?(human?null:'Delete permanently on the TrialAgents website'):'Only the workspace owner can delete permanently',keeps:{tables,automations}});
   }
- }else if(owner&&v.kind==='automations'){
-  const rows=(await db.query(`SELECT d.*,c.name AS app_name FROM (
-   SELECT id,app_id,'research' AS kind,config->>'name' AS name,archived_with_app_at,workspace_id,user_id FROM app_monitors WHERE deleted_at IS NULL AND archived_with_app_at IS NOT NULL
-   UNION ALL SELECT id,app_id,'action',config->>'name',archived_with_app_at,workspace_id,user_id FROM app_actions WHERE deleted_at IS NULL AND archived_with_app_at IS NOT NULL
-  ) d JOIN workspace_components c ON c.id=d.app_id AND c.workspace_id=d.workspace_id WHERE d.workspace_id=$1 AND d.user_id=$2 AND c.archived AND c.deleted_at IS NULL ORDER BY d.archived_with_app_at DESC,d.id`,[w,a.userId])).rows;
+ }else if(v.kind==='automations'){
+  // T1, A9 (6.1, 6.2): owners of the app see its archived automations, archived on their own or with the app.
+  const rows=(await db.query(`SELECT d.*,c.name AS app_name,c.archived AS app_archived FROM (
+   SELECT id,app_id,'research' AS kind,config->>'name' AS name,archived_with_app_at,archived_at,workspace_id,user_id FROM app_monitors WHERE deleted_at IS NULL AND (archived_with_app_at IS NOT NULL OR archived_at IS NOT NULL)
+   UNION ALL SELECT id,app_id,'action',config->>'name',archived_with_app_at,archived_at,workspace_id,user_id FROM app_actions WHERE deleted_at IS NULL AND follow_up_of IS NULL AND (archived_with_app_at IS NOT NULL OR archived_at IS NOT NULL)
+  ) d JOIN workspace_components c ON c.id=d.app_id AND c.workspace_id=d.workspace_id WHERE d.workspace_id=$1 AND c.deleted_at IS NULL
+   AND ($3::boolean OR d.user_id=$2 OR EXISTS(SELECT 1 FROM app_members m WHERE m.app_id=d.app_id AND m.user_id=$2 AND m.role='owner'))
+   AND (c.archived AND d.archived_with_app_at IS NOT NULL OR NOT c.archived AND d.archived_at IS NOT NULL)
+  ORDER BY coalesce(d.archived_at,d.archived_with_app_at) DESC,d.id`,[w,a.userId,owner])).rows;
   if(v.summaryOnly)count=rows.length;
-  else for(const r of rows)items.push({kind:'automation',automationKind:r.kind,id:r.id,name:r.name,appId:r.app_id,appName:r.app_name,archivedAt:r.archived_with_app_at,canRestore:true,restoreVia:{kind:'app',id:r.app_id,name:r.app_name},canDelete:false,deleteBlockedReason:`Deleted together with app ${r.app_name}`});
+  else for(const r of rows){const withApp=r.app_archived;items.push({kind:'automation',automationKind:r.kind,id:r.id,name:r.name,appId:r.app_id,appName:r.app_name,archivedAt:withApp?r.archived_with_app_at:r.archived_at,canRestore:true,...(withApp?{restoreVia:{kind:'app',id:r.app_id,name:r.app_name}}:{}),canDelete:false,deleteBlockedReason:`Deleted together with app ${r.app_name}`});}
  }else if(owner&&v.kind==='tables'){
   if(v.summaryOnly)return {kind:v.kind,workspaceId:w,items:[],summaryOnly:true,count:Number((await db.query('SELECT count(*) AS n FROM entity_types WHERE workspace_id=$1 AND archived_at IS NOT NULL AND deleted_at IS NULL',[w])).rows[0].n)};
   const rows=(await db.query('SELECT id,name,version,archived_at,archived_fields FROM entity_types WHERE workspace_id=$1 AND archived_at IS NOT NULL AND deleted_at IS NULL ORDER BY archived_at DESC,name,id',[w])).rows;

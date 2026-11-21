@@ -31,7 +31,8 @@ for(const embedded of [false,true])test(`Published ${embedded?'extension':'stand
  expect(await root.locator('.ty-workspace').evaluate(()=>{const e=new Event('beforeunload',{cancelable:true});return !window.dispatchEvent(e);})).toBe(false);
 });
 
-for(const surface of ['standalone','extension','public'])test(`Open ${surface} app keeps working after publication and dismisses incompatible writes`,async({page})=>{
+// D32 (6.8): public links are read-only; writes after publication are tested on the standalone and extension surfaces.
+for(const surface of ['standalone','extension'])test(`Open ${surface} app keeps working after publication and dismisses incompatible writes`,async({page})=>{
  await page.setViewportSize({width:surface==='standalone'?390:1100,height:900});
  const f=await (await page.request.post(base+'/fixture/publication')).json();expect(f.appId,JSON.stringify(f)).toBeTruthy();
  const call=async(name,args)=>{const r=await (await page.request.post(base+'/fixture/tool',{data:{name,arguments:args}})).json();expect(r.isError,JSON.stringify(r)).not.toBe(true);return r.structuredContent.result;};
