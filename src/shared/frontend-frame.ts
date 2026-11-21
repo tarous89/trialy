@@ -190,14 +190,16 @@ export const FRAME_SCRIPT=String.raw`(()=>{'use strict';
  }
  /** After a screen is shown, the screens it links to are made once in the background; reads they lack come in one request. */
  let warmed='';
+ // An idle slot, at the latest after 100 ms: some browsers (headless, hidden frames) never report idle time.
+ const idle=f=>window.requestIdleCallback?requestIdleCallback(f,{timeout:100}):setTimeout(f,16);
  function warm(){
   if(!browserApp||localOff||serverBusy)return;const actions=[...new Set([...root.querySelectorAll('[data-action]')].map(el=>el.getAttribute('data-action')).filter(a=>/^(nav|tab|screen|view):[\w-]{1,60}$/.test(a||'')))].slice(0,8);
   const key=JSON.stringify([actions,uiState]);if(key===warmed)return;warmed=key;const from=uiState,seq=eventSeq,missing=[],seen=new Set();let i=0;
   // When the linked screens are ready (their reads stored), the frame says so; the speed gate and diagnostics wait for it.
   const step=()=>{if(seq!==eventSeq||!browserApp||i>=actions.length){if(missing.length&&seq===eventSeq)requestReads(missing,{prefetch:true});else if(seq===eventSeq)host.postMessage({kind:'trialy.engine',status:'warm'},'*');return;}
    try{const r=browserApp.run.run(from,{kind:'click',action:actions[i++],value:null,form:{}});const reads=r.kind==='reads'?r.reads:r.kind==='painted'?r.misses:[];for(const x of reads){const k=Engine.readKey(x.name,x.input);if(!seen.has(k)&&missing.length<12){seen.add(k);missing.push(x);}}if(r.kind==='painted'&&r.rollback)store.restore(r.rollback);}catch{}
-   (window.requestIdleCallback||setTimeout)(step);};
-  (window.requestIdleCallback||setTimeout)(step);
+   idle(step);};
+  idle(step);
  }
  function requestReads(reads,context){const id=++readSeq;pendingReads.set(id,{...context,seq:eventSeq});post('trialy.reads',{id,reads:reads.slice(0,12)});}
  function paintLocal(output,event,t0){
