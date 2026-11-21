@@ -22,15 +22,29 @@ Backend coverage includes old-version reads and saves, proposals confirmed after
 
 ## Updating an installed catalog app
 
-An installed catalog app keeps the code of the version it was installed from. When a newer approved version of the same app exists, the app's Settings menu on the website offers **Update to version X** to the workspace owner and editors (`src/workspace/app-update.ts`).
+An installed catalog app keeps the code of the version it was installed from. When a newer approved version of the same app exists, the app's Settings menu on the website offers **Update to version X** to the app's owners (`A3`; `src/workspace/app-update.ts`).
 
 The update is offered only when nothing but the template code would change:
 
 - the saved code is exactly an approved version (changed code, or code of a withdrawn version, is never replaced);
 - both versions have the same installer schema (tables and fields), options, defaults and helper functions. Generated helpers embed their app's version and kit numbers in a constant; those labels alone may differ, and the installed helpers keep the label they were installed with;
-- a version that changes tables, options or helpers needs its own reviewed upgrade and is not offered here.
+- a version that changes tables or helpers is not offered here; it is installed as a new app.
 
 Preparing the update writes only a private review. Confirming it is the ordinary reviewed app save: the app's generated configuration and bindings lines are kept exactly, the template code behind them is replaced, and the revision records the new catalog origin. Name, layout, bindings, data, access, sections and automations are unchanged. People with the app open keep their loaded version until they refresh, as for any publication.
 
-Limits: website only (the ChatGPT and Claude hosts have no update tools yet); one app at a time; no automatic or bulk update. An earlier version must stay approved until its installed copies are updated, because an installed copy counts as unchanged catalog code only while its version is approved.
+Limits: website only (the ChatGPT and Claude hosts have no update tools yet); one app at a time.
+
+### Upgrading to a new major version (7.1, `A3`, `D41`)
+
+A rebuilt app ships as a new major version whose entry lists the earlier versions it upgrades in `upgradeFrom`. Those versions must have the same installer schema and helpers as the new one; options may differ. For such a pair the menu offers **Upgrade to version X**, to the app's owners only (`app_owner_required` for anyone else, checked before anything is prepared):
+
+- records and table connections carry across: the bindings line is kept exactly, and so is `tableMap`;
+- settings carry across: every saved option the new version still has, with a value of the right type, is kept; new options get their defaults; options the new version no longer has (for example the old layout profile) are dropped and listed in the dialog;
+- confirming is the ordinary reviewed app save, and the revision records the new catalog origin.
+
+The upgrade is offered for the newest approved version that is either a plain update or an upgrade. Old versions stay approved until their installed copies have moved (`D41`).
+
+### Automatic speed updates (7.2, `P11`, `D14`, `D15`)
+
+A publisher may declare a version speed-only with `"speedOnly": true` in its entry; the owner approves it with the version (`O4`). The machine check (`speedOnlyCompatible` in `src/workspace/speed-updates.ts`) requires the same engine, installer schema, options, defaults and helpers as the earlier version. An hourly worker pass (`applySpeedUpdates`) then moves every installed copy whose code is still exactly an earlier approved version (`D14`: configuration and layout lines do not count; any change to the code itself means customized, and that copy is skipped). Each update keeps the configuration and bindings lines, writes a revision with the new catalog origin and an audit entry `component.speed_updated` (origin `platform`, recorded under an owner of the app), and the header shows "Updated to faster version X" for seven days while the app stays at that version. A version that is speed-only by declaration but fails the check is never applied automatically; owners can still update by hand when it qualifies as an update. An earlier version must stay approved until its installed copies are updated, because an installed copy counts as unchanged catalog code only while its version is approved.
 
