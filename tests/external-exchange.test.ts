@@ -73,7 +73,8 @@ test('External exchange: per-recipient links, drafts and deadline, gates, messag
  // 4. Drafts, files (10 × 25 MB) and versioned resubmission until the deadline; lockout afterwards.
  assert.equal((await a.post('/draft',{data:{name:'Alpha CRO',price:120000,secret:'x'}})).status,400);
  assert.equal((await a.post('/draft',{data:{name:'Alpha CRO',price:120000}})).status,200);
- const file=(text:string,filename='bid.txt')=>({filename,mime:'text/plain',base64:Buffer.from(text).toString('base64')});
+ // D35 (6.9): files are screened, so a .pdf must look like a PDF.
+ const file=(text:string,filename='bid.txt')=>({filename,mime:'text/plain',base64:Buffer.from((filename.toLowerCase().endsWith('.pdf')?'%PDF-1.4\n':'')+text).toString('base64')});
  assert.equal((await a.post('/files',{...file(''),base64:''})).status,413);
  const upload=await a.post('/files',file('Alpha bid v1'));assert.equal(upload.status,200,upload.text);
  const draftPage=await a.get();assert.equal(draftPage.body.draft.data.price,120000);assert.equal(draftPage.body.draft.files.length,1);
@@ -121,7 +122,7 @@ test('External exchange: per-recipient links, drafts and deadline, gates, messag
  assert.equal((await run(ai,()=>s.documents(ai,w.id))).length,0,'unaccepted upload is not a document');
  const acceptFile=await prepare(owner,{kind:'accept_exchange_file',fileId:signed.body.id,ai:false});await assert.rejects(run(ai,()=>f.confirm({...ai,actionConfirmed:true},w.id,acceptFile.id,acceptFile.digest)),/cannot approve/);
  const accepted=await run(owner,()=>f.confirm(owner,w.id,acceptFile.id,acceptFile.digest));assert.ok(accepted.versionId);
- assert.equal((await run(owner,()=>s.original(owner,w.id,accepted.versionId))).bytes.toString(),'signed by Cara');assert.equal((await run(ai,()=>s.documents(ai,w.id))).length,0,'accepted without AI access stays hidden from AI');
+ assert.equal((await run(owner,()=>s.original(owner,w.id,accepted.versionId))).bytes.toString(),'%PDF-1.4\nsigned by Cara','the original is kept exactly as it arrived');assert.equal((await run(ai,()=>s.documents(ai,w.id))).length,0,'accepted without AI access stays hidden from AI');
  assert.equal((await c.get()).body.slots[0].status,'accepted');assert.equal((await c.get('/documents/'+rfpDoc)).status,200);
  const statusC=(await run(owner,()=>listExchanges(db,owner,w.id,{groupId:signedGroup.id}))).groups[0]!.exchanges[0]!.status;assert.equal(statusC.documentsBack[0].status,'accepted');
 

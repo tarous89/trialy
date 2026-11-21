@@ -1,3 +1,4 @@
+import {ensureScreened} from './file-screening.js';
 import {randomUUID,randomBytes} from 'node:crypto';
 import {z} from 'zod';
 import type {Connection,Database} from '../db/database.js';
@@ -59,6 +60,16 @@ const defaultGateText='The documents and information on this page are confidenti
 const defaultPrivacy='This page is operated by TrialAgents on behalf of the sender. Personal data is limited to your name, email address, organization and what you submit; it is shared only with the sender\'s workspace.';
 
 /** Owners always may; members need the "Send to people outside the workspace" right and app edit access. */
+/**
+ * X2, D34 (6.9): who reviews what comes in. An owner or editor of the app with write access to the target table
+ * (checked again by the record write itself). Sending outside keeps its own grant (exchangeAuthority).
+ */
+export async function reviewAuthority(tx:Connection,a:Actor,w:string,appId:string|null){
+ const p=await access(tx,a,w,true);
+ if(appId){const t=await toolPolicy(tx,a,p,appId);if(!t.grant.write)fail(403,'reviewer_required','Only an owner or editor of this app reviews what comes in');}
+ else if(p.role!=='owner'&&p.workspace_role!=='editor')fail(403,'reviewer_required','Only a team member who can edit this table reviews what comes in');
+ return p;
+}
 export async function exchangeAuthority(tx:Connection,a:Actor,w:string,appId:string|null,write:boolean){
  const p=await access(tx,a,w,write);
  if(write&&p.role!=='owner'){const r=(await tx.query('SELECT external_send FROM workspace_access WHERE workspace_id=$1 AND user_id=$2',[w,a.userId])).rows[0];if(!r?.external_send)fail(403,'external_send_required','"Send to people outside the workspace" is not granted to you');}
@@ -131,8 +142,8 @@ export async function exchangeReview(tx:Connection,a:Actor,w:string,op:ExchangeO
  if(op.kind==='send_exchange_email'){const b=await batchReview(tx,w,op.batchId,op.digest),g=await groupRow(tx,w,b.group_id);await exchangeAuthority(tx,a,w,g.app_id,true);const recipients=await Promise.all((b.rendered as any[]).map(async(r:any)=>{const e=await exchangeRow(tx,w,r.exchangeId);return {to:r.to,exchangeId:e.id,deadline:e.expires_at};}));return {plan:{title:g.title,documents:(g.documents as any[]).map(d=>d.filename),requestedDocuments:(g.slots as any[]).map(s=>s.label),gate:g.gate,emailVerification:g.verify_email,recipients},batchId:b.id,digest:b.digest,emailType:b.email_type,from:b.display_name,replyTo:b.reply_to,scheduledAt:b.scheduled_at,emails:(b.rendered as any[]).map(r=>({to:r.to,exchangeId:r.exchangeId,subject:r.subject,text:r.text,...(r.html?{html:r.html}:{}),...(r.headers&&Object.keys(r.headers).length?{headers:r.headers}:{}),personalised:r.personalised})),effect:b.scheduled_at?'Approve this reminder now; it is sent at the scheduled time with exactly this text.':'Send these emails exactly as shown. Only a person can confirm.'};}
  if(op.kind==='save_exchange_email_default'){await exchangeAuthority(tx,a,w,null,true);return {emailType:op.emailType,text:op.text,placeholders:PLACEHOLDERS.map(k=>`{${k}}`),effect:op.text?'Save this workspace default; it replaces the app default for this email type.':'Remove the workspace default; the app or platform default applies again.'};}
  if(op.kind==='accept_exchange_submission'){
-  const s=(await tx.query('SELECT s.*,x.record_id,x.group_id FROM exchange_submissions s JOIN exchanges x ON x.id=s.exchange_id LEFT JOIN exchange_acceptances acc ON acc.submission_id=s.id WHERE s.id=$1 AND s.workspace_id=$2 AND acc.submission_id IS NULL',[op.submissionId,w])).rows[0];if(!s)fail(409,'submission_unavailable','Submission is unavailable or already accepted');
-  const g=await groupRow(tx,w,s.group_id);await exchangeAuthority(tx,a,w,g.app_id,true);if(!g.type_id)fail(400,'no_form','This exchange has no response table');
+  const s=(await tx.query('SELECT s.*,x.record_id,x.group_id FROM exchange_submissions s JOIN exchanges x ON x.id=s.exchange_id LEFT JOIN exchange_acceptances acc ON acc.submission_id=s.id WHERE s.id=$1 AND s.workspace_id=$2 AND acc.submission_id IS NULL AND NOT EXISTS(SELECT 1 FROM external_rejections rj WHERE rj.object_kind=\'exchange_submission\' AND rj.object_id=s.id)',[op.submissionId,w])).rows[0];if(!s)fail(409,'submission_unavailable','Submission is unavailable or already accepted');
+  const g=await groupRow(tx,w,s.group_id);await reviewAuthority(tx,a,w,g.app_id);if(!g.type_id)fail(400,'no_form','This exchange has no response table');
   const {type,policy}=await typeAccess(tx,a,w,g.type_id);if(visibleFields(type.fields,policy,a).length!==type.fields.length)fail(403,'response_scope','Acceptance requires visibility of every table field');
   const service=new Service(adapter(tx));let target:any;
   if(op.target==='bound'){if(!s.record_id)fail(400,'no_bound_record','This exchange is not bound to a record');const r=(await tx.query('SELECT id,type_id,version FROM records WHERE id=$1 AND workspace_id=$2',[s.record_id,w])).rows[0];if(!r||r.type_id!==g.type_id)fail(409,'record_mismatch','The bound record belongs to another table');await service.validate(tx,a,w,{kind:'update_record',recordId:r.id,expectedVersion:r.version,data:op.data});target={kind:'update_record',recordId:r.id,expectedVersion:r.version};}
@@ -140,8 +151,10 @@ export async function exchangeReview(tx:Connection,a:Actor,w:string,op:ExchangeO
   return {submissionId:s.id,exchangeId:s.exchange_id,version:s.version,typeId:g.type_id,typeVersion:type.version,original:s.data,proposed:op.data,target,effect:op.target==='bound'?'Update the bound record with reviewed values; keep the versioned submission.':'Create one record with reviewed values; keep the versioned submission.'};
  }
  if(op.kind==='accept_exchange_file'){
-  const f=(await tx.query('SELECT f.id,f.exchange_id,f.slot,f.filename,f.mime,f.byte_size,f.checksum,f.submission_id,x.group_id FROM exchange_files f JOIN exchanges x ON x.id=f.exchange_id LEFT JOIN exchange_file_acceptances acc ON acc.file_id=f.id WHERE f.id=$1 AND f.workspace_id=$2 AND acc.file_id IS NULL AND f.removed_at IS NULL AND (f.submission_id IS NOT NULL OR f.slot IS NOT NULL)',[op.fileId,w])).rows[0];if(!f)fail(409,'file_unavailable','File is unavailable, unsubmitted or already accepted');
-  const g=await groupRow(tx,w,f.group_id),p=await exchangeAuthority(tx,a,w,g.app_id,true);if(p.role!=='owner')fail(403,'owner_required','A workspace owner accepts received files');
+  // X2, D35 (6.9): a file is screened before anyone can accept it; a failed file is never released.
+  await ensureScreened(tx,'exchange_files',op.fileId);
+  const f=(await tx.query('SELECT f.id,f.exchange_id,f.slot,f.filename,f.mime,f.byte_size,f.checksum,f.submission_id,x.group_id FROM exchange_files f JOIN exchanges x ON x.id=f.exchange_id LEFT JOIN exchange_file_acceptances acc ON acc.file_id=f.id WHERE f.id=$1 AND f.workspace_id=$2 AND acc.file_id IS NULL AND f.removed_at IS NULL AND (f.submission_id IS NOT NULL OR f.slot IS NOT NULL) AND NOT EXISTS(SELECT 1 FROM external_rejections rj WHERE rj.object_kind=\'exchange_file\' AND rj.object_id=f.id)',[op.fileId,w])).rows[0];if(!f)fail(409,'file_unavailable','File is unavailable, unsubmitted or already accepted');
+  const g=await groupRow(tx,w,f.group_id);await reviewAuthority(tx,a,w,g.app_id);
   // Room: the signed document of a level opens that level for this person only; with notify, they get the access-changed email shown here.
   const unlock=op.notify?await levelUnlockNotice(tx,a,w,g,{...await exchangeRow(tx,w,f.exchange_id)},f.slot):null;
   return {fileId:f.id,exchangeId:f.exchange_id,slot:f.slot,filename:f.filename,mime:f.mime,byteSize:f.byte_size,checksum:f.checksum,ai:op.ai,...(unlock?{unlocks:unlock.level,email:unlock.email}:{}),effect:'Save this received file as a TrialAgents document'+(f.slot===g.gate_slot&&g.gate==='signed_document'?' and unlock the other shared documents for this recipient':'')+(unlock?` and open the ${unlock.level} level for this person, emailing them the access change shown`:'')+'. Unaccepted uploads stay out of AI reach.'};

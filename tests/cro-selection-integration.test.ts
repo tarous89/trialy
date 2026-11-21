@@ -145,7 +145,7 @@ test('Acceptance 2: full selection — RFI → shortlist → RFP with pack and g
   assert.equal((await P.helix.post('/draft',{data:{total:1700000,currency:'EUR'}})).status,200);
   const v1=await P.helix.post('/submit',{nonce:randomUUID(),confirmed:true,data:{total:1720000,pass_through:215000,currency:'EUR',start_weeks:6,duration_months:20,answers:'Initial (fictional).'}});assert.equal(v1.body.version,1);
   const v2=await P.helix.post('/submit',{nonce:randomUUID(),confirmed:true,data:{total:1650000,pass_through:210000,currency:'EUR',start_weeks:6,duration_months:20,answers:'Revised after the clarification (fictional).',assumptions_delta:'10% more on-site visits.'}});assert.equal(v2.body.version,2);
-  const bn=await P.north.post('/files',{filename:'Northlake proposal (fictional).pdf',mime:'application/pdf',base64:Buffer.from('Northlake prices (fictional)').toString('base64')});
+  const bn=await P.north.post('/files',{filename:'Northlake proposal (fictional).pdf',mime:'application/pdf',base64:Buffer.from('%PDF-1.4 '+'Northlake prices (fictional)').toString('base64')});
   await P.north.post('/submit',{nonce:randomUUID(),confirmed:true,data:{total:780000,pass_through:180000,currency:'EUR',start_weeks:4,duration_months:18,answers:'Risk-based monitoring (fictional).',assumptions_delta:'40% fewer monitoring visits.'}});
   await P.meri.post('/submit',{nonce:randomUUID(),confirmed:true,data:{total:1060000,pass_through:195000,currency:'EUR',start_weeks:8,duration_months:21,answers:'Standard model (fictional).'}});
   await x.pg.query("UPDATE exchanges SET expires_at=now()-interval '1 minute' WHERE group_id=$1",[rfp.id]);

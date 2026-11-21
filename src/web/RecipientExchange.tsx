@@ -29,6 +29,9 @@ export function RecipientExchange(){
  }
  async function refresh(){const p=await call();setPage(p);if(p.draft&&!dirty)setData(p.draft.data??{});if(p.recipient?.email)setAckEmail(e=>e||p.recipient.email);return p;}
  useEffect(()=>{if(!token){setError('This link is incomplete.');return;}void refresh().catch(e=>setError(e.message));},[session]);
+ // X2 (6.9): what a reviewer sent back, so the recipient knows to send it again.
+ const [returned,setReturned]=useState<any[]>([]);
+ useEffect(()=>{if(!page||page.verification?.required&&!page.verification?.verified)return;call('/returned').then(d=>setReturned(d.returned??[])).catch(()=>setReturned([]));},[page]);
  async function act(fn:()=>Promise<void>){setBusy(true);setError('');setNotice('');try{await fn();}catch(e){setError((e as Error).message);}finally{setBusy(false);}}
  function onTabKey(e:React.KeyboardEvent,index:number){const n=TABS.length;let next=index;if(e.key==='ArrowRight')next=(index+1)%n;else if(e.key==='ArrowLeft')next=(index-1+n)%n;else if(e.key==='Home')next=0;else if(e.key==='End')next=n-1;else return;e.preventDefault();setTab(TABS[next].id);tabRefs.current[next]?.focus();}
  const closed=!!page?.closed,readOnly=closed||busy;
@@ -54,6 +57,7 @@ export function RecipientExchange(){
   <div role="tablist" aria-label="Sections" className="xp-tabs xp-wrap">{TABS.map((t,i)=><button key={t.id} ref={el=>{tabRefs.current[i]=el;}} role="tab" id={'tab-'+t.id} aria-selected={tab===t.id} aria-controls={'panel-'+t.id} tabIndex={tab===t.id?0:-1} className="xp-tab" onClick={()=>setTab(t.id)} onKeyDown={e=>onTabKey(e,i)}>{t.label}{t.id==='documents'&&page.documents.length>0&&<span className="xp-count" aria-label={`${page.documents.length} documents`}>{page.documents.length}</span>}{t.id==='messages'&&unreadCount>0&&<span className="xp-count">{unreadCount}</span>}</button>)}</div>
   <div className="xp-wrap xp-main" id="xp-content">
    {notice&&<p className="xp-notice" role="status">{notice}</p>}{error&&<p className="xp-error" role="alert">{error}</p>}
+   {returned.map((r:any)=><p key={r.id} className="xp-notice is-warn" role="status">{r.kind==='exchange_file'?`${r.filename??'A file'} was sent back`:'Your response was sent back'}: {r.reason} Please send it again.</p>)}
    {closed&&<p className="xp-notice is-warn" role="status">Submissions closed on {fmtDate(page.deadline)}. Your page stays available to read{page.messagesOpen?' and you can still send messages':''}.</p>}
    <section role="tabpanel" id="panel-brief" aria-labelledby="tab-brief" hidden={tab!=='brief'} className="xp-panel"><h2>Brief</h2>{page.summary?<p className="xp-pre">{page.summary}</p>:<p className="xp-muted">No summary was provided.</p>}{page.dates?.length>0&&<><h3>Key dates</h3><ul className="xp-dates">{page.dates.map((d:any,i:number)=><li key={i}><small>{d.label}</small>{fmtDay(d.date)}</li>)}<li><small>Response deadline</small>{fmtDate(page.deadline)}</li></ul></>}<h3>Sender</h3><p>{page.sender.name}, {page.sender.company}</p>{page.recipient?.name&&<p className="xp-muted">Prepared for {page.recipient.name}{page.recipient.company?`, ${page.recipient.company}`:''}</p>}</section>
    <section role="tabpanel" id="panel-documents" aria-labelledby="tab-documents" hidden={tab!=='documents'} className="xp-panel"><h2>Documents</h2>
