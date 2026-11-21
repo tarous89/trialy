@@ -1,3 +1,19 @@
+# Programs 3.0.0 validation
+
+Validated in the build container on 21 November 2026 with fictional data and disposable PGlite databases, not a deployed account. **Catalog status:** draft (not in the seed; the owner approves versions).
+
+| Command | Result |
+| --- | --- |
+| `node scripts/build-project-template.mjs --check` | Passed for 2.2.1 (rebuilt from `archive/2.2.1/`, JSON and preview unchanged) and 3.0.0 |
+| `node --import tsx scripts/check-app-functions.ts`, `npx tsc --noEmit` | Passed |
+| `node --import tsx --test tests/programs-v2.test.ts` | 14/14 passed, including the design check under current rules (`APP_DESIGN_CHROMIUM=/opt/pw-browsers/chromium`) on 18 screens and panels at 1440, 400 and 390 px: no issues; warnings only for the kit's muted text and navigation colour contrast |
+| `node --import tsx --test tests/programs-v2-integration.test.ts` | 1/1 passed |
+| 2.x suites (`programs*.test.ts`, `project-*.test.ts`) and `template-catalog`, `frame-engine`, `app-update`, `app-templates` | See the commit message of the 7.3 change |
+
+Not verified here: the browser frame (local renders and optimistic saves) on real hosts, the owner-approved upgrade of an installed 2.2.x copy (package 7.1), and the gallery screenshot for 3.0.0 (not generated; the gallery keeps 2.2.1 until approval).
+
+---
+
 # Programs 2.2.0 validation
 
 Validated against the repository host on 15 November 2026 with disposable PGlite databases and fictional data, not a deployed account. **Catalog status:** published (owner approval, 15 November 2026). `templates/catalog-seed.json` names 2.2.0; migration 075 withdraws 2.1.0 once (`tests/template-catalog.test.ts` rehearses it from the live catalog state).

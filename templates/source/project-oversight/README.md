@@ -1,4 +1,25 @@
-# Programs 2.2.0 (`life.project-oversight`)
+# Programs 3.0.0 (`life.project-oversight`)
+
+## 3.0.0: rebuilt on the kit and the v2 app contract (draft)
+
+Package 7.3 / 7.4 of the platform decisions of 19 November 2026 (G2–G8, G11, G14, P3–P5). **3.0.0 is a draft**: it is not in `templates/catalog-seed.json` until the owner approves it (O4). 2.2.1 stays published; its package is archived byte-for-byte under `archive/2.2.1/`, its installer entry points there and the builder rebuilds it from the archive (`--check` proves its JSON and preview are unchanged).
+
+- **Same data, helpers, automations and commands.** The installer schema is byte-identical to 2.2.1, the `functions` (digest helpers), `recommendedAutomations`, `automationFeatures`, the 27 app command names and inputs, the `programs.v2` output fields and `tableMap` are unchanged, so installed 2.2.0 and 2.2.1 copies can be upgraded by their owner (`upgradeFrom: ["2.2.0","2.2.1"]`). Options: `demoLabel` was dropped (the gallery preview labels itself); `heading`, `tableMap`, `pageSize`, `layoutProfile`, `readOnly` and `asOfOverride` stay.
+- **v2 contract.** Line 1 of the source is `'use trialagents v2';`, then `templateLayoutSchema` and `appCommands`. The kit (`kit.*`, `k-` styles) comes from the runtime; `programs.css` holds only the Gantt, matrix and a few layout rules, written against `--k-*` tokens.
+- **No own header, banner or footer.** Messages are returned as `output.notice`; a refused value comes back with an error notice. Partial reads are labelled in a line of the screen, never as zero.
+- **Saving.** Values are edited where they are shown (`kit.cell`) and saved at once with `records.save`, sending the version shown when editing started; side panels (`kit.panel`) create records and edit many fields; Plan has a board by status (`kit.board`, drag and drop or the card menu). Delete is `archive_record`; Undo for the person's own last action (`undo.list` after a save, `undo.run` on click). No "prepared for review" texts remain. Opening never writes.
+- **Screens.** Overview, Timeline, Plan, Gates & decisions, RAID, Updates, Programs, Team, Cash forecast and (owners only) Settings, in the kit's side navigation. The Programs and Program team lists and the cash forecast moved out of Settings to their own screens; the access, automation and "where data comes from" notes are gone; Settings holds only business choices (function lanes, stages, due-soon window, update day, reminder lead time, health definitions) and is shown to owners only (`input.appRole`).
+- **No IDs on screen.** Team members show by name with "Linked" or "Name only"; the workspace member ID is set by Claude or ChatGPT (`team.save`) and never shown or typed. Record IDs and versions are no longer displayed.
+- **Working context.** The Program picker is returned as `output.context {program}` and read from `input.context`; it filters every screen and is remembered for each person.
+- **Each screen reads only its data** in one `records.readMany` (Settings reads programs and settings only; Cash forecast reads the cash table). Pending reads render as "Loading…".
+- **Removed:** the as-of control (the runtime date is used; `asOfOverride` stays for previews and tests), Present mode (its key-milestone table is on the Timeline when one program is selected), the per-row "•••" menus and confirmation dialogs (archive, baseline, promote and reminders save directly, with Undo).
+- **Layout profiles.** `templateLayoutSchema` now names the screens overview, timeline, plan, decisions, raid, updates, programs, team (at most eight; Cash forecast and Settings are always available). A 2.2.x profile that names the old `settings` screen is not valid for 3.0.0 and the default layout applies until `layout.save` writes a new one.
+
+Tests: `tests/programs-v2.test.ts` (every screen, inline saves, slips, board, Settings by role, empty screens, pending reads, context, Undo, commands, the design check under current rules at 1440/400/390 px) and `tests/programs-v2-integration.test.ts` (install, open, one direct save, a stale save refused, one saving command). The 2.x tests are unchanged.
+
+## 2.2.0 and earlier
+
+**Programs 2.2.0 (`life.project-oversight`)**
 
 Milestones, dependencies, risks and decisions across all programs. Scope: [PROGRAMS.md](../../../docs/product/app-template-blueprints/apps/PROGRAMS.md). It follows [modular apps and shared data](../../../docs/product/MODULAR_APPS_AND_SHARED_DATA.md). It replaced Project Oversight 1.0.1 as a new major version. Released packages are archived byte-for-byte under `archive/<version>/` (1.0.1, 2.0.0, 2.1.0); their catalog JSON is unchanged. Saved apps are not migrated. **2.2.0 is published** (owner approval, 15 November 2026; seed entry and migration 075 withdrawing 2.1.0) (scope: [PROGRAMS.md §14](../../../docs/product/app-template-blueprints/apps/PROGRAMS.md#14-programs-220-assistant-control-team-notifications-and-the-weekly-digest)).
 
