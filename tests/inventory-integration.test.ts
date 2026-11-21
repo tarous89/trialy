@@ -13,7 +13,7 @@ test('Inventory real catalog/DB: atomic stock race, replay, failure rollback, la
   const a=await run({},submit(base));assert.ok(tookEffect(a),a.html);
   const saved=await settle(f,actor,w.id,a);assert.deepEqual(await settle(f,actor,w.id,a),saved);
   // D17 (4.4): a save made from the earlier lot version is refused, because the stock revision changed first.
-  await assert.rejects(f.saveAppRecords(actor,w.id,{componentId:component.id,expectedVersion:component.version,requestKey:randomUUID(),changes:[{kind:'update_record',recordId:lot.id,expectedVersion:lot.version,data:{stock_revision:1}}]}),/changed/);
+  await assert.rejects(f.saveAppRecords(actor,w.id,{componentId:component.id,expectedVersion:component.version,requestKey:randomUUID(),changes:[{kind:'update_record',recordId:lot.id,expectedVersion:lot.version,data:{stock_revision:7}}]}),/changed/);
   const after=(await s.records(actor,w.id,map.lots.typeId,{limit:100,offset:0})).rows.find((r:any)=>r.id===lot.id)!;assert.equal(after.data.stock_revision,1);assert.equal(after.version,lot.version+1);
   let moves=(await s.records(actor,w.id,map.movements.typeId,{limit:100,offset:0})).rows;assert.equal(moves.filter((r:any)=>r.data.name===base.name).length,1);assert.equal(moves.filter((r:any)=>r.data.name==='Concurrent receipt').length,0);
   // Two distinct withdrawals against the same current lot: only one may commit.
