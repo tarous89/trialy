@@ -257,7 +257,7 @@ export class WorkspaceFoundation {
   const knownTracker=standardTracker(content.source),pool=request.componentId?activeFrontends:activeDraftFrontends,key=w+':'+a.userId+':'+(request.componentId??request.previewId);
   signal?.throwIfAborted();
   const release=knownTracker?undefined:await pool.acquire(a.userId,key,signal);
-  const changes:any[]=[],invocations:any[]=[],connectorReviews:any[]=[];let layoutProposal:any=null,exchangeProposal:any=null,rerender:{state:unknown;saved:any}|null=null;
+  const changes:any[]=[],invocations:any[]=[],connectorReviews:any[]=[];let layoutProposal:any=null,exchangeProposal:any=null,rerender:{state:unknown;saved:any;notice?:unknown}|null=null;
   try{
    signal?.throwIfAborted();
    // Only queued admission needs to repeat the checks made just above.
@@ -430,7 +430,7 @@ export class WorkspaceFoundation {
     if(layoutProposal&&proposal?.reviewState==='draft')proposal=(await f.finalizeAppPreview(a,w,proposal.id,proposal.digest)).preview;
     const queued=[];for(const v of invocations){const latest=await f.component(tx,a,w,request.componentId!);if(!isDeepStrictEqual(content.execution.find((b:any)=>b.name===v.binding),latest.execution.find((b:any)=>b.name===v.binding)))incompatible();queued.push(await f.invokeComponent(a,w,{...v,componentId:request.componentId,expectedVersion:latest.version}));}return {proposal,queued};
    });
-   if(saved&&!command){rerender={state:output.state,saved};}
+   if(saved&&!command){rerender={state:output.state,saved,notice:output.notice};}
    // G4 (5.3): a v2 app's changed working context is remembered for this person.
    if(v2&&request.componentId&&output.context!==undefined&&J(output.context)!==J(personContext??null))await this.setAppContext(a,w,{componentId:request.componentId,context:output.context}).catch(()=>{});
    const browserPayload=!browser?undefined:browser.mode==='server'?{mode:'server',reason:browser.reason}:seedBytes>SEED_BYTES?{mode:'server',reason:'seed_size'}:
@@ -441,7 +441,9 @@ export class WorkspaceFoundation {
   // After a direct save the app is rendered once more from the saved data, with the state it returned (v1 apps), so the
   // person sees the result without a second request. The queue slot was released first.
   const {requestKey:ignored,...next}=request;
-  return resetBrowser({...await this.runFrontend(a,w,{...next,viewId,state:rerender!.state,event:{kind:'open',action:'',value:null,form:{}}},signal),saved:rerender!.saved});
+  // 7.3: the save's own message survives the re-render, unless the re-render returns one of its own.
+  const after:any=await this.runFrontend(a,w,{...next,viewId,state:rerender!.state,event:{kind:'open',action:'',value:null,form:{}}},signal);
+  return resetBrowser({...after,...(after.notice===undefined&&rerender!.notice!==undefined?{notice:rerender!.notice}:{}),saved:rerender!.saved});
  }
  /**
   * P3, P6, P8 (4.3): an app's reads without its sandbox or queue. The app is checked once, the reads run with the
@@ -647,7 +649,8 @@ export class WorkspaceFoundation {
     // G13, P9 (5.7): every screen of a custom app is checked, not only the first: each screen its navigation names.
     else for(const action of [...new Set([...String(initialOutput.html).matchAll(/data-action="((?:nav|tab|screen|view):[\w-]{1,60})"/g)].map(m=>m[1]!))].slice(0,9)){try{const output=await f.runFrontend(a,w,{previewId:preview.id,state:initialOutput.state,event:{kind:'click',action,value:null,form:{}}});frames.push({name:action,html:output.html,css:output.css});}catch{/* A screen that needs saved data is checked once the app is saved. */}}
     // 5.7: new apps are checked against the current rules; unchanged catalog code as published, until its rebuild (7.3).
-    designQuality=await inspectAppDesign(frames,!standard&&await isCatalogSource(f.db,op.content.source)?'v1-catalog':'current');
+    // 7.5: rebuilt catalog code (v2) is held to the current rules; only unchanged v1 catalog code keeps the rules it was published under.
+    designQuality=await inspectAppDesign(frames,!standard&&!isV2Source(op.content.source)&&await isCatalogSource(f.db,op.content.source)?'v1-catalog':'current');
     if(designQuality.status!=='passed')fail(422,'app_design_quality',JSON.stringify({message:'Repair the app design before preparing it again.',requestKey:key,previewId:replace,expectedDigest:prior?.digest,designQuality}));
    }
    const row=(await tx.query('SELECT body FROM workspace_previews WHERE id=$1',[preview.id])).rows[0];

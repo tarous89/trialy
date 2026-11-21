@@ -1,0 +1,228 @@
+{
+  "kit": "1.2.0",
+  "slug": "patent-radar",
+  "id": "life.patent-radar",
+  "version": "1.0.1",
+  "name": "Patent Radar",
+  "prefix": "patentradar",
+  "trackerTable": "families",
+  "trackerLabel": "Patent families",
+  "itemLabel": "patent family",
+  "itemsLabel": "patent families",
+  "cadence": "monthly",
+  "disclaimer": "Not legal advice: patent status, claims and expiry dates are research notes; confirm them with a patent attorney.",
+  "comingDays": 730,
+  "scopeFields": [
+    {
+      "key": "targets",
+      "name": "Targets or technologies",
+      "kind": "text",
+      "required": true,
+      "placeholder": "e.g. LPA1 antagonists, inhaled formulations"
+    },
+    {
+      "key": "cpc",
+      "name": "CPC classes",
+      "kind": "text",
+      "placeholder": "e.g. A61K31, A61P11/00"
+    },
+    {
+      "key": "assignees",
+      "name": "Assignees to watch",
+      "kind": "text",
+      "placeholder": "Comma-separated"
+    },
+    {
+      "key": "own_families",
+      "name": "Our own families",
+      "kind": "text",
+      "placeholder": "Family IDs, comma-separated"
+    },
+    {
+      "key": "offices",
+      "name": "Offices",
+      "kind": "text",
+      "placeholder": "e.g. EP, US, WO, CN, JP"
+    }
+  ],
+  "trackerFields": [
+    {
+      "key": "title",
+      "name": "Title",
+      "kind": "text",
+      "required": true
+    },
+    {
+      "key": "family_id",
+      "name": "Family ID",
+      "kind": "text",
+      "description": "INPADOC or DOCDB family ID."
+    },
+    {
+      "key": "numbers",
+      "name": "Publication numbers",
+      "kind": "text",
+      "description": "Comma-separated, e.g. EP1234567A1, US11222333B2."
+    },
+    {
+      "key": "office",
+      "name": "Main office",
+      "kind": "select",
+      "options": [
+        "EP",
+        "US",
+        "WO",
+        "CN",
+        "JP",
+        "other"
+      ]
+    },
+    {
+      "key": "assignee_id",
+      "name": "Assignee",
+      "kind": "text",
+      "description": "Record ID of an organizations record."
+    },
+    {
+      "key": "assignee_name",
+      "name": "Assignee name",
+      "kind": "text"
+    },
+    {
+      "key": "priority_date",
+      "name": "Priority date",
+      "kind": "date"
+    },
+    {
+      "key": "status",
+      "name": "Status",
+      "kind": "select",
+      "options": [
+        "filed",
+        "published",
+        "granted",
+        "lapsed",
+        "expired",
+        "opposed",
+        "withdrawn"
+      ]
+    },
+    {
+      "key": "expiry_estimate",
+      "name": "Expiry (estimate)",
+      "kind": "date",
+      "description": "Estimated expiry of the main patent; extensions not included unless stated."
+    },
+    {
+      "key": "cpc",
+      "name": "CPC classes",
+      "kind": "text"
+    },
+    {
+      "key": "claims_summary",
+      "name": "Claims summary",
+      "kind": "text",
+      "description": "Two lines on what the independent claims cover."
+    },
+    {
+      "key": "own_family",
+      "name": "Our own family",
+      "kind": "boolean"
+    }
+  ],
+  "naturalKey": {
+    "label": "family ID",
+    "rule": "The INPADOC or DOCDB family ID, e.g. \"inpadoc:12345678\"; when it isn't known yet, \"pub:\" and the earliest publication number without spaces."
+  },
+  "dateField": {
+    "key": "expiry_estimate",
+    "label": "Expiry (estimate)"
+  },
+  "eventKinds": [
+    {
+      "key": "patent_published",
+      "label": "Published"
+    },
+    {
+      "key": "patent_granted",
+      "label": "Granted"
+    },
+    {
+      "key": "legal_event",
+      "label": "Legal event"
+    },
+    {
+      "key": "opposition",
+      "label": "Opposition"
+    },
+    {
+      "key": "expiry_upcoming",
+      "label": "Expiry upcoming"
+    }
+  ],
+  "digestSection": {
+    "title": "New grants and legal events",
+    "kinds": [
+      "patent_granted",
+      "legal_event",
+      "opposition"
+    ],
+    "hint": "grants, legal events, oppositions"
+  },
+  "listColumns": [
+    "natural_key",
+    "title",
+    "assignee_name",
+    "office",
+    "status",
+    "priority_date",
+    "expiry_estimate",
+    "own_family"
+  ],
+  "optionLabels": {
+    "WO": "WO (PCT)"
+  },
+  "sources": [
+    {
+      "name": "Espacenet",
+      "covers": "Worldwide publications, INPADOC families and legal status.",
+      "priority": 1,
+      "notes": "Use the public site on the web."
+    },
+    {
+      "name": "Google Patents",
+      "covers": "Full text, claims and citations.",
+      "priority": 2,
+      "notes": "Use the public site on the web."
+    },
+    {
+      "name": "Lens.org",
+      "covers": "Families, assignees and scholarly links.",
+      "priority": 3,
+      "notes": "Use the public site on the web."
+    },
+    {
+      "name": "USPTO",
+      "covers": "US applications, grants, PTAB and term adjustments.",
+      "priority": 4,
+      "notes": "Use the public site on the web."
+    },
+    {
+      "name": "EPO Register",
+      "covers": "EP procedure, oppositions and legal events.",
+      "priority": 5,
+      "notes": "Use the public site on the web."
+    }
+  ],
+  "instruction": "You watch patents for the scopes below. For each active scope, find patent families on its targets or technologies, CPC classes, assignees and offices, and changes since the last run: new publications, grants, legal events (lapses, transfers, extensions), oppositions and expiries in the next 24 months. Keep one row per family with its publication numbers, assignee, status, priority date, estimated expiry and a two-line claims summary, and record each change as an event; record an upcoming expiry as an expiry_upcoming event dated on the estimated expiry, marked expected. Watch the scope's own families too. This is research, not legal advice: never state that a product is free to operate or infringes.",
+  "examplePrompts": [
+    {
+      "prompt": "Set up Patent Radar for LPA1 antagonists and our own families, and build it now.",
+      "expectedBehavior": "Install Patent Radar, add a scope (targets, CPC, own families), then Build now in chat: families with status and estimated expiry, events and a run with its source report. Everything is labelled \"Not legal advice\"."
+    },
+    {
+      "prompt": "Which competitor patents expire in the next two years?",
+      "expectedBehavior": "Read Patent Radar families and expiry_upcoming events for the scope and list them with estimated dates, marked as estimates and not legal advice. Nothing is written."
+    }
+  ]
+}
