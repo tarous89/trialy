@@ -26,11 +26,11 @@ async function openApp(page,app,viewport){
  await page.waitForFunction(()=>window.msgs.some(m=>m.kind==='trialy.ready'));
  await page.evaluate(app=>{for(const a of app.answers)window.answers.set(a.name+'|'+JSON.stringify((function canon(v){return Array.isArray(v)?v.map(canon):v&&typeof v==='object'?Object.fromEntries(Object.keys(v).sort().map(k=>[k,canon(v[k])])):v;})(a.input===undefined?{}:a.input)),a);
   window.send({kind:'trialy.render',channel:'gate',fresh:true,html:app.open.html,css:app.open.css,state:app.open.state,controls:[],connected:false,fill:app.browser.version==='v2',browser:app.browser,verify:{state:null,event:{kind:'open',action:'',value:null,form:{}}}});},app);
- await page.waitForFunction(()=>window.msgs.some(m=>m.kind==='trialy.engine'),null,{timeout:30000});
- const status=await page.evaluate(()=>window.msgs.find(m=>m.kind==='trialy.engine'));
+ await page.waitForFunction(()=>window.msgs.some(m=>m.kind==='trialy.engine'&&m.status!=='warm'),null,{timeout:30000});
+ const status=await page.evaluate(()=>window.msgs.find(m=>m.kind==='trialy.engine'&&m.status!=='warm'));
  expect(status.status,`${app.id}: the engine loads and the first screen matches the server`).toBe('loaded');
- // Background preparation of linked screens may ask for reads once; wait until it settles.
- await page.waitForTimeout(400);
+ // Background preparation of linked screens may ask for reads once; the frame says when it has settled.
+ await page.waitForFunction(()=>window.msgs.some(m=>m.kind==='trialy.engine'&&m.status==='warm'),null,{timeout:30000});
  return page.frameLocator('#f');
 }
 async function act(page,frame,selector,how){

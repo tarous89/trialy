@@ -193,7 +193,8 @@ export const FRAME_SCRIPT=String.raw`(()=>{'use strict';
  function warm(){
   if(!browserApp||localOff||serverBusy)return;const actions=[...new Set([...root.querySelectorAll('[data-action]')].map(el=>el.getAttribute('data-action')).filter(a=>/^(nav|tab|screen|view):[\w-]{1,60}$/.test(a||'')))].slice(0,8);
   const key=JSON.stringify([actions,uiState]);if(key===warmed)return;warmed=key;const from=uiState,seq=eventSeq,missing=[],seen=new Set();let i=0;
-  const step=()=>{if(seq!==eventSeq||!browserApp||i>=actions.length){if(missing.length&&seq===eventSeq)requestReads(missing,{prefetch:true});return;}
+  // When the linked screens are ready (their reads stored), the frame says so; the speed gate and diagnostics wait for it.
+  const step=()=>{if(seq!==eventSeq||!browserApp||i>=actions.length){if(missing.length&&seq===eventSeq)requestReads(missing,{prefetch:true});else if(seq===eventSeq)host.postMessage({kind:'trialy.engine',status:'warm'},'*');return;}
    try{const r=browserApp.run.run(from,{kind:'click',action:actions[i++],value:null,form:{}});const reads=r.kind==='reads'?r.reads:r.kind==='painted'?r.misses:[];for(const x of reads){const k=Engine.readKey(x.name,x.input);if(!seen.has(k)&&missing.length<12){seen.add(k);missing.push(x);}}if(r.kind==='painted'&&r.rollback)store.restore(r.rollback);}catch{}
    (window.requestIdleCallback||setTimeout)(step);};
   (window.requestIdleCallback||setTimeout)(step);
@@ -220,7 +221,8 @@ export const FRAME_SCRIPT=String.raw`(()=>{'use strict';
  function receiveReads(v){
   const context=pendingReads.get(v.id);if(!context)return;pendingReads.delete(v.id);
   if(!v.failed&&Array.isArray(v.results))store.seed(v.results);
-  if(context.prefetch||context.seq!==eventSeq)return;
+  if(context.prefetch){host.postMessage({kind:'trialy.engine',status:'warm'},'*');return;}
+  if(context.seq!==eventSeq)return;
   if(v.failed){serverBusy=true;post('trialy.event',{event:context.event,state:context.from});return;}
   if(!runLocal(context.event,context.from,(context.round||0)+1)){serverBusy=true;post('trialy.event',{event:context.event,state:context.from});}
  }
