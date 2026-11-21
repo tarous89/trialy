@@ -68,7 +68,8 @@ async function itemState(db:Database,a:Actor,w:string,c:ActionConfig,recordId:st
  });
 }
 export async function enqueueNotification(db:Database,a:Actor,w:string,row:any,c:ActionConfig,occurrence:string,recordId?:string,context:any={},rerouteFrom?:string){
- const old=(await db.query('SELECT b.id,b.status FROM app_notification_occurrences o JOIN app_notification_batches b ON b.id=o.batch_id WHERE o.action_id=$1 AND o.action_version=$2 AND o.occurrence=$3',[row.id,row.version,occurrence])).rows[0];
+ // T4 (6.5): a due occurrence is handled once whatever the automation's version, so an edit never sends the same notice again.
+ const old=(await db.query("SELECT b.id,b.status FROM app_notification_occurrences o JOIN app_notification_batches b ON b.id=o.batch_id WHERE o.action_id=$1 AND o.occurrence=$3 AND (o.action_version=$2 OR b.status<>'cancelled') ORDER BY (o.action_version=$2) DESC LIMIT 1",[row.id,row.version,occurrence])).rows[0];
  if(old&&!(old.id===rerouteFrom&&old.status==='collecting'))return {id:old.id,status:old.status==='collecting'?'queued':old.status,replayed:true,notification:true};
  const p=await access(db,a,w);await db.query('INSERT INTO app_notification_account_locks(tenant_id) VALUES($1) ON CONFLICT DO NOTHING',[p.tenant_id]);await db.query('SELECT tenant_id FROM app_notification_account_locks WHERE tenant_id=$1 FOR UPDATE',[p.tenant_id]);
  const state=await itemState(db,a,w,c,recordId??null,occurrence);if(!state)return {id:null,status:'cancelled',diagnostic:'condition_no_longer_met'};
@@ -188,6 +189,11 @@ export async function dispatchNotificationBatch(db:Database){
    }
    if(r.status!=='pending')continue;
    try{const current=await notificationRecipients(d,a,b.workspace_id,c,r.email,valid[0]?.data);if(current[0].id!==r.user_id)throw Object.assign(Error('changed'),{status:403});}catch(e:any){if(![403,404,409].includes(e.status))throw e;await tx.query("UPDATE app_notification_recipients SET status='cancelled',diagnostic='recipient_access_changed' WHERE batch_id=$1 AND user_id=$2",[b.id,r.user_id]);continue;}
+   // T4 (6.5): the delivery ledger. A recipient never gets the same business event for the same due occurrence twice.
+   // Sends that were cancelled before any attempt, or failed, do not count.
+   const events=valid.map((i:any)=>({event:String(i.item_key),occurrence:String(i.occurrence)}));
+   const delivered=events.length?Number((await tx.query("SELECT count(*) AS n FROM automation_deliveries x JOIN app_service_jobs j ON j.id=x.job_id WHERE x.automation_id=$1 AND x.recipient=$2 AND j.status NOT IN ('cancelled','failed') AND (x.business_event,x.occurrence) IN (SELECT * FROM unnest($3::text[],$4::text[]))",[b.action_id,String(r.email).toLowerCase(),events.map(x=>x.event),events.map(x=>x.occurrence)])).rows[0].n):0;
+   if(events.length&&delivered>=events.length){await tx.query("UPDATE app_notification_recipients SET status='cancelled',diagnostic='already_delivered' WHERE batch_id=$1 AND user_id=$2",[b.id,r.user_id]);continue;}
    const jobId=randomUUID(),budget=await reserveNotification(d,b.tenant_id,r.email,jobId,false,{actionId:b.action_id,trigger:c.trigger});
    if(!budget.allowed){pending=true;next=new Date(Math.min(next.getTime(),budget.nextAt.getTime()));await tx.query('UPDATE app_notification_recipients SET diagnostic=$3 WHERE batch_id=$1 AND user_id=$2',[b.id,r.user_id,budget.reason]);continue;}
    const step=c.steps[0],context={record:valid[0].data,recordId:valid[0].record_id,steps:valid[0].context,run:valid[0].run},multiple=valid.length>1;
@@ -196,6 +202,7 @@ export async function dispatchNotificationBatch(db:Database){
    const payload={origin:b.origin,action:{runId:b.id,version:b.action_version},notification:{batchId:b.id,recipientId:r.user_id,...(summary?{summaryRunId:b.summary_run_id}:{}),digest:checksum(J(valid.map(i=>[i.item_key,i.signature,i.context])))},message};
    let job;try{job=await enqueueServiceJob(d,a,b.workspace_id,b.app_id,'email','notification:'+jobId,payload,23*3600,jobId);}catch(e:any){if(![413,429].includes(e.status))throw e;await tx.query('UPDATE app_notification_reservations SET released=true WHERE job_id=$1 AND attempted_at IS NULL',[jobId]);if(e.status===429){pending=true;next=new Date(Math.min(next.getTime(),later(3600).getTime()));}else await tx.query("UPDATE app_notification_recipients SET status='failed',diagnostic='notification_size' WHERE batch_id=$1 AND user_id=$2",[b.id,r.user_id]);continue;}
    await tx.query("UPDATE app_notification_recipients SET status='queued',job_id=$3,diagnostic=NULL WHERE batch_id=$1 AND user_id=$2",[b.id,r.user_id,job.id]);
+   for(const x of events)await tx.query('INSERT INTO automation_deliveries(workspace_id,automation_id,recipient,business_event,occurrence,job_id) VALUES($1,$2,$3,$4,$5,$6) ON CONFLICT DO NOTHING',[b.workspace_id,b.action_id,String(r.email).toLowerCase(),x.event,x.occurrence,job.id]);
    await tx.query("UPDATE app_notification_batches SET status='sending' WHERE id=$1",[b.id]);pending=true;next=new Date(Math.min(next.getTime(),later(2).getTime()));
   }
   const remaining=(await tx.query("SELECT status FROM app_notification_recipients WHERE batch_id=$1 AND status IN ('pending','queued')",[b.id])).rows.length;

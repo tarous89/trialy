@@ -60,10 +60,10 @@ export class AutomationManagement{
   const blockedIds=dependencies.filter(d=>d.blockedReason||d.runnerIds.length&&stateOf(d)!=='ready').map(d=>d.id);
   const rows=(await this.db.query(`SELECT d.*,c.name AS app_name,c.archived AS app_archived,lu.name AS linked_name FROM (
    SELECT m.id,m.app_id,m.workspace_id,m.user_id,m.version,'research' AS kind,coalesce(m.assistant,'chatgpt') AS executor,m.config->>'name' AS name,m.enabled,m.config->>'expiresAt' AS expires_at,coalesce(m.config->'automation'->'trigger',m.config->'schedule') AS trigger,m.created_at,
-    concat_ws(E'\\n\\n',m.config->>'objective',m.config->>'instructions') AS prompt,NULL::jsonb AS steps,(m.config->'automation' IS NULL AND m.task IS NOT NULL) AS external_schedule,m.config->'automation'->>'runnerId' AS runner_id,m.assistant AS owner,m.off_reason,m.needs_attention_cause
+    concat_ws(E'\\n\\n',m.config->>'objective',m.config->>'instructions') AS prompt,NULL::jsonb AS steps,(m.config->'automation' IS NULL AND m.task IS NOT NULL) AS external_schedule,m.config->'automation'->>'runnerId' AS runner_id,m.assistant AS owner,m.off_reason,m.needs_attention_cause,m.copy_review_required
    FROM app_monitors m WHERE m.deleted_at IS NULL AND m.archived_with_app_at IS NULL AND m.archived_at IS NULL
    UNION ALL
-   SELECT a.id,a.app_id,a.workspace_id,a.user_id,a.version,'action','trialagents',a.config->>'name',NOT a.paused,a.config->>'expiresAt',a.config->'trigger',a.created_at,NULL,a.config->'steps',false,NULL,a.assistant,a.last_error,a.needs_attention_cause
+   SELECT a.id,a.app_id,a.workspace_id,a.user_id,a.version,'action','trialagents',a.config->>'name',NOT a.paused,a.config->>'expiresAt',a.config->'trigger',a.created_at,NULL,a.config->'steps',false,NULL,a.assistant,a.last_error,a.needs_attention_cause,a.copy_review_required
    FROM app_actions a WHERE a.deleted_at IS NULL AND a.archived_with_app_at IS NULL AND a.archived_at IS NULL AND a.follow_up_of IS NULL
   ) d JOIN workspace_components c ON c.id=d.app_id AND c.workspace_id=d.workspace_id LEFT JOIN users lu ON lu.id=d.user_id
   WHERE d.workspace_id=$1 AND ($9::boolean OR d.user_id=$2 OR EXISTS(SELECT 1 FROM app_members am WHERE am.app_id=d.app_id AND am.user_id=$2 AND am.role='owner')) AND ($3::uuid IS NULL OR d.app_id=$3)
@@ -134,7 +134,7 @@ export class AutomationManagement{
   const c=await new WorkspaceFoundation(this.db).component(this.db,a,w,r.app_id,false);
   const controlRevision=(await this.db.query("SELECT coalesce(max(event_sequence),0)::text revision FROM audit_events WHERE workspace_id=$1 AND object_id=$2 AND action IN ('monitoring.controlled','app_action.paused')",[w,r.id])).rows[0].revision;
   const mine=r.user_id===a.userId;
-  return {id:r.id,version:r.version,kind,executor:kind==='research'?ownedBy(r)??'chatgpt':'trialagents',owner:ownedBy(r),mine,linkedOwner:{id:r.user_id,name:r.linked_name??null},canEdit:mine&&canEdit(a,ownedBy(r)),offReason:kind==='research'?r.off_reason??null:r.last_error??null,enabled:kind==='research'?r.enabled:!r.paused,controlRevision,archived:!!r.archived_at,lastError:kind==='action'?r.last_error??null:null,config:r.config,archivedWithApp:!!r.archived_with_app_at,app:{id:c.id,name:c.name,url:appUrl({workspaceId:w,appId:c.id}),archived:c.archived||c.project_archived},managementOnly:true,task:r.task??null};
+  return {id:r.id,version:r.version,kind,executor:kind==='research'?ownedBy(r)??'chatgpt':'trialagents',owner:ownedBy(r),mine,linkedOwner:{id:r.user_id,name:r.linked_name??null},canEdit:mine&&canEdit(a,ownedBy(r)),offReason:kind==='research'?r.off_reason??null:r.last_error??null,enabled:kind==='research'?r.enabled:!r.paused,controlRevision,archived:!!r.archived_at,copyReviewRequired:!!r.copy_review_required,lastError:kind==='action'?r.last_error??null:null,config:r.config,archivedWithApp:!!r.archived_with_app_at,app:{id:c.id,name:c.name,url:appUrl({workspaceId:w,appId:c.id}),archived:c.archived||c.project_archived},managementOnly:true,task:r.task??null};
  }
  async prepareControl(a:Actor,w:string,input:unknown){
   const change=automationControl.parse(input),automation=await this.read(a,w,change.kind,change.automationId);if(change.enabled){requireLinkedOwner(a,{user_id:automation.linkedOwner.id},automation.linkedOwner.name);requireAutomationOwner(a,automation.owner);}
