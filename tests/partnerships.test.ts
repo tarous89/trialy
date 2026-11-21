@@ -23,14 +23,14 @@ test('package: catalog entry, seven screens, limits, build --check, installer, s
  // 2.1.0 is published and immutable: its catalog JSON and package stay byte-identical (archive/2.1.0 holds the package and its preview).
  const v21=JSON.parse(await readFile('templates/apps/life.partnership-tracker-2.1.0.json','utf8'));assert.equal(v21.version,'2.1.0');assert.equal(v21.recommendedAutomations.length,3);
  assert.equal(JSON.parse(await readFile(root+'archive/2.1.0/catalog.metadata.json','utf8')).version,'2.1.0');assert.match(await readFile(root+'archive/2.1.0/partnerships.source.js','utf8'),/Partnerships 2\.1\.0/);
- const layout=JSON.parse(/^const templateLayoutSchema=(.+);$/m.exec(await readFile(root+'partnerships.source.js','utf8'))![1]);
+ const layout=JSON.parse(/^const templateLayoutSchema=(.+);$/m.exec(await readFile(root+'archive/2.2.1/partnerships.source.js','utf8'))![1]);
  assert.deepEqual(layout.screens.map((s:any)=>s.id),SCREENS);
  assert.ok(entry.source!.length<=240000,'source '+entry.source!.length);assert.ok(Buffer.byteLength(JSON.stringify(entry))<=380000);
  assert.doesNotMatch(entry.source!,/const templateConfiguration|const templateBindings/,'the host prepends configuration and bindings');
  assert.match(execFileSync('node',['scripts/build-partnerships-template.mjs','--check'],{encoding:'utf8'}),/verified/);
  assert.match(execFileSync('node',['scripts/build-partnership-template.mjs','--check'],{encoding:'utf8'}),/1\.1\.1: catalog and preview verified/);
  const installers=JSON.parse(await readFile('templates/catalog-installers.json','utf8'));
- assert.equal(installers['life.partnership-tracker@2.2.1'],root+'schema.example.json');assert.equal(installers['life.partnership-tracker@2.1.0'],root+'archive/2.1.0/schema.example.json');assert.equal(installers['life.partnership-tracker@2.0.0'],root+'archive/2.0.0/schema.example.json');assert.equal(installers['life.partnership-tracker@1.1.1'],root+'archive/1.1.1/schema_mapping.example.json');
+ assert.equal(installers['life.partnership-tracker@2.2.1'],root+'archive/2.2.1/schema.example.json');assert.equal(installers['life.partnership-tracker@2.1.0'],root+'archive/2.1.0/schema.example.json');assert.equal(installers['life.partnership-tracker@2.0.0'],root+'archive/2.0.0/schema.example.json');assert.equal(installers['life.partnership-tracker@1.1.1'],root+'archive/1.1.1/schema_mapping.example.json');
  // 2.0.0 was imported as a draft by an earlier deployment; catalog rows are immutable, so its files stay byte-identical in the archive.
  const old=JSON.parse(await readFile('templates/apps/life.partnership-tracker-2.0.0.json','utf8'));assert.equal(old.version,'2.0.0');assert.equal(old.recommendedAutomations,undefined);
  assert.equal(JSON.stringify(Object.keys(JSON.parse(await readFile(root+'archive/2.0.0/schema.example.json','utf8')))),JSON.stringify(Object.keys(schema).filter(k=>k!=='partnerships.research_reports')));
@@ -39,7 +39,7 @@ test('package: catalog entry, seven screens, limits, build --check, installer, s
  assert.match(await readFile('migrations/071_approve_partnerships_2_1_0.sql','utf8'),/SET status='draft' WHERE template_id='life\.partnership-tracker' AND version='1\.1\.1' AND status='approved'/);
  const ret=JSON.parse(await readFile('templates/catalog-retirements.json','utf8')).retirements.find((r:any)=>r.templateId==='life.partnership-tracker');
  assert.deepEqual([ret.version,ret.replacedBy],['1.1.1','life.partnership-tracker@2.1.0']);
- const m=JSON.parse(await readFile(root+'catalog.metadata.json','utf8'));assert.equal(m.documentation.tasks.mode,'optional');
+ const m=JSON.parse(await readFile(root+'archive/2.2.1/catalog.metadata.json','utf8'));assert.equal(m.documentation.tasks.mode,'optional');
  assert.match(m.whenNotToUse,/Fundraise[\s\S]*Contracts[\s\S]*email campaigns|outreach/);
 });
 
@@ -302,7 +302,7 @@ test('customization: saved views keep their own columns and sort; filters on pri
  const a=session(rows,opts);await a.open({section:'pipeline'});await a.change('pick-view',rows[rows.length-1].id);assert.deepEqual(a.state.viewCols,['name','priority']);assert.equal(a.state.sort,null);assert.equal(a.state.mode,'list');
  assert.match(text(a.html),/Cedarline: NWB-101 licence/);for(const r of rows.filter(r=>r.role==='partnerships.opportunities'&&!bool(r.data.archived)&&a.html.includes('open:opp:'+r.id)))assert.ok(r.data.priority==='high'&&r.data.source==='conference'&&r.data.organization_id===ORG('Cedarline Pharma'));
  // Layout: every list has a column group; reorder and hide through the layout profile; newer columns start hidden.
- const layout=JSON.parse(/^const templateLayoutSchema=(.+);$/m.exec(await readFile(root+'partnerships.source.js','utf8'))![1]);assert.deepEqual(Object.keys(layout.groups),['pipeline','partners','contacts','activity','followups','meetings']);
+ const layout=JSON.parse(/^const templateLayoutSchema=(.+);$/m.exec(await readFile(root+'archive/2.2.1/partnerships.source.js','utf8'))![1]);assert.deepEqual(Object.keys(layout.groups),['pipeline','partners','contacts','activity','followups','meetings']);
  const prof={cols:{activity:['summary','date']},visible:{'activity.logged_by':false,'contacts.email':true}},r2=await render(fresh(),{section:'activity'},undefined,{config:cfgFor(fullMap,{layoutProfile:JSON.stringify(prof)})});
  assert.deepEqual([...r2.html.matchAll(/<th scope="col"[^>]*>([^<]*)<\/th>/g)].map(x=>x[1]),['Summary','Date','Kind','Partner','Opportunity']);
  const r3=await render(fresh(),{section:'partners'},undefined,{config:cfgFor(fullMap,{layoutProfile:JSON.stringify(prof)})});assert.match(r3.html,/>Professional email<\/th>/);assert.doesNotMatch((await render(fresh(),{section:'partners'})).html,/>Professional email<\/th>/);

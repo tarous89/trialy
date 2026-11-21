@@ -1,0 +1,91 @@
+{
+  "note": "Fictional, unsaved follow-up reminder actions for Partnerships 2.2.0, set up in chat (prepare_app_action) or in Automations because they need the condition status = open, which install recipes cannot express yet. Partner research, the digest and meeting briefs are install recommendations in catalog.metadata.json (recommendedAutomations). Substitute the saved app ID and table IDs returned by TrialAgents; recipients must be registered workspace members with access to the app. Nothing here is active.",
+  "reminderDue": {
+    "name": "Partnerships follow-up due",
+    "authoringKey": "partnerships_followup_due_v1",
+    "appId": "REPLACE_APP_ID",
+    "appVersion": 0,
+    "trigger": {
+      "kind": "record_date",
+      "typeId": "REPLACE_FOLLOW_UPS",
+      "field": "due",
+      "offsetMinutes": 0,
+      "time": "08:00",
+      "timeZone": "Europe/Berlin"
+    },
+    "recordTypeId": "REPLACE_FOLLOW_UPS",
+    "fields": [
+      "due",
+      "status",
+      "title",
+      "owner",
+      "owner_member_id"
+    ],
+    "conditions": [
+      {
+        "field": "status",
+        "operator": "equals",
+        "value": "open"
+      }
+    ],
+    "steps": [
+      {
+        "id": "remind",
+        "kind": "email",
+        "to": [
+          "REPLACE_MEMBER_EMAIL"
+        ],
+        "subject": "Partnerships follow-up due today",
+        "text": "Due today: {{record.title}} (owner {{record.owner}}). Open Partnerships → Activity → Follow-ups to mark it done.",
+        "memberField": "owner_member_id"
+      }
+    ],
+    "users": [],
+    "expiresAt": "2027-11-14T00:00:00Z",
+    "maxRunsPerDay": 20
+  },
+  "reminderOverdue": {
+    "name": "Partnerships follow-up overdue",
+    "authoringKey": "partnerships_followup_overdue_v1",
+    "appId": "REPLACE_APP_ID",
+    "appVersion": 0,
+    "trigger": {
+      "kind": "record_date",
+      "typeId": "REPLACE_FOLLOW_UPS",
+      "field": "due",
+      "offsetMinutes": 1440,
+      "time": "08:00",
+      "timeZone": "Europe/Berlin"
+    },
+    "recordTypeId": "REPLACE_FOLLOW_UPS",
+    "fields": [
+      "due",
+      "status",
+      "title",
+      "owner",
+      "owner_member_id"
+    ],
+    "conditions": [
+      {
+        "field": "status",
+        "operator": "equals",
+        "value": "open"
+      }
+    ],
+    "steps": [
+      {
+        "id": "overdue",
+        "kind": "email",
+        "to": [
+          "REPLACE_MEMBER_EMAIL"
+        ],
+        "subject": "Partnerships follow-up overdue",
+        "text": "Overdue since yesterday: {{record.title}} (owner {{record.owner}}). Open Partnerships → Activity → Follow-ups.",
+        "memberField": "owner_member_id"
+      }
+    ],
+    "users": [],
+    "expiresAt": "2027-11-14T00:00:00Z",
+    "maxRunsPerDay": 20
+  }
+}
