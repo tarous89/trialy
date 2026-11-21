@@ -647,7 +647,8 @@ export class WorkspaceFoundation {
     // G13, P9 (5.7): every screen of a custom app is checked, not only the first: each screen its navigation names.
     else for(const action of [...new Set([...String(initialOutput.html).matchAll(/data-action="((?:nav|tab|screen|view):[\w-]{1,60})"/g)].map(m=>m[1]!))].slice(0,9)){try{const output=await f.runFrontend(a,w,{previewId:preview.id,state:initialOutput.state,event:{kind:'click',action,value:null,form:{}}});frames.push({name:action,html:output.html,css:output.css});}catch{/* A screen that needs saved data is checked once the app is saved. */}}
     // 5.7: new apps are checked against the current rules; unchanged catalog code as published, until its rebuild (7.3).
-    designQuality=await inspectAppDesign(frames,!standard&&await isCatalogSource(f.db,op.content.source)?'v1-catalog':'current');
+    // 7.5: rebuilt catalog code (v2) is held to the current rules; only unchanged v1 catalog code keeps the rules it was published under.
+    designQuality=await inspectAppDesign(frames,!standard&&!isV2Source(op.content.source)&&await isCatalogSource(f.db,op.content.source)?'v1-catalog':'current');
     if(designQuality.status!=='passed')fail(422,'app_design_quality',JSON.stringify({message:'Repair the app design before preparing it again.',requestKey:key,previewId:replace,expectedDigest:prior?.digest,designQuality}));
    }
    const row=(await tx.query('SELECT body FROM workspace_previews WHERE id=$1',[preview.id])).rows[0];
