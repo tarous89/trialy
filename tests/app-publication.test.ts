@@ -73,7 +73,7 @@ test('open publications keep compatible reads and writes with current permission
   const app=await publish({kind:'save_component',content});await s.share(owner,w.id,member.userId,'editor',[],null,true);
   const loaded=await f.runFrontend(owner,w.id,{componentId:app.id,expectedVersion:0});
   const memberLoaded=await f.runFrontend(member,w.id,{componentId:app.id,expectedVersion:0});
-  const sharing=new AppSharing(db),sp=await sharing.prepare(owner,w.id,{appId:app.id,appVersion:0,kind:'public',mode:'edit',reviewedSource:true}),share=await sharing.confirm(owner,w.id,sp.id,sp.digest),token=share.url!.split('#')[1];
+  const sharing=new AppSharing(db),sp=await sharing.prepare(owner,w.id,{appId:app.id,appVersion:0,kind:'public',mode:'view',reviewedSource:true}),share=await sharing.confirm(owner,w.id,sp.id,sp.digest),token=share.url!.split('#')[1];
   const publicContext=await sharing.publicContext(token),publicLoaded=await withActor(publicContext.a,()=>f.runFrontend(publicContext.a,w.id,{componentId:app.id,expectedVersion:0}));
   const old={componentId:app.id,expectedVersion:0,viewId:loaded.viewId};
   // D16 (4.4): a record edit in the open app saves directly; there is no pending review to confirm later.
@@ -104,8 +104,8 @@ test('open publications keep compatible reads and writes with current permission
   await db.query('UPDATE entity_types SET fields=$2,version=version+1 WHERE id=$1',[typeId,JSON.stringify(migrated.filter((field:any)=>field.key==='note'))]);
   await f.checkComponentAccess(owner,w.id,app.id,loaded.viewId);await assert.rejects(f.runFrontend(owner,w.id,{...old,event:{kind:'click',action:'rename',value:'Removed'}}),/no longer compatible/);
   const pc=await sharing.publicContext(token,true);assert.match((await withActor(pc.a,()=>f.runFrontend(pc.a,w.id,{componentId:app.id,expectedVersion:0,viewId:publicLoaded.viewId}))).html,/Version zero/);
-  const publicWrite=await withActor(pc.a,()=>f.preview(pc.a,w.id,{kind:'apply_component_records',componentId:app.id,expectedVersion:0,viewId:publicLoaded.viewId,changes:[{kind:'update_record',recordId:row,expectedVersion:3,data:{note:'Still compatible'}}]}));
-  await withActor(pc.a,()=>f.confirm(pc.a,w.id,publicWrite.id,publicWrite.digest));
+  // D32 (6.8): a public link publishes read-only; it can never change records.
+  await assert.rejects(withActor(pc.a,()=>f.preview(pc.a,w.id,{kind:'apply_component_records',componentId:app.id,expectedVersion:0,viewId:publicLoaded.viewId,changes:[{kind:'update_record',recordId:row,expectedVersion:3,data:{note:'Still compatible'}}]})),/read-only/);
   // Removing read permission is distinct from changing a schema or publishing code.
   // A2, D1: a hidden field can no longer be set; one that already exists (seeded) is still enforced.
   await assert.rejects(s.share(owner,w.id,member.userId,'editor',['note'],null,true),retired);await seedHiddenFields(db,w.id,member.userId,['note']);
