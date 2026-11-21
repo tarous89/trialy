@@ -1,0 +1,301 @@
+{
+ "asOf": "2026-11-16",
+ "note": "Fictional demo data for Literature Radar. Every company, asset, identifier and URL is invented; .invalid domains resolve nowhere.",
+ "records": [
+  {
+   "role": "literatureradar.settings",
+   "id": "00000000-0000-4000-8000-000000000001",
+   "version": 0,
+   "data": {
+    "lookback_days": 90,
+    "research_template_version": 1
+   }
+  },
+  {
+   "role": "literatureradar.scopes",
+   "id": "00000000-0000-4000-8000-000000000002",
+   "version": 0,
+   "data": {
+    "name": "Fibrosis (fictional)",
+    "definition": "{\"topics\": \"fibrosis\"}",
+    "sources": "[{\"name\": \"PubMed\", \"covers\": \"Peer-reviewed papers with PMIDs.\", \"priority\": 1, \"notes\": \"Use the public site on the web.\"}, {\"name\": \"bioRxiv and medRxiv\", \"covers\": \"Preprints.\", \"priority\": 2, \"notes\": \"Use the public site on the web.\"}, {\"name\": \"Journals\", \"covers\": \"Journal sites and tables of contents.\", \"priority\": 3, \"notes\": \"Summarise paywalled content; do not copy it.\"}, {\"name\": \"Congress sites\", \"covers\": \"Abstracts and late-breakers.\", \"priority\": 4, \"notes\": \"Use the public site on the web.\"}]",
+    "watchlist": "[]",
+    "status": "active",
+    "archived": false
+   }
+  },
+  {
+   "role": "literatureradar.runs",
+   "id": "00000000-0000-4000-8000-000000000003",
+   "version": 0,
+   "data": {
+    "run_id": "00000000-0000-4000-9100-000000000001",
+    "scope_ids": "[\"00000000-0000-4000-8000-000000000002\"]",
+    "kind": "build",
+    "run_on": "2026-11-02",
+    "assistant": "claude",
+    "research_template_version": 1,
+    "sources_report": "[{\"scope_id\": \"00000000-0000-4000-8000-000000000002\", \"sources\": [{\"name\": \"PubMed\", \"status\": \"used\", \"note\": \"\"}, {\"name\": \"bioRxiv and medRxiv\", \"status\": \"used\", \"note\": \"\"}, {\"name\": \"Journals\", \"status\": \"not_relevant\", \"note\": \"\"}, {\"name\": \"Congress sites\", \"status\": \"not_reachable\", \"note\": \"\"}]}]",
+    "items_added": 5,
+    "items_updated": 0,
+    "events_added": 4,
+    "summary": "Fictional run for the demo. Two changes this week.",
+    "status": "completed"
+   }
+  },
+  {
+   "role": "literatureradar.runs",
+   "id": "00000000-0000-4000-8000-000000000004",
+   "version": 0,
+   "data": {
+    "run_id": "00000000-0000-4000-9100-000000000002",
+    "scope_ids": "[\"00000000-0000-4000-8000-000000000002\"]",
+    "kind": "refresh",
+    "run_on": "2026-11-09",
+    "assistant": "claude",
+    "research_template_version": 1,
+    "sources_report": "[{\"scope_id\": \"00000000-0000-4000-8000-000000000002\", \"sources\": [{\"name\": \"PubMed\", \"status\": \"used\", \"note\": \"\"}, {\"name\": \"bioRxiv and medRxiv\", \"status\": \"used\", \"note\": \"\"}, {\"name\": \"Journals\", \"status\": \"not_relevant\", \"note\": \"\"}, {\"name\": \"Congress sites\", \"status\": \"not_reachable\", \"note\": \"\"}]}]",
+    "items_added": 1,
+    "items_updated": 2,
+    "events_added": 4,
+    "summary": "Fictional run for the demo. Two changes this week.",
+    "status": "completed"
+   }
+  },
+  {
+   "role": "literatureradar.runs",
+   "id": "00000000-0000-4000-8000-000000000005",
+   "version": 0,
+   "data": {
+    "run_id": "00000000-0000-4000-9100-000000000003",
+    "scope_ids": "[\"00000000-0000-4000-8000-000000000002\"]",
+    "kind": "refresh",
+    "run_on": "2026-11-16",
+    "assistant": "claude",
+    "research_template_version": 1,
+    "sources_report": "[{\"scope_id\": \"00000000-0000-4000-8000-000000000002\", \"sources\": [{\"name\": \"PubMed\", \"status\": \"used\", \"note\": \"\"}, {\"name\": \"bioRxiv and medRxiv\", \"status\": \"used\", \"note\": \"\"}, {\"name\": \"Journals\", \"status\": \"not_relevant\", \"note\": \"\"}, {\"name\": \"Congress sites\", \"status\": \"not_reachable\", \"note\": \"\"}]}]",
+    "items_added": 1,
+    "items_updated": 2,
+    "events_added": 4,
+    "summary": "Fictional run for the demo. Two changes this week.",
+    "status": "completed"
+   }
+  },
+  {
+   "role": "literatureradar.publications",
+   "id": "00000000-0000-4000-8000-000000000006",
+   "version": 0,
+   "data": {
+    "title": "LPA1 signalling drives fibroblast activation (fictional)",
+    "kind": "paper",
+    "venue": "J Fict Pulm",
+    "published_on": "2026-11-03",
+    "doi": "10.5555/fict.0001",
+    "authors": "Ortega A, Lind B (fictional)",
+    "topic": "Fibroblast activation",
+    "summary": "Fictional summary line one. Line two. Line three.",
+    "why_it_matters": "Supports the NWB-101 mechanism.",
+    "relevance": "high",
+    "queue_status": "to_read",
+    "natural_key": "10.5555/fict.0001",
+    "scope_id": "00000000-0000-4000-8000-000000000002",
+    "sources": "[{\"title\": \"Source (fictional)\", \"url\": \"https://news.example.invalid/10.5555/fict.0001\", \"date\": \"2026-11-16\"}]",
+    "last_verified_on": "2026-11-16",
+    "last_changed_run_id": "00000000-0000-4000-9100-000000000003",
+    "changed_fields": "[\"kind\"]",
+    "watched": true,
+    "dismissed": false
+   }
+  },
+  {
+   "role": "literatureradar.publications",
+   "id": "00000000-0000-4000-8000-000000000007",
+   "version": 0,
+   "data": {
+    "title": "Autotaxin in progressive fibrosis (fictional)",
+    "kind": "preprint",
+    "venue": "bioRxiv",
+    "published_on": "2026-11-10",
+    "doi": "10.5555/fict.0002",
+    "authors": "Ortega A, Lind B (fictional)",
+    "topic": "Fibroblast activation",
+    "summary": "Fictional summary line one. Line two. Line three.",
+    "why_it_matters": "Competing mechanism with new human data.",
+    "relevance": "high",
+    "queue_status": "to_read",
+    "natural_key": "10.5555/fict.0002",
+    "scope_id": "00000000-0000-4000-8000-000000000002",
+    "sources": "[{\"title\": \"Source (fictional)\", \"url\": \"https://news.example.invalid/10.5555/fict.0002\", \"date\": \"2026-11-16\"}]",
+    "last_verified_on": "2026-11-16",
+    "last_changed_run_id": "00000000-0000-4000-9100-000000000001",
+    "changed_fields": "[]",
+    "watched": false,
+    "dismissed": false
+   }
+  },
+  {
+   "role": "literatureradar.publications",
+   "id": "00000000-0000-4000-8000-000000000008",
+   "version": 0,
+   "data": {
+    "title": "Senescent fibroblasts in IPF lungs (fictional)",
+    "kind": "paper",
+    "venue": "Fict Resp J",
+    "published_on": "2026-10-28",
+    "doi": "10.5555/fict.0003",
+    "authors": "Ortega A, Lind B (fictional)",
+    "topic": "Fibroblast activation",
+    "summary": "Fictional summary line one. Line two. Line three.",
+    "why_it_matters": "Background for patient selection.",
+    "relevance": "medium",
+    "queue_status": "read",
+    "natural_key": "10.5555/fict.0003",
+    "scope_id": "00000000-0000-4000-8000-000000000002",
+    "sources": "[{\"title\": \"Source (fictional)\", \"url\": \"https://news.example.invalid/10.5555/fict.0003\", \"date\": \"2026-11-16\"}]",
+    "last_verified_on": "2026-11-16",
+    "last_changed_run_id": "00000000-0000-4000-9100-000000000001",
+    "changed_fields": "[]",
+    "watched": false,
+    "dismissed": false
+   }
+  },
+  {
+   "role": "literatureradar.publications",
+   "id": "00000000-0000-4000-8000-000000000009",
+   "version": 0,
+   "data": {
+    "title": "Review: anti-fibrotic targets 2026 (fictional)",
+    "kind": "review",
+    "venue": "Fict Rev Drug Disc",
+    "published_on": "2026-10-15",
+    "doi": "10.5555/fict.0004",
+    "authors": "Ortega A, Lind B (fictional)",
+    "topic": "Fibroblast activation",
+    "summary": "Fictional summary line one. Line two. Line three.",
+    "why_it_matters": "Useful overview for the board.",
+    "relevance": "medium",
+    "queue_status": "key",
+    "natural_key": "10.5555/fict.0004",
+    "scope_id": "00000000-0000-4000-8000-000000000002",
+    "sources": "[{\"title\": \"Source (fictional)\", \"url\": \"https://news.example.invalid/10.5555/fict.0004\", \"date\": \"2026-11-16\"}]",
+    "last_verified_on": "2026-11-16",
+    "last_changed_run_id": "00000000-0000-4000-9100-000000000001",
+    "changed_fields": "[]",
+    "watched": false,
+    "dismissed": false
+   }
+  },
+  {
+   "role": "literatureradar.publications",
+   "id": "00000000-0000-4000-8000-000000000010",
+   "version": 0,
+   "data": {
+    "title": "Inhaled delivery of LPA1 antagonists (fictional)",
+    "kind": "abstract",
+    "venue": "ATS 2026 (fictional)",
+    "published_on": "2026-11-14",
+    "doi": "10.5555/fict.0005",
+    "authors": "Ortega A, Lind B (fictional)",
+    "topic": "Fibroblast activation",
+    "summary": "Fictional summary line one. Line two. Line three.",
+    "why_it_matters": "Direct competitor formulation.",
+    "relevance": "high",
+    "queue_status": "to_read",
+    "natural_key": "10.5555/fict.0005",
+    "scope_id": "00000000-0000-4000-8000-000000000002",
+    "sources": "[{\"title\": \"Source (fictional)\", \"url\": \"https://news.example.invalid/10.5555/fict.0005\", \"date\": \"2026-11-16\"}]",
+    "last_verified_on": "2026-11-16",
+    "last_changed_run_id": "00000000-0000-4000-9100-000000000003",
+    "changed_fields": "[\"new\"]",
+    "watched": false,
+    "dismissed": false
+   }
+  },
+  {
+   "role": "literatureradar.events",
+   "id": "00000000-0000-4000-8000-000000000011",
+   "version": 0,
+   "data": {
+    "scope_id": "00000000-0000-4000-8000-000000000002",
+    "item_id": "00000000-0000-4000-8000-000000000006",
+    "natural_key": "10.5555/fict.0001|publication|2026-11-03",
+    "kind": "publication",
+    "title": "New paper on LPA1 signalling (fictional)",
+    "summary": "Fictional event for the demo.",
+    "occurred_on": "2026-11-03",
+    "occurred_month": "2026-11",
+    "expected": false,
+    "impact": "medium",
+    "direction": "neutral",
+    "sources": "[{\"title\": \"Source (fictional)\", \"url\": \"https://news.example.invalid/e0\", \"date\": \"2026-11-03\"}]",
+    "run_id": "00000000-0000-4000-9100-000000000003",
+    "status": "new"
+   }
+  },
+  {
+   "role": "literatureradar.events",
+   "id": "00000000-0000-4000-8000-000000000012",
+   "version": 0,
+   "data": {
+    "scope_id": "00000000-0000-4000-8000-000000000002",
+    "item_id": "00000000-0000-4000-8000-000000000010",
+    "natural_key": "10.5555/fict.0005|conference_data|2026-11-14",
+    "kind": "conference_data",
+    "title": "ATS abstract on inhaled LPA1 (fictional)",
+    "summary": "Fictional event for the demo.",
+    "occurred_on": "2026-11-14",
+    "occurred_month": "2026-11",
+    "expected": false,
+    "impact": "high",
+    "direction": "threat",
+    "so_what": "Could change the plan for NWB-101 (fictional).",
+    "sources": "[{\"title\": \"Source (fictional)\", \"url\": \"https://news.example.invalid/e1\", \"date\": \"2026-11-14\"}]",
+    "run_id": "00000000-0000-4000-9100-000000000003",
+    "status": "new"
+   }
+  },
+  {
+   "role": "literatureradar.events",
+   "id": "00000000-0000-4000-8000-000000000013",
+   "version": 0,
+   "data": {
+    "scope_id": "00000000-0000-4000-8000-000000000002",
+    "item_id": "00000000-0000-4000-8000-000000000007",
+    "natural_key": "10.5555/fict.0002|publication|2026-11-10",
+    "kind": "publication",
+    "title": "Autotaxin preprint (fictional)",
+    "summary": "Fictional event for the demo.",
+    "occurred_on": "2026-11-10",
+    "occurred_month": "2026-11",
+    "expected": false,
+    "impact": "high",
+    "direction": "threat",
+    "so_what": "Could change the plan for NWB-101 (fictional).",
+    "sources": "[{\"title\": \"Source (fictional)\", \"url\": \"https://news.example.invalid/e2\", \"date\": \"2026-11-10\"}]",
+    "run_id": "00000000-0000-4000-9100-000000000001",
+    "status": "new"
+   }
+  },
+  {
+   "role": "literatureradar.events",
+   "id": "00000000-0000-4000-8000-000000000014",
+   "version": 0,
+   "data": {
+    "scope_id": "00000000-0000-4000-8000-000000000002",
+    "item_id": "00000000-0000-4000-8000-000000000008",
+    "natural_key": "10.5555/fict.0003|retraction|2026-10-30",
+    "kind": "retraction",
+    "title": "Retraction notice (fictional)",
+    "summary": "Fictional event for the demo.",
+    "occurred_on": "2026-10-30",
+    "occurred_month": "2026-10",
+    "expected": false,
+    "impact": "low",
+    "direction": "neutral",
+    "sources": "[{\"title\": \"Source (fictional)\", \"url\": \"https://news.example.invalid/e3\", \"date\": \"2026-10-30\"}]",
+    "run_id": "00000000-0000-4000-9100-000000000001",
+    "status": "reviewed"
+   }
+  }
+ ]
+}

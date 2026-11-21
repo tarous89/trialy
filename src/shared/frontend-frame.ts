@@ -75,7 +75,7 @@ export const FRAME_SCRIPT=String.raw`(()=>{'use strict';
     if(name==='type'&&tag==='input'){if(!inputTypes.has(attr.value.toLowerCase()))node.setAttribute('type','text');continue;}
     if(name==='type'&&tag==='button'){node.setAttribute('type',['button','submit','reset'].includes(attr.value)?attr.value:'button');continue;}
     if(name==='src'&&tag==='img'&&/^data:image\/(png|jpeg|gif|webp);base64,[a-z0-9+/=]+$/i.test(attr.value))continue;
-    if(name==='href'&&tag==='a'&&appLinks){const href=attr.value;if(href.length<=2000&&!/[\\\u0000-\u0020]/.test(href)&&!href.startsWith('//')&&(!/^[a-z][a-z0-9+.-]*:/i.test(href)||/^(https?:|mailto:|tel:)/i.test(href))){node.dataset.appHref=href;continue;}}
+    if(name==='href'&&tag==='a'&&appLinks){const href=attr.value;if(href.length<=2000&&!/[\\\u0000-\u0020]/.test(href)&&!href.startsWith('//')&&(!/^[a-z][a-z0-9+.-]*:/i.test(href)||/^(https?:|mailto:|tel:)/i.test(href)||/^platform:(access|logs|automations)$/.test(href))){node.dataset.appHref=href;continue;}}
     if(!attrs.has(name)&&!/^aria-[a-z-]+$/.test(name))node.removeAttribute(attr.name);
    }
    if(tag==='a'&&node.dataset.appHref){const target=linkTarget(node.dataset.appHref,appOrigin,linkContext);if(!target){node.removeAttribute('href');delete node.dataset.appHref;}else if(target.external){node.href=target.href;node.target='_blank';node.rel='noopener noreferrer';node.dataset.external='true';}else node.setAttribute('href','#');}

@@ -4,7 +4,7 @@ import {readFile} from 'node:fs/promises';
 import {appTemplateEntry} from '../src/workspace/app-templates.js';
 import {validateRecipeDeclarations,readRecipes} from '../src/automations/recipes-schema.js';
 import {validateAppFunctions} from '../src/workspace/app-functions-schema.js';
-import * as kit from '../templates/source/radar-kit/kit.mjs';
+import * as kit from '../templates/source/radar-kit/archive/1.2.0/kit.mjs';
 import {radarHarness} from './fixtures/radar.js';
 
 /* Bio Radars wave 2 on kit 1.1.0 (BIO_RADAR.md §3, §5): Pipeline, Literature 2.0.0, Deal and Funding Radar, each in production QuickJS
@@ -21,7 +21,7 @@ for(const slug of SLUGS){
   assert.deepEqual(Object.keys(schema),['organizations','programs',T('settings'),T('scopes'),T('tracker'),T('events'),T('runs')]);
   assert.equal(schema[T('events')].contract,'radar.v1');assert.equal(outputs[T('events')].writer,radar.id);
   assert.equal(schema[T('tracker')].contract,radar.trackerOutput?'radar.v1':radar.prefix+'.v1');assert.equal(!!outputs[T('tracker')],!!radar.trackerOutput,'tracker output registered only when the radar publishes it');
-  assert.equal(installers[radar.id+'@'+radar.version],'templates/source/radars/'+slug+'/schema.example.json');
+  assert.equal(installers[radar.id+'@'+radar.version],'templates/source/radars/'+slug+'/archive/'+radar.version+'/schema.example.json');
   assert.deepEqual(seed[radar.id],{schema:'templates/source/radars/'+slug+'/schema.example.json',version:radar.version},'published on owner approval (15 Nov 2026)');
   const [scan,alert]=readRecipes(raw).recommended as any[];assert.deepEqual([scan.key,alert.key],['scan','alert']);assert.ok(scan.research&&scan.email);
   const g=scan.research.writeBindings.find((b:any)=>b.role===T('tracker'));assert.deepEqual(g.exceptFields,kit.userOwned(radar));

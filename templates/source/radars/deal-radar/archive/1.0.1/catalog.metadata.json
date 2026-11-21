@@ -1,0 +1,15 @@
+{
+  "description": "Pharma and biotech deals in your space: licenses, partnerships, options, acquisitions and collaborations with disclosed terms. One table of deals (shared with Partnerships and Deal Comps as dealradar.deals), an events feed, and a weekly scan + digest of the largest disclosed deals run by Claude or ChatGPT.",
+  "tags": [
+    "biotech",
+    "business development",
+    "deals",
+    "licensing",
+    "m&a",
+    "comparables",
+    "radar",
+    "bio radars"
+  ],
+  "whenToUse": "Track deals in your modalities and indications with their disclosed terms, as comparables for your own business development, with a weekly digest of the largest disclosed deals and period totals.",
+  "whenNotToUse": "Your own partnering pipeline (Partnerships), contract drafting (Contracts), valuation models, financings (Funding Radar), investment advice or estimating undisclosed terms."
+}

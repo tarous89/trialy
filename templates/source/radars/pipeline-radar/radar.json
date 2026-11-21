@@ -1,8 +1,12 @@
 {
-  "kit": "1.2.0",
+  "kit": "2.0.0",
   "slug": "pipeline-radar",
   "id": "life.pipeline-radar",
-  "version": "1.0.1",
+  "version": "2.0.0",
+  "upgradeFrom": [
+    "1.0.0",
+    "1.0.1"
+  ],
   "name": "Pipeline Radar",
   "prefix": "pipelineradar",
   "trackerTable": "assets",

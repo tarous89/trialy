@@ -13,3 +13,13 @@ Watches financings, IPOs and grants for one or more scopes, one row per company,
 Roles: `organizations` (core.v1), `programs` (core.v1, optional, read-only), `fundingradar.settings`, `.scopes`, `.financings` (output, `radar.v1`, one writer), `.events` (output, `radar.v1`, one writer), `.runs`. The Financings table is also published as a `radar.v1` output (`fundingradar.financings`, one writer), so Fundraise or a dashboard can read it.
 
 Automations (install dialog, both selected): **Funding Radar scan + digest** and **Funding Radar high-impact alert**, as for every radar. Research may create and update financings (except watched, seen_run_id, dismissed, user_notes, archived), create events and create runs; it never touches scopes or the template.
+
+
+## Funding Radar 2.0.0 (kit 2.0.0, draft)
+
+The same radar rebuilt on the platform kit and the v2 app contract (package 7.3; G2–G8, G11, P3–P5, P9). It waits for the owner's approval (O4) and is not in `templates/catalog-seed.json`; 1.0.0 and 1.0.1 stay published and their packages are unchanged (`archive/1.0.1/`, `archive/1.0.0/`).
+
+- **Screens:** Overview (counts, high-impact events to review, coming dates, what changed in the last run, the last run with its source report one click away), Financings (search, filters and sort on the loaded rows; select, number, date and watched values edit in place; a side panel for details, many fields and adding), Events (To review, All events, Calendar), Scopes (status in place, a side panel to add, edit or remove) and Settings for owners (research template, lookback, language).
+- **Removed:** the app's own header, as-of pill and layout gear; the footer and disclaimer bar; the seven banners (messages are platform notices); Automations, version history, return format and "Build now" panels in Setup; the CSV page export; field label editing.
+- **Saving:** every change is one `records.save` from a person's click, edit or form with the version shown when the edit started; it saves directly and can be undone. No `records.propose`, no "prepared for review" text.
+- **Unchanged for the upgrade:** installer schema, `radar.v1` output contract, both recommended automations and the three helper functions (only their version label differs); `upgradeFrom` lists 1.0.0, 1.0.1. Options `heading`, `layoutProfile` and `demoLabel` are dropped.
