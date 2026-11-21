@@ -1,0 +1,1557 @@
+{
+  "organizations": {
+    "name": "Organizations",
+    "contract": "core.v1",
+    "fields": [
+      {
+        "key": "name",
+        "name": "Name",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "org_type",
+        "name": "Type",
+        "kind": "select",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "options": [
+          "company",
+          "investor",
+          "cro",
+          "cdmo",
+          "site",
+          "funder",
+          "partner",
+          "agency",
+          "other"
+        ]
+      },
+      {
+        "key": "country",
+        "name": "Country",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "website",
+        "name": "Website",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "archived",
+        "name": "Archived",
+        "kind": "boolean",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      }
+    ],
+    "logicalFields": {
+      "name": "name",
+      "org_type": "org_type",
+      "country": "country",
+      "website": "website",
+      "archived": "archived"
+    }
+  },
+  "people": {
+    "name": "People",
+    "contract": "core.v1",
+    "fields": [
+      {
+        "key": "name",
+        "name": "Name",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "organization_id",
+        "name": "Organization",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "description": "Record ID of an organizations record."
+      },
+      {
+        "key": "title",
+        "name": "Title",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "email",
+        "name": "Email",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "archived",
+        "name": "Archived",
+        "kind": "boolean",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      }
+    ],
+    "logicalFields": {
+      "name": "name",
+      "organization_id": "organization_id",
+      "title": "title",
+      "email": "email",
+      "archived": "archived"
+    }
+  },
+  "programs": {
+    "name": "Programs",
+    "contract": "core.v1",
+    "fields": [
+      {
+        "key": "name",
+        "name": "Name",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "code",
+        "name": "Code",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "indication",
+        "name": "Indication",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "modality",
+        "name": "Modality",
+        "kind": "select",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "options": [
+          "small_molecule",
+          "biologic",
+          "antibody",
+          "cell_therapy",
+          "gene_therapy",
+          "rna",
+          "vaccine",
+          "device",
+          "other"
+        ]
+      },
+      {
+        "key": "stage",
+        "name": "Stage",
+        "kind": "select",
+        "required": true,
+        "multiple": false,
+        "ai": true,
+        "options": [
+          "discovery",
+          "preclinical",
+          "ind_enabling",
+          "phase_1",
+          "phase_2",
+          "phase_3",
+          "registration",
+          "approved"
+        ]
+      },
+      {
+        "key": "lead",
+        "name": "Lead",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "status",
+        "name": "Status",
+        "kind": "select",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "options": [
+          "active",
+          "paused",
+          "stopped",
+          "partnered"
+        ]
+      },
+      {
+        "key": "archived",
+        "name": "Archived",
+        "kind": "boolean",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      }
+    ],
+    "logicalFields": {
+      "name": "name",
+      "code": "code",
+      "indication": "indication",
+      "modality": "modality",
+      "stage": "stage",
+      "lead": "lead",
+      "status": "status",
+      "archived": "archived"
+    },
+    "optional": true
+  },
+  "investorupdates.settings": {
+    "name": "Investor Updates settings",
+    "contract": "investorupdates.v1",
+    "fields": [
+      {
+        "key": "sender_display",
+        "name": "Sender display",
+        "kind": "select",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "options": [
+          "organization",
+          "first_name"
+        ],
+        "description": "\"<Organization> at TrialAgents\" or \"<First name> at TrialAgents\". Blank: organization."
+      },
+      {
+        "key": "approval_steps",
+        "name": "Approval steps",
+        "kind": "select",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "options": [
+          "one",
+          "two"
+        ],
+        "description": "one: approver 2 approves. two: approver 1 checks the numbers first. Blank: one."
+      },
+      {
+        "key": "help_enabled",
+        "name": "\"I can help\" on",
+        "kind": "boolean",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "description": "App-wide. Blank counts as on. Off: asks render as plain text everywhere and no responses are collected."
+      },
+      {
+        "key": "questions_enabled",
+        "name": "Questions on",
+        "kind": "boolean",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "description": "App-wide. Blank counts as on."
+      },
+      {
+        "key": "meeting_lead_days",
+        "name": "Meeting lead time (days)",
+        "kind": "number",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "description": "Days before a meeting its before part is due. Blank: 7."
+      },
+      {
+        "key": "confidentiality_footer",
+        "name": "Confidentiality footer",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "description": "Shown at the end of every update; {recipient_name} allowed."
+      },
+      {
+        "key": "email_texts",
+        "name": "Email default texts",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "description": "JSON {update|meeting_before|meeting_after|answer|reminder: {subject, body}} with the exchange placeholders. Blank uses the standard texts."
+      },
+      {
+        "key": "custom_fields",
+        "name": "Custom fields",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "description": "JSON array [{table, key, label, kind, options?}] of fields added to recipients, meetings or updates (§8a)."
+      },
+      {
+        "key": "labels",
+        "name": "Labels",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "description": "JSON object {board|investors|shareholders|everyone|<screen id>: label}."
+      },
+      {
+        "key": "preferences",
+        "name": "Preferences",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "description": "JSON object {opening_screen, page_size, overview_hidden: [...]}."
+      }
+    ],
+    "logicalFields": {
+      "sender_display": "sender_display",
+      "approval_steps": "approval_steps",
+      "help_enabled": "help_enabled",
+      "questions_enabled": "questions_enabled",
+      "meeting_lead_days": "meeting_lead_days",
+      "confidentiality_footer": "confidentiality_footer",
+      "email_texts": "email_texts",
+      "custom_fields": "custom_fields",
+      "labels": "labels",
+      "preferences": "preferences"
+    }
+  },
+  "investorupdates.categories": {
+    "name": "Categories",
+    "contract": "investorupdates.v1",
+    "fields": [
+      {
+        "key": "name",
+        "name": "Name",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "kind",
+        "name": "Kind",
+        "kind": "select",
+        "required": true,
+        "multiple": false,
+        "ai": true,
+        "options": [
+          "board",
+          "investors",
+          "shareholders",
+          "custom"
+        ],
+        "description": "Stable key of a standard category; custom for your own. Never changes."
+      },
+      {
+        "key": "level",
+        "name": "Level",
+        "kind": "select",
+        "required": true,
+        "multiple": false,
+        "ai": true,
+        "options": [
+          "board",
+          "investors",
+          "everyone"
+        ],
+        "description": "Highest block level this category sees: everyone < investors < board."
+      },
+      {
+        "key": "description",
+        "name": "Description",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "description": "Who they are and what they care about; read by the assistant."
+      },
+      {
+        "key": "share_class_ids",
+        "name": "Share classes (rule)",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "description": "JSON list of share_classes record IDs: everyone holding any of them is a member, in addition to people added directly."
+      },
+      {
+        "key": "default_template_id",
+        "name": "Default template",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "description": "templates record ID."
+      },
+      {
+        "key": "help_on",
+        "name": "\"I can help\" on",
+        "kind": "boolean",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "description": "Blank counts as on."
+      },
+      {
+        "key": "questions_on",
+        "name": "Questions on",
+        "kind": "boolean",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "description": "Blank counts as on."
+      },
+      {
+        "key": "archived",
+        "name": "Archived",
+        "kind": "boolean",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      }
+    ],
+    "logicalFields": {
+      "name": "name",
+      "kind": "kind",
+      "level": "level",
+      "description": "description",
+      "share_class_ids": "share_class_ids",
+      "default_template_id": "default_template_id",
+      "help_on": "help_on",
+      "questions_on": "questions_on",
+      "archived": "archived"
+    }
+  },
+  "investorupdates.share_classes": {
+    "name": "Share classes",
+    "contract": "investorupdates.v1",
+    "fields": [
+      {
+        "key": "name",
+        "name": "Name",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "kind",
+        "name": "Kind",
+        "kind": "select",
+        "required": true,
+        "multiple": false,
+        "ai": true,
+        "options": [
+          "common",
+          "preferred",
+          "convertible",
+          "other"
+        ]
+      },
+      {
+        "key": "notes",
+        "name": "Notes",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "description": "For example information rights, in words."
+      },
+      {
+        "key": "sort_order",
+        "name": "Order",
+        "kind": "number",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "archived",
+        "name": "Archived",
+        "kind": "boolean",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      }
+    ],
+    "logicalFields": {
+      "name": "name",
+      "kind": "kind",
+      "notes": "notes",
+      "sort_order": "sort_order",
+      "archived": "archived"
+    }
+  },
+  "investorupdates.recipients": {
+    "name": "Recipients",
+    "contract": "investorupdates.v1",
+    "fields": [
+      {
+        "key": "person_id",
+        "name": "Person",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true,
+        "description": "people record ID."
+      },
+      {
+        "key": "organization_id",
+        "name": "Firm",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "description": "organizations record ID (optional)."
+      },
+      {
+        "key": "category_ids",
+        "name": "Categories",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "description": "JSON list of categories record IDs (direct membership)."
+      },
+      {
+        "key": "share_class_ids",
+        "name": "Share classes held",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "description": "JSON list of share_classes record IDs. Classes only: no amounts or ownership."
+      },
+      {
+        "key": "status",
+        "name": "Status",
+        "kind": "select",
+        "required": true,
+        "multiple": false,
+        "ai": true,
+        "options": [
+          "receives",
+          "paused"
+        ]
+      },
+      {
+        "key": "unsubscribed_on",
+        "name": "Unsubscribed on",
+        "kind": "date",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "description": "Reserved. TrialAgents records unsubscribes per email address and series; the app reads them from the exchange and never writes this field."
+      },
+      {
+        "key": "notes",
+        "name": "Notes",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "source",
+        "name": "Source",
+        "kind": "select",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "options": [
+          "manual",
+          "assistant",
+          "fundraise",
+          "captable"
+        ]
+      },
+      {
+        "key": "archived",
+        "name": "Archived",
+        "kind": "boolean",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      }
+    ],
+    "logicalFields": {
+      "person_id": "person_id",
+      "organization_id": "organization_id",
+      "category_ids": "category_ids",
+      "share_class_ids": "share_class_ids",
+      "status": "status",
+      "unsubscribed_on": "unsubscribed_on",
+      "notes": "notes",
+      "source": "source",
+      "archived": "archived"
+    }
+  },
+  "investorupdates.templates": {
+    "name": "Templates",
+    "contract": "investorupdates.v1",
+    "fields": [
+      {
+        "key": "name",
+        "name": "Name",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "kind",
+        "name": "Kind",
+        "kind": "select",
+        "required": true,
+        "multiple": false,
+        "ai": true,
+        "options": [
+          "board_monthly",
+          "investor_quarterly",
+          "milestone_flash",
+          "meeting_before",
+          "meeting_after",
+          "custom"
+        ]
+      },
+      {
+        "key": "format",
+        "name": "Format",
+        "kind": "select",
+        "required": true,
+        "multiple": false,
+        "ai": true,
+        "options": [
+          "email",
+          "meeting_before",
+          "meeting_after"
+        ]
+      },
+      {
+        "key": "sections",
+        "name": "Sections",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true,
+        "description": "JSON array [{name, purpose, level}]; level is board, investors or everyone."
+      },
+      {
+        "key": "brief",
+        "name": "Brief",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "description": "Tone, length and rules in words, read by the assistant."
+      },
+      {
+        "key": "design",
+        "name": "Design",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "description": "JSON {logo_document_id, accent, heading_color, block_styles}."
+      },
+      {
+        "key": "source",
+        "name": "Source",
+        "kind": "select",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "options": [
+          "standard",
+          "user",
+          "assistant"
+        ]
+      },
+      {
+        "key": "archived",
+        "name": "Archived",
+        "kind": "boolean",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      }
+    ],
+    "logicalFields": {
+      "name": "name",
+      "kind": "kind",
+      "format": "format",
+      "sections": "sections",
+      "brief": "brief",
+      "design": "design",
+      "source": "source",
+      "archived": "archived"
+    }
+  },
+  "investorupdates.plans": {
+    "name": "Plans",
+    "contract": "investorupdates.v1",
+    "fields": [
+      {
+        "key": "name",
+        "name": "Name",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "format",
+        "name": "Format",
+        "kind": "select",
+        "required": true,
+        "multiple": false,
+        "ai": true,
+        "options": [
+          "email",
+          "meeting"
+        ]
+      },
+      {
+        "key": "template_id",
+        "name": "Template",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true,
+        "description": "templates record ID (the before template for meetings)."
+      },
+      {
+        "key": "after_template_id",
+        "name": "After template",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "description": "templates record ID of the recap template (meetings)."
+      },
+      {
+        "key": "category_ids",
+        "name": "Categories",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true,
+        "description": "JSON list of categories record IDs."
+      },
+      {
+        "key": "sources",
+        "name": "Sources",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true,
+        "description": "JSON {apps: [...], document_ids: [...], notes, exclusions}."
+      },
+      {
+        "key": "cadence",
+        "name": "Cadence",
+        "kind": "select",
+        "required": true,
+        "multiple": false,
+        "ai": true,
+        "options": [
+          "monthly",
+          "quarterly",
+          "half_yearly",
+          "yearly"
+        ]
+      },
+      {
+        "key": "send_by_day",
+        "name": "Send by (days after period end)",
+        "kind": "number",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "description": "Email plans. Blank: 7."
+      },
+      {
+        "key": "timezone",
+        "name": "Time zone",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "description": "IANA name. Blank: Europe/Berlin."
+      },
+      {
+        "key": "approver_1",
+        "name": "Approver 1 (numbers)",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "approver_2",
+        "name": "Approver 2",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "status",
+        "name": "Status",
+        "kind": "select",
+        "required": true,
+        "multiple": false,
+        "ai": true,
+        "options": [
+          "active",
+          "paused"
+        ]
+      },
+      {
+        "key": "next_period_end",
+        "name": "Next period end",
+        "kind": "date",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "description": "Kept by the app (computed from the cadence; advanced when the period is sent). The scheduled-draft automation runs a set number of days after it."
+      },
+      {
+        "key": "archived",
+        "name": "Archived",
+        "kind": "boolean",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      }
+    ],
+    "logicalFields": {
+      "name": "name",
+      "format": "format",
+      "template_id": "template_id",
+      "after_template_id": "after_template_id",
+      "category_ids": "category_ids",
+      "sources": "sources",
+      "cadence": "cadence",
+      "send_by_day": "send_by_day",
+      "timezone": "timezone",
+      "approver_1": "approver_1",
+      "approver_2": "approver_2",
+      "status": "status",
+      "next_period_end": "next_period_end",
+      "archived": "archived"
+    }
+  },
+  "investorupdates.meetings": {
+    "name": "Meetings",
+    "contract": "investorupdates.v1",
+    "fields": [
+      {
+        "key": "title",
+        "name": "Title",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "kind",
+        "name": "Kind",
+        "kind": "select",
+        "required": true,
+        "multiple": false,
+        "ai": true,
+        "options": [
+          "board",
+          "shareholders",
+          "investor_call",
+          "advisory",
+          "custom"
+        ]
+      },
+      {
+        "key": "meeting_date",
+        "name": "Date",
+        "kind": "date",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "start_time",
+        "name": "Start time",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "description": "HH:MM"
+      },
+      {
+        "key": "timezone",
+        "name": "Time zone",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "location",
+        "name": "Place or call link",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "description": "Shown as text, never as a managed link."
+      },
+      {
+        "key": "plan_id",
+        "name": "Plan",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "description": "plans record ID."
+      },
+      {
+        "key": "category_ids",
+        "name": "Invited categories",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true,
+        "description": "JSON list of categories record IDs."
+      },
+      {
+        "key": "status",
+        "name": "Status",
+        "kind": "select",
+        "required": true,
+        "multiple": false,
+        "ai": true,
+        "options": [
+          "planned",
+          "held",
+          "cancelled"
+        ]
+      },
+      {
+        "key": "notes",
+        "name": "Notes",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "description": "Your notes, for example for the recap."
+      },
+      {
+        "key": "archived",
+        "name": "Archived",
+        "kind": "boolean",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      }
+    ],
+    "logicalFields": {
+      "title": "title",
+      "kind": "kind",
+      "meeting_date": "meeting_date",
+      "start_time": "start_time",
+      "timezone": "timezone",
+      "location": "location",
+      "plan_id": "plan_id",
+      "category_ids": "category_ids",
+      "status": "status",
+      "notes": "notes",
+      "archived": "archived"
+    }
+  },
+  "investorupdates.updates": {
+    "name": "Updates",
+    "contract": "investorupdates.v1",
+    "fields": [
+      {
+        "key": "format",
+        "name": "Format",
+        "kind": "select",
+        "required": true,
+        "multiple": false,
+        "ai": true,
+        "options": [
+          "email",
+          "meeting_before",
+          "meeting_after"
+        ]
+      },
+      {
+        "key": "plan_id",
+        "name": "Plan",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "meeting_id",
+        "name": "Meeting",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "kind",
+        "name": "Kind",
+        "kind": "select",
+        "required": true,
+        "multiple": false,
+        "ai": true,
+        "options": [
+          "scheduled",
+          "one_off",
+          "flash"
+        ]
+      },
+      {
+        "key": "period",
+        "name": "Period",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "description": "For example 2026-10 or 2026-Q3."
+      },
+      {
+        "key": "title",
+        "name": "Title",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "category_ids",
+        "name": "Categories",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true,
+        "description": "JSON list of categories record IDs."
+      },
+      {
+        "key": "status",
+        "name": "Status",
+        "kind": "select",
+        "required": true,
+        "multiple": false,
+        "ai": true,
+        "options": [
+          "drafting",
+          "in_review",
+          "approved",
+          "sent",
+          "cancelled"
+        ]
+      },
+      {
+        "key": "blocks",
+        "name": "Blocks",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true,
+        "description": "JSON array of blocks, each with type and level."
+      },
+      {
+        "key": "facts",
+        "name": "Facts",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true,
+        "description": "JSON array of facts: id, claim, value, unit, source, as_of, status."
+      },
+      {
+        "key": "asks",
+        "name": "Asks",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "description": "JSON array [{key, text}]."
+      },
+      {
+        "key": "document_ids",
+        "name": "Documents",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "description": "JSON list of platform document version IDs shown on the page."
+      },
+      {
+        "key": "drafted_by",
+        "name": "Drafted by",
+        "kind": "select",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "options": [
+          "claude",
+          "chatgpt",
+          "user"
+        ]
+      },
+      {
+        "key": "drafted_on",
+        "name": "Drafted on",
+        "kind": "date",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "approved_1_by",
+        "name": "Approved 1 by",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "approved_2_by",
+        "name": "Approved 2 by",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "approved_on",
+        "name": "Approved on",
+        "kind": "date",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "sent_on",
+        "name": "Sent on",
+        "kind": "date",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "exchange_group_id",
+        "name": "Exchange groups",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "description": "JSON {level: group ID} of the sent versions."
+      },
+      {
+        "key": "pdf_document_id",
+        "name": "PDF",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "correction_of",
+        "name": "Correction of",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "description": "updates record ID this update corrects."
+      },
+      {
+        "key": "sent_settings",
+        "name": "Sent settings",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "description": "JSON: versions, recipients, responses and toggles as sent."
+      }
+    ],
+    "logicalFields": {
+      "format": "format",
+      "plan_id": "plan_id",
+      "meeting_id": "meeting_id",
+      "kind": "kind",
+      "period": "period",
+      "title": "title",
+      "category_ids": "category_ids",
+      "status": "status",
+      "blocks": "blocks",
+      "facts": "facts",
+      "asks": "asks",
+      "document_ids": "document_ids",
+      "drafted_by": "drafted_by",
+      "drafted_on": "drafted_on",
+      "approved_1_by": "approved_1_by",
+      "approved_2_by": "approved_2_by",
+      "approved_on": "approved_on",
+      "sent_on": "sent_on",
+      "exchange_group_id": "exchange_group_id",
+      "pdf_document_id": "pdf_document_id",
+      "correction_of": "correction_of",
+      "sent_settings": "sent_settings"
+    }
+  },
+  "investorupdates.deliveries": {
+    "name": "Deliveries",
+    "contract": "investorupdates.v1",
+    "fields": [
+      {
+        "key": "update_id",
+        "name": "Update",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "recipient_id",
+        "name": "Recipient",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "category_id",
+        "name": "Category",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "level",
+        "name": "Level",
+        "kind": "select",
+        "required": true,
+        "multiple": false,
+        "ai": true,
+        "options": [
+          "board",
+          "investors",
+          "everyone"
+        ]
+      },
+      {
+        "key": "email",
+        "name": "Email",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "person_id",
+        "name": "Person",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "description": "Copied to responses by TrialAgents."
+      },
+      {
+        "key": "organization_id",
+        "name": "Firm",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "description": "Copied to responses by TrialAgents."
+      },
+      {
+        "key": "exchange_id",
+        "name": "Exchange",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "description": "Recorded by TrialAgents."
+      },
+      {
+        "key": "sent_on",
+        "name": "Sent on",
+        "kind": "date",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "description": "Recorded by TrialAgents."
+      },
+      {
+        "key": "status",
+        "name": "Status",
+        "kind": "select",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "options": [
+          "queued",
+          "sent",
+          "bounced",
+          "read",
+          "revoked"
+        ],
+        "description": "Recorded by TrialAgents; blank until the email is queued."
+      },
+      {
+        "key": "first_read_on",
+        "name": "First read",
+        "kind": "date",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "description": "Recorded by TrialAgents."
+      },
+      {
+        "key": "last_read_on",
+        "name": "Last read",
+        "kind": "date",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "description": "Recorded by TrialAgents."
+      },
+      {
+        "key": "read_count",
+        "name": "Reads",
+        "kind": "number",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "description": "Recorded by TrialAgents."
+      }
+    ],
+    "logicalFields": {
+      "update_id": "update_id",
+      "recipient_id": "recipient_id",
+      "category_id": "category_id",
+      "level": "level",
+      "email": "email",
+      "person_id": "person_id",
+      "organization_id": "organization_id",
+      "exchange_id": "exchange_id",
+      "sent_on": "sent_on",
+      "status": "status",
+      "first_read_on": "first_read_on",
+      "last_read_on": "last_read_on",
+      "read_count": "read_count"
+    }
+  },
+  "investorupdates.responses": {
+    "name": "Responses",
+    "contract": "investorupdates.v1",
+    "fields": [
+      {
+        "key": "update_id",
+        "name": "Update",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true,
+        "description": "Copied by TrialAgents from the delivery."
+      },
+      {
+        "key": "recipient_id",
+        "name": "Recipient",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "description": "Kept by the app; TrialAgents links each response to its delivery (delivery_id)."
+      },
+      {
+        "key": "kind",
+        "name": "Kind",
+        "kind": "select",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "options": [
+          "help",
+          "question"
+        ],
+        "description": "Blank on responses TrialAgents records: the ask key question means a question, any other key an offer of help."
+      },
+      {
+        "key": "ask_key",
+        "name": "Ask",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "ask_text",
+        "name": "Ask text",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "message",
+        "name": "Message",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "description": "The note the person wrote."
+      },
+      {
+        "key": "responded_on",
+        "name": "Responded on",
+        "kind": "date",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "delivery_id",
+        "name": "Delivery",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "exchange_id",
+        "name": "Exchange",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "person_id",
+        "name": "Person",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "organization_id",
+        "name": "Firm",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "answer",
+        "name": "Answer",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "description": "Draft or sent answer to a question."
+      },
+      {
+        "key": "answered_on",
+        "name": "Answered on",
+        "kind": "date",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "answer_scope",
+        "name": "Answer to",
+        "kind": "select",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "options": [
+          "private",
+          "group"
+        ]
+      },
+      {
+        "key": "status",
+        "name": "Status",
+        "kind": "select",
+        "required": true,
+        "multiple": false,
+        "ai": true,
+        "options": [
+          "new",
+          "answered",
+          "following_up",
+          "done"
+        ]
+      },
+      {
+        "key": "owner",
+        "name": "Owner",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "follow_up_due",
+        "name": "Follow-up due",
+        "kind": "date",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      }
+    ],
+    "logicalFields": {
+      "update_id": "update_id",
+      "recipient_id": "recipient_id",
+      "kind": "kind",
+      "ask_key": "ask_key",
+      "ask_text": "ask_text",
+      "message": "message",
+      "responded_on": "responded_on",
+      "delivery_id": "delivery_id",
+      "exchange_id": "exchange_id",
+      "person_id": "person_id",
+      "organization_id": "organization_id",
+      "answer": "answer",
+      "answered_on": "answered_on",
+      "answer_scope": "answer_scope",
+      "status": "status",
+      "owner": "owner",
+      "follow_up_due": "follow_up_due"
+    }
+  }
+}

@@ -1,3 +1,23 @@
+# Investor Updates 2.0.0 (`life.investor-updates`) — draft
+
+**2.0.0** (21 November 2026, package 7.3/7.4, decisions G2–G8, G11, G14, P3–P5) is a new major version rebuilt on the v2 app contract and the TrialAgents kit. It is a **draft**: it is not in `templates/catalog-seed.json` and waits for the owner's approval (O4). The published 1.0.1 is archived byte-identical under `archive/1.0.1/` (its installer entry points there; the builder builds and checks both).
+
+What stays the same as 1.0.0/1.0.1 (`upgradeFrom: ["1.0.0","1.0.1"]`): the installer schema (`schema.example.json`, byte-identical), the three helpers in `functions/`, `recommendedAutomations` and `automationFeatures`, all 39 app commands (names and inputs; line 3 of the source is the same JSON), the layout declaration (five screens, column groups `investors` and `updates`) and every installer option. Dropped option: `demoLabel` (the gallery preview labels its demo data itself).
+
+What changed:
+- Line 1 is `'use trialagents v2';`; the kit (helpers and CSS) comes from the runtime. `investor-updates.css` holds only about 3 KB of app styles on `--k-*` tokens (email preview, fact list, send steps).
+- No own header, eyebrow, "as of" pill, layout gear, footer or banners. Messages are `output.notice`; partial reads are an error notice; the unsaved preview is an info notice.
+- Record changes save directly with `records.save` (at most 50 per action) and the version shown when editing started; no "prepared for review" text. Inline cells: recipient status, category name/level/questions/"I can help", share class name/kind/notes/order, template name, plan status and send-by days, meeting date and status, response status/owner/follow-up, update title (drafts), block levels. Questions and offers of help are a drag-and-drop board by status. Delete is `archive_record`; a draft update is cancelled. Undo offers the person's last change after a save.
+- Sub-screens: Overview (Today; Questions and offers of help), Updates (Updates; Meetings), Investors (People; Categories; Share classes), Plans & templates (Plans; Templates; Email texts, moved out of Settings). Settings is the owners' screen only (`kit.settings`): sender, approval steps, agenda lead time, questions, "I can help", confidentiality footer. Labels, preferences and custom fields remain as app commands only. Automation and access notes are replaced by `platform:automations` / `platform:access` links.
+- An open update replaces the list (review, send, engagement); other records open in `kit.panel`. Template sections are edited as rows, not as `Name | level | purpose` text; block items as data are one click away in a disclosure.
+- Each screen reads only its tables, batched in one `records.readMany`; pending reads render as loading. The open update is the working context (`output.context`).
+- Sending keeps its single confirmation: recipients (delivery records) are saved on a click, links are created on the next click, each email is shown exactly as prepared, and `exchange.sendEmail` is the one confirmation in TrialAgents; the update lock (`records.save`) joins that same confirmation.
+- Known gap: a save returns no new record IDs, so adding a new person with a new firm takes two or three clicks (firm, person, recipient), each saved at once.
+
+Build: `node scripts/build-investor-updates-template.mjs [--check]` writes/verifies `templates/apps/life.investor-updates-1.0.1.json` (from `archive/1.0.1/`) and `-2.0.0.json`, and both previews. Tests: `tests/investor-updates-v2.test.ts` and `tests/investor-updates-v2-integration.test.ts`; the 1.0.1 tests run against `archive/1.0.1/`.
+
+---
+
 # Investor Updates 1.0.0 (`life.investor-updates`)
 
 Scope: [INVESTOR_UPDATES.md](../../../docs/product/app-template-blueprints/apps/INVESTOR_UPDATES.md) (BT2-06, revised 15 November 2026). **Published** on 17 November 2026 (owner approval): `templates/catalog-seed.json` names 1.0.0.
