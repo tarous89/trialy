@@ -5,7 +5,7 @@ import {createHash} from 'node:crypto';
  * They replace the separate versions of the template guidance, the workspace guide, the tracker design resources, the
  * design kit, the shell library and the guardrails. Old resource names stay as aliases, so older plugins keep working.
  */
-export const GUIDE_VERSION='2.0.0';
+export {GUIDE_VERSION} from '../shared/guide-version.js';
 const read=(name:string)=>readFileSync(new URL('../../templates/'+name,import.meta.url),'utf8');
 let files:{guide:string;reference:string;checksum:string}|null=null;
 export function guideFiles(){

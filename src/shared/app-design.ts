@@ -2,7 +2,7 @@ import {z} from 'zod';
 import {PLATFORM_ORIGIN} from './public-url.js';
 import {appShellCss} from './app-shells.js';
 import {KIT_VERSION,kitTokens,kitCss,KIT_COMPONENTS} from './app-kit.js';
-import {GUIDE_VERSION} from '../workspace/guide.js';
+import {GUIDE_VERSION} from './guide-version.js';
 /** 5.6: the design version is the guide's version (one version for all authoring guidance). */
 export const DESIGN_VERSION='trialagents.guide.'+GUIDE_VERSION;
 export const designPalettes={
