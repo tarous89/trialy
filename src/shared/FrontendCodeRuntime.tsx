@@ -85,7 +85,7 @@ export function FrontendCodeRuntime({active=true,component,previewId,initialOutp
    const read=await call('read_project_component',{componentId:current.current.id}),next=read.component;
    const result=await readFrontend({componentId:next.id,expectedVersion:next.version,event:{kind:'open'},...(navigationRef.current?{route:navigationRef.current.route}:{})});
    if(!live.current||afterSave&&saveReceipt.current!==receipt)return false;
-   current.current=next;output.current=mergeTrackerSnapshot(null,result);state.current=result.state;setStandard(!!result.tracker);setFrameUrl(result.frameUrl);setProposal(result.proposal);setConnectorReviews(result.connectorReviews??[]);setFooter(null);setRecordReview(null);setCustomDirty(false);saveReceipt.current=null;setSavedPhase(null);blocked.current=!!result.proposal;eventQueue.current=[];setPublishedUpdate(false);setConfirmUpdate(false);setReviewProposal(false);setError('');setRetryEvent(null);setLoadFailed(false);setSchemaChanged(false);send();prefetch(result);onUpdated?.(next);return true;
+   current.current=next;output.current=mergeTrackerSnapshot(null,result);state.current=result.state;setStandard(!!result.tracker);setFrameUrl(result.frameUrl);setProposal(result.proposal);setConnectorReviews(result.connectorReviews??[]);setFooter(null);setRecordReview(null);setCustomDirty(false);saveReceipt.current=null;setSavedPhase(null);blocked.current=!!result.proposal;eventQueue.current=[];setPublishedUpdate(false);setConfirmUpdate(false);setReviewProposal(false);setError('');setRetryEvent(null);setLoadFailed(false);setSchemaChanged(false);freshScreen.current=true;send();prefetch(result);onUpdated?.(next);return true;
   }catch(e){if(afterSave)throw e;if(live.current){setConfirmUpdate(false);setSchemaChanged((e as any)?.code==='manifest_stale');if(unavailable(e)){revoke();}else {setLoadFailed(!output.current);setError((e as Error).message||'The latest version could not load. Your work is still here.');}}}
   finally{busyRef.current=false;if(live.current){setBusy(false);if(eventQueue.current.length&&!blocked.current)void run(eventQueue.current.shift());}}
  }
@@ -112,7 +112,8 @@ export function FrontendCodeRuntime({active=true,component,previewId,initialOutp
    frame.current?.contentWindow?.postMessage({kind:'trialy.cache',channel:channel.current,tracker:merged.tracker},'*');
   }catch{/* Optional prefetch does not replace the view. */}}},150);
  }
- const send=()=>{if(output.current&&current.current&&!previewId)rememberOutput(current.current,output.current);if(output.current)frame.current?.contentWindow?.postMessage({kind:'trialy.render',channel:channel.current,html:output.current.html,css:output.current.css,controls:output.current.controls,connected:output.current.connected,state:output.current.state,tracker:output.current.tracker,navigationOnly:embedded,appLinks:platformRef.current.enabled,appOrigin:platformRef.current.origin,linkContext:navigationRef.current?.location??parseAppUrl(location.pathname+location.search)??(component?{appId:component.id,workspaceId:component.workspace_id,source:'component'}:null)},'*');};
+ const paintPending=useRef(false),freshScreen=useRef(false);
+ const send=()=>{paintPending.current=false;queueMicrotask(()=>{freshScreen.current=false;});if(output.current&&current.current&&!previewId)rememberOutput(current.current,output.current);if(output.current)frame.current?.contentWindow?.postMessage({kind:'trialy.render',channel:channel.current,fresh:freshScreen.current,html:output.current.html,css:output.current.css,controls:output.current.controls,connected:output.current.connected,state:output.current.state,tracker:output.current.tracker,navigationOnly:embedded,appLinks:platformRef.current.enabled,appOrigin:platformRef.current.origin,linkContext:navigationRef.current?.location??parseAppUrl(location.pathname+location.search)??(component?{appId:component.id,workspaceId:component.workspace_id,source:'component'}:null)},'*');};
  useEffect(()=>{if(ready)send();},[platform.enabled,platform.origin]);
  async function run(event:any={kind:'open'}){
   if(event.action==='tracker:layout'){onLayout?.();return;}if(event.action==='tracker:access'){onAccess?.();return;}
@@ -169,16 +170,18 @@ export function FrontendCodeRuntime({active=true,component,previewId,initialOutp
    // fields visible instead of rendering the pre-save database values over them.
    if(result.proposal){setProposal(result.proposal);setReviewProposal(true);blocked.current=true;eventQueue.current=[];return;}
    result=mergeTrackerSnapshot(output.current,result);output.current=result;state.current=result.state;setStandard(!!result.tracker);setFrameUrl(result.frameUrl);setProposal(result.proposal);setConnectorReviews(result.connectorReviews??[]);setCustomDirty(false);setLoadFailed(false);setSchemaChanged(false);
-   if(result.proposal){blocked.current=true;eventQueue.current=[];}send();prefetch(result);
+   if(result.proposal){blocked.current=true;eventQueue.current=[];}
+   // P5 (4.4): while more of the person's actions are waiting, an earlier screen is not painted: it would replace what they typed since, and the next action would read and save the old value. The latest action's screen is shown.
+   if(!eventQueue.current.length||result.tracker||result.proposal)send();else paintPending.current=true;prefetch(result);
   }catch(e){if(live.current){setSchemaChanged((e as any)?.code==='manifest_stale');if(navigationRead(event)){
    if(unavailable(e)){clearOutput();setLoadFailed(true);onUnavailable?.('No app is available');}
    else if(!output.current&&current.current&&(e as any)?.code!=='runtime_busy')await loadPublished();
    else {setLoadFailed(!output.current);if(['app_view_expired','component_changed','app_view_incompatible'].includes((e as any)?.code))setPublishedUpdate(true);else {actionError(e);setRetryEvent(event);}}
   }else if(event.action==='bound-batch'){
-   frame.current?.contentWindow?.postMessage({kind:'trialy.save-failed',channel:channel.current,message:(e as Error).message||'Not saved'},'*');send();
+   frame.current?.contentWindow?.postMessage({kind:'trialy.save-failed',channel:channel.current,message:(e as Error).message||'Not saved'},'*');
    setError((e as any)?.code==='stale_value'?'Someone changed this value first. The newer value is shown; your edit was not saved.':((e as Error).message||'Your edit could not be saved. The earlier value is back.'));
    if((e as any)?.code==='stale_value'||(e as any)?.code==='stale_version')void run({kind:'open'});
-  }else{actionError(e);const code=(e as any)?.code,status=(e as any)?.status;if(current.current&&['click','change','submit'].includes(event.kind)&&(!status||status>=500||code==='temporary'))setRetryEvent(event);}}}finally{busyRef.current=false;onBusyChange?.(false);if(live.current){setBusy(false);frame.current?.contentWindow?.postMessage({kind:'trialy.save-idle',channel:channel.current,blocked:!!saveReceipt.current||!!proposal},'*');if(eventQueue.current.length&&!blocked.current)void run(eventQueue.current.shift());}}
+  }else{actionError(e);const code=(e as any)?.code,status=(e as any)?.status;if(current.current&&['click','change','submit'].includes(event.kind)&&(!status||status>=500||code==='temporary'))setRetryEvent(event);}}}finally{busyRef.current=false;onBusyChange?.(false);if(live.current){setBusy(false);frame.current?.contentWindow?.postMessage({kind:'trialy.save-idle',channel:channel.current,blocked:!!saveReceipt.current||!!proposal},'*');if(eventQueue.current.length&&!blocked.current)void run(eventQueue.current.shift());else if(paintPending.current)send();}}
  }
  /** G8 (4.6): the standard tracker offers Undo for the last add, duplicate or delete, while the app stays open. */
  async function undoLast(){

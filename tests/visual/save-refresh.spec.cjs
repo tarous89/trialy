@@ -32,7 +32,7 @@ for(const host of ['web','embedded','public']){
   const f=await(await page.request.post(base+'/fixture/publication')).json(),{root,frame}=await open(page,host,f);let saves=0,confirms=0;
   await intercept(page,async(route,op)=>{if(['confirm_workspace_change','approve_workspace_change'].includes(op.name))confirms++;if(op.name==='run_component_frontend'&&op.args?.request?.event?.kind==='submit')saves++;});
   await saveValue(root,frame,'Direct value',page);await expect.poll(()=>version(page,f)).toBe(1);await expect(frame.getByLabel('Value',{exact:true})).toHaveValue('Direct value');await expect(status(root)).toHaveCount(0);await expect(root.locator('iframe[title="Saved frontend code"]')).not.toHaveAttribute('inert');
-  await saveValue(root,frame,'A distinct second edit',page);await expect.poll(()=>version(page,f)).toBe(2);await expect(frame.getByLabel('Value',{exact:true})).toHaveValue('A distinct second edit');expect(saves).toBe(2);expect(confirms).toBe(0);
+  await saveValue(root,frame,'A distinct second edit',page);await expect.poll(()=>version(page,f)).toBe(2);await expect(frame.getByLabel('Value',{exact:true})).toHaveValue('A distinct second edit');await expect.poll(()=>saves).toBe(2);await page.waitForLoadState('networkidle');expect(await version(page,f)).toBe(2);expect(confirms).toBe(0);
  });
  test(`Access removed before a save: nothing is saved and the app is removed (${host})`,async({page})=>{
   const f=await(await page.request.post(base+'/fixture/publication')).json(),{root,frame}=await open(page,host,f);

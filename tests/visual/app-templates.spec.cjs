@@ -11,8 +11,7 @@ test('Catalog starter apps render and respond inside the extension',async({page}
   const root=page.frameLocator('#app'),app=root.frameLocator('iframe[title="Saved frontend code"]');
   await expect(app.getByRole('heading',{name:template.defaults.heading,exact:true})).toBeVisible();
   if(templateId==='simple.calculator'){
-   // Moving to the next field sends a change that re-renders the form; type the next value once that render has arrived.
-   await app.getByLabel('Quantity').fill('3');await app.getByLabel('Unit cost').focus();await page.waitForLoadState('networkidle');if(!(await app.getByLabel('Quantity').inputValue()))await app.getByLabel('Quantity').fill('3');await app.getByLabel('Unit cost').fill('8');await app.getByRole('button',{name:'Calculate',exact:true}).click();await expect(app.getByRole('heading',{name:'EUR 24.00',exact:true})).toBeVisible();
+   await app.getByLabel('Quantity').fill('3');await app.getByLabel('Unit cost').fill('8');await app.getByRole('button',{name:'Calculate',exact:true}).click();await expect(app.getByRole('heading',{name:'EUR 24.00',exact:true})).toBeVisible();
   }else{
    await app.getByLabel('Define the objective').check();await app.getByRole('button',{name:'Update progress',exact:true}).click();await expect(app.getByRole('heading',{name:'1 / 3',exact:true})).toBeVisible();await expect(app.getByLabel('Define the objective')).toBeChecked();
   }
