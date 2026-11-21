@@ -50,9 +50,7 @@ document.addEventListener('submit',e=>{e.preventDefault();eventFor('submit',e.ta
 document.addEventListener('change',e=>eventFor('change',e.target));
 dispatch({kind:'open',action:''});
 </script></body></html>`;
- // While 2.1.1 is the seeded version its installer entry names the folder's schema.example.json (identical for 3.0.0), and the gallery
- // finds its preview in that folder: the folder keeps the 2.1.1 preview too, byte for byte.
- await output(new URL('../../../../apps/'+entry.id+'-'+entry.version+'.json',root),serialized);await output(new URL('cro-selection.preview.html',root),preview);await output(new URL('../../cro-selection.preview.html',root),preview);
+ await output(new URL('../../../../apps/'+entry.id+'-'+entry.version+'.json',root),serialized);await output(new URL('cro-selection.preview.html',root),preview);
  return entry.version;
 }
 
@@ -104,8 +102,7 @@ document.addEventListener('submit',e=>{e.preventDefault();eventFor('submit',e.ta
 document.addEventListener('change',e=>{if(e.target.closest('form')&&!/^(edit|f|draft|filter|query|pick-request|move)/.test(e.target.dataset.action||''))return;eventFor('change',e.target);});
 dispatch({kind:'open',action:''});
 </script></body></html>`;
- // The 3.0.0 preview has its own name until the owner approves 3.0.0 (the gallery reads the folder's single *.preview.html, 2.1.1's).
- await output(new URL('../../apps/'+entry.id+'-'+entry.version+'.json',root),serialized);await output(new URL('cro-selection-3.0.0-preview.html',root),preview);
+ await output(new URL('../../apps/'+entry.id+'-'+entry.version+'.json',root),serialized);await output(new URL('cro-selection.preview.html',root),preview);
  return entry.version;
 }
 const built=[await buildV1(new URL('archive/2.1.1/',base)),await buildV2(base)];

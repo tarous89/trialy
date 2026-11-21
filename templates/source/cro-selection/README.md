@@ -24,10 +24,9 @@ Choose CROs, CDMOs and labs: from the need to a signed award and a clean handove
 | `cro-selection.source.js` | The canonical, readable `frontend-js` source. Line 1: the v2 marker; line 2: `templateLayoutSchema` (screens, column groups and form groups for `layout.save`); line 3: `appCommands`. |
 | `cro-selection.css` | The few app-specific styles, on kit tokens. |
 | `catalog.metadata.json` | Catalog fields: options, `upgradeFrom`, instructions and the documentation served to assistants. |
-| `schema.example.json` | Installer schema, identical to 2.1.1 (`templates/catalog-installers.json` names it for 2.1.1 and 3.0.0). |
+| `schema.example.json` | Installer schema, identical to 2.1.1; `templates/catalog-installers.json` names it for 3.0.0 and the archived copy for 2.1.1. |
 | `demo_data.json` | Fictional records and exchange state for the preview and the tests. Never seeded into a workspace. |
-| `cro-selection-3.0.0-preview.html` | Generated offline preview of 3.0.0 with the kit and labelled fictional data. It contacts nobody. It gets the folder's `*.preview.html` name when the owner approves 3.0.0. |
-| `cro-selection.preview.html` | The 2.1.1 preview (a byte-for-byte copy of `archive/2.1.1/`), because the gallery finds the seeded version's preview through its installer entry, which names this folder. |
+| `cro-selection.preview.html` | Generated offline preview of 3.0.0 with the kit and labelled fictional data. It contacts nobody. |
 | `QA.md` | Commands, results and what was not verified. |
 | `archive/2.1.1/` | The released 2.1.1 package, unchanged; the builder rebuilds its catalog JSON and preview from here and `--check` proves them byte for byte. |
 | `archive/1.0.1/`, `archive/2.0.0/`, `archive/2.1.0/` | Earlier packages, unchanged. |
