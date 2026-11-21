@@ -63,8 +63,8 @@ for(const viewport of WIDTHS)for(const app of data.filter(a=>a.browser.version==
 // nothing is wider than the frame (a hard rule for rebuilt apps). The soft time gate is the same as for v1.
 async function settle(page,n){let last=-1;for(let i=0;i<40;i++){const now=await page.evaluate(()=>window.msgs.length);if(now===last)break;last=now;await page.waitForTimeout(150);}return page.evaluate(n=>({msgs:window.msgs.slice(n)}),n);}
 for(const viewport of WIDTHS)for(const app of data.filter(a=>a.rebuilt))test(`${app.id} ${app.version} (rebuilt) at ${viewport.name} width: screens run in the frame, at most one read, no overflow`,async({page})=>{
- const frame=await openApp(page,app,viewport),times=[];
- for(const screen of app.screens){
+ const frame=await openApp(page,app,viewport),times=[],widthClass=viewport.width<480?'phone':viewport.width<800?'panel':'wide';
+ for(const screen of app.screensBy[widthClass]){
   const before=await page.evaluate(()=>({...window.requests,n:window.msgs.length}));
   await frame.locator(`[data-action="${screen.action}"]`).first().dispatchEvent('click');
   await page.waitForFunction(n=>window.msgs.slice(n).some(m=>m.kind==='trialy.local'||m.kind==='trialy.event'),before.n);
