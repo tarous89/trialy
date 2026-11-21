@@ -1,3 +1,4 @@
+import {retryAt,alertOnce} from './attention.js';
 import {requireAutomationManager} from './app-owners.js';
 import {chatServiceReview,checkServiceReview} from '../app-services/review.js';
 import {randomUUID} from 'node:crypto';
@@ -108,7 +109,9 @@ export class AutomationService{
   const stored={...result,requestDigest:checksum(J(input.result??null))};await tx.query('UPDATE automation_occurrences SET status=$2,result=$3,finished_at=now() WHERE id=$1',[o.id,result.status,J(stored)]);
   await tx.query('UPDATE automation_runners SET last_check_at=now(),verified_at=CASE WHEN $2 THEN coalesce(verified_at,now()) ELSE verified_at END WHERE id=$1',[o.runner_id,o.reason==='verification']);
   if(o.reason!=='test_run'&&o.monitor_id&&['completed','no_update'].includes(result.status)){await tx.query('UPDATE automation_dispatch SET last_success_at=now(),diagnostic=NULL WHERE monitor_id=$1',[o.monitor_id]);const m=await new AppMonitoring(adapter(tx)).row(a,w,o.monitor_id),t=m.config.automation?.trigger;if(t?.kind==='after_success')await tx.query('UPDATE automation_dispatch SET next_at=$2 WHERE monitor_id=$1',[o.monitor_id,new Date(Date.now()+t.minutes*60000)]);}
-  if(result.status==='partial'&&o.attempts<o.retry_limit){await tx.query("UPDATE automation_occurrences SET status='queued',available_at=now()+interval '15 minutes' WHERE id=$1",[o.id]);await signalWork(tx,o,`partial:${o.id}:${o.attempts}`,'continuation');}
+  // T3: a partial or failed run is retried as the same run at 5, 15 and 60 minutes; the last failure raises one alert. Later runs continue.
+  if((result.status==='partial'||result.status==='failed')&&o.reason!=='test_run'&&o.attempts<o.retry_limit){await tx.query("UPDATE automation_occurrences SET status='queued',available_at=$2,claim_token=NULL,lease_until=NULL WHERE id=$1",[o.id,retryAt(Math.max(1,o.attempts))]);await signalWork(tx,o,`${result.status}:${o.id}:${o.attempts}`,'continuation');}
+  else if(result.status==='failed'&&o.reason!=='test_run'&&o.monitor_id){const m=(await tx.query('SELECT id,workspace_id,app_id FROM app_monitors WHERE id=$1',[o.monitor_id])).rows[0];if(m)await alertOnce(tx,m,'research','run:'+o.id,'failed','A run failed after its retries. Later runs continue as scheduled.');}
   // A bounded host invocation must not strand the remainder of today's agenda.
   // Delay the hint so the current invocation can finish its own small batch first.
   if((await tx.query("SELECT id FROM automation_occurrences WHERE runner_id=$1 AND status='queued' AND due_at<=now() AND available_at<=now() LIMIT 1",[o.runner_id])).rows.length){const key='drain:'+Math.floor(Date.now()/30000);await signalWork(tx,o,key,'continuation');await tx.query("UPDATE automation_outbox SET available_at=greatest(available_at,now()+interval '30 seconds') WHERE runner_id=$1 AND event_key=$2 AND status='queued'",[o.runner_id,key]);}

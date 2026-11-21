@@ -23,6 +23,7 @@ export function AutomationsPage({call,appId}:{call:Call;appId?:string}){
  if(creating)return <AutomationCreation call={call} appId={filterApp} onClose={()=>navigate(null)} onSaved={()=>{navigate(null);void load(0);}}/>;
  return <section className="ty-page ty-automations-page" aria-label="App automations"><div className="ty-page-heading ty-connector-heading"><div><h1>Automations</h1><p className="ty-page-subtitle">Your workflows, schedules and delivery — in one place.</p></div><Button icon="plus" variant="primary" onClick={()=>navigate(null,true)}>Add automation</Button></div>
  {(!!data?.rows.length||filtered)&&<form className="ty-automation-toolbar" onSubmit={e=>{e.preventDefault();void load(0);}}><SearchField label="Search automations" placeholder="Search automations and apps…" value={query} onChange={setQuery}/><Select label="Automation status" value={state} onChange={setState} options={[{value:'all',label:'All statuses'},{value:'enabled',label:'Enabled'},{value:'disabled',label:'Disabled'}]}/><Button type="submit" disabled={busy}>Search</Button></form>}
+ <AutomationAlerts call={call} refreshKey={data}/>
  {filterApp&&<p className="ty-automation-scope">Showing this app’s automations. <Button variant="quiet" onClick={()=>setFilterApp(undefined)}>Show all apps</Button></p>}
  {notice&&<p role="status">{notice} <Button disabled={busy} onClick={()=>void load()}>Retry</Button></p>}{busy&&!data&&<p role="status">Loading automations…</p>}
  {data?.rows.length===0&&<p className="ty-automation-empty">{filtered?'No matching automations.':'No automations configured.'}</p>}
@@ -33,6 +34,13 @@ export function AutomationsPage({call,appId}:{call:Call;appId?:string}){
  <UnassignedAutomations call={call} refreshKey={data} onChanged={()=>void load(0)}/>
  <ArchivedItems call={call} kind="automations" refreshKey={data} onChanged={()=>void load(0)}/>
  </section>;
+}
+/** T3, U2: one alert per failed run or Needs-attention cause, for the owners of the app, until dismissed. */
+function AutomationAlerts({call,refreshKey}:{call:Call;refreshKey:unknown}){
+ const [rows,setRows]=useState<any[]>([]);
+ useEffect(()=>{let live=true;call('list_automation_alerts',{}).then(d=>{if(live)setRows(d.rows??[]);}).catch(()=>{if(live)setRows([]);});return()=>{live=false;};},[refreshKey]);
+ if(!rows.length)return null;
+ return <section className="ty-automation-alerts" aria-label="Automation alerts"><ul>{rows.map(r=><li key={r.id}><strong>{r.name??'Automation'}</strong> <span>({r.app_name})</span>: {r.cause} <Button variant="quiet" onClick={async()=>{try{await call('dismiss_automation_alert',{alertId:r.id});setRows(x=>x.filter(y=>y.id!==r.id));}catch{/* stays listed */}}}>Dismiss</Button></li>)}</ul></section>;
 }
 /** D25: functions, code schedules and record rules that belong to no app. Organization owners attach each to an app or archive it. */
 function UnassignedAutomations({call,refreshKey,onChanged}:{call:Call;refreshKey:unknown;onChanged:()=>void}){
@@ -50,14 +58,15 @@ function UnassignedAutomations({call,refreshKey,onChanged}:{call:Call;refreshKey
 function AutomationRow({call,row:r,onChanged,onEdit}:{call:Call;row:any;onChanged:()=>void;onEdit:()=>void}){
  const platform=React.useContext(AppPlatform);
  const [notice,setNotice]=useState(''),[busy,setBusy]=useState(false);
- const pending=!!r.connectionState&&r.connectionState!=='ready',effective=r.effectiveEnabled??(r.enabled&&!pending&&!r.app_archived),status=effective?'Enabled':'Disabled';
+ const pending=!!r.connectionState&&r.connectionState!=='ready',effective=r.effectiveEnabled??(r.enabled&&!pending&&!r.app_archived),status=r.needsAttention?'Needs attention':effective?'Enabled':'Disabled';
  const args={kind:r.kind,automationId:r.id},category=triggerCategory(r.trigger);
  const [testing,setTesting]=useState(false);const requestKey=useRef<string|null>(null);
  const test=async()=>{setBusy(true);setNotice('');try{requestKey.current??=crypto.randomUUID();const result=await call('test_app_automation',{...args,expectedVersion:r.version,requestKey:requestKey.current});setNotice(result.message??'Test queued for your account only.');requestKey.current=null;setTesting(false);}catch(e:any){setNotice(e.message||'The test could not be started. You can retry safely.');}finally{setBusy(false);}};
  return <article className="ty-automation-row" aria-label={r.name}>
- <div className="ty-automation-card-top"><div className="ty-automation-prompt"><span className="ty-automation-kind">{r.kind==='research'?(r.executor==='claude'?'Claude prompt':'ChatGPT prompt')+(r.followUps?.length?' + Email':''):'Workflow'}</span><h2>{r.name}</h2></div><span className="ty-automation-state" data-enabled={effective} data-state={effective?'enabled':'disabled'} aria-label={`Automation status: ${status}`}>{status}</span></div>
+ <div className="ty-automation-card-top"><div className="ty-automation-prompt"><span className="ty-automation-kind">{r.kind==='research'?(r.executor==='claude'?'Claude prompt':'ChatGPT prompt')+(r.followUps?.length?' + Email':''):'Workflow'}</span><h2>{r.name}</h2></div><span className="ty-automation-state" data-enabled={effective} data-state={r.needsAttention?'attention':effective?'enabled':'disabled'} aria-label={`Automation status: ${status}`}>{status}</span></div>
  <div className="ty-automation-card-body"><div className="ty-automation-app"><Icon name="grid" size={14}/><a href={new URL(r.app_url,platform.origin||window.location.origin).href}  onClick={e=>{if(platform.openLink){e.preventDefault();platform.openLink(new URL(r.app_url,platform.origin||window.location.origin).href);}}}>{r.app_name}</a></div><div className="ty-automation-timing"><Icon name={category==='database'?'database':'clock'} size={14}/><span>{scheduleLabel(r.trigger)}</span></div><div className="ty-automation-services">{[...(r.services??[{id:r.executor,name:r.executor==='chatgpt'?'ChatGPT':'TrialAgents'}]),...(r.followUps?.length?[{id:'email-step',name:'Email'}]:[])].map((s:any)=><span className="ty-service-label" key={s.id}>{s.name}</span>)}</div></div>
  <div className="ty-automation-prompt"><p>{r.prompt}</p>{(r.followUps??[]).map((s:any)=><p key={s.id} className="ty-automation-help">Then email {s.recipients.join(', ')} after each completed run{s.enabled?'':' (email switched off)'}.</p>)}</div>
+ {r.needsAttention&&<p className="ty-automation-attention" role="status">{r.needsAttention}</p>}
  {!r.enabled&&r.offReason&&<p className="ty-automation-attention">{r.offReason}</p>}
  {r.mine===false&&<p className="ty-automation-linked">Linked to {r.linkedOwner?.name||'another owner'}. It runs with their access. <Button disabled={busy} onClick={async()=>{setBusy(true);setNotice('');try{const moved=await call('move_app_automation',{...args,expectedVersion:r.version});setNotice(moved.enabled?'Moved to your account. It stays on.':moved.reason??'Moved to your account. Switch it on when you are ready.');onChanged();}catch(e:any){setNotice(e.message||'The automation could not be moved. You can retry safely.');}finally{setBusy(false);}}}>Move to my account</Button></p>}
  {r.blockedReason&&<p className="ty-automation-blocked">{r.blockedReason}</p>}

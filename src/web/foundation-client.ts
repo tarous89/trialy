@@ -30,6 +30,8 @@ export function foundationClient(api:(path:string,method?:string,body?:unknown,o
  control_app_automation:[`${automation}/definitions/${v.kind}/${v.automationId}/control`,'POST',{expectedVersion:v.expectedVersion,enabled:v.enabled}],
  archive_app_automation:[`${automation}/definitions/${v.kind}/${v.automationId}/archive`,'POST',{expectedVersion:v.expectedVersion}],
  restore_app_automation:[`${automation}/definitions/${v.kind}/${v.automationId}/restore`,'POST',{}],
+ list_automation_alerts:[`${automation}/alerts`],
+ dismiss_automation_alert:[`${automation}/alerts/${v.alertId}/dismiss`,'POST',{}],
  move_app_automation:[`${automation}/definitions/${v.kind}/${v.automationId}/move`,'POST',{expectedVersion:v.expectedVersion}],
  list_unassigned_automations:[`${automation}/unassigned`],
  resolve_unassigned_automation:[`${automation}/unassigned/${v.kind}/${v.itemId}`,'POST',{...(v.appId?{appId:v.appId}:{}),...(v.archive?{archive:true}:{})}],

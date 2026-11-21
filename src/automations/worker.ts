@@ -10,6 +10,7 @@ import {localDay} from '../shared/schedules.js';
 import {adapter,signalWork,automationsEnabled,activeSubscription} from './service.js';
 import {dailyDue,nextCalendar} from './schedules.js';
 import {runnerActor} from './ownership.js';
+import {classifyFailure,needsAttention,clearAttention,retryAt,minimumInterval,alertOnce} from './attention.js';
 const J=JSON.stringify;
 async function occurrence(tx:Connection,d:any,key:string,reason:string,due:Date,input:any,config?:any){
  const id=randomUUID(),r=(await tx.query(`INSERT INTO automation_occurrences(id,workspace_id,user_id,runner_id,monitor_id,monitor_version,occurrence_key,reason,due_at,input,completion_action_id,completion_action_version)
@@ -33,10 +34,15 @@ export async function dispatchDue(db:Database,now=new Date()){
   await tx.query('SAVEPOINT optional_dispatch');
   try{
    const a=runnerActor({user_id:d.user_id,assistant:candidate.assistant}),m=new AppMonitoring(adapter(tx)),row=await m.row(a,d.workspace_id,d.monitor_id),c=monitoringConfig.parse(row.config);
-   if(!row.enabled||!c.automation||row.version!==d.monitor_version)throw Error('disabled_or_changed');
+   // Switched off or archived: stop quietly. Switching it on again schedules it from now (6.2).
+   if(!row.enabled||row.archived_at||!c.automation){await tx.query("UPDATE automation_dispatch SET next_at=NULL,retry_at=NULL,diagnostic='disabled' WHERE monitor_id=$1",[d.monitor_id]);await tx.query('RELEASE SAVEPOINT optional_dispatch');return true;}
+   if(row.version!==d.monitor_version)throw Object.assign(Error('version_moved'),{code:'version_moved'});
    const checked=await m.validate(a,d.workspace_id,c);if(checked.stamp!==row.scope_stamp)throw Error('scope_changed');
    const pending=Number((await tx.query("SELECT count(*) AS n FROM automation_occurrences WHERE monitor_id=$1 AND status IN ('queued','running','partial','blocked')",[d.monitor_id])).rows[0].n),capacity=Math.max(0,100-pending);if(!capacity){await tx.query("UPDATE automation_dispatch SET retry_at=$2,diagnostic='queue_capacity' WHERE monitor_id=$1",[d.monitor_id,new Date(now.getTime()+60000)]);await tx.query('RELEASE SAVEPOINT optional_dispatch');return true;}
    const t=c.automation.trigger,coverageFrom=row.coverage_through??new Date(now.getTime()-c.automation.initialLookbackDays*86400000).toISOString();let next:Date|null=null,cursor=d.event_cursor,scan=d.scan_cursor;
+   // D30: database-triggered research waits for the organization's minimum interval since its last run, so changes in between run together.
+   if(t.kind==='database'||t.kind==='record_date'){const min=await minimumInterval(tx,d.workspace_id),last=(await tx.query("SELECT max(created_at) AS at FROM automation_occurrences WHERE monitor_id=$1 AND reason<>'test_run'",[d.monitor_id])).rows[0]?.at;
+    if(last&&new Date(last).getTime()+min*60000>now.getTime()){await tx.query('UPDATE automation_dispatch SET next_at=$2,diagnostic=NULL,retry_at=NULL WHERE monitor_id=$1',[d.monitor_id,new Date(new Date(last).getTime()+min*60000)]);await tx.query('RELEASE SAVEPOINT optional_dispatch');return true;}}
    if(t.kind==='database'){
     const events=(await tx.query('SELECT e.*,r.type_id FROM audit_events e LEFT JOIN records r ON r.id=e.object_id WHERE e.workspace_id=$1 AND e.event_sequence>$2 ORDER BY e.event_sequence LIMIT $3',[d.workspace_id,cursor,capacity])).rows;
     for(const e of events){cursor=e.event_sequence;if(e.type_id!==t.typeId||t.recordId&&e.object_id!==t.recordId||e.source_run_id)continue;const kind=e.action==='record.created'?'created':['record.deleted','record.archived','record.creation_archived'].includes(e.action)?'deleted':e.action.startsWith('record.')?'updated':null;if(!kind||!t.events.includes(kind))continue;
@@ -51,8 +57,15 @@ export async function dispatchDue(db:Database,now=new Date()){
     const due=new Date(d.next_at);await occurrence(tx,d,`${d.monitor_id}:${d.monitor_version}:time:${due.toISOString()}`,'scheduled_due',due,{coverageFrom,coverageThrough:c.automation.catchUp==='replay'?due.toISOString():now.toISOString(),catchUp:c.automation.catchUp},c);
     if(t.kind==='calendar')next=nextCalendar(t,c.automation.catchUp==='coalesce'?now:due);
    }
-   await tx.query('UPDATE automation_dispatch SET next_at=$2,event_cursor=$3,scan_cursor=$4,diagnostic=NULL,retry_at=NULL WHERE monitor_id=$1',[d.monitor_id,next,cursor,scan]);await tx.query('RELEASE SAVEPOINT optional_dispatch');
-  }catch{await tx.query('ROLLBACK TO SAVEPOINT optional_dispatch');await tx.query("UPDATE automation_dispatch SET diagnostic='authorization_or_schedule_unavailable',retry_at=$2 WHERE monitor_id=$1",[d.monitor_id,new Date(now.getTime()+3600000)]);}
+   await tx.query('UPDATE automation_dispatch SET next_at=$2,event_cursor=$3,scan_cursor=$4,diagnostic=NULL,retry_at=NULL,failure_count=0 WHERE monitor_id=$1',[d.monitor_id,next,cursor,scan]);
+   await clearAttention(tx,d.monitor_id,'research');await tx.query('RELEASE SAVEPOINT optional_dispatch');
+  }catch(e){await tx.query('ROLLBACK TO SAVEPOINT optional_dispatch');
+   // T3: temporary failures retry at 5, 15 and 60 minutes and the automation stays on; anything else stops runs with a visible cause and one alert.
+   const failure=classifyFailure(e),monitor=(await tx.query('SELECT id,workspace_id,app_id,needs_attention_cause,deleted_at FROM app_monitors WHERE id=$1',[d.monitor_id])).rows[0];
+   if(!monitor||monitor.deleted_at)await tx.query("UPDATE automation_dispatch SET next_at=NULL,retry_at=NULL,diagnostic='deleted' WHERE monitor_id=$1",[d.monitor_id]);
+   else if(failure.kind==='temporary')await tx.query('UPDATE automation_dispatch SET diagnostic=$2,retry_at=$3,failure_count=failure_count+1 WHERE monitor_id=$1',[d.monitor_id,failure.code,retryAt((d.failure_count??0)+1,now)]);
+   else{await tx.query('UPDATE automation_dispatch SET diagnostic=$2,retry_at=$3 WHERE monitor_id=$1',[d.monitor_id,failure.code,new Date(now.getTime()+3600000)]);if(monitor)await needsAttention(tx,monitor,'research',failure);}
+  }
   return true;
  }));
 }
@@ -61,7 +74,9 @@ export async function recoverWork(db:Database,now=new Date()){
  for(const row of rows)await withActor(runnerActor(row),()=>db.transaction(async tx=>{
   await tx.query('SELECT id FROM workspaces WHERE id=$1 FOR UPDATE',[row.workspace_id]);const o=(await tx.query("SELECT * FROM automation_occurrences WHERE id=$1 AND status='running' AND lease_until<=$2 FOR UPDATE",[row.id,now])).rows[0];if(!o)return;
   if(o.run_id)await tx.query("UPDATE app_monitor_runs SET status='failed',finished_at=now(),result=$2 WHERE id=$1 AND status='running'",[o.run_id,J({summary:'Execution deadline passed. Saved receipts are retained; coverage is unchanged.'})]);
-  await tx.query("UPDATE automation_occurrences SET status=$2,available_at=$3,result=$4 WHERE id=$1",[o.id,o.attempts<o.retry_limit?'queued':'blocked',new Date(now.getTime()+15*60000),J({summary:'Execution interrupted; reconcile previous receipts before continuing.'})]);
+  // T3: the same run is retried at 5, 15 and 60 minutes; after the last retry it stops and the owners get one alert.
+  await tx.query("UPDATE automation_occurrences SET status=$2,available_at=$3,result=$4 WHERE id=$1",[o.id,o.attempts<o.retry_limit?'queued':'blocked',retryAt(Math.max(1,o.attempts),now),J({summary:'Execution interrupted; reconcile previous receipts before continuing.'})]);
+  if(o.attempts>=o.retry_limit&&o.monitor_id){const m=(await tx.query('SELECT id,workspace_id,app_id FROM app_monitors WHERE id=$1',[o.monitor_id])).rows[0];if(m)await alertOnce(tx,m,'research','run:'+o.id,'failed','A run did not finish after its retries. Later runs continue as scheduled.');}
   if(o.attempts<o.retry_limit)await signalWork(tx,o,`recovery:${o.id}:${o.attempts}`,'continuation');
  }));
  // Only one watchdog wake per runner/time bucket, with a daily bound. It never assumes delivery means execution.

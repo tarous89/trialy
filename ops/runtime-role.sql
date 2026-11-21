@@ -118,3 +118,7 @@ GRANT SELECT,INSERT,UPDATE ON assistant_limits TO trialy_runtime;
 GRANT SELECT,INSERT,UPDATE,DELETE ON app_undo_entries TO trialy_runtime;
 -- 5.3: the person's own remembered working context per app (row security: own rows only).
 GRANT SELECT,INSERT,UPDATE,DELETE ON app_person_context TO trialy_runtime;
+
+-- Session 6 (6.3): automation alerts for the owners of an app, and the organization's minimum research interval.
+GRANT SELECT,INSERT,UPDATE ON automation_alerts TO trialy_runtime;
+GRANT UPDATE(automation_min_interval_minutes) ON tenants TO trialy_runtime;

@@ -35,6 +35,11 @@ export function addAutomationApi(app:Express,db:Database){
  app.post(base+'/definitions/:kind/:automationId/control',async(req,res)=>{const v=z.object({expectedVersion:z.number().int().min(0),enabled:z.boolean()}).strict().parse(req.body);res.json(await manage.control(req.actor!,id.parse(req.params.workspaceId),automationKind.parse(req.params.kind),id.parse(req.params.automationId),v.expectedVersion,v.enabled));});
  // T1, D29: an owner of the app moves an automation linked to someone else to their own account.
  app.post(base+'/definitions/:kind/:automationId/move',async(req,res)=>{const v=z.object({expectedVersion:z.number().int().min(0)}).strict().parse(req.body);res.json(await manage.move(req.actor!,id.parse(req.params.workspaceId),automationKind.parse(req.params.kind),id.parse(req.params.automationId),v.expectedVersion));});
+ // T3, D30 (6.3): alerts for owners of the app, and the organization's minimum research interval.
+ app.get(base+'/alerts',async(req,res)=>res.json(await manage.alerts(req.actor!,id.parse(req.params.workspaceId))));
+ app.post(base+'/alerts/:alertId/dismiss',async(req,res)=>res.json(await manage.dismissAlert(req.actor!,id.parse(req.params.workspaceId),id.parse(req.params.alertId))));
+ app.get(base+'/settings',async(req,res)=>res.json(await manage.settings(req.actor!,id.parse(req.params.workspaceId))));
+ app.put(base+'/settings',async(req,res)=>{const v=z.object({minIntervalMinutes:z.number().int()}).strict().parse(req.body);res.json(await manage.saveSettings(req.actor!,id.parse(req.params.workspaceId),v.minIntervalMinutes));});
  // A9 (6.2): archive and restore one automation.
  app.post(base+'/definitions/:kind/:automationId/archive',async(req,res)=>{const v=z.object({expectedVersion:z.number().int().min(0)}).strict().parse(req.body);res.json(await manage.archive(req.actor!,id.parse(req.params.workspaceId),automationKind.parse(req.params.kind),id.parse(req.params.automationId),v.expectedVersion));});
  app.post(base+'/definitions/:kind/:automationId/restore',async(req,res)=>res.json(await manage.restore(req.actor!,id.parse(req.params.workspaceId),automationKind.parse(req.params.kind),id.parse(req.params.automationId))));

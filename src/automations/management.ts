@@ -20,6 +20,7 @@ import {requireAutomationManager,requireLinkedOwner} from './app-owners.js';
 import {appRole as appRoleOf} from '../domain/app-roles.js';
 import {audit} from '../domain/evidence.js';
 import {syncDispatch} from './service.js';
+import {minimumInterval} from './attention.js';
 import {monitoringConfig} from '../app-services/monitoring-schema.js';
 export const automationKind=z.enum(['research','action']);
 export const automationControl=z.object({kind:automationKind,automationId:id,expectedVersion:z.number().int().min(0),enabled:z.boolean()}).strict();
@@ -59,10 +60,10 @@ export class AutomationManagement{
   const blockedIds=dependencies.filter(d=>d.blockedReason||d.runnerIds.length&&stateOf(d)!=='ready').map(d=>d.id);
   const rows=(await this.db.query(`SELECT d.*,c.name AS app_name,c.archived AS app_archived,lu.name AS linked_name FROM (
    SELECT m.id,m.app_id,m.workspace_id,m.user_id,m.version,'research' AS kind,coalesce(m.assistant,'chatgpt') AS executor,m.config->>'name' AS name,m.enabled,m.config->>'expiresAt' AS expires_at,coalesce(m.config->'automation'->'trigger',m.config->'schedule') AS trigger,m.created_at,
-    concat_ws(E'\\n\\n',m.config->>'objective',m.config->>'instructions') AS prompt,NULL::jsonb AS steps,(m.config->'automation' IS NULL AND m.task IS NOT NULL) AS external_schedule,m.config->'automation'->>'runnerId' AS runner_id,m.assistant AS owner,m.off_reason
+    concat_ws(E'\\n\\n',m.config->>'objective',m.config->>'instructions') AS prompt,NULL::jsonb AS steps,(m.config->'automation' IS NULL AND m.task IS NOT NULL) AS external_schedule,m.config->'automation'->>'runnerId' AS runner_id,m.assistant AS owner,m.off_reason,m.needs_attention_cause
    FROM app_monitors m WHERE m.deleted_at IS NULL AND m.archived_with_app_at IS NULL AND m.archived_at IS NULL
    UNION ALL
-   SELECT a.id,a.app_id,a.workspace_id,a.user_id,a.version,'action','trialagents',a.config->>'name',NOT a.paused,a.config->>'expiresAt',a.config->'trigger',a.created_at,NULL,a.config->'steps',false,NULL,a.assistant,a.last_error
+   SELECT a.id,a.app_id,a.workspace_id,a.user_id,a.version,'action','trialagents',a.config->>'name',NOT a.paused,a.config->>'expiresAt',a.config->'trigger',a.created_at,NULL,a.config->'steps',false,NULL,a.assistant,a.last_error,a.needs_attention_cause
    FROM app_actions a WHERE a.deleted_at IS NULL AND a.archived_with_app_at IS NULL AND a.archived_at IS NULL AND a.follow_up_of IS NULL
   ) d JOIN workspace_components c ON c.id=d.app_id AND c.workspace_id=d.workspace_id LEFT JOIN users lu ON lu.id=d.user_id
   WHERE d.workspace_id=$1 AND ($9::boolean OR d.user_id=$2 OR EXISTS(SELECT 1 FROM app_members am WHERE am.app_id=d.app_id AND am.user_id=$2 AND am.role='owner')) AND ($3::uuid IS NULL OR d.app_id=$3)
@@ -71,7 +72,7 @@ export class AutomationManagement{
   ORDER BY d.created_at,d.id LIMIT 21 OFFSET $7`,[w,a.userId,v.appId??null,v.query,v.executor,v.state,v.offset,blockedIds,p.role==='owner'])).rows;
   const visible=[];for(const row of rows.slice(0,20)){try{const c=await new WorkspaceFoundation(this.db).component(this.db,a,w,row.app_id,false);
    if(p.role!=='owner'&&row.user_id!==a.userId&&await appRoleOf(this.db,a,p,row.app_id)!=='owner')continue;
-   const {steps,external_schedule,runner_id,linked_name,off_reason,...definition}=row,mine=row.user_id===a.userId,offReason=typeof off_reason==='string'&&off_reason.includes(' ')?off_reason:null;
+   const {steps,external_schedule,runner_id,linked_name,off_reason,needs_attention_cause,...definition}=row,needsAttention=needs_attention_cause??null,mine=row.user_id===a.userId,offReason=typeof off_reason==='string'&&off_reason.includes(' ')?off_reason:null;
    const dependency=dependencies.find(d=>d.id===row.id&&d.kind===row.kind),connectionState=stateOf(dependency)??null;
    let blockedReason=dependency?.blockedReason??null;
    if(connectionState&&connectionState!=='ready'&&!mine)blockedReason??=`${linked_name||'The linked owner'}'s ${ASSISTANT_NAMES[runnerOf(dependency)]} connection is not ready. Move this automation to your account to run it on yours.`;
@@ -80,7 +81,7 @@ export class AutomationManagement{
    // E5: an email step is shown inside its research automation, with both connectors.
    const followUps=row.kind==='research'?(await this.db.query("SELECT id,version,NOT paused AS enabled,config->>'name' AS name,config->'steps' AS steps FROM app_actions WHERE follow_up_of=$1 AND deleted_at IS NULL AND user_id=$2 ORDER BY created_at,id",[row.id,row.user_id])).rows.map((s:any)=>({id:s.id,version:s.version,kind:'action',enabled:s.enabled,name:s.name,recipients:(s.steps??[]).flatMap((x:any)=>x.to??[])})):[];
    const lastTest=(await this.db.query("SELECT id,status,delivery_status,created_at FROM (SELECT id,status,NULL::text AS delivery_status,created_at FROM automation_occurrences WHERE monitor_id=$1 AND user_id=$2 AND reason='test_run' UNION ALL SELECT id,status,delivery_status,created_at FROM app_service_jobs WHERE user_id=$2 AND payload->'test'->>'automationId'=$1::text) t ORDER BY created_at DESC LIMIT 1",[row.id,row.user_id])).rows[0]??null;
-   visible.push({...definition,followUps,connectors:[row.executor,...(followUps.length?['email']:[])],canEdit:mine&&canEdit(a,ownedBy({assistant:row.owner})),mine,offReason,linkedOwner:{id:row.user_id,name:linked_name??null},lastTest,prompt,blockedReason,services:dependency?.services??[],effectiveEnabled:row.enabled&&!blockedReason&&!c.archived&&!c.project_archived,connectionState,externalSchedule:external_schedule,app_url:appUrl({workspaceId:w,appId:c.id}),app_archived:c.archived||c.project_archived});
+   visible.push({...definition,followUps,connectors:[row.executor,...(followUps.length?['email']:[])],canEdit:mine&&canEdit(a,ownedBy({assistant:row.owner})),mine,offReason,needsAttention,linkedOwner:{id:row.user_id,name:linked_name??null},lastTest,prompt,blockedReason,services:dependency?.services??[],effectiveEnabled:row.enabled&&!blockedReason&&!c.archived&&!c.project_archived,connectionState,externalSchedule:external_schedule,app_url:appUrl({workspaceId:w,appId:c.id}),app_archived:c.archived||c.project_archived});
   }catch(e){if(![403,404].includes((e as any).status))throw e;}}
   // B2: read-only helpers installed with an app are shown under that app, never as entries of their own.
   const helpers=(await this.db.query('SELECT f.app_id,c.name AS app_name,array_agg(f.name ORDER BY f.name) AS names FROM foundation_functions f JOIN workspace_components c ON c.id=f.app_id AND c.workspace_id=f.workspace_id WHERE f.workspace_id=$1 AND f.app_id IS NOT NULL AND f.retired_at IS NULL AND NOT c.archived AND ($2::uuid IS NULL OR f.app_id=$2) GROUP BY f.app_id,c.name ORDER BY c.name,f.app_id',[w,v.appId??null])).rows.map((h:any)=>({appId:h.app_id,appName:h.app_name,names:h.names}));
@@ -247,6 +248,18 @@ export class AutomationManagement{
   await audit(tx,a,p,'automation.moved',automationId,{linkedOwner:from.id},{linkedOwner:a.userId,kind,enabled:wasOn&&!cause});
   return {id:automationId,kind,movedFrom:from,linkedOwner:{id:a.userId,name:me},enabled:wasOn&&!cause,reason:cause};
  });}
+ /** T3, U2: open alerts for the automations of apps the caller owns (one per failed run or Needs-attention cause). */
+ async alerts(a:Actor,w:string){await this.owner(a,w);
+  const rows=(await this.db.query(`SELECT x.id,x.app_id,x.automation_id,x.automation_kind,x.kind,x.cause,x.created_at,c.name AS app_name,coalesce(m.config->>'name',t.config->>'name') AS name FROM automation_alerts x JOIN workspace_components c ON c.id=x.app_id
+   LEFT JOIN app_monitors m ON m.id=x.automation_id LEFT JOIN app_actions t ON t.id=x.automation_id WHERE x.workspace_id=$1 AND x.dismissed_at IS NULL ORDER BY x.created_at DESC LIMIT 50`,[w])).rows;
+  return {rows};
+ }
+ async dismissAlert(a:Actor,w:string,alertId:string){await this.owner(a,w);const r=await this.db.query('UPDATE automation_alerts SET dismissed_at=now(),dismissed_by=$3 WHERE id=$1 AND workspace_id=$2 AND dismissed_at IS NULL RETURNING id',[alertId,w,a.userId]);return {id:alertId,dismissed:r.rows.length>0};}
+ /** D30: the organization's minimum interval for recurring research. Organization owners change it. */
+ async settings(a:Actor,w:string){await this.owner(a,w);return {minIntervalMinutes:await minimumInterval(this.db,w)};}
+ async saveSettings(a:Actor,w:string,minutes:number){requireHuman(a);return this.db.transaction(async tx=>{const p=await access(tx,a,w,true);if(p.role!=='owner')fail(403,'owner_required','Only an organization owner can change this');
+  if(!Number.isInteger(minutes)||minutes<15||minutes>1440)fail(400,'invalid_interval','Choose between 15 and 1440 minutes');
+  await tx.query('UPDATE tenants SET automation_min_interval_minutes=$2 WHERE id=$1',[p.tenant_id,minutes]);await audit(tx,a,p,'automation.min_interval',null,null,{minutes});return {minIntervalMinutes:minutes};});}
  /** A9 (6.2): archive one automation. It stops, runs nothing and leaves the list; its history stays. Any owner of the app may do this. */
  async archive(a:Actor,w:string,kind:'research'|'action',automationId:string,expectedVersion:number){requireCurrentAction(a);return this.db.transaction(async tx=>{
   await tx.query('SELECT id FROM workspaces WHERE id=$1 FOR UPDATE',[w]);const db=adapter(tx),s=new AutomationManagement(db),r=await s.read(a,w,kind,automationId);

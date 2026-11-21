@@ -1,3 +1,4 @@
+import {classifyFailure,needsAttention,alertOnce,retryAt} from '../automations/attention.js';
 import {requireAutomationManager} from '../automations/app-owners.js';
 import {validateSummary} from '../automations/summary.js';
 import {meaningfulRun} from '../automations/run-data.js';
@@ -105,7 +106,7 @@ export class AppActions{
   await tx.query('SELECT id FROM workspaces WHERE id=$1 FOR UPDATE',[w]);const db=adapter(tx),s=new AppActions(db),p=await access(tx,a,w,true),row=await s.row(a,w,actionId);
   await requireAutomationManager(tx,a,w,row.app_id);if(row.user_id!==a.userId)fail(409,'move_required','This automation runs as another owner. Move it to your account to change it or switch it on.');
   if(!paused){requireAutomationOwner(a,ownedBy(row));const config=actionConfig.parse(row.config),checked=await s.validate(asOwner(a,ownedBy(row)),w,config,row.scope_stamp);if(checked.stamp!==row.scope_stamp)fail(409,'action_scope_changed','Review changed action scope');if(notificationEmail(config))await notificationRecipients(db,a,w,config);}
-  await tx.query('UPDATE app_actions SET paused=$2,last_error=NULL WHERE id=$1',[actionId,paused]);
+  await tx.query('UPDATE app_actions SET paused=$2,last_error=NULL,needs_attention_cause=CASE WHEN $2 THEN needs_attention_cause ELSE NULL END,needs_attention_at=CASE WHEN $2 THEN needs_attention_at ELSE NULL END,failure_count=0 WHERE id=$1',[actionId,paused]);
   // A9, T4 (6.2, 6.5): switched on after a restore or a long pause, it is scheduled again from now. Nothing missed while off is replayed.
   if(!paused&&(!row.next_at||new Date(row.next_at)<new Date()))await resumeAction(tx,row);
   await audit(tx,a,p,'app_action.paused',actionId,null,{paused});return {id:actionId,paused};
@@ -140,8 +141,17 @@ export async function dispatchAppActions(db:Database,now=new Date()){
     for(const item of records){if(trigger.recordId&&item.id!==trigger.recordId)continue;try{const r=await service.record(a,row.workspace_id,config,item.id),due=recordDue(r?.data[trigger.field],trigger);if(due&&due<=now&&(trigger.catchUpDays?withinCatchUp(due,now,trigger.timeZone,trigger.catchUpDays):due>=new Date(row.approved_at)))await service.enqueue(a,row.workspace_id,row.id,'date:'+item.id+':'+due.toISOString(),item.id);}catch(e:any){if(![403,404,409].includes(e.status))throw e;}}
     scan=records.length===100?records.at(-1)!.id:null;next=new Date(now.getTime()+(scan?1000:30000));
    }else{await service.enqueue(a,row.workspace_id,row.id,'time:'+new Date(row.next_at).toISOString());next=trigger.kind==='once'?null:nextAction(config,now);}
-   await tx.query('UPDATE app_actions SET next_at=$2,event_cursor=$3,scan_cursor=$4,last_error=NULL WHERE id=$1',[row.id,next,cursor,scan]);});await tx.query('RELEASE SAVEPOINT action_dispatch');
-  }catch(e:any){if(e.code!=='run_source_connection')console.error(JSON.stringify({event:'app_action_dispatch_failed',actionId:row.id,code:e.code??null,errorName:e.name??'Error',frames:typeof e.stack==='string'?e.stack.split('\n').slice(1,5):[]}));await tx.query('ROLLBACK TO SAVEPOINT action_dispatch');if(e.code==='run_source_connection')await tx.query("UPDATE app_actions SET next_at=now()+interval '1 minute',last_error='awaiting_chatgpt_connection' WHERE id=$1",[row.id]);else if(e.status===429)await tx.query("UPDATE app_actions SET next_at=now()+interval '1 hour',last_error='waiting_for_allowance' WHERE id=$1",[row.id]);else await tx.query('UPDATE app_actions SET paused=true,last_error=$2 WHERE id=$1',[row.id,typeof e.code==='string'&&/^[a-z][a-z0-9_]{0,79}$/.test(e.code)?e.code:'authorization_or_dispatch_failed']);}return true;
+   await tx.query('UPDATE app_actions SET next_at=$2,event_cursor=$3,scan_cursor=$4,last_error=NULL,failure_count=0,needs_attention_cause=NULL,needs_attention_at=NULL WHERE id=$1',[row.id,next,cursor,scan]);});await tx.query('RELEASE SAVEPOINT action_dispatch');
+  }catch(e:any){if(e.code!=='run_source_connection')console.error(JSON.stringify({event:'app_action_dispatch_failed',actionId:row.id,code:e.code??null,errorName:e.name??'Error',frames:typeof e.stack==='string'?e.stack.split('\n').slice(1,5):[]}));await tx.query('ROLLBACK TO SAVEPOINT action_dispatch');if(e.code==='run_source_connection')await tx.query("UPDATE app_actions SET next_at=now()+interval '1 minute',last_error='awaiting_chatgpt_connection' WHERE id=$1",[row.id]);else if(e.status===429)await tx.query("UPDATE app_actions SET next_at=now()+interval '1 hour',last_error='waiting_for_allowance' WHERE id=$1",[row.id]);
+   else{
+    // T3: a temporary failure no longer switches the automation off. It retries at 5, 15 and 60 minutes and calendar runs continue.
+    // Permission, connection and setup failures stop runs with a visible cause and one alert; a later check that passes clears it.
+    const code=typeof e.code==='string'&&/^[a-z][a-z0-9_]{0,79}$/.test(e.code)?e.code:'authorization_or_dispatch_failed',failure=classifyFailure({...e,code});
+    if(failure.kind==='temporary')await tx.query('UPDATE app_actions SET next_at=$2,last_error=$3,failure_count=failure_count+1 WHERE id=$1',[row.id,retryAt(row.failure_count+1,now),code]);
+    // "Set up again" (D28): what it was approved for changed underneath, so it stays off until someone saves it again.
+    else if(failure.kind==='setup'){await tx.query('UPDATE app_actions SET paused=true,last_error=$2 WHERE id=$1',[row.id,code]);await needsAttention(tx,row,'action',failure);}
+    else{await tx.query("UPDATE app_actions SET next_at=$2,last_error=$3 WHERE id=$1",[row.id,new Date(now.getTime()+3600000),code]);await needsAttention(tx,row,'action',failure);}
+   }}return true;
  });
 }
 export async function processAppAction(db:Database){
@@ -160,7 +170,10 @@ export async function processAppAction(db:Database){
    await db.query('INSERT INTO app_action_effects(run_id,step,job_id) VALUES($1,$2,$3) ON CONFLICT DO NOTHING',[r.id,r.step,job.id]);
    await db.query("UPDATE app_action_runs SET pending_job=$2,status='waiting',lease_until=NULL WHERE id=$1 AND status='running' AND lease_token=$3",[r.id,job.id,r.lease_token]);
   });
- }catch(e:any){await db.query("UPDATE app_action_runs SET status=$2,diagnostic=$3,finished_at=now() WHERE id=$1 AND status='running' AND lease_token=$4",[r.id,e.unknown?'unknown':'failed',e.status?'authorization_or_record_changed':'step_failed',r.lease_token]);}return true;
+ }catch(e:any){const failed=await db.query("UPDATE app_action_runs SET status=$2,diagnostic=$3,finished_at=now() WHERE id=$1 AND status='running' AND lease_token=$4 RETURNING id",[r.id,e.unknown?'unknown':'failed',e.status?'authorization_or_record_changed':'step_failed',r.lease_token]);
+  // T3: one alert per failed run for the owners of the app. Steps after the failed one never run; other runs are unaffected.
+  if(failed.rows.length)try{const act=(await db.query('SELECT id,workspace_id,app_id,needs_attention_cause FROM app_actions WHERE id=$1',[r.action_id])).rows[0];if(act){const f=classifyFailure(e.status?e:{code:'step_failed'});if(f.kind!=='temporary')await needsAttention(db as any,act,'action',f);await alertOnce(db as any,act,'action','run:'+r.id,'failed',e.unknown?'A step may not have been delivered. It is checked before anything is sent again.':'A run failed. Later runs continue as scheduled.');}}catch{/* alerts never fail the run record */}
+ }return true;
 }
 
 export async function authorizeAppFunction(db:Database,jobId:string,lock=false){
