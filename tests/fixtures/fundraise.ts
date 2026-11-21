@@ -10,7 +10,7 @@ import type {Actor} from '../../src/shared/schema.js';
 export const FUNDRAISE_REF_KEYS=['organization_id','primary_contact_id','contact_id','round_id','opportunity_id','lead_org_id','milestone_id','grant_id','person_id'];
 /** Fundraise 2.0.0 on a disposable database: the documented schema created through reviewed writes, the fictional demo records
  * saved with real receipt IDs substituted into every relationship, then the catalog app prepared with a manifest and role labels. */
-export async function fundraiseFixture(opts:{demo?:boolean}={}){
+export async function fundraiseFixture(opts:{demo?:boolean;version?:string}={}){
  const pg=new PGlite();for(const file of (await readdir('migrations')).filter(f=>f.endsWith('.sql')).sort())await pg.exec(await readFile('migrations/'+file,'utf8'));
  const db:Database={query:(q,v)=>pg.query(q,v) as any,transaction:fn=>pg.transaction(tx=>fn(tx as Connection)),close:()=>pg.close()};
  const actor:Actor={userId:randomUUID(),origin:'human'};
@@ -29,7 +29,7 @@ export async function fundraiseFixture(opts:{demo?:boolean}={}){
  if(opts.demo!==false){const demo=JSON.parse(await readFile('templates/source/investor-crm/demo_data.json','utf8')).records;
   for(const r of demo){const data=Object.fromEntries(Object.entries(r.data).filter(([,v])=>v!==null).map(([k,v])=>[k,FUNDRAISE_REF_KEYS.includes(k)?ids[v as string]:v]));
    ids[r.id]=(await save({kind:'create_record',typeId:map[r.role].typeId,data})).objects[0].id;}}
- const entry=await appTemplates.read({templateId:'life.investor-crm',version:'2.0.1'});
+ const entry=await appTemplates.read({templateId:'life.investor-crm',version:opts.version??'2.0.1'});
  const op=await appTemplates.operation(f,actor,w.id,{templateId:entry.id,version:entry.version,digest:entry.digest,name:'Fundraise',configuration:{tableMap:JSON.stringify(map),asOfOverride:'2026-11-11'},bindings,manifest:{version:1,scope:'workspace',fields,roles}});
  const p=await f.preview(actor,w.id,op),receipt=await f.confirm(actor,w.id,p.id,p.digest),component=(await f.readComponent(actor,w.id,receipt.id)).component;
  return {pg,db,actor,f,s,w,component,map,bindings,fields,save,ids,entry};
