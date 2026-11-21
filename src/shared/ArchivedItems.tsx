@@ -33,7 +33,10 @@ export function ArchivedItems({call,kind,typeId,refreshKey,onChanged,layout='lis
   await call('confirm_workspace_change',{previewId:preview.id,digest:preview.digest,confirmed:true});return null;
  }
  async function restore(item:any,confirmed=false){setBusy(item.key??item.id);setError('');try{
-  if(item.kind==='app'||item.kind==='automation'){
+  if(item.kind==='automation'&&!item.restoreVia){
+   // A9: archived on its own. It comes back switched off.
+   await call('restore_app_automation',{kind:item.automationKind,automationId:item.id});
+  }else if(item.kind==='app'||item.kind==='automation'){
    const app=item.kind==='app'?item:(await call('list_archived_items',{kind:'apps'})).items.find((a:any)=>a.id===item.restoreVia.id);
    if(!app)throw Error(`Restore ${item.restoreVia.name} from Show archived apps.`);
    if(item.kind==='automation'&&!confirmed){setConfirming({item,action:'restore'});return;}
