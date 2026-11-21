@@ -57,6 +57,21 @@ button,input,select,textarea{font:inherit;color:inherit}a{color:var(--k-accent)}
  .k-panel{width:100%;border-left:0}
  .k-board{grid-auto-flow:row;grid-auto-columns:auto}
 }`;
+/** The kit's building blocks, as read_app_design lists them. */
+export const KIT_COMPONENTS=[
+ {id:'navigation',helper:'kit.nav / kit.layout',use:'Screens as tabs or side navigation; folds into a scrolling row on narrow screens.'},
+ {id:'table',helper:'kit.table',use:'Rows that become cards on narrow screens; columns can be inline cells.'},
+ {id:'inline-cell',helper:'kit.cell / kit.edit',use:'Edit a value where it is shown; it saves at once.'},
+ {id:'side-panel',helper:'kit.panel',use:'Create a record or edit many fields; full screen on phones.'},
+ {id:'board',helper:'kit.board / kit.move',use:'Drag and drop between stages, with a move menu on every card.'},
+ {id:'empty-state',helper:'kit.empty',use:'An empty screen with its first action.'},
+ {id:'pager',helper:'kit.pager',use:'Paging through long lists.'},
+ {id:'context-picker',helper:'kit.picker',use:'The working context a person keeps across screens and visits.'},
+ {id:'settings',helper:'kit.settings',use:'Business choices, for the app\u2019s owners only.'},
+ {id:'undo',helper:'kit.undo',use:'Undo the person\u2019s own last action.'},
+ {id:'notice',helper:'kit.notice',use:'The platform\u2019s one message (output.notice).'},
+ {id:'stat',helper:'kit.stat',use:'One number that matters, with its label.'},
+] as const;
 export const kitComponentsCss=components.replace(/\n/g,'');
 /** Everything the runtime adds in front of a v2 app's own styles. Inside a layer, so the app's own rules still win. */
 export const kitCss=()=>`@layer trialagents-kit{${kitTokensCss}${kitComponentsCss}}`;

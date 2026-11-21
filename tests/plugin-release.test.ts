@@ -93,7 +93,7 @@ test('portable package retains identity, prompts, branding and two focused skill
     }
     assert.ok(!(await readdir(new URL('plugin/trialy/skills/' + skill + '/', root))).includes('assets'));
   }
-  const baseline = await read('resources/design-baseline.md');
+  const baseline = await read('templates/APP_GUIDE.md');
   assert.equal((await read('plugin/trialy/skills/trialy-tracker-design/references/DESIGN_BASELINE.md')).split('\n').slice(1).join('\n'), baseline);
 });
 

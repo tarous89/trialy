@@ -28,7 +28,8 @@ test('fixed components escape content and retain exact overview icon geometry',a
  assert.doesNotMatch(runtime,/NorthStar|Apex|vendorId|nextFollowup|localStorage/);
 });
 test('template contract and components are exposed without loading example business logic',async()=>{
- const page=await readTrackerDesign({resource:'template'});assert.equal(page.nextOffset,null);assert.match(page.text,/contents are examples/);
+ // 5.6: the old reference names read the technical reference now.
+ const page=await readTrackerDesign({resource:'template'});assert.equal(page.alias,'reference');assert.match(page.text,/technical reference/i);
  for(const name of ['components','manifest','styles','catalog'])assert.ok(page.resources.includes(name));
 });
 test('non-sample domain uses the same strict template with a closed icon catalog',()=>{

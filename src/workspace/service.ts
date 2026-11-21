@@ -644,6 +644,8 @@ export class WorkspaceFoundation {
    if(process.env.APP_DESIGN_CHECKS!=='off'){
     const frames:DesignFrame[]=[{name:'Overview',html:initialOutput.html,css:initialOutput.css}];
     if(standard)for(const [i,tab] of standard.config.tabs.entries()){if(tab.visible===false)continue;const output=await f.runFrontend(a,w,{previewId:preview.id,event:{kind:'click',action:'tab:'+i}});frames.push({name:tab.name,html:output.html,css:output.css});}
+    // G13, P9 (5.7): every screen of a custom app is checked, not only the first: each screen its navigation names.
+    else for(const action of [...new Set([...String(initialOutput.html).matchAll(/data-action="((?:nav|tab|screen|view):[\w-]{1,60})"/g)].map(m=>m[1]!))].slice(0,9)){try{const output=await f.runFrontend(a,w,{previewId:preview.id,state:initialOutput.state,event:{kind:'click',action,value:null,form:{}}});frames.push({name:action,html:output.html,css:output.css});}catch{/* A screen that needs saved data is checked once the app is saved. */}}
     designQuality=await inspectAppDesign(frames);
     if(designQuality.status!=='passed')fail(422,'app_design_quality',JSON.stringify({message:'Repair the app design before preparing it again.',requestKey:key,previewId:replace,expectedDigest:prior?.digest,designQuality}));
    }

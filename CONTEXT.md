@@ -1,3 +1,5 @@
+Browser runtime, kit and one guide (21 November 2026, platform decisions session 5): saved apps can run in the browser frame as well as on the server. v2 code (`'use trialagents v2'`) and unchanged code of the catalog versions in `templates/browser-runtime.json` change screens without a request; anything with an outside effect still runs on the server ([FRONTEND_CODE.md](docs/FRONTEND_CODE.md#browser-runtime-and-the-v2-contract-session-5-21-november-2026)). Authoring guidance is one guide ([APP_GUIDE.md](templates/APP_GUIDE.md)) and one technical reference ([APP_REFERENCE.md](templates/APP_REFERENCE.md)), version 2.0.0; `TEMPLATE_AUTHORING.md`, `TEMPLATE_USAGE.md`, the design baseline and the tracker-design references are archived and their resource names are aliases. The general style is the kit (`src/shared/app-kit.ts`).
+
 App code access decision (15 November 2026): access is enforced by the platform on every read an app makes. The workspace owner and the owner's own Claude or ChatGPT can run and change any app. Unchanged catalog code can be run by anyone allowed to use the app, including their assistant, so commands work when some documents or fields are hidden from them. Changing code needs full access (owner, or a member with nothing hidden); otherwise `code_change_restricted`. Template guidance 1.3.32.
 
 Data Room 1.1.0 (15 November 2026) is published: app commands for every action, custom fields and form layouts, Notify parties instead of an automatic digest, an access-ending switch per room (`set_exchange_room_notices`, migration 076), instant question emails (platform), and one install recommendation, the weekly room summary ([DATA_ROOM.md §14](docs/product/app-template-blueprints/apps/DATA_ROOM.md#14-data-room-110-platform-standards-assistant-control-and-notifications)).
@@ -114,7 +116,7 @@ Same-workspace/viewer metadata revalidation retains the editor through transient
 
 - [Development and outstanding verification](DEVELOPMENT.md)
 - [Documentation index](docs/README.md) and [product guide](docs/product/README.md)
-- [Template authoring](templates/TEMPLATE_AUTHORING.md), [assistant usage](templates/TEMPLATE_USAGE.md), [shells](docs/product/APP_SHELLS.md)
+- [Template authoring](templates/TEMPLATE_AUTHORING.md), [assistant usage](templates/TEMPLATE_USAGE.md), [shells](docs/archive/guidance-2026-11/APP_SHELLS.md)
 - [App configuration/access/automations](docs/product/APP_CONFIGURATION_AND_AUTOMATIONS.md)
 - [History](HISTORY.md), [archived superseded context](docs/archive/README.md)
 

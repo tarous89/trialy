@@ -8,7 +8,7 @@ Start with [Product direction](PRODUCT_DIRECTION.md) and [current context](../..
 - [Implementation status](APP_PLATFORM_IMPLEMENTATION.md) and [development priorities](../../DEVELOPMENT.md).
 - [Database catalog](../TEMPLATE_CATALOG.md) and [dynamic template/custom app reuse](DYNAMIC_APP_TEMPLATES.md).
 - [App configuration, access and automations](APP_CONFIGURATION_AND_AUTOMATIONS.md); research executor details remain ChatGPT-specific.
-- [Design quality](APP_DESIGN_QUALITY.md), [shells/components](APP_SHELLS.md), [template authoring](../../templates/TEMPLATE_AUTHORING.md) and [assistant usage](../../templates/TEMPLATE_USAGE.md).
+- [Design quality](../archive/guidance-2026-11/APP_DESIGN_QUALITY.md), [shells/components](../archive/guidance-2026-11/APP_SHELLS.md), [template authoring](../../templates/TEMPLATE_AUTHORING.md) and [assistant usage](../../templates/TEMPLATE_USAGE.md).
 - [Connectors](CONNECTORS_AND_USAGE.md) and [backlog](APP_PLATFORM_BACKLOG.md).
 
 ## Suite and specifications

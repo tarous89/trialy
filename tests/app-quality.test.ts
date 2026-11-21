@@ -60,13 +60,16 @@ test('real browser checks reject unreadable or overlapping custom content and pr
  const {db,a,f,w,prepare}=await fixture();process.env.APP_DESIGN_CHECKS='on';try{
  const requestKey=randomUUID(),input={requestKey,content:{name:'Quality app',source:'return {html:"<main><h1>Good app</h1><p>Clear copy with comfortable spacing.</p><button>Continue</button></main>",css:""};',bindings:[]}};
  const good=await prepareRenderedApp(f,a,w.id,input);assert.equal(good.designQuality.status,'passed');
- const bad={...input,replacesPreviewId:good.preview.id,expectedDigest:good.preview.digest,content:{...input.content,source:'return {html:"<main><p>Unreadable text</p></main>",css:"p{color:#eeeeee;background:#ffffff}"};'}};
- await assert.rejects(prepareRenderedApp(f,a,w.id,bad),{code:'app_design_quality'});assert.equal((await f.resolveTrackerPreview(a,w.id,good.preview.id)).preview.digest,good.preview.digest);
+ // D22 (5.7): low contrast is a warning; broken layout (here a header bar of the app's own, G1) blocks.
+ const pale={...input,replacesPreviewId:good.preview.id,expectedDigest:good.preview.digest,content:{...input.content,source:'return {html:"<main><p>Unreadable text</p></main>",css:"p{color:#eeeeee;background:#ffffff}"};'}};
+ const warned=await prepareRenderedApp(f,a,w.id,pale);assert.equal(warned.designQuality.status,'passed');assert.ok(warned.designQuality.warnings.some((x:any)=>x.code==='text_contrast'));
+ const bad={...input,replacesPreviewId:warned.preview.id,expectedDigest:warned.preview.digest,content:{...input.content,source:'return {html:"<div class=\\"bar\\">Quality app</div><main><p>Copy</p></main>",css:".bar{position:fixed;top:0;left:0;right:0;height:56px;background:#fff}"};'}};
+ await assert.rejects(prepareRenderedApp(f,a,w.id,bad),{code:'app_design_quality'});assert.equal((await f.resolveTrackerPreview(a,w.id,warned.preview.id)).preview.digest,warned.preview.digest);
  assert.equal((await db.query('SELECT id FROM workspace_previews')).rows.length,1);
  for(const templateId of ['simple.calculator','simple.checklist']){const t=await appTemplates.read({templateId});const draft=await f.prepareRenderedTracker(a,w.id,await appTemplates.operation(f,a,w.id,{templateId,version:t.version,digest:t.digest,name:'Catalog '+templateId}));assert.equal(draft.designQuality.status,'passed');await f.discard(a,w.id,draft.preview.id);}
  const defaultDraft=await prepare(setup());assert.equal(defaultDraft.designQuality.status,'passed');await f.discard(a,w.id,defaultDraft.preview.id);
  for(const [name,theme] of Object.entries(designPalettes)){const draft=await prepare({...setup(),name:'Palette '+name,theme});assert.equal(draft.designQuality.status,'passed');await f.discard(a,w.id,draft.preview.id);}
- const checks=await inspectAppDesign([{name:'Bad controls',html:'<main><p style="font-size:9px">Tiny text</p><button>A</button><button>B</button></main>',css:appDesignCss+'button{position:absolute;top:40px;left:30px}'}]);assert.ok(checks.issues.some(x=>x.code==='small_text'));assert.ok(checks.issues.some(x=>x.code==='overlapping_controls'));
+ const checks=await inspectAppDesign([{name:'Bad controls',html:'<main><p style="font-size:9px">Tiny text</p><button>A</button><button>B</button></main>',css:appDesignCss+'button{position:absolute;top:40px;left:30px}'}]);assert.ok(checks.warnings.some(x=>x.code==='small_text'));assert.ok(checks.issues.some(x=>x.code==='overlapping_controls'));
  }finally{process.env.APP_DESIGN_CHECKS='off';await db.close();}
 });
 

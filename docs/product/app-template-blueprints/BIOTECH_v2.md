@@ -1,6 +1,6 @@
 # Biotech company apps — use cases and reference apps (v2)
 
-**Status:** Proposed shortlist, 10 November 2026. Supersedes [BIOTECH_v1.md](BIOTECH_v1.md) (BT-01…BT-06) as the planning list for biotech templates. It is a planning document, not the live catalog: package QA and database approval state still decide availability. All rules in the [shared design and build contract](DESIGN_AND_BUILD_CONTRACT.md) and the [blueprint README boundaries](README.md#boundaries--must-pass-before-marketing-an-app-as-functional) apply unchanged (no patient data, no mandatory external system, governed writes, no regulated-platform claims, never clone a benchmark).
+**Status:** Proposed shortlist, 10 November 2026. Supersedes [BIOTECH_v1.md](BIOTECH_v1.md) (BT-01…BT-06) as the planning list for biotech templates. It is a planning document, not the live catalog: package QA and database approval state still decide availability. All rules in the [shared design and build contract](../../archive/guidance-2026-11/DESIGN_AND_BUILD_CONTRACT.md) and the [blueprint README boundaries](README.md#boundaries--must-pass-before-marketing-an-app-as-functional) apply unchanged (no patient data, no mandatory external system, governed writes, no regulated-platform claims, never clone a benchmark).
 
 **Audience:** small biotech companies (up to ~50 employees), specifically executives (CEO/CFO/CSO/CMO), project and program management, clinical operations, business development and scientific leaders.
 
@@ -78,7 +78,7 @@ Organization (investor, partner, CRO, vendor, site, competitor, funder) · Perso
 
 ## App briefs
 
-Format per app: users and job · reference app · scope (in / out) · records · screens · assistant and data angle. Screen recipes follow the v1 conventions in [BIOTECH_v1.md](BIOTECH_v1.md) and the [build contract](DESIGN_AND_BUILD_CONTRACT.md).
+Format per app: users and job · reference app · scope (in / out) · records · screens · assistant and data angle. Screen recipes follow the v1 conventions in [BIOTECH_v1.md](BIOTECH_v1.md) and the [build contract](../../archive/guidance-2026-11/DESIGN_AND_BUILD_CONTRACT.md).
 
 ### BT2-01 — Runway (rank 1, Core)
 *Cash, burn and runway by program, with what-if scenarios.*  

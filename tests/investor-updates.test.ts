@@ -282,5 +282,5 @@ test('partial or denied reads disable writes and are named; read-only and previe
 test('design gate at 1440 and 390 px for every screen and the review drawer',async()=>{
  const rows=fresh(),frames:any[]=[];for(const section of SCREENS){const o=await render(rows,{section});frames.push({name:section,html:o.html,css:o.output.css});}
  const s=session(rows);await s.open({section:'updates'});const o=await s.click('open:update:'+UPD(/October 2026/));frames.push({name:'review',html:o.html,css:o.output.css});
- const r=await inspectAppDesign(frames);assert.deepEqual(r.issues,[],JSON.stringify(r.issues.slice(0,5)));assert.deepEqual(r.viewports,[1440,390]);
+ const r=await inspectAppDesign(frames);assert.deepEqual(r.issues,[],JSON.stringify(r.issues.slice(0,5)));assert.deepEqual(r.viewports,[1440,400,390]);
 });

@@ -1,6 +1,6 @@
 # Implementation scope for the platform decisions of 19 November 2026
 
-**Status:** being built. Sessions 1 to 3 are merged; session 4 is in review. See the progress table (section 9).
+**Status:** being built. Sessions 1 to 5 are merged. See the progress table (section 9).
 **Decisions:** [snapshot with codes](PLATFORM_DECISIONS_SNAPSHOT_2026-11-19.md) (72 records: 69 in scope, 3 backlog or draft).
 **Evidence:** six code reviews in [`platform-decisions-2026-11-19/`](platform-decisions-2026-11-19/), read at commit `376f29d`. They hold the file and line references for every item below.
 **How to cite:** decisions by code (`R3`, `A6`, `P5`); work packages by number (`2.3` = session 2, package 3).
@@ -419,8 +419,8 @@ Updated at the end of every session.
 | 1 · Foundations and quick fixes | Shipped and live, 20 November 2026 (checked on the live platform after release). | [#196](https://github.com/tarous89/trialy/pull/196) | 1.1 to 1.9, with the changes listed under "Session 1 notes" | Listed under "Session 1 notes" |
 | 2 · Roles and access | Built and merged, 20 November 2026 | [#197](https://github.com/tarous89/trialy/pull/197) | 2.1 to 2.9, with the changes listed under "Session 2 notes" | Listed under "Session 2 notes" |
 | 3 · App lifecycle and installation | Built and merged, 20 November 2026 | [#198](https://github.com/tarous89/trialy/pull/198) | 3.1 to 3.7, with the changes listed under "Session 3 notes" | Listed under "Session 3 notes" |
-| 4 · Data path and server speed | Built 20 November 2026; in review | [#199](https://github.com/tarous89/trialy/pull/199) | 4.1 to 4.7, with the changes listed under "Session 4 notes" | Listed under "Session 4 notes" |
-| 5 · Browser runtime, style and guide | Not started | | | |
+| 4 · Data path and server speed | Built and merged, 20 November 2026 | [#199](https://github.com/tarous89/trialy/pull/199) | 4.1 to 4.7, with the changes listed under "Session 4 notes" | Listed under "Session 4 notes" |
+| 5 · Browser runtime, style and guide | Built and merged, 21 November 2026 | see HISTORY.md | 5.1 to 5.8, with the changes listed under "Session 5 notes" | Listed under "Session 5 notes" |
 | 6 · Automations and external sharing | Not started | | | |
 | 7 · Catalog rebuild | Not started | | | |
 
@@ -524,4 +524,29 @@ Carried over, with the package that takes it:
 - **Owner action.** The *Platform Capability Review* app was not updated from this session: marking decisions live belongs after merge and release, and changing that workspace needs the owner's approval.
 
 Environment note: as in session 3, the design check cannot launch the pinned browser here (32 unit tests fail with `design_check_unavailable`, the same on `48dd234`), and browser tests run only with the browser path overridden. In the last full browser run, every failure (font-rendering screenshots, settings and Vivid template timeouts) also fails on `48dd234` in this container; the pull request's checks are the authority for them. The browser tests that asserted the old review-then-confirm flow for record edits (native saving, publication, save-refresh, app changes) were rewritten for direct saves, and the 390 px tracker details screenshot was refreshed: it had recorded leftover data from a restoring save that never landed.
+
+### Session 5 notes
+
+Start of session: no decision changed since session 4 (the snapshot was used as is). The spike's open question (does Claude's widget allow WebAssembly?) could not be checked from the build container; the frame detects a refusal at start and that host stays on server mode (D21), so nothing depends on the answer.
+
+How it is built (so later sessions do not redo it):
+
+- **Engine (5.1).** `src/frame-engine/engine-core.ts` (the guest wrapper, the same as the server's but kept alive per open app) and `local-runtime.ts` (store and event loop) run unchanged in Node tests and in the frame. `scripts/build-frame-engine.mjs` bundles them into `src/shared/frame-engine.generated.ts` (checked in `npm run build`); the engine binary is read from the installed quickjs package at run time and carried in the frame document as a non-executable data block. Frame policy: two script hashes and `'wasm-unsafe-eval'`. Frame document: about 690 KB gzip, most of it the bundled font; budget 720 KB in `tests/browser-runtime.test.ts`.
+- **Server side.** A request with `browser:{source}` gets `browser:{mode,version,digest,reads,reset,input,styles,source?}` (`src/workspace/service.ts`, decision in `src/workspace/browser-runtime.ts`). Every read the render made is seeded (errors too, so a failing read fails the same way in the frame). `read_app_data` also serves an app's documents, exchange and file reads now, answered exactly as in the sandboxed run.
+- **Frame loop.** A local screen is posted as `trialy.local` (no request); missing reads as `trialy.reads` (the host calls `read_app_data`); outside effects as `trialy.event` with the state before the event. The host answers `trialy.server-idle` after each server event. The first screen is rendered again in the frame and compared with the server's; a difference keeps the view on server mode.
+- **Compat (5.2).** The browser test of a catalog version is `tests/frame-engine.test.ts`: every screen identical in both engines, made from seeded reads. All 16 switched-on versions pass and are listed in `templates/browser-runtime.json`.
+- **v2 (5.3).** Marker `'use trialagents v2'` in the first lines (after the generated configuration lines). `records.save` is refused outside a person's click, change or submit (or a command with a request key). Migration 090 `app_person_context` (own rows only, runtime grant in `ops/runtime-role.sql`).
+- **Shell (5.4) and kit (5.5).** v2 apps and trackers fill the frame; v1 apps keep growing with their content. `src/shared/app-kit.ts` holds tokens, CSS (in a `trialagents-kit` layer, container queries, no hover) and the helper source placed ahead of v2 code. The Vivid stylesheet's colour rule is generated from the kit tokens with the approved values, so the tracker looks the same; the stylesheet body is `theme.source.css`.
+- **Guide (5.6).** `templates/APP_GUIDE.md` and `templates/APP_REFERENCE.md`, `GUIDE_VERSION` 2.0.0 and `guideChecksum()` in `src/workspace/guide.ts`, used by template guidance, the workspace guide, `read_tracker_design` and `read_app_design`. Old names (`authoring`, `usage`, `baseline`, `skill`, `theme`, `interaction`, `qa`, `discovery`, `integration`, `data`, `parity`, `configuration`, `template`) are aliases. Plugins ship the guide under their old `DESIGN_BASELINE.md` name.
+- **Checks (5.7).** `DESIGN_WIDTHS` 1440, 400, 390; custom apps are checked on each screen their navigation names. `APP_DESIGN_CHROMIUM` lets a build container point the check at its own Chromium.
+- **Gates (5.8).** `tests/visual/frame-runtime.spec.cjs` (data from `scripts/frame-gate-data.ts`): hard gate on requests and identical screens; soft gate reports times and fails only above 2.5 s.
+
+Carried over, with the package that takes it:
+
+- **Owner actions.** Publish the ChatGPT and Claude plugin versions with the new skills and bundled guide (O3); installed plugins keep the old wording until then. Report real speed numbers after release (O5). Update the *Platform Capability Review* app (needs the owner's approval of that workspace change).
+- **Real hosts.** WebAssembly in the Claude widget and in the ChatGPT and Claude mobile apps, Safari and real phones were not tested here; the frame falls back to server mode where refused.
+- **v1 apps at narrow widths → 7.3.** The browser gate reports (does not fail) horizontal overflow of v1 catalog screens at panel and phone widths; the rebuild on the kit fixes them.
+- **Embedded carry-overs from sessions 2 and 3 → 6.8.** The no-access page and role changes inside an assistant, and the sharing screen for app owners who are not organization owners, move with Publish / Collect / Disclose.
+- **Per-screen data in catalog apps → 7.3.** v1 catalog apps still read whole tables per screen; the frame makes that fast once loaded, but the first open still reads everything.
+- **Header status from apps.** Apps cannot set the header status themselves; the platform sets it. A `status` output can be added when a rebuilt app needs one.
 
