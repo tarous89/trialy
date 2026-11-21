@@ -1,3 +1,40 @@
+# CRO Selection 3.0.0 validation
+
+Validated in the repository on 21 November 2026 with fictional data only (session 7, package 7.3/7.4). Nothing ran on a deployed account. **Catalog status:** draft; not in the seed (the owner approves versions, O4). 2.1.1 stays published; its catalog JSON and preview are rebuilt from `archive/2.1.1/` and checked byte for byte.
+
+## Decisions applied (platform decisions of 19 November 2026)
+
+| Decision | How it shows in 3.0.0 |
+| --- | --- |
+| G2, G3 No own header, platform messages | No header, title, eyebrow, "As of" pill, layout gear, rail footer or banners (19 banners and the review note removed); every message is `output.notice`, at most 300 characters. |
+| G4 Working context | The request picker returns `context: {requestId}`; `input.context` restores it. |
+| G5 Fewest clicks | Inline edits (`kit.cell`) for request budget, deadlines and owner, vendor name, type and country, criterion weight and mandatory, checklist status, owner and due, line amounts, award start date; side panels only to add or edit many fields; drag and drop of requests between stages (`kit.board`, with the menu on each card). |
+| G6 Settings | Owners only: default currency, question-deadline default, confidentiality text, blind scoring. Display (opening screen, stage names) and Access and automations panels removed. Invitation texts and decision notices moved to the new Emails screen. |
+| G7, G8 Empty screens and Undo | Each empty screen has its first action; Undo for the person's last action after a save. |
+| G11 Real data | No example records in installed apps; the gallery preview labels its fictional data. |
+| P3, P4 Per-screen reads | One `records.readMany` batch per screen with the same reads every time; commands read every table; `pending` shows as loading. |
+| P5 Direct saving | `records.save` with the version captured when editing started (29 "(reviewed)" labels and every "prepared for review" text removed); delete is `archive_record`. The one confirmation stays for everything that goes out to suppliers. |
+
+## Commands and results
+
+| Check | Command | Result |
+| --- | --- | --- |
+| Builders | `node scripts/build-cro-selection-template.mjs --check`, `node scripts/build-selection-template.mjs --check` | pass (2.1.1 and 1.0.1 byte for byte) |
+| Functions and types | `node --import tsx scripts/check-app-functions.ts`, `npx tsc --noEmit` | pass |
+| 3.0.0 unit (14 tests) | `APP_DESIGN_CHECKS=off node --no-wasm-code-gc --import tsx --test tests/cro-selection-v2.test.ts` | 13 pass, 1 skipped (the design check, run separately below) |
+| 3.0.0 design check, current rules, 1440/400/390 px, nine screens and two panels | `APP_DESIGN_CHROMIUM=/opt/pw-browsers/chromium node --no-wasm-code-gc --import tsx --test --test-name-pattern="design check" tests/cro-selection-v2.test.ts` | pass; warnings only for the kit's muted text contrast (3.9:1) |
+| 3.0.0 install and run | `APP_DESIGN_CHECKS=off node --no-wasm-code-gc --import tsx --test tests/cro-selection-v2-integration.test.ts` | 1 of 1 pass: install, open (no write), direct save, inline edit, stale edit refused, assistant command saved directly, round and links on click, one confirmed send carrying the invited status, supplier submission accepted with one confirmation |
+| 2.1.1 tests unchanged | `tests/cro-selection.test.ts`, `tests/cro-selection-commands.test.ts`, `tests/cro-selection-integration.test.ts` | pass |
+| Platform regressions | `tests/template-catalog.test.ts`, `tests/frame-engine.test.ts`, `tests/app-update.test.ts`, `tests/app-templates.test.ts`, `tests/batched-read-apps.test.ts` | pass |
+
+**Per-screen reads checked against full reads:** every screen for each demo request, and the supplier, decision, proposal, round and award panels, render the same HTML whether the screen reads its own tables or every table (checked while building; the only difference was a proposal panel forced onto the Vendors screen, a state the app never reaches).
+
+**Deviations:** the folder's `cro-selection.preview.html` stays the 2.1.1 preview (the gallery's preview hash and `tests/template-catalog.test.ts` require it while 2.1.1 is seeded); the 3.0.0 preview is `cro-selection-3.0.0-preview.html`. `templates/catalog-installers.json` keeps 2.1.1 on `templates/source/cro-selection/schema.example.json` (the 3.0.0 schema, byte-identical to `archive/2.1.1/`), because `tests/template-catalog.test.ts` and `tests/cro-selection.test.ts` assert that the seeded 2.1.1 is not served from an archive folder. The layout screens keep the 2.x ids (the platform allows at most eight layout screens, and saved profiles stay valid); Emails is added after Decision outside the layout schema and cannot be hidden.
+
+**Not verified:** the frame runtime in a real browser host (the screens were checked in QuickJS and the design inspector, not with `tests/visual/frame-runtime.spec.cjs`); the upgrade of an installed 2.1.x copy to 3.0.0 (package 7.1); a real Claude or ChatGPT session; gallery media (not regenerated: `src/shared/template-gallery.ts` and screenshots are out of scope here). `scripts/test-cro-selection-browser.ts` still exercises 2.1.1.
+
+---
+
 # CRO Selection 2.1.0 validation
 
 Validated against the repository host on 15 November 2026 with fictional data only, on top of the 2.0.0 validation below (which still applies unless this section changes it). Nothing ran on a deployed account.
