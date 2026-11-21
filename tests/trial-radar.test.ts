@@ -8,7 +8,7 @@ import {validateRecipeDeclarations,readRecipes,automationRecipe} from '../src/au
 import {validateAppFunctions} from '../src/workspace/app-functions-schema.js';
 import {schedule} from '../src/automations/schema.js';
 import {nextCalendar} from '../src/automations/schedules.js';
-import * as kit from '../templates/source/radar-kit/kit.mjs';
+import * as kit from '../templates/source/radar-kit/archive/1.2.0/kit.mjs';
 import {entry,radar,schema,demo,fresh,session,render,text,runFunction,T,fullBindings,cfgFor,fullMap,type Row} from './fixtures/trial-radar.js';
 
 /* BIO_RADAR.md §5 for the radar kit and Trial Radar 1.0.0, in production QuickJS with platform-shaped reads (tests/fixtures/trial-radar.ts).
@@ -32,7 +32,7 @@ test('package: the generator is deterministic and the catalog entry, recipes, fu
  const outputs=JSON.parse(await readFile('templates/contracts/outputs.json','utf8'));const out=outputs.roles['trialradar.events'];
  assert.deepEqual([out.kind,out.writer],['output','life.trial-radar']);assert.match(out.description,/dismissed rows .* are never counted/);
  assert.deepEqual(out.versions['radar.v1'].fields.map((f:any)=>f.key),schema['trialradar.events'].fields.map((f:any)=>f.key));
- assert.equal(JSON.parse(await readFile('templates/catalog-installers.json','utf8'))['life.trial-radar@1.0.1'],'templates/source/radars/trial-radar/schema.example.json');
+ assert.equal(JSON.parse(await readFile('templates/catalog-installers.json','utf8'))['life.trial-radar@1.0.1'],'templates/source/radars/trial-radar/archive/1.0.1/schema.example.json');
  // Published on owner approval (15 Nov 2026): the seed approves 1.0.0 on first import.
  assert.equal(JSON.parse(await readFile('templates/catalog-seed.json','utf8'))['life.trial-radar'].version,'1.0.1');
  // Trial specifics (§3): scope fields, tracker fields, natural key, event kinds, digest section, sources with TrialAgents Intel first.

@@ -9,7 +9,8 @@ import {appTemplates} from '../../src/workspace/app-templates.js';
  * the injected appRoles map. Records are the fictional demo set (as of 16 Nov 2026). */
 export type Row={id:string,version:number,role:string,data:any};
 export async function radarHarness(slug:string){
-const root='templates/source/radars/'+slug+'/';
+// The released version (kit 1.x) is archived since the 2.0.0 rebuild (3.0.0 for Literature); its tests read the archive.
+const root='templates/source/radars/'+slug+'/archive/'+(slug==='literature-radar'?'2.0.1':'1.0.1')+'/';
 const radar=JSON.parse(await readFile(root+'radar.json','utf8'));
 const entry=await appTemplates.read({templateId:radar.id,version:radar.version,includeFunctionSource:true} as any);
 const schema=JSON.parse(await readFile(root+'schema.example.json','utf8'));

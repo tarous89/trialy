@@ -1,0 +1,208 @@
+{
+  "kit": "1.2.0",
+  "slug": "deal-radar",
+  "id": "life.deal-radar",
+  "version": "1.0.1",
+  "name": "Deal Radar",
+  "prefix": "dealradar",
+  "trackerTable": "deals",
+  "trackerLabel": "Deals",
+  "itemLabel": "deal",
+  "itemsLabel": "deals",
+  "cadence": "weekly",
+  "trackerOutput": {
+    "note": "amounts are only those publicly disclosed (disclosed true); never add different currencies"
+  },
+  "scopeFields": [
+    {
+      "key": "modalities",
+      "name": "Modalities",
+      "kind": "text",
+      "placeholder": "e.g. antibodies, ADCs"
+    },
+    {
+      "key": "indications",
+      "name": "Indications",
+      "kind": "text",
+      "required": true,
+      "placeholder": "e.g. fibrosis, oncology"
+    },
+    {
+      "key": "regions",
+      "name": "Regions",
+      "kind": "text",
+      "placeholder": "e.g. US, EU, China"
+    },
+    {
+      "key": "deal_kinds",
+      "name": "Deal kinds",
+      "kind": "text",
+      "placeholder": "e.g. license, option, acquisition"
+    },
+    {
+      "key": "stages",
+      "name": "Asset stages",
+      "kind": "text",
+      "placeholder": "e.g. preclinical to phase 2"
+    }
+  ],
+  "trackerFields": [
+    {
+      "key": "kind",
+      "name": "Kind",
+      "kind": "select",
+      "options": [
+        "license",
+        "partnership",
+        "option",
+        "acquisition",
+        "collaboration"
+      ]
+    },
+    {
+      "key": "title",
+      "name": "Title",
+      "kind": "text",
+      "required": true
+    },
+    {
+      "key": "announced_on",
+      "name": "Announced",
+      "kind": "date"
+    },
+    {
+      "key": "organization_ids",
+      "name": "Parties",
+      "kind": "text",
+      "description": "Comma-separated organizations record IDs."
+    },
+    {
+      "key": "parties",
+      "name": "Party names",
+      "kind": "text"
+    },
+    {
+      "key": "asset",
+      "name": "Asset",
+      "kind": "text"
+    },
+    {
+      "key": "modality",
+      "name": "Modality",
+      "kind": "text"
+    },
+    {
+      "key": "indication",
+      "name": "Indication",
+      "kind": "text"
+    },
+    {
+      "key": "stage",
+      "name": "Asset stage",
+      "kind": "text"
+    },
+    {
+      "key": "upfront",
+      "name": "Upfront",
+      "kind": "number"
+    },
+    {
+      "key": "milestones",
+      "name": "Milestones",
+      "kind": "number"
+    },
+    {
+      "key": "total",
+      "name": "Total value",
+      "kind": "number"
+    },
+    {
+      "key": "currency",
+      "name": "Currency",
+      "kind": "text"
+    },
+    {
+      "key": "royalties_note",
+      "name": "Royalties",
+      "kind": "text"
+    },
+    {
+      "key": "disclosed",
+      "name": "Terms disclosed",
+      "kind": "boolean"
+    }
+  ],
+  "naturalKey": {
+    "label": "parties, kind and date",
+    "rule": "Party names in alphabetical order, lower case, then the kind and the announcement date, joined by \"|\". The same deal reported within 7 days is the same deal: reuse its key."
+  },
+  "dateField": {
+    "key": "announced_on",
+    "label": "Announced",
+    "upcoming": false
+  },
+  "eventKinds": [
+    {
+      "key": "deal_announced",
+      "label": "Deal announced"
+    },
+    {
+      "key": "deal_terminated",
+      "label": "Deal terminated"
+    },
+    {
+      "key": "option_exercised",
+      "label": "Option exercised"
+    }
+  ],
+  "digestSection": {
+    "title": "Largest disclosed deals",
+    "source": "items",
+    "amountField": "total",
+    "currencyField": "currency",
+    "disclosedField": "disclosed",
+    "hint": "disclosed deal values"
+  },
+  "listColumns": [
+    "title",
+    "kind",
+    "parties",
+    "announced_on",
+    "indication",
+    "stage",
+    "total",
+    "currency"
+  ],
+  "optionLabels": {},
+  "sources": [
+    {
+      "name": "Press releases",
+      "covers": "Company and newswire announcements with terms.",
+      "priority": 1,
+      "notes": "Use the public site on the web."
+    },
+    {
+      "name": "SEC filings",
+      "covers": "8-K, 10-K/10-Q exhibits with deal terms (EDGAR).",
+      "priority": 2,
+      "notes": "Use the public site on the web."
+    },
+    {
+      "name": "News",
+      "covers": "Trade and business news.",
+      "priority": 3,
+      "notes": "Prefer primary sources for terms."
+    }
+  ],
+  "instruction": "You watch pharma and biotech deals for the scopes below: licenses, partnerships, options, acquisitions and collaborations in their modalities, indications, regions and stages, announced since the last run, plus terminations and exercised options of deals already in the table. Record each deal once with its parties, asset and disclosed terms (upfront, milestones, total, currency, royalties). Set disclosed to true only when terms are public; never estimate undisclosed terms.",
+  "examplePrompts": [
+    {
+      "prompt": "Set up Deal Radar for fibrosis licensing deals and build it now.",
+      "expectedBehavior": "Install Deal Radar, add a scope (indications, deal kinds), then Build now in chat: deals with disclosed terms, events and a run with its source report."
+    },
+    {
+      "prompt": "What were the largest disclosed fibrosis deals this quarter?",
+      "expectedBehavior": "Read Deal Radar deals with disclosed terms for the scope and list the largest by total value per currency. Nothing is written."
+    }
+  ]
+}

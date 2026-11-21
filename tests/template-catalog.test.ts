@@ -254,7 +254,10 @@ test('the batched-read release of all 16 switched-on apps is the listed version;
    assert.equal(listed.find((t:any)=>t.id===id)?.version,next,id);assert.equal((await catalog.read({templateId:id})).version,next,id);assert.equal(seed[id].version,next,id);
    assert.ok(!ret.some((r:any)=>r.templateId===id&&r.version===old),id);
    // Both versions keep their own installer schema, preview and gallery image; the released one is never changed.
-   assert.ok(gallery[id+'@'+old]&&gallery[id+'@'+next],id);assert.match(installers[id+'@'+old],/\/archive\//,id);assert.doesNotMatch(installers[id+'@'+next],/\/archive\//,id);
+   assert.ok(gallery[id+'@'+old]&&gallery[id+'@'+next],id);assert.match(installers[id+'@'+old],/\/archive\//,id);
+   // 7.3: once a rebuilt major version follows (a draft until approved), this release is archived too; the newest version is never archived.
+   const newest=Object.keys(installers).filter(k=>k.startsWith(id+'@')).map(k=>k.slice(id.length+1)).sort((a,b)=>{const x=a.split('.').map(Number),y=b.split('.').map(Number);return x[0]-y[0]||x[1]-y[1]||x[2]-y[2];}).pop()!;
+   assert.doesNotMatch(installers[id+'@'+newest],/\/archive\//,id);if(newest!==next)assert.match(installers[id+'@'+next],/\/archive\//,id);
    for(const version of [old,next])assert.ok((await templateMedia(catalog,id,version,'preview')).toString().includes('<html'),id+'@'+version);
    const released=JSON.parse(await readFile(`templates/apps/${id}-${old}.json`,'utf8')),current=JSON.parse(await readFile(`templates/apps/${id}-${next}.json`,'utf8'));
    assert.equal(released.name,current.name,id);assert.deepEqual(Object.keys(released.options??{}),Object.keys(current.options??{}),id);

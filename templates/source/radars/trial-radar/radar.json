@@ -1,8 +1,13 @@
 {
-  "kit": "1.0.1",
+  "kit": "2.0.0",
+  "dataKit": "1.0.1",
   "slug": "trial-radar",
   "id": "life.trial-radar",
-  "version": "1.0.1",
+  "version": "2.0.0",
+  "upgradeFrom": [
+    "1.0.0",
+    "1.0.1"
+  ],
   "name": "Trial Radar",
   "prefix": "trialradar",
   "trackerTable": "trials",
