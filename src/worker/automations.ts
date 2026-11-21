@@ -6,7 +6,8 @@ import { access } from '../domain/permissions.js';
 import { audit,Service } from '../domain/service.js';
 export async function runAutomation(db:Database):Promise<boolean>{return db.transaction(async tx=>{
  const rule=(await tx.query('SELECT * FROM automations WHERE paused=false AND next_run<=now() ORDER BY next_run FOR UPDATE SKIP LOCKED LIMIT 1')).rows[0];if(!rule)return false;
- await tx.query('SELECT id FROM workspaces WHERE id=$1 FOR UPDATE',[rule.workspace_id]);
+ // P7 (6.7): background rules take the workspace lock shared, so people's saves never wait for them.
+ await tx.query('SELECT id FROM workspaces WHERE id=$1 FOR SHARE',[rule.workspace_id]);
  let eventIds:string[]=[];
  if(rule.schedule&&rule.schedule.kind!=='daily'){
   const action=rule.schedule.kind==='records.changed'?'record.':'document.saved';

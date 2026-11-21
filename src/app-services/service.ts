@@ -1,3 +1,4 @@
+import {nothingNew} from '../automations/event-watermark.js';
 import {classifyFailure,needsAttention,alertOnce,retryAt} from '../automations/attention.js';
 import {requireAutomationManager} from '../automations/app-owners.js';
 import {validateSummary} from '../automations/summary.js';
@@ -122,6 +123,8 @@ export class AppActions{
 }
 export async function dispatchAppActions(db:Database,now=new Date()){
  return db.transaction(async tx=>{const row=(await tx.query('SELECT * FROM app_actions WHERE deleted_at IS NULL AND NOT paused AND next_at<=$1 ORDER BY next_at,id FOR UPDATE SKIP LOCKED LIMIT 1',[now])).rows[0];if(!row)return false;const service=new AppActions(adapter(tx)),a:Actor={userId:row.user_id,origin:'ai',...(row.assistant==='claude'?{assistant:'claude' as const}:{})};
+  // P7 (6.7): a database trigger with no new events since its cursor waits without scanning or checking access again.
+  if(row.config?.trigger?.kind==='database'&&row.config.trigger.source!=='automation_runs'&&await nothingNew(tx,row.workspace_id,row.event_cursor)){await tx.query("UPDATE app_actions SET next_at=$2 WHERE id=$1",[row.id,new Date(now.getTime()+5000)]);return true;}
   await tx.query('SAVEPOINT action_dispatch');try{await withActor(a,async()=>{const config=actionConfig.parse(row.config);await service.validate(a,row.workspace_id,config,row.scope_stamp);const trigger=config.trigger;let cursor=row.event_cursor,scan=row.scan_cursor,next:Date|null;
    if(trigger.kind==='database'&&trigger.source==='automation_runs'){
     // monitoring.finished is committed in the same transaction as the immutable run.

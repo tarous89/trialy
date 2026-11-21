@@ -26,7 +26,7 @@ test('one classifier: temporary failures retry at 5, 15 and 60 minutes; access, 
  assert.equal(classifyFailure({status:409,code:'scope_changed'}).kind,'setup');
 });
 
-test('a failing action is not switched off: it shows Needs attention with the cause, alerts once, and its schedule continues; the minimum interval is an organization setting',async()=>{
+test('an action whose end date passed shows Needs attention with the cause and alerts once (D31); the minimum interval is an organization setting',async()=>{
  const pg=new PGlite();
  try{
   for(const file of (await readdir('migrations')).filter(f=>f.endsWith('.sql')).sort())await pg.exec(await readFile('migrations/'+file,'utf8'));
@@ -44,10 +44,9 @@ test('a failing action is not switched off: it shows Needs attention with the ca
   const before=Date.now();
   assert.equal(await dispatchAppActions(setup),true);
   const row=await one('SELECT paused,needs_attention_cause,next_at,last_error FROM app_actions WHERE id=$1',[action]);
-  assert.equal(row.paused,false,'a failure no longer switches the automation off');
-  assert.match(row.needs_attention_cause,/end date/);
-  assert.ok(new Date(row.next_at).getTime()>=before+59*60000,'checked again later, without running');
-  await setup.query("UPDATE app_actions SET next_at=now()-interval '1 minute' WHERE id=$1",[action]);
+  assert.equal(row.paused,true,'an end date that passed is a set-up-again cause: it stays off until saved again');
+  assert.match(row.needs_attention_cause,/end date/);assert.equal(row.last_error,'action_expired');void before;
+  await setup.query("UPDATE app_actions SET paused=false,next_at=now()-interval '1 minute' WHERE id=$1",[action]);
   await dispatchAppActions(setup);
   assert.equal(Number((await one('SELECT count(*) AS n FROM automation_alerts WHERE automation_id=$1',[action])).n),1,'one alert for the cause, however often it is checked');
   const listed=(await withActor(owner,()=>manage.list(owner,w,{}))).rows.find((r:any)=>r.id===action);
@@ -56,6 +55,14 @@ test('a failing action is not switched off: it shows Needs attention with the ca
   await withActor(owner,()=>manage.dismissAlert(owner,w,alerts.rows[0].id));
   assert.equal((await withActor(owner,()=>manage.alerts(owner,w))).rows.length,0);
 
+  // P7 (6.7): a database-triggered action with nothing new since its cursor waits without scanning or checking access.
+  const quiet=randomUUID(),latest=Number((await one('SELECT coalesce(max(event_sequence),0) AS n FROM audit_events WHERE workspace_id=$1',[w])).n);
+  await setup.query("INSERT INTO app_actions(id,workspace_id,user_id,app_id,config,approved_by,paused,next_at,event_cursor) VALUES($1,$2,$3,$4,$5,$3,false,now()-interval '1 minute',$6)",[quiet,w,owner.userId,app.id,JSON.stringify({...config,name:'Quiet',trigger:{kind:'database',typeId:randomUUID(),events:['created']}}),latest]);
+  await setup.query("UPDATE app_actions SET next_at=now()+interval '1 hour' WHERE id=$1",[action]);
+  await dispatchAppActions(setup);
+  const q=await one('SELECT needs_attention_cause,next_at FROM app_actions WHERE id=$1',[quiet]);
+  assert.equal(q.needs_attention_cause,null,'no access check ran (its end date passed, which a check would report)');
+  assert.ok(new Date(q.next_at).getTime()>Date.now(),'it simply waits for the next poll');
   // D30: default 60 minutes, changed by an organization owner within 15 to 1440.
   assert.equal((await withActor(owner,()=>manage.settings(owner,w))).minIntervalMinutes,60);
   await withActor(owner,()=>manage.saveSettings(owner,w,30));

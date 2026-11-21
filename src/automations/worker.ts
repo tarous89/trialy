@@ -10,6 +10,7 @@ import {localDay} from '../shared/schedules.js';
 import {adapter,signalWork,automationsEnabled,activeSubscription} from './service.js';
 import {dailyDue,nextCalendar} from './schedules.js';
 import {runnerActor} from './ownership.js';
+import {nothingNew} from './event-watermark.js';
 import {classifyFailure,needsAttention,clearAttention,retryAt,minimumInterval,alertOnce} from './attention.js';
 const J=JSON.stringify;
 async function occurrence(tx:Connection,d:any,key:string,reason:string,due:Date,input:any,config?:any){
@@ -20,7 +21,7 @@ async function occurrence(tx:Connection,d:any,key:string,reason:string,due:Date,
 export async function dispatchDaily(db:Database,now=new Date()){
  const candidate=(await db.query('SELECT id,user_id,workspace_id,assistant FROM automation_runners WHERE enabled AND next_daily_at<=$1 ORDER BY next_daily_at,id LIMIT 1',[now])).rows[0];if(!candidate)return false;
  return withActor(runnerActor(candidate),()=>db.transaction(async tx=>{
-  await tx.query('SELECT id FROM workspaces WHERE id=$1 FOR UPDATE',[candidate.workspace_id]);const r=(await tx.query('SELECT * FROM automation_runners WHERE id=$1 AND enabled AND next_daily_at<=$2 FOR UPDATE',[candidate.id,now])).rows[0];if(!r)return false;
+  /* P7 (6.7): a shared workspace lock; the scheduler's own row lock below keeps the work single. */await tx.query('SELECT id FROM workspaces WHERE id=$1 FOR SHARE',[candidate.workspace_id]);const r=(await tx.query('SELECT * FROM automation_runners WHERE id=$1 AND enabled AND next_daily_at<=$2 FOR UPDATE',[candidate.id,now])).rows[0];if(!r)return false;
   const day=localDay(now,r.preferences.timeZone),hasWork=(await tx.query("SELECT id FROM automation_occurrences WHERE runner_id=$1 AND status IN ('queued','running') AND due_at<=$2 LIMIT 1",[r.id,now])).rows.length;
   if(r.preferences.emptyChecks||hasWork)await occurrence(tx,r,'daily:'+day,'daily_check',now,{localDate:day});
   await tx.query('UPDATE automation_runners SET next_daily_at=$2 WHERE id=$1',[r.id,dailyDue(r.preferences.time,r.preferences.timeZone,now)]);return true;
@@ -30,13 +31,15 @@ export async function dispatchDue(db:Database,now=new Date()){
  const candidate=(await db.query(`SELECT d.monitor_id,d.user_id,d.workspace_id,r.assistant FROM automation_dispatch d JOIN automation_runners r ON r.id=d.runner_id
  WHERE r.enabled AND d.next_at<=$1 AND (d.retry_at IS NULL OR d.retry_at<=$1) ORDER BY d.next_at,d.monitor_id LIMIT 1`,[now])).rows[0];if(!candidate)return false;
  return withActor(runnerActor(candidate),()=>db.transaction(async tx=>{
-  await tx.query('SELECT id FROM workspaces WHERE id=$1 FOR UPDATE',[candidate.workspace_id]);const d=(await tx.query('SELECT * FROM automation_dispatch WHERE monitor_id=$1 AND next_at<=$2 FOR UPDATE',[candidate.monitor_id,now])).rows[0];if(!d)return false;
+  /* P7 (6.7): a shared workspace lock; the scheduler's own row lock below keeps the work single. */await tx.query('SELECT id FROM workspaces WHERE id=$1 FOR SHARE',[candidate.workspace_id]);const d=(await tx.query('SELECT * FROM automation_dispatch WHERE monitor_id=$1 AND next_at<=$2 FOR UPDATE',[candidate.monitor_id,now])).rows[0];if(!d)return false;
   await tx.query('SAVEPOINT optional_dispatch');
   try{
    const a=runnerActor({user_id:d.user_id,assistant:candidate.assistant}),m=new AppMonitoring(adapter(tx)),row=await m.row(a,d.workspace_id,d.monitor_id),c=monitoringConfig.parse(row.config);
    // Switched off or archived: stop quietly. Switching it on again schedules it from now (6.2).
    if(!row.enabled||row.archived_at||!c.automation){await tx.query("UPDATE automation_dispatch SET next_at=NULL,retry_at=NULL,diagnostic='disabled' WHERE monitor_id=$1",[d.monitor_id]);await tx.query('RELEASE SAVEPOINT optional_dispatch');return true;}
    if(row.version!==d.monitor_version)throw Object.assign(Error('version_moved'),{code:'version_moved'});
+   // P7 (6.7): a database trigger with no new events since its cursor waits without scanning or checking access again.
+   if(c.automation.trigger.kind==='database'&&await nothingNew(tx,d.workspace_id,d.event_cursor)){await tx.query('UPDATE automation_dispatch SET next_at=$2 WHERE monitor_id=$1',[d.monitor_id,new Date(now.getTime()+30000)]);await tx.query('RELEASE SAVEPOINT optional_dispatch');return true;}
    const checked=await m.validate(a,d.workspace_id,c);if(checked.stamp!==row.scope_stamp)throw Error('scope_changed');
    const pending=Number((await tx.query("SELECT count(*) AS n FROM automation_occurrences WHERE monitor_id=$1 AND status IN ('queued','running','partial','blocked')",[d.monitor_id])).rows[0].n),capacity=Math.max(0,100-pending);if(!capacity){await tx.query("UPDATE automation_dispatch SET retry_at=$2,diagnostic='queue_capacity' WHERE monitor_id=$1",[d.monitor_id,new Date(now.getTime()+60000)]);await tx.query('RELEASE SAVEPOINT optional_dispatch');return true;}
    const t=c.automation.trigger,coverageFrom=row.coverage_through??new Date(now.getTime()-c.automation.initialLookbackDays*86400000).toISOString();let next:Date|null=null,cursor=d.event_cursor,scan=d.scan_cursor;
@@ -72,7 +75,7 @@ export async function dispatchDue(db:Database,now=new Date()){
 export async function recoverWork(db:Database,now=new Date()){
  const rows=(await db.query("SELECT o.id,o.user_id,o.workspace_id,r.assistant FROM automation_occurrences o JOIN automation_runners r ON r.id=o.runner_id WHERE o.status='running' AND o.lease_until<=$1 ORDER BY o.lease_until LIMIT 10",[now])).rows;
  for(const row of rows)await withActor(runnerActor(row),()=>db.transaction(async tx=>{
-  await tx.query('SELECT id FROM workspaces WHERE id=$1 FOR UPDATE',[row.workspace_id]);const o=(await tx.query("SELECT * FROM automation_occurrences WHERE id=$1 AND status='running' AND lease_until<=$2 FOR UPDATE",[row.id,now])).rows[0];if(!o)return;
+  /* P7 (6.7): a shared workspace lock; the scheduler's own row lock below keeps the work single. */await tx.query('SELECT id FROM workspaces WHERE id=$1 FOR SHARE',[row.workspace_id]);const o=(await tx.query("SELECT * FROM automation_occurrences WHERE id=$1 AND status='running' AND lease_until<=$2 FOR UPDATE",[row.id,now])).rows[0];if(!o)return;
   if(o.run_id)await tx.query("UPDATE app_monitor_runs SET status='failed',finished_at=now(),result=$2 WHERE id=$1 AND status='running'",[o.run_id,J({summary:'Execution deadline passed. Saved receipts are retained; coverage is unchanged.'})]);
   // T3: the same run is retried at 5, 15 and 60 minutes; after the last retry it stops and the owners get one alert.
   await tx.query("UPDATE automation_occurrences SET status=$2,available_at=$3,result=$4 WHERE id=$1",[o.id,o.attempts<o.retry_limit?'queued':'blocked',retryAt(Math.max(1,o.attempts),now),J({summary:'Execution interrupted; reconcile previous receipts before continuing.'})]);
@@ -88,7 +91,7 @@ export async function recoverWork(db:Database,now=new Date()){
 export async function dispatchCompletions(db:Database){
  const o=(await db.query("SELECT o.*,r.assistant FROM automation_occurrences o JOIN automation_runners r ON r.id=o.runner_id WHERE o.status='completed' AND o.completion_action_id IS NOT NULL AND o.completion_dispatched_at IS NULL ORDER BY o.finished_at LIMIT 1")).rows[0];if(!o)return false;
  return withActor(runnerActor(o),()=>db.transaction(async tx=>{
-  await tx.query('SELECT id FROM workspaces WHERE id=$1 FOR UPDATE',[o.workspace_id]);const current=(await tx.query('SELECT * FROM automation_occurrences WHERE id=$1 FOR UPDATE',[o.id])).rows[0];if(current.completion_dispatched_at)return false;
+  /* P7 (6.7): a shared workspace lock; the scheduler's own row lock below keeps the work single. */await tx.query('SELECT id FROM workspaces WHERE id=$1 FOR SHARE',[o.workspace_id]);const current=(await tx.query('SELECT * FROM automation_occurrences WHERE id=$1 FOR UPDATE',[o.id])).rows[0];if(current.completion_dispatched_at)return false;
   await tx.query('SAVEPOINT completion_dispatch');try{
    const db=adapter(tx),a=runnerActor(o),monitor=await new AppMonitoring(db).row(a,o.workspace_id,o.monitor_id),r=(await tx.query('SELECT enabled FROM automation_runners WHERE id=$1',[o.runner_id])).rows[0];
    if(!r?.enabled||!monitor.enabled||monitor.version!==o.monitor_version)throw Error('paused_or_changed');
