@@ -1,3 +1,16 @@
+# Investor Updates 2.0.0 — QA record (draft)
+
+See README.md for what changed. Verified on 21 November 2026 in the build container:
+
+- `node scripts/build-investor-updates-template.mjs --check`: 1.0.1 unchanged and 2.0.0 verified.
+- `tests/investor-updates-v2.test.ts`: every screen and sub-screen on demo data and empty tables (no own header, banners or review wording; one read request per screen), first action on every empty screen, inline saves with the shown version, board moves, archive_record, owner-only Settings, pending reads as loading, notices, Undo, working context, the single send confirmation, commands saving directly.
+- `tests/investor-updates-v2-integration.test.ts`: real installer on PGlite, direct save from a click, inline edit (and a stale version refused), a write command.
+- Design check under current rules runs in the v2 test when APP_DESIGN_CHROMIUM is set.
+
+Not verified here: real hosts (frame in Claude/ChatGPT), real email clients, the owner-approved upgrade of an installed copy (package 7.1).
+
+---
+
 # Investor Updates 1.0.0 — QA record
 
 Scope: [INVESTOR_UPDATES.md](../../../docs/product/app-template-blueprints/apps/INVESTOR_UPDATES.md), revised 15 November 2026 (scope PR #186). Template guidance 1.3.31, rechecked against 1.3.32 (app code access): customization stays in settings, layout and records, and the catalog code holds no workspace data. Status: **published** 17 November 2026 (owner approval; `catalog-seed.json` names 1.0.0).
