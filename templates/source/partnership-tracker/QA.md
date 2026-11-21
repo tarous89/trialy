@@ -1,3 +1,15 @@
+# Partnerships 3.0.0: QA (draft, v2 rebuild)
+
+**Run for 3.0.0 (21 November 2026; package 7.3 / 7.4).** Fictional data only; production QuickJS with the kit prepended (`effectiveSource`), and a disposable PGlite database with every migration and the runtime role for the install test.
+
+| Test | Result |
+|---|---|
+| `tests/partnerships-v2.test.ts` (new): package (marker first, `upgradeFrom`, schema, automations, functions and command names/inputs identical to 2.2.1, no `records.propose`, header, h1, "(reviewed)" or member IDs, builder `--check` for 2.2.1 and 3.0.0); every screen at wide, panel and phone widths with side navigation and one batched read per table group; Settings for owners only; inline edit, board drop, move menu with the reason panel, panel version captured at open, delete as archive, Undo; panel forms (new opportunity, log with stage move and follow-ups, conference meeting and outcome, accept a target); empty screens with their first action; pending reads as Loading; notices instead of banners; viewers read only; commands (reads write nothing, writes save once, `layout.save` answers with an app change); design check (current rules) at 1440/400/390 on 8 screens and 2 panels with `APP_DESIGN_CHROMIUM=/opt/pw-browsers/chromium`, no issues | 9/9 pass |
+| `tests/partnerships-v2-integration.test.ts` (new): install 3.0.0 through the real installer, every screen on the v2 runtime, an inline edit saved directly, a board drop with stage history, `opportunity.move_stage` and `overview.read` through `run_app_command` | pass |
+| 2.2.1 tests (`partnerships.test.ts`, `partnerships-commands.test.ts`, `partnerships-integration.test.ts`): unchanged assertions; paths of the files that moved to `archive/2.2.1/` updated | `partnerships.test.ts` and `partnerships-commands.test.ts` pass; `partnerships-integration.test.ts` passes except its design gate, which could not start a browser in that run (`design_check_unavailable`) |
+
+---
+
 # Partnerships 2.2.0: QA against PARTNERSHIPS.md §13
 
 **Revision run for 2.2.0 (15 November 2026; app commands, integration standard, E5 and E6; PARTNERSHIPS.md §12b).** Fictional data only. Same environment as below; this container's Playwright 1.51.1 was pointed at the installed Chromium build for the design gate and browser test (CI installs its own).

@@ -1,22 +1,36 @@
-# Partnerships 2.2.0 (`life.partnership-tracker`)
+# Partnerships 3.0.0 (`life.partnership-tracker`)
 
-Out-licensing, in-licensing, co-development, research, academic and platform deals by asset, from first contact to signature: conferences, follow-ups and partner news, with the assistant doing the research and the admin. Scope: [PARTNERSHIPS.md](../../../docs/product/app-template-blueprints/apps/PARTNERSHIPS.md) (BT2-07). It replaces Partnership Tracker 1.1.1, whose released files are archived unchanged under [`archive/1.1.1/`](archive/1.1.1/) (built by `scripts/build-partnership-template.mjs`). There are no existing users, so there is no migration.
+Out-licensing, in-licensing, co-development, research, academic and platform deals by asset, from first contact to signature: conferences, follow-ups and partner news, with the assistant doing the research and the admin. Scope: [PARTNERSHIPS.md](../../../docs/product/app-template-blueprints/apps/PARTNERSHIPS.md) (BT2-07).
+
+3.0.0 is the rebuild on the v2 app contract and the shared kit (platform decisions G2-G8, G11, G14, P3-P5; package 7.3). It is a **draft** until the owner approves it (O4); the seed still names 2.2.1. The installer schema, recommended automations and the 50 app command names and inputs are unchanged, so installed 2.1.0, 2.2.0 and 2.2.1 copies can be upgraded (`upgradeFrom`). The published 2.2.1 package is archived byte-identical under [`archive/2.2.1/`](archive/2.2.1/), where its installer entry points; earlier releases stay under `archive/` (1.1.1 is built by `scripts/build-partnership-template.mjs`).
+
+## What changed in 3.0.0
+
+- No header, title, "As of" pill, layout gear, footer or banner of its own: the platform header shows the app name and messages come back as `notice`. Side navigation (kit) with eight screens: Overview, Pipeline, Partners, Conferences, Activity, Research, Lists and Settings (owners only).
+- Record edits save directly with `records.save` and the version captured when editing started; every "(reviewed)" button and "prepared for review" text is gone. Values are edited where they are shown (inline cells in the pipeline list, partners, contacts, follow-ups, meetings and panels); the side panel is for new records and many fields; delete archives (`archive_record`); Undo offers the person's own last change.
+- The pipeline board is a drag-and-drop board (`kit.board`); every card also has a move menu. Lost and On hold ask for a reason in a small panel before saving. Stage history is written in the same save.
+- Settings holds only business choices (stalled days, how the pipeline opens, rows per page, digest intro line) and is shown to owners only. The `key | Label | hidden` text areas and team member IDs are gone from the screens: team names, lost reasons, stage labels and hidden stages, activity kinds, deal types and tag categories are edited row by row on the Lists screen; member IDs are set by an assistant (`settings.save team_members`). The access and automation notes and "where data comes from" text are gone (links to `platform:automations` where useful).
+- Each screen reads only its tables, in fixed `records.readMany` batches (core tables; Contracts, Data Room and saved views; research), so changing screens, filters and sorting make no new request. Reads still on their way show Loading; the overview's open-deal count comes from `records.summarize`. Every empty screen offers its first action.
+- The conference and "You are" are the remembered working context (`output.context`).
+- Activity, materials and disclosure records stay (D42).
+- Options: `heading`, `layoutProfile` and `demoLabel` are dropped (they served the old design); `tableMap`, `pageSize`, `readOnly` and `asOfOverride` stay. `layout.save` is still declared and answers that screens and columns now change with an app change.
+- Catalog source 185,541 characters (2.2.1: 225,866) with the kit's styles and helpers supplied by the runtime; the app keeps about 2 KB of its own styles on `--k-*` tokens.
 
 ## Files
 
 | File | Purpose |
 |---|---|
-| `partnerships.source.js` | Readable app source (`frontend-js`). Line 1 is `templateLayoutSchema` with seven screen IDs; line 2 is `appCommands` (50 commands, single-line JSON). Both are kept verbatim by the build. |
-| `partnerships.css` | Vivid kit styles, theme forest (`#087B58`). |
-| `catalog.metadata.json` | Catalog entry: description, options, instructions and documentation (setup, data contract, automations). |
-| `schema.example.json` | Installer schema with the roles below; `templates/catalog-installers.json` points here. |
-| `demo_data.json` | Fictional assets, partners, contacts, opportunities, stage history, a conference with briefs, signals (`.invalid` emails). |
-| `automation.examples.json` | Fictional follow-up reminder actions set up in chat (they need `status = open`); research (with its digest email) and briefs are `recommendedAutomations` in the catalog entry. |
-| `partnerships.preview.html` | Offline fictional preview (generated). |
+| `partnerships.source.js` | Readable app source. Line 1 is `'use trialagents v2';`, line 2 is `appCommands` (50 commands, single-line JSON). Both are kept verbatim by the build. |
+| `partnerships.css` | The few app-specific styles, on kit tokens. |
+| `catalog.metadata.json` | Catalog entry: description, options, `upgradeFrom`, instructions and documentation for assistants. |
+| `schema.example.json` | Installer schema (unchanged from 2.1.0); `templates/catalog-installers.json` points here for 3.0.0. |
+| `demo_data.json` | Fictional assets, partners, contacts, opportunities, stage history, a conference with briefs, signals (`.invalid` emails); used only by the gallery preview and tests (D40). |
+| `automation.examples.json` | Fictional follow-up reminder actions set up in chat. |
+| `partnerships.preview.html` | Offline gallery preview with labelled fictional data (generated; kit included). |
 | `AUTOMATION_RECIPES.md` | The install recommendations and the chat-set-up reminders. |
-| `QA.md` | PARTNERSHIPS.md §13 results. |
+| `QA.md` | Test results per version. |
 
-Build: `node scripts/build-partnerships-template.mjs` writes `templates/apps/life.partnership-tracker-2.2.0.json` and the preview. `--check` (part of `npm run build`) fails when either is stale. 2.2.0 is approved (owner, 15 November 2026): the seed names it, so new installs get it; 2.1.0 (approved 14 November 2026, migration 071 withdrew 1.1.1) stays approved in existing catalogs and its package is archived unchanged under `archive/2.1.0/`, where its installer entry and preview now point. The first build, 2.0.0, was imported as a draft by an earlier deployment; its files stay unchanged under `archive/2.0.0/`.
+Build: `node scripts/build-partnerships-template.mjs` writes `templates/apps/life.partnership-tracker-3.0.0.json` and its preview, and rebuilds 2.2.1 from `archive/2.2.1/` (byte-identical to the released JSON). `--check` (part of `npm run build`) fails when any of them is stale.
 
 ## Roles
 
