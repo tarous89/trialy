@@ -1,3 +1,4 @@
+import {requireAutomationManager} from './app-owners.js';
 import {randomUUID} from 'node:crypto';
 import {z} from 'zod';
 import type {Database} from '../db/database.js';
@@ -22,7 +23,7 @@ const canonical=(v:any):any=>Array.isArray(v)?v.map(canonical):v&&typeof v==='ob
 export const recipeDigest=(v:unknown)=>checksum(JSON.stringify(canonical(v)));
 export const recipePreparation=z.object({appId:id,key:z.string().max(64),contextRecordId:id.optional(),settings:recipeSettings.default({})}).strict();
 const scope=(c:any)=>recipeDigest({bindings:c.bindings,manifest:c.manifest,execution:c.execution});
-async function owner(db:Database,a:Actor,w:string){const p=await access(db,a,w,true);if(p.role!=='owner')fail(403,'owner_required','Only the owner can set up app automations');return p;}
+async function owner(db:Database,a:Actor,w:string,appId?:string|null){return requireAutomationManager(db,a,w,appId,true);}
 async function app(db:Database,a:Actor,w:string,appId:string){await owner(db,a,w);const c=(await new WorkspaceFoundation(db).readComponent(a,w,appId)).component;if(c.archived||c.project_archived)fail(409,'app_archived','Restore the app before setting up automation');return c;}
 export function recipeRoles(c:any){return {...c.manifest?.automationRoles,...Object.fromEntries((c.manifest?.roles??[]).filter((r:any)=>r.typeId).map((r:any)=>[r.role,r.typeId]))};}
 

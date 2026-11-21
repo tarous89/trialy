@@ -140,7 +140,7 @@ test('logs and history follow roles, and old entries follow today\'s table permi
    assert.deepEqual((await as(bob,()=>s.recordHistory(bob,w,site))).fields.map((x:any)=>x.key),['name','budget']);
   });
 
-  await t.test('automation runs: app owners see outcomes of the app\'s actions; research runs stay with the person who set them up',async()=>{
+  await t.test('automation runs: every owner of the app sees the outcomes of its actions and research (T1, A7)',async()=>{
    const tenant=((await setup.query('SELECT tenant_id FROM workspaces WHERE id=$1',[w])).rows[0] as any).tenant_id;
    const action=randomUUID(),monitor=randomUUID();
    await setup.query('INSERT INTO app_actions(id,workspace_id,user_id,app_id,config,approved_by,paused) VALUES($1,$2,$3,$4,$5,$3,true)',[action,w,alice.userId,app.id,JSON.stringify({name:'Weekly summary',appId:app.id,instructions:'PROMPT-SENTINEL'})]);
@@ -152,12 +152,13 @@ test('logs and history follow roles, and old entries follow today\'s table permi
    const lines=async(a:Actor)=>{const page=await log(a,app.id,{limit:100});for(const hidden of ['PROMPT-SENTINEL','RESULT-SENTINEL','DIAGNOSTIC-SENTINEL'])assert.ok(!words(page).includes(hidden),hidden+' must not show');return page.rows.map((r:any)=>r.description);};
    // The person who set both up, and owns the app, sees both.
    const creator=await lines(alice);assert.ok(creator.includes('“Weekly summary” finished')&&creator.includes('“Research watch” finished'));assert.equal(creator.filter(l=>l==='Switched an automation off').length,2);
-   // Another owner of the app, and the organization owner, see the action's runs and switches. The database keeps research automations with their creator.
-   for(const a of [dana,owner]){const seen=await lines(a);assert.ok(seen.includes('“Weekly summary” finished'));assert.ok(!seen.some(l=>l.includes('Research watch')));assert.equal(seen.filter(l=>l==='Switched an automation off').length,1);}
+   // Session 6 (6.1): another owner of the app, and the organization owner, see every run and switch of the app's automations.
+   for(const a of [dana,owner]){const seen=await lines(a);assert.ok(seen.includes('“Weekly summary” finished'));assert.ok(seen.includes('“Research watch” finished'));assert.equal(seen.filter(l=>l==='Switched an automation off').length,2);}
    for(const a of [bob,vic])await assert.rejects(log(a,app.id),/owner of this app/);
-   // Managing an automation and its detailed history stays with the person who set it up.
-   await assert.rejects(as(dana,()=>new AutomationManagement(db).history(dana,w,'action',action)),/owner/i);
-   await assert.rejects(as(owner,()=>new AutomationManagement(db).history(owner,w,'action',action)),/unavailable/i);
+   // Every owner of the app reads its detailed history; editors and viewers do not.
+   assert.equal((await as(owner,()=>new AutomationManagement(db).history(owner,w,'action',action))).rows.length,1);
+   assert.equal((await as(owner,()=>new AutomationManagement(db).history(owner,w,'research',monitor))).rows.length,1);
+   await assert.rejects(as(bob,()=>new AutomationManagement(db).history(bob,w,'action',action)),/owner|unavailable/i);
   });
  }finally{await pg.close();}
 });
