@@ -32,6 +32,8 @@ export function foundationClient(api:(path:string,method?:string,body?:unknown,o
  restore_app_automation:[`${automation}/definitions/${v.kind}/${v.automationId}/restore`,'POST',{}],
  list_automation_alerts:[`${automation}/alerts`],
  dismiss_automation_alert:[`${automation}/alerts/${v.alertId}/dismiss`,'POST',{}],
+ read_legacy_monitors:[`${automation}/legacy`],
+ migrate_legacy_monitor:[`${automation}/legacy/${v.monitorId}/migrate`,'POST',{expectedVersion:v.expectedVersion,...(v.trigger?{trigger:v.trigger}:{})}],
  move_app_automation:[`${automation}/definitions/${v.kind}/${v.automationId}/move`,'POST',{expectedVersion:v.expectedVersion}],
  list_unassigned_automations:[`${automation}/unassigned`],
  resolve_unassigned_automation:[`${automation}/unassigned/${v.kind}/${v.itemId}`,'POST',{...(v.appId?{appId:v.appId}:{}),...(v.archive?{archive:true}:{})}],

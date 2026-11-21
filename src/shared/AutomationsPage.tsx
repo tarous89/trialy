@@ -31,6 +31,7 @@ export function AutomationsPage({call,appId}:{call:Call;appId?:string}){
  {data&&(offset>0||data.nextOffset!==null)&&<nav className="ty-page-pagination" aria-label="Pagination"><Button disabled={busy||offset===0} onClick={()=>void load(Math.max(0,offset-20))}>Previous page</Button><span>Page {Math.floor(offset/20)+1}</span><Button disabled={busy||data.nextOffset===null} onClick={()=>void load(data.nextOffset)}>Next page</Button></nav>}
  {!!data?.helpers?.length&&<section className="ty-automation-helpers" aria-label="App helpers"><h2>App helpers</h2><p>Read-only helpers installed with an app. They belong to the app and are updated with it.</p><ul>{data.helpers.map((h:any)=><li key={h.appId}><strong>{h.appName}</strong><span>{h.names.join(', ')}</span></li>)}</ul></section>}
  <PendingRecipeSetups call={call} appId={filterApp} refreshKey={data} onConfigure={id=>{setFilterApp(id);navigate(null,true);}}/>
+ <LegacyMonitors call={call} refreshKey={data} onChanged={()=>void load(0)}/>
  <UnassignedAutomations call={call} refreshKey={data} onChanged={()=>void load(0)}/>
  <ArchivedItems call={call} kind="automations" refreshKey={data} onChanged={()=>void load(0)}/>
  </section>;
@@ -41,6 +42,16 @@ function AutomationAlerts({call,refreshKey}:{call:Call;refreshKey:unknown}){
  useEffect(()=>{let live=true;call('list_automation_alerts',{}).then(d=>{if(live)setRows(d.rows??[]);}).catch(()=>{if(live)setRows([]);});return()=>{live=false;};},[refreshKey]);
  if(!rows.length)return null;
  return <section className="ty-automation-alerts" aria-label="Automation alerts"><ul>{rows.map(r=><li key={r.id}><strong>{r.name??'Automation'}</strong> <span>({r.app_name})</span>: {r.cause} <Button variant="quiet" onClick={async()=>{try{await call('dismiss_automation_alert',{alertId:r.id});setRows(x=>x.filter(y=>y.id!==r.id));}catch{/* stays listed */}}}>Dismiss</Button></li>)}</ul></section>;
+}
+/** T7 (6.6): older monitors run by a per-app assistant task, each with its verification report and one move. */
+function LegacyMonitors({call,refreshKey,onChanged}:{call:Call;refreshKey:unknown;onChanged:()=>void}){
+ const [rows,setRows]=useState<any[]>([]),[notice,setNotice]=useState(''),[busy,setBusy]=useState(false);
+ useEffect(()=>{let live=true;call('read_legacy_monitors',{}).then(d=>{if(live)setRows(d.rows??[]);}).catch(()=>{if(live)setRows([]);});return()=>{live=false;};},[refreshKey]);
+ if(!rows.length)return null;
+ const move=async(r:any)=>{setBusy(true);setNotice('');try{const m=await call('migrate_legacy_monitor',{monitorId:r.id,expectedVersion:r.version});setRows(x=>x.filter(y=>y.id!==r.id));setNotice((m.enabled?'Moved. It runs on the TrialAgents schedule.':'Moved. It stays switched off.')+(m.hostTaskNote?' '+m.hostTaskNote:''));onChanged();}catch(e:any){setNotice(e.message||'This monitor could not be moved.');}finally{setBusy(false);}};
+ return <section className="ty-automation-helpers" aria-label="Older monitors"><h2>Older monitors to move</h2><p>These still run from a task in the assistant. Move each one to the TrialAgents schedule.</p>
+  <ul>{rows.map(r=><li key={r.id}><strong>{r.name}</strong><span>{r.appName} · {r.verification.schedule.description||'No schedule saved'}{r.verification.lastCompletedRun?` · last completed ${new Date(r.verification.lastCompletedRun.finishedAt).toLocaleDateString()}`:''}{r.verification.recipients.length?` · emails ${r.verification.recipients.join(', ')}`:''} · {r.verification.writeTables}</span><span>{r.afterMigration}</span><Button disabled={busy} onClick={()=>void move(r)}>Move to TrialAgents schedule</Button></li>)}</ul>
+  {notice&&<p role="status">{notice}</p>}</section>;
 }
 /** D25: functions, code schedules and record rules that belong to no app. Organization owners attach each to an app or archive it. */
 function UnassignedAutomations({call,refreshKey,onChanged}:{call:Call;refreshKey:unknown;onChanged:()=>void}){
