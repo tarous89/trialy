@@ -1,0 +1,1340 @@
+{
+ "note": "Fictional demo data for the Fundraise preview and tests, fixed as of 11 Nov 2026. Never seed into a workspace.",
+ "records": [
+  {
+   "id": "00000000-0000-4000-9000-000000000001",
+   "version": 0,
+   "role": "fundraise.settings",
+   "data": {
+    "default_currency": "EUR",
+    "stale_days": 14,
+    "stages": "target, contacted, first_meeting, partner_meeting, due_diligence, term_sheet, committed, closed, passed",
+    "pass_reasons": "too_early, want_in_vivo_data, want_clinical_data, outside_mandate, cheque_size, valuation, team, competition, timing, other",
+    "modalities": "small_molecule, antibody, cell_therapy",
+    "therapeutic_areas": "oncology, immunology, fibrosis",
+    "dev_stages": "discovery, preclinical, phase_1"
+   }
+  },
+  {
+   "id": "00000000-0000-4000-9000-000000000002",
+   "version": 0,
+   "role": "organizations",
+   "data": {
+    "name": "Northlake Bio Ventures",
+    "org_type": "investor",
+    "country": "US",
+    "website": "https://northlakebioventur.example",
+    "archived": false
+   }
+  },
+  {
+   "id": "00000000-0000-4000-9000-000000000003",
+   "version": 0,
+   "role": "organizations",
+   "data": {
+    "name": "Calder Life Sciences Fund",
+    "org_type": "investor",
+    "country": "UK",
+    "website": "https://calderlifesciences.example",
+    "archived": false
+   }
+  },
+  {
+   "id": "00000000-0000-4000-9000-000000000004",
+   "version": 0,
+   "role": "organizations",
+   "data": {
+    "name": "Harbourline Capital",
+    "org_type": "investor",
+    "country": "DE",
+    "website": "https://harbourlinecapital.example",
+    "archived": false
+   }
+  },
+  {
+   "id": "00000000-0000-4000-9000-000000000005",
+   "version": 0,
+   "role": "organizations",
+   "data": {
+    "name": "Meridian Pharma Ventures",
+    "org_type": "investor",
+    "country": "CH",
+    "website": "https://meridianpharmavent.example",
+    "archived": false
+   }
+  },
+  {
+   "id": "00000000-0000-4000-9000-000000000006",
+   "version": 0,
+   "role": "organizations",
+   "data": {
+    "name": "Fjordhaven Partners",
+    "org_type": "investor",
+    "country": "NO",
+    "website": "https://fjordhavenpartners.example",
+    "archived": false
+   }
+  },
+  {
+   "id": "00000000-0000-4000-9000-000000000007",
+   "version": 0,
+   "role": "organizations",
+   "data": {
+    "name": "Alder Family Office",
+    "org_type": "investor",
+    "country": "DE",
+    "website": "https://alderfamilyoffice.example",
+    "archived": false
+   }
+  },
+  {
+   "id": "00000000-0000-4000-9000-000000000008",
+   "version": 0,
+   "role": "organizations",
+   "data": {
+    "name": "Brightwater Growth",
+    "org_type": "investor",
+    "country": "US",
+    "website": "https://brightwatergrowth.example",
+    "archived": false
+   }
+  },
+  {
+   "id": "00000000-0000-4000-9000-000000000009",
+   "version": 0,
+   "role": "organizations",
+   "data": {
+    "name": "Silverpine Angels",
+    "org_type": "investor",
+    "country": "US",
+    "website": "https://silverpineangels.example",
+    "archived": false
+   }
+  },
+  {
+   "id": "00000000-0000-4000-9000-000000000010",
+   "version": 0,
+   "role": "organizations",
+   "data": {
+    "name": "Kestrel Public Equity",
+    "org_type": "investor",
+    "country": "UK",
+    "website": "https://kestrelpublicequit.example",
+    "archived": false
+   }
+  },
+  {
+   "id": "00000000-0000-4000-9000-000000000011",
+   "version": 0,
+   "role": "organizations",
+   "data": {
+    "name": "Oakmere Capital",
+    "org_type": "investor",
+    "country": "FR",
+    "website": "https://oakmerecapital.example",
+    "archived": false
+   }
+  },
+  {
+   "id": "00000000-0000-4000-9000-000000000012",
+   "version": 0,
+   "role": "organizations",
+   "data": {
+    "name": "Thornbury Ventures",
+    "org_type": "investor",
+    "country": "UK",
+    "website": "https://thornburyventures.example",
+    "archived": false
+   }
+  },
+  {
+   "id": "00000000-0000-4000-9000-000000000013",
+   "version": 0,
+   "role": "organizations",
+   "data": {
+    "name": "Greywell Investors",
+    "org_type": "investor",
+    "country": "NL",
+    "website": "https://greywellinvestors.example",
+    "archived": false
+   }
+  },
+  {
+   "id": "00000000-0000-4000-9000-000000000014",
+   "version": 0,
+   "role": "organizations",
+   "data": {
+    "name": "Ashgrove Strategic",
+    "org_type": "investor",
+    "country": "DE",
+    "website": "https://ashgrovestrategic.example",
+    "archived": false
+   }
+  },
+  {
+   "id": "00000000-0000-4000-9000-000000000015",
+   "version": 0,
+   "role": "organizations",
+   "data": {
+    "name": "Larchmont Bio Fund",
+    "org_type": "investor",
+    "country": "US",
+    "website": "https://larchmontbiofund.example",
+    "archived": false
+   }
+  },
+  {
+   "id": "00000000-0000-4000-9000-000000000016",
+   "version": 0,
+   "role": "organizations",
+   "data": {
+    "name": "Quarry Hill Ventures",
+    "org_type": "investor",
+    "country": "US",
+    "website": "https://quarryhillventures.example",
+    "archived": false
+   }
+  },
+  {
+   "id": "00000000-0000-4000-9000-000000000017",
+   "version": 0,
+   "role": "organizations",
+   "data": {
+    "name": "Redfern Capital",
+    "org_type": "investor",
+    "country": "UK",
+    "website": "https://redferncapital.example",
+    "archived": false
+   }
+  },
+  {
+   "id": "00000000-0000-4000-9000-000000000018",
+   "version": 0,
+   "role": "organizations",
+   "data": {
+    "name": "Fictional Therapeutics (us)",
+    "org_type": "company",
+    "country": "DE",
+    "website": "https://fictional-therapeutics.example",
+    "archived": false
+   }
+  },
+  {
+   "id": "00000000-0000-4000-9000-000000000019",
+   "version": 0,
+   "role": "people",
+   "data": {
+    "name": "Dana Whitfield",
+    "organization_id": "00000000-0000-4000-9000-000000000002",
+    "title": "Partner",
+    "email": "dana.whitfield@example.invalid",
+    "archived": false
+   }
+  },
+  {
+   "id": "00000000-0000-4000-9000-000000000020",
+   "version": 0,
+   "role": "people",
+   "data": {
+    "name": "Priya Raman",
+    "organization_id": "00000000-0000-4000-9000-000000000003",
+    "title": "Principal",
+    "email": "priya.raman@example.invalid",
+    "archived": false
+   }
+  },
+  {
+   "id": "00000000-0000-4000-9000-000000000021",
+   "version": 0,
+   "role": "people",
+   "data": {
+    "name": "Tomas Lind",
+    "organization_id": "00000000-0000-4000-9000-000000000004",
+    "title": "Managing partner",
+    "email": "tomas.lind@example.invalid",
+    "archived": false
+   }
+  },
+  {
+   "id": "00000000-0000-4000-9000-000000000022",
+   "version": 0,
+   "role": "people",
+   "data": {
+    "name": "Elena Ruiz",
+    "organization_id": "00000000-0000-4000-9000-000000000005",
+    "title": "Director",
+    "email": "elena.ruiz@example.invalid",
+    "archived": false
+   }
+  },
+  {
+   "id": "00000000-0000-4000-9000-000000000023",
+   "version": 0,
+   "role": "people",
+   "data": {
+    "name": "Marc Olsen",
+    "organization_id": "00000000-0000-4000-9000-000000000006",
+    "title": "Partner",
+    "email": "marc.olsen@example.invalid",
+    "archived": false
+   }
+  },
+  {
+   "id": "00000000-0000-4000-9000-000000000024",
+   "version": 0,
+   "role": "people",
+   "data": {
+    "name": "Greta Hoff",
+    "organization_id": "00000000-0000-4000-9000-000000000007",
+    "title": "Investment manager",
+    "email": "greta.hoff@example.invalid",
+    "archived": false
+   }
+  },
+  {
+   "id": "00000000-0000-4000-9000-000000000025",
+   "version": 0,
+   "role": "fundraise.investor_profiles",
+   "data": {
+    "organization_id": "00000000-0000-4000-9000-000000000002",
+    "investor_type": "specialist_ls_vc",
+    "tier": "a",
+    "profile_status": "accepted",
+    "modalities": "small_molecule, antibody",
+    "therapeutic_areas": "oncology",
+    "dev_stages": "preclinical, phase_1",
+    "check_min": 3000000,
+    "check_max": 10000000,
+    "currency": "EUR",
+    "leads_rounds": "yes",
+    "fund_vintage_year": 2024,
+    "intro_path": "Board member Anna (former colleague)",
+    "archived": false
+   }
+  },
+  {
+   "id": "00000000-0000-4000-9000-000000000026",
+   "version": 0,
+   "role": "fundraise.investor_profiles",
+   "data": {
+    "organization_id": "00000000-0000-4000-9000-000000000003",
+    "investor_type": "specialist_ls_vc",
+    "tier": "a",
+    "profile_status": "accepted",
+    "modalities": "small_molecule",
+    "therapeutic_areas": "oncology, fibrosis",
+    "dev_stages": "preclinical",
+    "check_min": 2000000,
+    "check_max": 8000000,
+    "currency": "EUR",
+    "leads_rounds": "yes",
+    "fund_vintage_year": 2023,
+    "intro_path": "Via Harbourline (Tomas Lind)",
+    "archived": false
+   }
+  },
+  {
+   "id": "00000000-0000-4000-9000-000000000027",
+   "version": 0,
+   "role": "fundraise.investor_profiles",
+   "data": {
+    "organization_id": "00000000-0000-4000-9000-000000000004",
+    "investor_type": "specialist_ls_vc",
+    "tier": "a",
+    "profile_status": "accepted",
+    "modalities": "small_molecule, cell_therapy",
+    "therapeutic_areas": "oncology",
+    "dev_stages": "discovery, preclinical",
+    "check_min": 1000000,
+    "check_max": 4000000,
+    "currency": "EUR",
+    "leads_rounds": "sometimes",
+    "fund_vintage_year": 2021,
+    "intro_path": "Existing investor",
+    "archived": false
+   }
+  },
+  {
+   "id": "00000000-0000-4000-9000-000000000028",
+   "version": 0,
+   "role": "fundraise.investor_profiles",
+   "data": {
+    "organization_id": "00000000-0000-4000-9000-000000000005",
+    "investor_type": "pharma_cvc",
+    "tier": "b",
+    "profile_status": "accepted",
+    "modalities": "antibody",
+    "therapeutic_areas": "immunology, oncology",
+    "dev_stages": "preclinical, phase_1",
+    "check_min": 1000000,
+    "check_max": 3000000,
+    "currency": "EUR",
+    "leads_rounds": "no",
+    "intro_path": "Scientific advisory board",
+    "archived": false
+   }
+  },
+  {
+   "id": "00000000-0000-4000-9000-000000000029",
+   "version": 0,
+   "role": "fundraise.investor_profiles",
+   "data": {
+    "organization_id": "00000000-0000-4000-9000-000000000006",
+    "investor_type": "specialist_ls_vc",
+    "tier": "b",
+    "profile_status": "accepted",
+    "modalities": "small_molecule",
+    "therapeutic_areas": "oncology",
+    "dev_stages": "preclinical",
+    "check_min": 500000,
+    "check_max": 2000000,
+    "currency": "EUR",
+    "leads_rounds": "sometimes",
+    "fund_vintage_year": 2022,
+    "intro_path": "Conference intro (BIO-Europe)",
+    "archived": false
+   }
+  },
+  {
+   "id": "00000000-0000-4000-9000-000000000030",
+   "version": 0,
+   "role": "fundraise.investor_profiles",
+   "data": {
+    "organization_id": "00000000-0000-4000-9000-000000000007",
+    "investor_type": "family_office",
+    "tier": "c",
+    "profile_status": "accepted",
+    "check_min": 250000,
+    "check_max": 1000000,
+    "currency": "EUR",
+    "leads_rounds": "no",
+    "intro_path": "CFO network",
+    "archived": false
+   }
+  },
+  {
+   "id": "00000000-0000-4000-9000-000000000031",
+   "version": 0,
+   "role": "fundraise.investor_profiles",
+   "data": {
+    "organization_id": "00000000-0000-4000-9000-000000000008",
+    "investor_type": "generalist_vc",
+    "tier": "b",
+    "profile_status": "accepted",
+    "therapeutic_areas": "oncology",
+    "dev_stages": "phase_1",
+    "check_min": 2000000,
+    "check_max": 6000000,
+    "currency": "EUR",
+    "leads_rounds": "sometimes",
+    "fund_vintage_year": 2025,
+    "archived": false
+   }
+  },
+  {
+   "id": "00000000-0000-4000-9000-000000000032",
+   "version": 0,
+   "role": "fundraise.investor_profiles",
+   "data": {
+    "organization_id": "00000000-0000-4000-9000-000000000009",
+    "investor_type": "angel",
+    "tier": "c",
+    "profile_status": "accepted",
+    "check_min": 50000,
+    "check_max": 300000,
+    "currency": "EUR",
+    "leads_rounds": "no",
+    "intro_path": "Pre-seed investor",
+    "archived": false
+   }
+  },
+  {
+   "id": "00000000-0000-4000-9000-000000000033",
+   "version": 0,
+   "role": "fundraise.investor_profiles",
+   "data": {
+    "organization_id": "00000000-0000-4000-9000-000000000010",
+    "investor_type": "public_fund",
+    "tier": "c",
+    "profile_status": "accepted",
+    "modalities": "small_molecule",
+    "therapeutic_areas": "oncology",
+    "dev_stages": "phase_1",
+    "check_min": 5000000,
+    "check_max": 20000000,
+    "currency": "EUR",
+    "leads_rounds": "no",
+    "archived": false
+   }
+  },
+  {
+   "id": "00000000-0000-4000-9000-000000000034",
+   "version": 0,
+   "role": "fundraise.investor_profiles",
+   "data": {
+    "organization_id": "00000000-0000-4000-9000-000000000011",
+    "investor_type": "specialist_ls_vc",
+    "tier": "b",
+    "profile_status": "accepted",
+    "modalities": "small_molecule",
+    "therapeutic_areas": "oncology",
+    "dev_stages": "preclinical",
+    "check_min": 1000000,
+    "check_max": 5000000,
+    "currency": "EUR",
+    "leads_rounds": "yes",
+    "fund_vintage_year": 2023,
+    "archived": false
+   }
+  },
+  {
+   "id": "00000000-0000-4000-9000-000000000035",
+   "version": 0,
+   "role": "fundraise.investor_profiles",
+   "data": {
+    "organization_id": "00000000-0000-4000-9000-000000000012",
+    "investor_type": "specialist_ls_vc",
+    "tier": "b",
+    "profile_status": "accepted",
+    "modalities": "antibody",
+    "therapeutic_areas": "immunology",
+    "dev_stages": "preclinical",
+    "check_min": 1000000,
+    "check_max": 4000000,
+    "currency": "EUR",
+    "leads_rounds": "sometimes",
+    "fund_vintage_year": 2022,
+    "archived": false
+   }
+  },
+  {
+   "id": "00000000-0000-4000-9000-000000000036",
+   "version": 0,
+   "role": "fundraise.investor_profiles",
+   "data": {
+    "organization_id": "00000000-0000-4000-9000-000000000013",
+    "investor_type": "generalist_vc",
+    "tier": "c",
+    "profile_status": "accepted",
+    "check_min": 1000000,
+    "check_max": 3000000,
+    "currency": "EUR",
+    "leads_rounds": "no",
+    "fund_vintage_year": 2020,
+    "archived": false
+   }
+  },
+  {
+   "id": "00000000-0000-4000-9000-000000000037",
+   "version": 0,
+   "role": "fundraise.investor_profiles",
+   "data": {
+    "organization_id": "00000000-0000-4000-9000-000000000014",
+    "investor_type": "strategic",
+    "tier": "b",
+    "profile_status": "accepted",
+    "modalities": "small_molecule",
+    "therapeutic_areas": "oncology",
+    "dev_stages": "preclinical",
+    "leads_rounds": "no",
+    "intro_path": "Partnering contact",
+    "archived": false
+   }
+  },
+  {
+   "id": "00000000-0000-4000-9000-000000000038",
+   "version": 0,
+   "role": "fundraise.investor_profiles",
+   "data": {
+    "organization_id": "00000000-0000-4000-9000-000000000015",
+    "investor_type": "specialist_ls_vc",
+    "profile_status": "proposed",
+    "modalities": "small_molecule",
+    "therapeutic_areas": "oncology",
+    "dev_stages": "preclinical",
+    "leads_rounds": "yes",
+    "source": "https://news.example/larchmont-bio-fund (fictional)",
+    "source_date": "2026-11-02",
+    "notes": "Proposed by the assistant from public sources.",
+    "archived": false
+   }
+  },
+  {
+   "id": "00000000-0000-4000-9000-000000000039",
+   "version": 0,
+   "role": "fundraise.investor_profiles",
+   "data": {
+    "organization_id": "00000000-0000-4000-9000-000000000016",
+    "investor_type": "specialist_ls_vc",
+    "profile_status": "proposed",
+    "modalities": "cell_therapy",
+    "therapeutic_areas": "oncology",
+    "dev_stages": "discovery, preclinical",
+    "leads_rounds": "sometimes",
+    "source": "https://news.example/quarry-hill-ventures (fictional)",
+    "source_date": "2026-11-02",
+    "notes": "Proposed by the assistant from public sources.",
+    "archived": false
+   }
+  },
+  {
+   "id": "00000000-0000-4000-9000-000000000040",
+   "version": 0,
+   "role": "fundraise.investor_profiles",
+   "data": {
+    "organization_id": "00000000-0000-4000-9000-000000000017",
+    "investor_type": "generalist_vc",
+    "profile_status": "rejected",
+    "leads_rounds": "no",
+    "source": "https://news.example/redfern-capital (fictional)",
+    "source_date": "2026-11-02",
+    "notes": "Proposed by the assistant from public sources.",
+    "archived": false
+   }
+  },
+  {
+   "id": "00000000-0000-4000-9000-000000000041",
+   "version": 0,
+   "role": "fundraise.rounds",
+   "data": {
+    "name": "Pre-seed 2025",
+    "round_type": "pre_seed",
+    "target_amount": 2000000,
+    "currency": "EUR",
+    "status": "closed",
+    "opened_on": "2025-02-01",
+    "target_close": "2025-06-30",
+    "closed_on": "2025-07-15",
+    "lead_org_id": "00000000-0000-4000-9000-000000000004",
+    "archived": false
+   }
+  },
+  {
+   "id": "00000000-0000-4000-9000-000000000042",
+   "version": 0,
+   "role": "fundraise.rounds",
+   "data": {
+    "name": "Seed 2026",
+    "round_type": "seed",
+    "target_amount": 15000000,
+    "currency": "EUR",
+    "status": "active",
+    "opened_on": "2026-09-01",
+    "target_close": "2027-03-31",
+    "lead_org_id": "00000000-0000-4000-9000-000000000002",
+    "notes": "Lead first, then syndicate. Tranched on milestones.",
+    "archived": false
+   }
+  },
+  {
+   "id": "00000000-0000-4000-9000-000000000043",
+   "version": 0,
+   "role": "fundraise.opportunities",
+   "data": {
+    "round_id": "00000000-0000-4000-9000-000000000041",
+    "organization_id": "00000000-0000-4000-9000-000000000004",
+    "stage": "closed",
+    "interest": "signed",
+    "currency": "EUR",
+    "is_lead": true,
+    "archived": false,
+    "amount_committed": 1200000,
+    "last_activity_on": "2025-07-10",
+    "owner": "Lea (CEO)"
+   }
+  },
+  {
+   "id": "00000000-0000-4000-9000-000000000044",
+   "version": 0,
+   "role": "fundraise.opportunities",
+   "data": {
+    "round_id": "00000000-0000-4000-9000-000000000041",
+    "organization_id": "00000000-0000-4000-9000-000000000009",
+    "stage": "closed",
+    "interest": "signed",
+    "currency": "EUR",
+    "is_lead": false,
+    "archived": false,
+    "amount_committed": 300000,
+    "last_activity_on": "2025-07-01",
+    "owner": "Lea (CEO)"
+   }
+  },
+  {
+   "id": "00000000-0000-4000-9000-000000000045",
+   "version": 0,
+   "role": "fundraise.opportunities",
+   "data": {
+    "round_id": "00000000-0000-4000-9000-000000000041",
+    "organization_id": "00000000-0000-4000-9000-000000000010",
+    "stage": "passed",
+    "interest": "none",
+    "currency": "EUR",
+    "is_lead": false,
+    "archived": false,
+    "pass_reason": "too_early",
+    "pass_detail": "Public fund; revisit at Phase 1",
+    "last_activity_on": "2025-04-02",
+    "owner": "Lea (CEO)"
+   }
+  },
+  {
+   "id": "00000000-0000-4000-9000-000000000046",
+   "version": 0,
+   "role": "fundraise.opportunities",
+   "data": {
+    "round_id": "00000000-0000-4000-9000-000000000042",
+    "organization_id": "00000000-0000-4000-9000-000000000002",
+    "stage": "term_sheet",
+    "interest": "verbal",
+    "currency": "EUR",
+    "is_lead": true,
+    "archived": false,
+    "amount_indicated": 6000000,
+    "owner": "Lea (CEO)",
+    "primary_contact_id": "00000000-0000-4000-9000-000000000019",
+    "next_step": "Return marked-up term sheet",
+    "next_due": "2026-11-12",
+    "last_activity_on": "2026-11-06",
+    "offer_received_on": "2026-10-30",
+    "offer_amount": 6000000,
+    "offer_pre_money": 24000000,
+    "offer_instrument": "priced",
+    "offer_board_seat": true,
+    "offer_expires_on": "2026-11-30",
+    "offer_status": "received",
+    "offer_notes": "Two tranches: 50% at close, 50% at lead candidate nomination.",
+    "cda_status": "signed",
+    "cda_signed_on": "2026-10-02"
+   }
+  },
+  {
+   "id": "00000000-0000-4000-9000-000000000047",
+   "version": 0,
+   "role": "fundraise.opportunities",
+   "data": {
+    "round_id": "00000000-0000-4000-9000-000000000042",
+    "organization_id": "00000000-0000-4000-9000-000000000003",
+    "stage": "due_diligence",
+    "interest": "verbal",
+    "currency": "EUR",
+    "is_lead": false,
+    "archived": false,
+    "amount_indicated": 2500000,
+    "owner": "Jonas (CFO)",
+    "primary_contact_id": "00000000-0000-4000-9000-000000000020",
+    "next_step": "Send CMC package",
+    "next_due": "2026-11-20",
+    "last_activity_on": "2026-11-09",
+    "offer_received_on": "2026-11-05",
+    "offer_amount": 5000000,
+    "offer_pre_money": 20000000,
+    "offer_instrument": "convertible",
+    "offer_board_seat": false,
+    "offer_expires_on": "2026-11-25",
+    "offer_status": "negotiating",
+    "cda_status": "signed",
+    "cda_signed_on": "2026-10-28"
+   }
+  },
+  {
+   "id": "00000000-0000-4000-9000-000000000048",
+   "version": 0,
+   "role": "fundraise.opportunities",
+   "data": {
+    "round_id": "00000000-0000-4000-9000-000000000042",
+    "organization_id": "00000000-0000-4000-9000-000000000004",
+    "stage": "committed",
+    "interest": "signed",
+    "currency": "EUR",
+    "is_lead": false,
+    "archived": false,
+    "amount_indicated": 3000000,
+    "amount_committed": 3000000,
+    "owner": "Lea (CEO)",
+    "primary_contact_id": "00000000-0000-4000-9000-000000000021",
+    "last_activity_on": "2026-11-03",
+    "cda_status": "signed",
+    "cda_signed_on": "2026-09-10"
+   }
+  },
+  {
+   "id": "00000000-0000-4000-9000-000000000049",
+   "version": 0,
+   "role": "fundraise.opportunities",
+   "data": {
+    "round_id": "00000000-0000-4000-9000-000000000042",
+    "organization_id": "00000000-0000-4000-9000-000000000005",
+    "stage": "committed",
+    "interest": "signed",
+    "currency": "EUR",
+    "is_lead": false,
+    "archived": false,
+    "amount_committed": 2000000,
+    "owner": "Jonas (CFO)",
+    "primary_contact_id": "00000000-0000-4000-9000-000000000022",
+    "last_activity_on": "2026-10-20"
+   }
+  },
+  {
+   "id": "00000000-0000-4000-9000-000000000050",
+   "version": 0,
+   "role": "fundraise.opportunities",
+   "data": {
+    "round_id": "00000000-0000-4000-9000-000000000042",
+    "organization_id": "00000000-0000-4000-9000-000000000009",
+    "stage": "committed",
+    "interest": "signed",
+    "currency": "USD",
+    "is_lead": false,
+    "archived": false,
+    "amount_committed": 250000,
+    "owner": "Jonas (CFO)",
+    "last_activity_on": "2026-10-25"
+   }
+  },
+  {
+   "id": "00000000-0000-4000-9000-000000000051",
+   "version": 0,
+   "role": "fundraise.opportunities",
+   "data": {
+    "round_id": "00000000-0000-4000-9000-000000000042",
+    "organization_id": "00000000-0000-4000-9000-000000000007",
+    "stage": "partner_meeting",
+    "interest": "soft",
+    "currency": "EUR",
+    "is_lead": false,
+    "archived": false,
+    "amount_indicated": 500000,
+    "owner": "Jonas (CFO)",
+    "primary_contact_id": "00000000-0000-4000-9000-000000000024",
+    "next_step": "Share updated model",
+    "next_due": "2026-11-05",
+    "last_activity_on": "2026-10-10"
+   }
+  },
+  {
+   "id": "00000000-0000-4000-9000-000000000052",
+   "version": 0,
+   "role": "fundraise.opportunities",
+   "data": {
+    "round_id": "00000000-0000-4000-9000-000000000042",
+    "organization_id": "00000000-0000-4000-9000-000000000006",
+    "stage": "first_meeting",
+    "interest": "soft",
+    "currency": "EUR",
+    "is_lead": false,
+    "archived": false,
+    "amount_indicated": 1000000,
+    "owner": "Lea (CEO)",
+    "primary_contact_id": "00000000-0000-4000-9000-000000000023",
+    "next_step": "Partner meeting date",
+    "next_due": "2026-11-14",
+    "last_activity_on": "2026-10-27"
+   }
+  },
+  {
+   "id": "00000000-0000-4000-9000-000000000053",
+   "version": 0,
+   "role": "fundraise.opportunities",
+   "data": {
+    "round_id": "00000000-0000-4000-9000-000000000042",
+    "organization_id": "00000000-0000-4000-9000-000000000008",
+    "stage": "contacted",
+    "interest": "none",
+    "currency": "EUR",
+    "is_lead": false,
+    "archived": false,
+    "owner": "Jonas (CFO)"
+   }
+  },
+  {
+   "id": "00000000-0000-4000-9000-000000000054",
+   "version": 0,
+   "role": "fundraise.opportunities",
+   "data": {
+    "round_id": "00000000-0000-4000-9000-000000000042",
+    "organization_id": "00000000-0000-4000-9000-000000000014",
+    "stage": "target",
+    "interest": "none",
+    "currency": "EUR",
+    "is_lead": false,
+    "archived": false,
+    "owner": "Lea (CEO)"
+   }
+  },
+  {
+   "id": "00000000-0000-4000-9000-000000000055",
+   "version": 0,
+   "role": "fundraise.opportunities",
+   "data": {
+    "round_id": "00000000-0000-4000-9000-000000000042",
+    "organization_id": "00000000-0000-4000-9000-000000000010",
+    "stage": "passed",
+    "interest": "none",
+    "currency": "EUR",
+    "is_lead": false,
+    "archived": false,
+    "pass_reason": "too_early",
+    "pass_detail": "Wants clinical proof of concept",
+    "last_activity_on": "2026-09-30",
+    "owner": "Lea (CEO)"
+   }
+  },
+  {
+   "id": "00000000-0000-4000-9000-000000000056",
+   "version": 0,
+   "role": "fundraise.opportunities",
+   "data": {
+    "round_id": "00000000-0000-4000-9000-000000000042",
+    "organization_id": "00000000-0000-4000-9000-000000000011",
+    "stage": "passed",
+    "interest": "none",
+    "currency": "EUR",
+    "is_lead": false,
+    "archived": false,
+    "pass_reason": "want_in_vivo_data",
+    "pass_detail": "Wants in-vivo efficacy in a second model",
+    "last_activity_on": "2026-10-08",
+    "owner": "Lea (CEO)"
+   }
+  },
+  {
+   "id": "00000000-0000-4000-9000-000000000057",
+   "version": 0,
+   "role": "fundraise.opportunities",
+   "data": {
+    "round_id": "00000000-0000-4000-9000-000000000042",
+    "organization_id": "00000000-0000-4000-9000-000000000012",
+    "stage": "passed",
+    "interest": "none",
+    "currency": "EUR",
+    "is_lead": false,
+    "archived": false,
+    "pass_reason": "too_early",
+    "last_activity_on": "2026-10-14",
+    "owner": "Jonas (CFO)"
+   }
+  },
+  {
+   "id": "00000000-0000-4000-9000-000000000058",
+   "version": 0,
+   "role": "fundraise.opportunities",
+   "data": {
+    "round_id": "00000000-0000-4000-9000-000000000042",
+    "organization_id": "00000000-0000-4000-9000-000000000013",
+    "stage": "passed",
+    "interest": "none",
+    "currency": "EUR",
+    "is_lead": false,
+    "archived": false,
+    "pass_reason": "outside_mandate",
+    "last_activity_on": "2026-09-22",
+    "owner": "Jonas (CFO)"
+   }
+  },
+  {
+   "id": "00000000-0000-4000-9000-000000000059",
+   "version": 0,
+   "role": "fundraise.opportunities",
+   "data": {
+    "round_id": "00000000-0000-4000-9000-000000000042",
+    "organization_id": "00000000-0000-4000-9000-000000000017",
+    "stage": "contacted",
+    "interest": "soft",
+    "currency": "EUR",
+    "is_lead": false,
+    "archived": false,
+    "amount_indicated": 400000,
+    "owner": "Jonas (CFO)",
+    "last_activity_on": "2026-10-01"
+   }
+  },
+  {
+   "id": "00000000-0000-4000-9000-000000000060",
+   "version": 0,
+   "role": "fundraise.activities",
+   "data": {
+    "opportunity_id": "00000000-0000-4000-9000-000000000043",
+    "activity_on": "2025-07-10",
+    "kind": "meeting",
+    "summary": "Signing call for the pre-seed",
+    "source": "manual",
+    "outcome": "Signed"
+   }
+  },
+  {
+   "id": "00000000-0000-4000-9000-000000000061",
+   "version": 0,
+   "role": "fundraise.activities",
+   "data": {
+    "opportunity_id": "00000000-0000-4000-9000-000000000048",
+    "activity_on": "2026-10-15",
+    "kind": "call",
+    "summary": "Pro-rata discussion",
+    "source": "manual",
+    "outcome": "Will take full pro-rata",
+    "follow_up_due": "2026-10-22",
+    "contact_id": "00000000-0000-4000-9000-000000000021"
+   }
+  },
+  {
+   "id": "00000000-0000-4000-9000-000000000062",
+   "version": 0,
+   "role": "fundraise.activities",
+   "data": {
+    "opportunity_id": "00000000-0000-4000-9000-000000000048",
+    "activity_on": "2026-11-03",
+    "kind": "email",
+    "summary": "Signed commitment letter received",
+    "source": "manual",
+    "outcome": "Signed EUR 3.0M",
+    "contact_id": "00000000-0000-4000-9000-000000000021"
+   }
+  },
+  {
+   "id": "00000000-0000-4000-9000-000000000063",
+   "version": 0,
+   "role": "fundraise.activities",
+   "data": {
+    "opportunity_id": "00000000-0000-4000-9000-000000000046",
+    "activity_on": "2026-10-20",
+    "kind": "meeting",
+    "summary": "Partner meeting",
+    "source": "manual",
+    "outcome": "Moving to term sheet",
+    "contact_id": "00000000-0000-4000-9000-000000000019"
+   }
+  },
+  {
+   "id": "00000000-0000-4000-9000-000000000064",
+   "version": 0,
+   "role": "fundraise.activities",
+   "data": {
+    "opportunity_id": "00000000-0000-4000-9000-000000000046",
+    "activity_on": "2026-11-06",
+    "kind": "call",
+    "summary": "Term sheet walkthrough",
+    "source": "manual",
+    "outcome": "Board seat and two tranches",
+    "contact_id": "00000000-0000-4000-9000-000000000019"
+   }
+  },
+  {
+   "id": "00000000-0000-4000-9000-000000000065",
+   "version": 0,
+   "role": "fundraise.activities",
+   "data": {
+    "opportunity_id": "00000000-0000-4000-9000-000000000047",
+    "activity_on": "2026-11-09",
+    "kind": "meeting",
+    "summary": "Diligence session on CMC",
+    "source": "assistant",
+    "outcome": "Asked for the CMC package",
+    "follow_up_due": "2026-11-13",
+    "contact_id": "00000000-0000-4000-9000-000000000020"
+   }
+  },
+  {
+   "id": "00000000-0000-4000-9000-000000000066",
+   "version": 0,
+   "role": "fundraise.activities",
+   "data": {
+    "opportunity_id": "00000000-0000-4000-9000-000000000049",
+    "activity_on": "2026-10-20",
+    "kind": "email",
+    "summary": "Commitment confirmed by the investment committee",
+    "source": "manual",
+    "contact_id": "00000000-0000-4000-9000-000000000022"
+   }
+  },
+  {
+   "id": "00000000-0000-4000-9000-000000000067",
+   "version": 0,
+   "role": "fundraise.activities",
+   "data": {
+    "opportunity_id": "00000000-0000-4000-9000-000000000051",
+    "activity_on": "2026-10-10",
+    "kind": "meeting",
+    "summary": "First partner meeting",
+    "source": "manual",
+    "outcome": "Interested, wants model update",
+    "contact_id": "00000000-0000-4000-9000-000000000024"
+   }
+  },
+  {
+   "id": "00000000-0000-4000-9000-000000000068",
+   "version": 0,
+   "role": "fundraise.activities",
+   "data": {
+    "opportunity_id": "00000000-0000-4000-9000-000000000052",
+    "activity_on": "2026-10-27",
+    "kind": "meeting",
+    "summary": "Intro meeting at BIO-Europe",
+    "source": "manual",
+    "outcome": "Soft interest",
+    "contact_id": "00000000-0000-4000-9000-000000000023"
+   }
+  },
+  {
+   "id": "00000000-0000-4000-9000-000000000069",
+   "version": 0,
+   "role": "fundraise.activities",
+   "data": {
+    "opportunity_id": "00000000-0000-4000-9000-000000000056",
+    "activity_on": "2026-10-08",
+    "kind": "email",
+    "summary": "Pass email",
+    "source": "manual",
+    "outcome": "Passed: in-vivo data"
+   }
+  },
+  {
+   "id": "00000000-0000-4000-9000-000000000070",
+   "version": 0,
+   "role": "programs.plan_items",
+   "data": {
+    "name": "Lead candidate nomination",
+    "program_id": "PX-101",
+    "item_type": "milestone",
+    "end_date": "2027-06-30",
+    "status": "planned",
+    "is_key": true
+   }
+  },
+  {
+   "id": "00000000-0000-4000-9000-000000000071",
+   "version": 0,
+   "role": "programs.plan_items",
+   "data": {
+    "name": "GLP tox readout",
+    "program_id": "PX-101",
+    "item_type": "milestone",
+    "end_date": "2027-09-30",
+    "status": "at_risk",
+    "is_key": true
+   }
+  },
+  {
+   "id": "00000000-0000-4000-9000-000000000072",
+   "version": 0,
+   "role": "programs.plan_items",
+   "data": {
+    "name": "Pilot tox complete",
+    "program_id": "PX-101",
+    "item_type": "milestone",
+    "end_date": "2026-10-15",
+    "status": "done",
+    "is_key": false
+   }
+  },
+  {
+   "id": "00000000-0000-4000-9000-000000000073",
+   "version": 0,
+   "role": "fundraise.tranches",
+   "data": {
+    "round_id": "00000000-0000-4000-9000-000000000042",
+    "tranche_no": 1,
+    "amount": 6000000,
+    "currency": "EUR",
+    "condition": "First close",
+    "expected_on": "2026-12-15",
+    "status": "expected"
+   }
+  },
+  {
+   "id": "00000000-0000-4000-9000-000000000074",
+   "version": 0,
+   "role": "fundraise.tranches",
+   "data": {
+    "round_id": "00000000-0000-4000-9000-000000000042",
+    "tranche_no": 2,
+    "amount": 5000000,
+    "currency": "EUR",
+    "condition": "Lead candidate nominated",
+    "milestone_id": "00000000-0000-4000-9000-000000000070",
+    "expected_on": "2027-07-31",
+    "status": "expected"
+   }
+  },
+  {
+   "id": "00000000-0000-4000-9000-000000000075",
+   "version": 0,
+   "role": "fundraise.tranches",
+   "data": {
+    "round_id": "00000000-0000-4000-9000-000000000042",
+    "tranche_no": 3,
+    "amount": 4000000,
+    "currency": "EUR",
+    "condition": "IND-enabling tox data",
+    "milestone_id": "00000000-0000-4000-9000-000000000071",
+    "expected_on": "2027-10-31",
+    "status": "expected"
+   }
+  },
+  {
+   "id": "00000000-0000-4000-9000-000000000076",
+   "version": 0,
+   "role": "dataroom.access_grants",
+   "data": {
+    "room_id": "room-seed-2026",
+    "room_name": "Seed 2026 data room",
+    "room_purpose": "financing",
+    "organization_id": "00000000-0000-4000-9000-000000000002",
+    "granted_on": "2026-10-20",
+    "status": "active",
+    "source": "manual",
+    "agreement_accepted_on": "2026-10-20",
+    "person_id": "00000000-0000-4000-9000-000000000019"
+   }
+  },
+  {
+   "id": "00000000-0000-4000-9000-000000000077",
+   "version": 0,
+   "role": "dataroom.access_grants",
+   "data": {
+    "room_id": "room-seed-2026",
+    "room_name": "Seed 2026 data room",
+    "room_purpose": "financing",
+    "organization_id": "00000000-0000-4000-9000-000000000004",
+    "granted_on": "2026-09-25",
+    "status": "active",
+    "source": "manual",
+    "agreement_accepted_on": "2026-09-25",
+    "person_id": "00000000-0000-4000-9000-000000000021"
+   }
+  },
+  {
+   "id": "00000000-0000-4000-9000-000000000078",
+   "version": 0,
+   "role": "dataroom.access_grants",
+   "data": {
+    "room_id": "room-seed-2026",
+    "room_name": "Seed 2026 data room",
+    "room_purpose": "financing",
+    "organization_id": "00000000-0000-4000-9000-000000000003",
+    "granted_on": "2026-11-01",
+    "status": "active",
+    "source": "manual",
+    "agreement_accepted_on": "2026-11-01",
+    "person_id": "00000000-0000-4000-9000-000000000020"
+   }
+  },
+  {
+   "id": "00000000-0000-4000-9000-000000000079",
+   "version": 0,
+   "role": "dataroom.access_grants",
+   "data": {
+    "room_id": "room-seed-2026",
+    "room_name": "Seed 2026 data room",
+    "room_purpose": "financing",
+    "organization_id": "00000000-0000-4000-9000-000000000006",
+    "granted_on": "2026-11-04",
+    "status": "active",
+    "source": "manual",
+    "agreement_accepted_on": "2026-11-04",
+    "person_id": "00000000-0000-4000-9000-000000000023"
+   }
+  },
+  {
+   "id": "00000000-0000-4000-9000-000000000080",
+   "version": 0,
+   "role": "dataroom.access_grants",
+   "data": {
+    "room_id": "room-seed-2026",
+    "room_name": "Seed 2026 data room",
+    "room_purpose": "financing",
+    "organization_id": "00000000-0000-4000-9000-000000000007",
+    "granted_on": "2026-11-08",
+    "status": "invited",
+    "source": "manual",
+    "person_id": "00000000-0000-4000-9000-000000000024"
+   }
+  },
+  {
+   "id": "00000000-0000-4000-9000-000000000081",
+   "version": 0,
+   "role": "dataroom.engagement",
+   "data": {
+    "grant_id": "00000000-0000-4000-9000-000000000076",
+    "organization_id": "00000000-0000-4000-9000-000000000002",
+    "document_ref": "deck-v3",
+    "document_title": "Company deck",
+    "first_viewed_on": "2026-10-21",
+    "last_viewed_on": "2026-11-09",
+    "view_count": 4,
+    "source": "docsend",
+    "as_of": "2026-11-10",
+    "seconds_viewed": 1260
+   }
+  },
+  {
+   "id": "00000000-0000-4000-9000-000000000082",
+   "version": 0,
+   "role": "dataroom.engagement",
+   "data": {
+    "grant_id": "00000000-0000-4000-9000-000000000076",
+    "organization_id": "00000000-0000-4000-9000-000000000002",
+    "document_ref": "tox-summary",
+    "document_title": "Tox summary",
+    "first_viewed_on": "2026-11-07",
+    "last_viewed_on": "2026-11-07",
+    "view_count": 2,
+    "source": "docsend",
+    "as_of": "2026-11-10",
+    "seconds_viewed": 540
+   }
+  },
+  {
+   "id": "00000000-0000-4000-9000-000000000083",
+   "version": 0,
+   "role": "dataroom.engagement",
+   "data": {
+    "grant_id": "00000000-0000-4000-9000-000000000077",
+    "organization_id": "00000000-0000-4000-9000-000000000004",
+    "document_ref": "fin-model",
+    "document_title": "Financial model",
+    "first_viewed_on": "2026-09-26",
+    "last_viewed_on": "2026-10-05",
+    "view_count": 3,
+    "source": "docsend",
+    "as_of": "2026-11-10",
+    "seconds_viewed": 900
+   }
+  },
+  {
+   "id": "00000000-0000-4000-9000-000000000084",
+   "version": 0,
+   "role": "dataroom.engagement",
+   "data": {
+    "grant_id": "00000000-0000-4000-9000-000000000077",
+    "organization_id": "00000000-0000-4000-9000-000000000004",
+    "document_ref": "cap-table",
+    "document_title": "Cap table draft",
+    "first_viewed_on": "2026-11-08",
+    "last_viewed_on": "2026-11-08",
+    "view_count": 1,
+    "source": "docsend",
+    "as_of": "2026-11-10",
+    "seconds_viewed": 120
+   }
+  },
+  {
+   "id": "00000000-0000-4000-9000-000000000085",
+   "version": 0,
+   "role": "dataroom.engagement",
+   "data": {
+    "grant_id": "00000000-0000-4000-9000-000000000078",
+    "organization_id": "00000000-0000-4000-9000-000000000003",
+    "document_ref": "mgmt-pres",
+    "document_title": "Management presentation",
+    "first_viewed_on": "2026-11-02",
+    "last_viewed_on": "2026-11-10",
+    "view_count": 2,
+    "source": "docsend",
+    "as_of": "2026-11-10",
+    "seconds_viewed": 1500
+   }
+  }
+ ]
+}

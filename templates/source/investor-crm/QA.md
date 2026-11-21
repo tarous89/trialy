@@ -1,4 +1,25 @@
-# Fundraise 2.0.0 validation
+# Fundraise validation
+
+## 3.0.0 (21 November 2026, draft): rebuilt on the kit and the v2 contract
+
+Session 7, package 7.3/7.4 (G2–G8, G11, G14, P3–P5, P9). Checked in this repository with stub platform answers and disposable PGlite databases, fictional data only; not in a deployed account or a real assistant host.
+
+| Check | Result |
+| --- | --- |
+| `node scripts/build-investor-template.mjs --check` | 2.0.1 (from `archive/2.0.1/`) and 3.0.0 verified; `templates/apps/life.investor-crm-2.0.1.json` is byte-identical |
+| `node --import tsx scripts/check-app-functions.ts`, `npx tsc --noEmit` | Passed |
+| `tests/fundraise-v2.test.ts` | Marker, identical installer schema, helpers and automations; every screen without own header, `<h1>`, banner, footer or review text; totals reconcile with the 2.0.1 hand calculation (raised EUR 5,000,000 of 15,000,000, 33.3%); inline edits, board drop and move menu, pass panel, create panel, Mark lead, Accept, Remove and Settings call `records.save` with the captured `expectedVersion`; bad values return an error notice and save nothing; Settings only for owners; viewers and previews render without edit controls; every empty screen offers its first action; pending reads show Loading and never zero; one `records.readMany` per screen; Undo listed on open only; the round is the working context; side navigation on wide, tabs on phone and panel |
+| Design check, current rules (`inspectAppDesign(frames,'current')`, Chromium from `/opt/pw-browsers/chromium`), seven screens and the details panel at 1440, 400 and 390 px | Passed. Warnings only: contrast of the kit's muted text (`--k-muted`, about 3.9:1) — a kit token, left to the kit |
+| `tests/fundraise-v2-integration.test.ts` | Catalog install of 3.0.0 (approved only in the test database), open on the "Start a round" first action, one direct save (new round) with the screen made again; with the fictional data: inline edit, board move and Undo saved directly; a stale version refused |
+| `tests/template-catalog.test.ts`, `tests/frame-engine.test.ts`, `tests/app-update.test.ts`, `tests/app-templates.test.ts`, 2.0.1 tests | See the session report; unchanged assertions about 2.0.1 |
+
+Not done here: gallery screenshot for 3.0.0, the browser speed gate for a v2 version (3.0.0 is not switched on in `templates/browser-runtime.json`, which this session must not change), and a browser script (`scripts/test-fundraise-browser.ts` stays for 2.0.1).
+
+Totals use the full tables (up to 800 rows each, read in two batched calls); when a table is not read completely the totals are withheld and the screen says so. `records.summarize` is not used: raised, verbal and soft depend on interest, currency and pipeline membership per row, which a single summarize call cannot express.
+
+---
+
+# Fundraise 2.0.0 validation (archived notes)
 
 Validated on 12 November 2026 against the repository host with disposable PGlite databases and fictional data, not a deployed account. Guidance: `read_app_template_guidance` reports version **1.3.20** (authoring, including "Role-based connections and existing data" → Integrations) and the contract registry `resource:"contracts"` (registry version 2026-11-11, sha256 `375b056c…`), identical to `templates/TEMPLATE_AUTHORING.md` and `templates/contracts/outputs.json` on `main` after PR #134.
 
