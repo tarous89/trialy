@@ -17,8 +17,15 @@ async function openPage(page,width){
  await page.setViewportSize({width,height:1000});
  const {token}=await (await page.request.get(base+'/fixture/exchange')).json();
  await page.goto(base+'/exchange#'+token);
+ // X1 (6.8): confidential documents always ask the recipient to verify their email first.
+ await page.getByLabel(/Email/).first().fill('anna@alpha.invalid');
+ const sent=page.waitForResponse(r=>r.url().endsWith('/external-exchange/verify')&&r.request().method()==='POST');
+ await page.getByRole('button',{name:/code/i}).first().click();const {code}=await (await sent).json();
+ await page.getByLabel(/code/i).first().fill(code);await page.getByRole('button',{name:/verify|continue|confirm/i}).first().click();
  await expect(page.getByRole('heading',{level:1,name:'RFP: Phase II monitoring services'})).toBeVisible();
  await page.evaluate(()=>document.fonts.ready);
+ // Start keyboard checks from the top of the page, as on a fresh visit after verification.
+ await page.reload();await expect(page.getByRole('heading',{level:1,name:'RFP: Phase II monitoring services'})).toBeVisible();await page.evaluate(()=>document.fonts.ready);
  return token;
 }
 for(const width of [1440,390])test(`Recipient page is usable, keyboard accessible and readable at ${width}px`,async({page})=>{
@@ -39,7 +46,7 @@ for(const width of [1440,390])test(`Recipient page is usable, keyboard accessibl
  for(const name of [/Brief/,/Documents/,'Your response','Messages']){await page.getByRole('tab',{name}).click();const problems=await page.evaluate(contrastScript);expect(problems,JSON.stringify(problems)).toEqual([]);}
  // Acknowledgement unlocks downloads; the response form, requested document slot and message box are reachable.
  await page.getByRole('tab',{name:/Documents/}).click();await expect(page.getByText('Locked')).toBeVisible();
- await page.getByLabel('Your name').fill('Anna Example');await page.getByLabel('Your email').fill('anna@alpha.invalid');await page.getByRole('button',{name:'I accept'}).click();
+ await page.getByLabel('Your name').fill('Anna Example');await expect(page.getByLabel('Your email')).toHaveValue('anna@alpha.invalid');await page.getByRole('button',{name:'I accept'}).click();
  await expect(page.getByRole('button',{name:'Download RFP pack.pdf'})).toBeVisible();await expect(page.getByText('Locked')).toHaveCount(0);
  await page.getByRole('tab',{name:'Your response'}).click();await expect(page.getByLabel(/Name/)).toBeVisible();await expect(page.getByText('Signed CDA')).toBeVisible();await expect(page.getByText('Requested',{exact:true})).toBeVisible();
  await page.getByLabel(/Name/).fill('Alpha CRO');await page.getByRole('button',{name:'Save draft'}).click();await expect(page.getByRole('status').filter({hasText:'Draft saved'})).toBeVisible();
