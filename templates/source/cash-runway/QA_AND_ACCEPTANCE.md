@@ -1,4 +1,30 @@
-# Runway 2.2.0 validation
+# Runway 3.0.0 validation
+
+Validated on 21 November 2026 in the build container with stub tools in production QuickJS and disposable PGlite databases, fictional data only. 3.0.0 is a **draft** (O4): the seed still names 2.2.1. The 2.2.1 package is archived unchanged under [`archive/2.2.1/`](archive/2.2.1/); the builder rebuilds it there and `--check` confirms its catalog JSON is byte-identical.
+
+## What the tests check
+
+- `tests/cash-runway-v2.test.ts`
+  - Contract: the v2 marker; no `records.propose`, `<header>`, `<h1>`, footer, banner or review texts; installer schema, app commands, automations, functions and options identical to 2.2.1; layout screen ids kept.
+  - Screens: every screen renders at wide, panel and phone widths, never writes on open, and reads in batches. Each screen reads only its tables, and full-table counts come from `records.summarize`.
+  - Saving: inline edits save with the captured version; a refused value shows an error notice and never saves; board moves, Delete (`archive_record`) and Undo; the side panel sends only changed values.
+  - Roles: Settings are hidden from editors and viewers and refused for them, including through commands.
+  - Empty and loading: every empty screen offers its first action; pending reads show Loading, never zero.
+  - Messages: success and error notices instead of banners.
+  - Close and lock: a month close and a budget lock each save in one call.
+  - Commands: read commands return the same results as 2.2.1, write commands save in one buffered call, and `layout.save` prepares a layout change.
+  - The program context is kept.
+  - A design check under the current rules (1440/400/390 px), skipped when `APP_DESIGN_CHECKS=off`.
+- `tests/cash-runway-v2-integration.test.ts`: real installer and runtime. The draft is approved only inside the test database; the app opens empty with its first action, the setup panel saves directly, `line.save` saves directly, an inline edit saves, and Overview shows the runway.
+- `tests/cash-runway.test.ts`: the newest file is now the 3.0.0 draft, and the seed still names 2.2.1.
+
+## Known limits
+
+- The layout declaration allows eight screens, so the Exchange rates, Programs and Organizations screens are not reorderable with `layout.save`.
+- Copies upgraded from 2.2.x keep their saved layout profile; it stays valid because the screen ids are unchanged.
+- The design check under the current rules needs `APP_DESIGN_CHROMIUM`; see the commit report for whether it ran.
+
+# Runway 2.2.0 validation (archived reference)
 
 Validated against the repository host on 14 November 2026 with disposable PGlite databases and fictional data, not a deployed account. Scope: [RUNWAY.md §14](../../../docs/product/app-template-blueprints/apps/RUNWAY.md#14-runway-220--assistant-control-integrations-and-automations). The 2.1.0 validation is archived in [`archive/2.1.0/QA_AND_ACCEPTANCE.md`](archive/2.1.0/QA_AND_ACCEPTANCE.md); its tests still run against the archived 2.1.0 package.
 

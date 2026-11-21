@@ -1,6 +1,20 @@
-# Runway 2.2.0 (`life.cash-runway`)
+# Runway 3.0.0 (`life.cash-runway`)
 
-Cash, burn and runway by program, with what-if scenarios. Scope: [RUNWAY.md](../../../docs/product/app-template-blueprints/apps/RUNWAY.md) (2.2.0: [§14](../../../docs/product/app-template-blueprints/apps/RUNWAY.md#14-runway-220--assistant-control-integrations-and-automations)). It follows [modular apps and shared data](../../../docs/product/MODULAR_APPS_AND_SHARED_DATA.md). The released catalog JSON for 1.2.2, 2.0.0 and 2.1.0 is unchanged, and their source packages are archived byte-for-byte under [`archive/`](archive/). The owner approved 2.2.0 on 14 November 2026 (`templates/catalog-seed.json`). Saved apps are not migrated.
+Cash, burn and runway by program, with what-if scenarios. Runway 3.0.0 is the session 7 rebuild (package 7.3) on the v2 app contract and the kit. It ships as a **draft**: the owner approves it (O4); `templates/catalog-seed.json` still names 2.2.1. The released 2.2.1 package is archived byte-for-byte under [`archive/2.2.1/`](archive/2.2.1/), its installer entry points there, and `scripts/build-cash-runway-template.mjs` rebuilds both versions (`--check` verifies the 2.2.1 JSON unchanged).
+
+## 3.0.0: rebuilt on the kit and the v2 contract
+
+- **Same data, same engine.** The installer schema (`schema.example.json`) is byte-identical to 2.2.0/2.2.1, as are `appCommands` (37 commands, same ids and inputs), `recommendedAutomations`, the `runway.month_closes` output contract and the options `tableMap`, `pageSize`, `layoutProfile`, `readOnly` and `heading` (`demoLabel` is gone). The calculation engine is spliced verbatim from 2.2.1, and `tests/cash-runway-v2.test.ts` checks that the read commands return the same figures. `upgradeFrom: ["2.2.0","2.2.1"]` lets an owner upgrade a copy (package 7.1).
+- **v2 contract.** `'use trialagents v2';` is the first line of the body; the builder puts the app's small stylesheet (`cash-runway.css`, chart and finance rows only, on `--k-*` tokens) after it. No header, title, "as of" pill, layout gear, footer, disclaimer or banner: the 11 banners of 2.2.1 are gone. Messages are `output.notice`; missing or excluded data is listed on Overview under **Needs attention** with the action that fixes it, and other screens say when figures are provisional.
+- **Direct saves.** `records.save` from a person's click, change or submit (at most 50 changes), with the version captured when editing started. Values are edited where they are shown (`kit.cell`: names, amounts, months, statuses, rates, program and organization fields, the opening balance), side panels (`kit.panel`) create records or edit many fields, People has a board (`kit.board`, drag a planned hire to current), Delete is `archive_record`, and Undo (`undo.list`, `kit.undo`) is offered on the screen after a save. Close month, Lock budget, Adopt and Archive scenario save in one click; there are no confirmation dialogs (nothing goes out to external people). Commands buffer their changes and save them in one `records.save`.
+- **Screens.** Overview, Cash flow, Plan (spend and cash in, milestones, budgets), People, Scenarios, Monthly close, and new **Exchange rates**, **Programs** and **Organizations** screens (the data lists that were in Settings). **Settings** holds only business choices (`kit.settings`) and is shown to owners of the app only; editors keep the opening balance and date on Monthly close → Starting point. The layout declaration keeps the 2.x screen ids, so saved layout profiles stay valid (at most eight screens can be declared, so the three data screens are not layout-controlled).
+- **Reads.** Each screen reads only its tables with `records.readMany` (the forecast tables in one batch, the rest in another, then the remaining pages of long tables, up to 800 rows). Exchange rates, Programs and Organizations read one sorted, searchable page. Full-table counts use `records.summarize` (rates per currency, actual records per month). Pending reads render as Loading, never as empty or zero. Opening never writes.
+- **Context.** The chosen program (Plan, People, Milestones) is returned as `output.context` and read back from `input.context`.
+- **Preview.** `cash-runway.preview.html` runs the app with the kit on labelled fictional records (D40); nothing is installed or sent.
+
+## 2.2.x reference (unchanged behaviour of the engine and data model)
+
+The sections below describe the data model, calculations and integrations, which 3.0.0 keeps. Screen and review descriptions refer to 2.2.x.
 
 ## Files
 

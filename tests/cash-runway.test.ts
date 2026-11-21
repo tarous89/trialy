@@ -65,7 +65,8 @@ test('catalog entry is a new immutable major version that keeps 1.2.2 discoverab
  assert.equal(entry.version,'2.1.0');assert.equal(entry.name,'Runway');assert.equal(entry.engine,'frontend-js');
  assert.doesNotMatch(entry.source!,/const templateConfiguration=|const templateBindings=/);
  // The newest file in the repository catalog is the 2.2.0 draft; 2.1.0 stays readable by version.
- assert.equal((await appTemplates.read({templateId:'life.cash-runway'})).version,'2.2.1');assert.equal((await appTemplates.read({templateId:'life.cash-runway',version:'2.0.0'})).version,'2.0.0');
+ // The newest file is the 3.0.0 draft; the newest approved (seed) version stays 2.2.1 until the owner approves 3.0.0.
+ assert.equal((await appTemplates.read({templateId:'life.cash-runway'})).version,'3.0.0');assert.equal(JSON.parse(await readFile('templates/catalog-seed.json','utf8'))['life.cash-runway'].version,'2.2.1');assert.equal((await appTemplates.read({templateId:'life.cash-runway',version:'2.0.0'})).version,'2.0.0');
  assert.equal((await appTemplates.read({templateId:'life.cash-runway',version:'1.2.2'})).version,'1.2.2');
  assert.equal(roles.length,13);for(const r of roles)for(const f of schema[r].fields){assert.equal(f.multiple,false);assert.match(f.key,/^[a-z][a-z0-9_]{0,63}$/);}
  assert.deepEqual(readCustomLayout(source())!.schema.screens.map(s=>s.id),['overview','cash_flow','plan','people','scenarios','actuals','settings']);
