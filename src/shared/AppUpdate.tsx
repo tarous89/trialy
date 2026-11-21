@@ -4,7 +4,8 @@ import {AppPlatform} from './AppPlatform.js';
 import {SystemNotice} from './SystemNotice.js';
 import type {WorkspaceRequestOptions} from './workspace-request.js';
 type Call=(name:string,args:any,options?:WorkspaceRequestOptions)=>Promise<any>;
-/** A newer published version of this installed catalog app, when updating changes only its code.
+/** A newer published version of this installed catalog app, when updating changes only its code, or (7.1) a new major
+ * version that names this one as upgradable (same tables and helpers; settings carried over).
  * Website only for now: the embedded hosts have no update tools, so nothing is asked of them. */
 export function useAppUpdate(component:any,call:Call){
  const platform=useContext(AppPlatform),website=!platform.readTemplateMedia&&!platform.useTemplate;
@@ -33,9 +34,12 @@ export function AppUpdateDialog({offer,call,onUpdated,onClose}:{offer:any;call:C
   if(live.current){setDone(true);onUpdated(r.component,r.initialOutput);}
  });
  if(done)return <SystemNotice message={`${offer.name} updated to version ${offer.toVersion}.`} onDismiss={onClose}/>;
- return <div className="ty-content-overlay"><section className="ty-confirm-dialog" role="dialog" aria-modal="true" aria-label="Update app"><h2>Update {offer.name} to version {offer.toVersion}?</h2>
-  <p>This replaces the app's code with the newer published version ({offer.fromVersion} to {offer.toVersion}). Your records, tables, layout, settings, access and automations stay as they are.</p>
+ return <div className="ty-content-overlay"><section className="ty-confirm-dialog" role="dialog" aria-modal="true" aria-label="Update app"><h2>{offer.kind==='upgrade'?'Upgrade':'Update'} {offer.name} to version {offer.toVersion}?</h2>
+  {offer.kind==='upgrade'
+   ?<><p>Version {offer.toVersion} is a new major version of {offer.name}, rebuilt on the platform's current design ({offer.fromVersion} to {offer.toVersion}). Your records, connected tables, access and automations carry across, and so do your settings.</p>
+    {offer.settings?.removed?.length>0&&<p>Settings this version no longer has: {offer.settings.removed.join(', ')}. Layout changes made to the earlier version do not carry over.</p>}</>
+   :<p>This replaces the app's code with the newer published version ({offer.fromVersion} to {offer.toVersion}). Your records, tables, layout, settings, access and automations stay as they are.</p>}
   {error&&<p role="alert">{error}</p>}{!review&&!error&&<p role="status">Preparing the update…</p>}
-  <div className="settings-actions"><button className="secondary" disabled={busy} onClick={()=>void cancel()}>{saved.current?'Close':'Cancel'}</button><button className="primary" disabled={busy||!review} onClick={()=>void confirm()}>{busy&&review?'Updating…':saved.current?'Reload app':'Update app'}</button></div>
+  <div className="settings-actions"><button className="secondary" disabled={busy} onClick={()=>void cancel()}>{saved.current?'Close':'Cancel'}</button><button className="primary" disabled={busy||!review} onClick={()=>void confirm()}>{busy&&review?(offer.kind==='upgrade'?'Upgrading…':'Updating…'):saved.current?'Reload app':offer.kind==='upgrade'?'Upgrade app':'Update app'}</button></div>
  </section></div>;
 }

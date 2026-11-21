@@ -87,3 +87,49 @@ test('no update is offered or prepared for changed code, stale requests, or peop
   await assert.rejects(prepareAppUpdate(f,owner,w.id,{...request,expectedVersion:c.version+1}),(e:any)=>e.code==='update_unavailable');
  }finally{await pg.close();}
 });
+/* 7.1 (A3, D41): a new major version that names the installed version in upgradeFrom is an owner-approved upgrade.
+ * Records, the connected tables (bindings and tableMap) and the settings it still has carry across; settings it no longer
+ * has are listed and dropped. Editors are refused before anything is prepared. */
+test('an owner upgrades an installed copy to a new major version: records, connections and settings carry across',async()=>{
+ const pg=new PGlite();
+ try{
+  for(const file of (await readdir('migrations')).filter(f=>f.endsWith('.sql')).sort())await pg.exec(await readFile('migrations/'+file,'utf8'));
+  const db:Database={query:(q,v)=>pg.query(q,v) as any,transaction:fn=>pg.transaction(tx=>fn(tx as Connection)),close:async()=>{}};
+  await syncTemplateCatalog(db);
+  const [id,,from]=RELEASES[1];
+  const owner={userId:randomUUID(),origin:'human' as const},human={...owner,actionConfirmed:true} as any,editor={userId:randomUUID(),origin:'human' as const};
+  for(const u of [owner,editor])await db.query('INSERT INTO users(id,subject,email,name) VALUES($1,$2,$3,$4)',[u.userId,u.userId,u.userId+'@example.invalid','Upgrade']);
+  const service=new Service(db),catalog=new AppTemplates(undefined,db),f=new WorkspaceFoundation(db),w=await service.createWorkspace(owner,'Upgrade');
+  await service.share(owner,w.id,editor.userId,'editor',[],null,true);
+  const old=await catalog.read({templateId:id,version:from,includeFunctionSource:true});
+  const app=await installCatalogApp(f,human,w.id,{templateId:id,version:from,digest:old.digest,name:old.name,requestKey:randomUUID(),createNew:true});
+  const before=(await f.readComponent(owner,w.id,app.appId)).component;
+  // A major version with the same tables and helpers, one option removed and one added.
+  const row=(await pg.query<any>('SELECT payload,install_schema FROM app_template_catalog WHERE template_id=$1 AND version=$2',[id,from])).rows[0];
+  const payload={...row.payload,version:'9.0.0',upgradeFrom:[from],source:row.payload.source+'\n/* rebuilt */',options:{...row.payload.options,newChoice:{type:'string',description:'A new business choice.',default:'standard'}},defaults:{...row.payload.defaults}};
+  delete payload.options.layoutProfile;delete payload.defaults.layoutProfile;
+  await pg.query("INSERT INTO app_template_catalog(template_id,version,status,digest,payload,install_schema) VALUES($1,'9.0.0','approved',$2,$3,$4)",[id,'f'.repeat(64),JSON.stringify(payload),JSON.stringify(row.install_schema)]);
+  const offer:any=await readAppUpdate(f,owner,w.id,app.appId);
+  assert.equal(offer.available,true);assert.equal(offer.kind,'upgrade');assert.equal(offer.toVersion,'9.0.0');assert.equal(offer.canUpdate,true);
+  assert.ok(offer.settings.removed.includes('layoutProfile'));assert.ok(offer.settings.added.includes('newChoice'));assert.ok(offer.settings.kept.includes('tableMap'));
+  // An editor sees no upgrade they can start, and is refused before anything is prepared.
+  assert.equal((await readAppUpdate(f,editor,w.id,app.appId) as any).canUpdate,false);
+  const request={componentId:before.id,expectedVersion:before.version,toVersion:'9.0.0',toDigest:'f'.repeat(64)};
+  await assert.rejects(prepareAppUpdate(f,editor,w.id,request),(e:any)=>e.code==='app_owner_required');
+  const prepared:any=await prepareAppUpdate(f,owner,w.id,request);assert.equal(prepared.update.kind,'upgrade');
+  await f.confirm(human,w.id,prepared.preview.id,prepared.preview.digest);
+  const after=(await f.readComponent(owner,w.id,app.appId)).component;
+  assert.equal(catalogBody(after.source),payload.source);
+  const config=(s:string)=>JSON.parse(/^const templateConfiguration=(.+);\n/.exec(s)![1]),bindingsLine=(s:string)=>s.split('\n')[1];
+  const was=config(before.source),now=config(after.source);
+  assert.equal(now.tableMap,was.tableMap,'connections carry across');assert.equal(now.newChoice,'standard');assert.equal('layoutProfile' in now,false);
+  for(const k of Object.keys(was).filter(k=>k!=='layoutProfile'))assert.deepEqual(now[k],was[k],'setting '+k);
+  assert.equal(bindingsLine(after.source),bindingsLine(before.source));
+  for(const key of ['name','bindings','manifest','project_id','execution'])assert.deepEqual(after[key],before[key],key);
+  assert.deepEqual(await readAppUpdate(f,owner,w.id,app.appId),{available:false,reason:'current'});
+  // Without upgradeFrom naming the installed version, a major version is not offered.
+  const other=await installCatalogApp(f,human,w.id,{templateId:id,version:from,digest:old.digest,name:old.name+' 2',requestKey:randomUUID(),createNew:true});
+  await pg.query("UPDATE app_template_catalog SET payload=jsonb_set(payload,'{upgradeFrom}','[]'::jsonb),digest='e'||repeat('f',63) WHERE template_id=$1 AND version='9.0.0'",[id]);
+  assert.deepEqual(await readAppUpdate(f,owner,w.id,other.appId),{available:false,reason:'needs_review'});
+ }finally{await pg.close();}
+});
