@@ -16,7 +16,11 @@ export function catalogBody(source:string){const m=prefix.exec(source);return m?
  * only what the platform's per-request checks allow the caller to read. */
 export async function isCatalogSource(tx:Connection,source:unknown){
  if(typeof source!=='string')return false;const body=catalogBody(source);if(!body)return false;
+ return (await catalogSourceHashes(tx)).has(sha(body));
+}
+/** SHA-256 (hex) of every approved catalog template's code; cached until the approved catalog changes. */
+export async function catalogSourceHashes(tx:Connection){
  const s=(await tx.query("SELECT count(*)::int AS n, max(updated_at)::text AS u FROM app_template_catalog WHERE status='approved'")).rows[0],stamp=`${s?.n}|${s?.u}`;
  if(cache?.stamp!==stamp){const rows=(await tx.query("SELECT payload->>'source' AS source FROM app_template_catalog WHERE status='approved'")).rows;cache={stamp,hashes:new Set(rows.filter(r=>typeof r.source==='string').map(r=>sha(r.source)))};}
- return cache.hashes.has(sha(body));
+ return cache.hashes;
 }
