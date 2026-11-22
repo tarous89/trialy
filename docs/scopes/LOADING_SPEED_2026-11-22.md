@@ -1,7 +1,7 @@
 # Loading speed scope: Apps home, archived apps, templates and individual apps
 
 **Date:** 22 November 2026
-**Status:** plan. Nothing in it is built until the progress table (section 9) says so.
+**Status:** session L1 built; L2 to L4 are a plan. Nothing else in it is built until the progress table (section 9) says so.
 **Covers:** four surfaces (Apps home, archived apps, templates, an individual app) on three hosts (website, ChatGPT plugin, Claude plugin).
 **Goal:** every surface opens as fast as technically possible. What is already known is shown at once; anything that needs processing arrives afterwards and never holds the page back.
 **Read at commit:** `1c19eef`. File and line references are in section 2.
@@ -213,7 +213,21 @@ Open points are resolved this way unless the owner says otherwise.
 | Session | Status | Pull request | Notes |
 | --- | --- | --- | --- |
 | Before L1 | built | none yet (branch `claude/zealous-cori-10snwn`) | Tab-return loading bar fixed, commit `1c19eef` |
-| L1 | not started | | |
+| L1 | built, except the items below | branch `claude/upbeat-allen-lcc5wd` | See below |
 | L2 | not started | | |
 | L3 | not started | | |
 | L4 | not started | | |
+
+### Session L1 in detail
+
+Measured before and after in [performance measurement](../PERFORMANCE_MEASUREMENT.md#loading-speed-session-l1-apps-home-and-archived-apps-22-november-2026). On a 40-app account, Apps home went from 165 queries and 20 MB read to 12 queries and 32 KB; the archived list from 82 queries to 6.
+
+| Package | Status | Notes |
+| --- | --- | --- |
+| L1.0 | partly built | Query budgets in `tests/loading-speed.test.ts`. `home`, `archive` and `templates` timings (migration 098). Production baseline not taken: owner action 7.1. Home's budget is 14 queries, not 6 (see the measurement page for what remains); none of them grows with the number of apps |
+| L1.1 | built | `src/workspace/app-index.ts`; `tests/app-index.test.ts` compares it with the per-app check on generated accounts, both directions |
+| L1.2 | partly built | Home reads the index; projects and placements from one project read. Not built: database-side paging and set queries for a person's own standalone automations, links and older automations (they grow with that person's automations, not with apps) |
+| L1.3 | built for Home | Miniatures are `read_home_snapshots`, a quiet later read for the cards on screen, with a browser test that holds it open and checks the bar. Rule I for other surfaces' details comes with those details (L2, L3) |
+| L1.4 | built | Count with the Home read, no request; list in 3 queries beyond the count. Record and automation counts are batched into the list request rather than a later one |
+| L1.5 | partly built | Frame drawn by `index.html` before any script; `public/start.js` starts the account check and Home read before the main script downloads. Not built: splitting the main script |
+| L1.6 | built | `open_workspace` carries the first Home page; saved views no longer hold the widget's first paint |

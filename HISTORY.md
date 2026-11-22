@@ -1,3 +1,16 @@
+## 22 November 2026 — Loading speed, session L1: Apps home and archived apps
+
+First of four build sessions of the [loading speed scope](docs/scopes/LOADING_SPEED_2026-11-22.md). Package numbers refer to that scope.
+
+- **One lean app index (L1.1, L1.2).** Apps home works out which apps a person may see once for the whole workspace, in a fixed number of queries, and no longer reads app code. The permission rules did not change: the per-app check and the index share the same rule functions, and a test compares the two on generated accounts in both directions. On a 40-app account Home went from 165 queries and 20 MB read to 12 queries and 32 KB.
+- **Card miniatures after the cards (L1.3).** Cards appear first; miniatures follow in a quiet request for the cards on screen (`read_home_snapshots`), never with the loading bar. A card without one keeps its cover.
+- **Archived apps (L1.4).** The "Show archived apps" count arrives with Home, with no request of its own; the expanded list takes a fixed six queries for any number of apps.
+- **Website start (L1.5).** The page frame is drawn before any script. A small start script begins the account check and the Apps home read before the main script has downloaded.
+- **Plugins (L1.6).** The `open_workspace` result carries the first Apps home page, so the ChatGPT and Claude widget paints Home without asking again; saved views no longer hold the first paint.
+- **Timings (L1.0).** Apps home, the archived list and the template list are timed next to app open, interaction and save (migration 098).
+
+Not yet built: the production baseline (owner action), splitting the main script, and set queries for a person's own standalone automations and links. Tests: `app-index`, `loading-speed`, `early-start`, updated `page-performance`, `archive-first`, `ux-timing`, and browser tests in `background-progress`, `deferred-startup` and `coordinated-refresh`.
+
 ## 21 November 2026 — Platform decisions, session 7: catalog rebuild
 
 Last of seven build sessions for the [platform decisions of 19 November](docs/scopes/PLATFORM_DECISIONS_IMPLEMENTATION_2026-11-19.md). Decision codes refer to the [snapshot](docs/scopes/PLATFORM_DECISIONS_SNAPSHOT_2026-11-19.md).
