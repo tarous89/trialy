@@ -31,7 +31,8 @@ export function browserSwitches():Switches{
  return switches;
 }
 let catalog:{stamp:string;byHash:Map<string,{templateId:string;version:string}>}|null=null;
-async function catalogVersion(tx:Connection,source:string){
+/** The approved catalog version whose unchanged code this is, if any (the switch is not considered). */
+export async function catalogVersion(tx:Connection,source:string){
  const body=catalogBody(source);if(!body)return null;
  const s=(await tx.query("SELECT count(*)::int AS n, max(updated_at)::text AS u FROM app_template_catalog WHERE status='approved'")).rows[0],stamp=`${s?.n}|${s?.u}`;
  if(catalog?.stamp!==stamp){const rows=(await tx.query("SELECT template_id,version,payload->>'source' AS source FROM app_template_catalog WHERE status='approved'")).rows;catalog={stamp,byHash:new Map(rows.filter((r:any)=>typeof r.source==='string').map((r:any)=>[sha(r.source),{templateId:r.template_id,version:r.version}]))};}

@@ -1,3 +1,16 @@
+## 22 November 2026 — Loading speed, session L2: individual apps
+
+Second of four build sessions of the [loading speed scope](docs/scopes/LOADING_SPEED_2026-11-22.md). Package numbers refer to that scope.
+
+- **One pass per open (L2.1).** Opening an app works out the person's access once for the whole request and reuses it for every check and read; every reused result is still checked again before the screen is sent, and nothing is kept between requests. An app's tables are looked up together. Opening Runway went from 596 database queries to 43; a member's from 679 to 48.
+- **App code once (L2.2).** The app frame no longer receives an app's code again with its first click. Opens carry what the frame needs to run the app itself, so the first click runs in the browser; the code is taken from the app already loaded, or fetched once by its fingerprint (cached by the browser on the website, cleared on sign-out).
+- **Other tabs ready (L2.4).** After Overview, every other tab of a tracker (and every linked screen of a browser-run app) is prepared quietly, nearest first, paused while the page is hidden or a save runs.
+- **Opening from a card (L2.5).** The app's name and frame appear at once; the website fetches the app frame ahead while Apps is idle.
+- **Plugins (L2.6).** `open_app` carries the first screen for the widget only, so ChatGPT and Claude show the app without asking again, and no longer wait for the account or table list.
+- **Server-mode report (L2.7).** `npm run apps:runtime-report` lists which installed apps run in the browser and why the others do not.
+
+Not built: sending app data without the app's code in its metadata, making the first screen in the browser (L2.3), preparing the engine ahead. Tests: `loading-speed-apps`.
+
 ## 22 November 2026 — Loading speed, session L1: Apps home and archived apps
 
 First of four build sessions of the [loading speed scope](docs/scopes/LOADING_SPEED_2026-11-22.md). Package numbers refer to that scope.

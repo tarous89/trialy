@@ -74,10 +74,14 @@ function useCanExpand(){
 function expandWorkspace(){void bridge.requestDisplayMode({mode:'fullscreen'}).catch(()=>{/* The host keeps the inline view. */});}
 // Present only in the Claude resource: Claude blocks nested frames from the platform origin, so apps render with srcdoc.
 function inlineFrameDocument(){try{const text=document.getElementById('trialy-frame-document')?.textContent;const value=text?JSON.parse(text):undefined;return typeof value==='string'?value:undefined;}catch{return undefined;}}
+/** L2.6: an "open app" result carries the app's first screen as widget-only metadata (never shown to the assistant). */
+function withFirstScreen(result:any){const data=unwrap(result),first=result?._meta?.['trialagents/initialOutput'];return first&&data?.screen==='tracker'&&data.component&&!data.initialOutput?{...data,initialOutput:first}:data;}
 function unwrap(result:any){if(result.isError)throw Object.assign(new Error(result.content?.find((c:any)=>c.type==='text')?.text??'The action could not complete.'),result.structuredContent?.error??{});return result.structuredContent?.result;}
 // D11: inside ChatGPT or Claude, a Save the view sends is the person's click. It goes through the view-only tool;
 // the tool of the same purpose that the assistant can call refuses app changes.
 const viewTool=(name:string)=>name==='confirm_workspace_change'?'approve_workspace_change':name;
+/** call(), returning the whole tool result (with its widget-only metadata) instead of only the result data. */
+async function callResult(name:string,args:Record<string,unknown>={}){name=viewTool(name);const result=await withWorkspaceActivity(()=>bridge.callServerTool({name,arguments:args}),workspaceRequestOptions(name,args,undefined));unwrap(result);return result;}
 async function call(name:string,args:Record<string,unknown>={},options?:WorkspaceRequestOptions){name=viewTool(name);return unwrap(await withWorkspaceActivity(()=>bridge.callServerTool({name,arguments:args},{signal:options?.signal}),workspaceRequestOptions(name,args,options)));}
 function Workspace(){
  const [trackerRoute,setTrackerRoute]=useState<AppRoute>({path:'/'});
@@ -100,6 +104,8 @@ function Workspace(){
  useEffect(()=>{const open=(e:Event)=>{const d=(e as CustomEvent).detail;if(!d?.destination)return;navigationEpoch.current++;transition.current.reset();setPlatformApp(d.appId??null);setView(d.destination==='access'?'access-control':d.destination);};window.addEventListener('trialy:platform-page',open);return()=>window.removeEventListener('trialy:platform-page',open);},[]);
  const [ready,setReady]=useState(false),[error,setError]=useState(''),[busy,setBusy]=useState(false),[notice,setNotice]=useState('');
  const [state,setState]=useState<any>({workspaces:[],types:[],templates:[]}),[typeId,setTypeId]=useState(''),[rows,setRows]=useState<any[]>([]),[total,setTotal]=useState(0),[offset,setOffset]=useState(0);
+ /** L2.6: the account and table list arrive after the app is shown; until then only the app's workspace is set. */
+ const showDetails=(details:Promise<any>,workspaceId:string,current:()=>boolean)=>{setState((old:any)=>old.workspaceId===workspaceId?old:{...old,workspaceId});void details.then(account=>{if(current())setState(account);}).catch(()=>{});};
  const [form,setForm]=useState<any>(null),[draft,setDraft]=useState<Record<string,any>>({}),[preview,setPreview]=useState<any>(null),[query,setQuery]=useState('');
  const [view,setView]=useState('loading'),[documents,setDocuments]=useState<any[]>([]),[document,setDocument]=useState<any>(null),[search,setSearch]=useState<any>(null),[docQuery,setDocQuery]=useState(''),[versions,setVersions]=useState<any>(null);
  React.useEffect(()=>{setIdentity({});if(!ready||!state.viewerId)return;let active=true;void bridge.callServerTool({name:'read_connected_account',arguments:{}}).then(result=>{if(active&&!result.isError){setIdentity((result._meta as any)?.accountIdentity??{});setPlatform(current=>{const next=(result._meta as any)?.appPlatform;return next?{...next,frameDocument:current.frameDocument}:current;});}}).catch(()=>{});return()=>{active=false;};},[ready,state.viewerId]);
@@ -136,10 +142,10 @@ function Workspace(){
   if(!options.dataAccess)throw Error('Review the installation before adding this app.');
   const installed=await call('confirm_data_access',{workspaceId:state.workspaceId,install,...options.dataAccess,confirmed:true});
   setHomeRevision(n=>n+1);
-  const data=await call('open_app',{workspaceId:installed.workspaceId,appId:installed.appId,source:'component'}),{account,resolved,output}=await loadTrackerDisplay(data,call,()=>{});
+  const opened=await callResult('open_app',{workspaceId:installed.workspaceId,appId:installed.appId,source:'component'}),data=withFirstScreen(opened),{details,resolved,output}=await loadTrackerDisplay(data,call,()=>{});
   if(epoch!==navigationEpoch.current)return;
   if(resolved.screen==='tracker-unavailable')throw Error('Your app was installed. Open Apps to try opening it again.');
-  setState(account);setTrackerRoute(resolved.route??{path:'/'});setTrackerOutput(output);setOpenedTracker(resolved.component);setTrackerPreview(null);setView('tracker');setAppUpdating(false);setError('');setNotice(installed.automationStatus==='pending'?'App added. Automation setup continues in the background.':'');
+  showDetails(details,resolved.workspaceId,()=>epoch===navigationEpoch.current);setTrackerRoute(resolved.route??{path:'/'});setTrackerOutput(output);setOpenedTracker(resolved.component);setTrackerPreview(null);setView('tracker');setAppUpdating(false);setError('');setNotice(installed.automationStatus==='pending'?'App added. Automation setup continues in the background.':'');
  }),[state.workspaceId]);
  const contextView=view==='tracker'||(view==='home'&&homeAppActive)?'app':view;
  const details=Object.values(viewDetails).filter(d=>d.view===contextView||(['app','database'].includes(contextView)&&d.view==='access-control'));
@@ -164,20 +170,21 @@ function Workspace(){
  const showPlatform=(message='',workspaceId?:string,destination='home')=>{const epoch=++navigationEpoch.current;transition.current.reset();setView(destination);if(destination==='automations')setAutomationsRevision(n=>n+1);setOpenedTracker(null);setTrackerPreview(null);setTrackerOutput(null);setError(message);void call('open_workspace',workspaceId?{workspaceId}:{}).then(account=>{if(active&&epoch===navigationEpoch.current)setState(account);}).catch(()=>{if(active&&epoch===navigationEpoch.current)retainDisplay();});};
  const retainDisplay=(e?:any)=>{setAppUpdating(false);setUnavailableReason(e?.code==='manifest_stale'?'schema':e&&![401,403,404].includes(e.status)?'load':'missing');setError('');setNotice('');if(!visibleApp.current&&!(visibleSurface.current==='home'&&homeAppVisible.current)){setOpenedTracker(null);setTrackerPreview(null);setTrackerOutput(null);setView('unavailable');}};
  const receive=(result:any)=>{if(!active)return;try{
-  const data=unwrap(result);if(data?.displayIntent==='background')return;
+  const data=withFirstScreen(result);if(data?.displayIntent==='background')return;
   if(data?.preferredDisplayMode==='fullscreen'){fullscreenWanted=true;requestFullscreen();}
   if(['app-link','tracker','tracker-preview'].includes(data?.screen))retryDisplay.current=()=>receive(result);
-  if(data?.screen==='app-link'){const epoch=++navigationEpoch.current;void call('open_app',{appId:data.appId,workspaceId:data.workspaceId,source:data.source??'component',route:data.route??{path:'/'}}).then(display=>{if(active&&epoch===navigationEpoch.current)receive({structuredContent:{result:display}});}).catch(e=>{if(active&&epoch===navigationEpoch.current)retainDisplay(e);});return;}
+  if(data?.screen==='app-link'){const epoch=++navigationEpoch.current;void callResult('open_app',{appId:data.appId,workspaceId:data.workspaceId,source:data.source??'component',route:data.route??{path:'/'}}).then(opened=>{if(active&&epoch===navigationEpoch.current)receive(opened);}).catch(e=>{if(active&&epoch===navigationEpoch.current)retainDisplay(e);});return;}
   if(data?.screen==='automations'){showPlatform('',data.workspaceId,'automations');return;}
   if(data?.screen==='platform'){showPlatform('',data.workspaceId);return;}
   if(data?.guestDraft){setGuest((current:any)=>current?.handle.id===data.handle.id?{...current,...data,bundle:data.bundle??current.bundle}:data);return;}
   const saved=data?.screen==='tracker'&&data.component, draft=data?.screen==='tracker-preview'&&data.preview;
   if(saved||draft){
    const key=data.workspaceId+':'+(saved?'saved:'+saved.id+':'+saved.version+(data.appUpdating?':updating':''):'draft:'+draft.id+':'+draft.digest)+':'+JSON.stringify(data.route??{path:'/'});
-   void transition.current.show(key,()=>{const epoch=++navigationEpoch.current;return loadTrackerDisplay(data,call,account=>{if(active&&epoch===navigationEpoch.current)setState((old:any)=>old.viewerId===account.viewerId?old:{...old,...account});});},({account,resolved,output})=>{
+   let epoch=0;
+   void transition.current.show(key,()=>{epoch=++navigationEpoch.current;return loadTrackerDisplay(data,call,account=>{if(active&&epoch===navigationEpoch.current)setState((old:any)=>old.viewerId===account.viewerId?old:{...old,...account});});},({details,resolved,output})=>{
     if(!active)return;
     if(resolved.screen==='tracker-unavailable'){retainDisplay();return;}
-    setState(account);setTrackerRoute(resolved.route??{path:'/'});setTrackerOutput(output);setOpenedTracker(resolved.component||null);setTrackerPreview(resolved.component?null:resolved.preview||null);setView('tracker');setAppUpdating(!!resolved.appUpdating);setError('');setNotice('');
+    showDetails(details,resolved.workspaceId,()=>active&&epoch===navigationEpoch.current);setTrackerRoute(resolved.route??{path:'/'});setTrackerOutput(output);setOpenedTracker(resolved.component||null);setTrackerPreview(resolved.component?null:resolved.preview||null);setView('tracker');setAppUpdating(!!resolved.appUpdating);setError('');setNotice('');
    },e=>{if(active)retainDisplay(e);});
   }else if(data?.screen==='tracker-unavailable'){retainDisplay();
   }else if(data?.workspaces&&data?.types){
