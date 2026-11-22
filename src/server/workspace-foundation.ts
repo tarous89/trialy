@@ -14,7 +14,7 @@ import {AppRoles} from '../domain/app-sharing.js';
 import {AppLogs,appLogQuery} from '../domain/app-log.js';
 import {AssistantLevelSettings} from '../domain/assistant-levels.js';
 import {accountCatalog,accountCatalogRequest} from '../workspace/catalog.js';
-import {accountHome} from '../workspace/home.js';
+import {accountHome,homeSnapshots,snapshotQuery} from '../workspace/home.js';
 import {trackerSetup,trackerOperation} from '../workspace/tracker-template.js';
 import {appPreparationResult,backgroundMetadata} from './ui-resource.js';
 import {moveTool,moveToolInput} from '../workspace/tool-placement.js';
@@ -138,6 +138,8 @@ export function addWorkspaceMcp(server:McpServer,f:WorkspaceFoundation,a:Actor,s
  register('prepare_tool_template','Prepare a template with explicitly chosen existing or new tables.',{workspaceId:id,...trackerSetup.shape},false,async({workspaceId,...v})=>{const setup=trackerSetup.parse(v),op=await trackerOperation(f,a,workspaceId,setup);return f.preview(a,workspaceId,{kind:'create_tracker',setup,content:op.content});},true);
  register('move_tool','Move a tracker, form, dashboard or automation into a project, between projects, or back to Home (projectId:null). Only after the user requests this move. Changes organization only: data bindings, original project data scope, sharing and automation grants remain unchanged. Use placementVersion from read_workspace_home as expectedVersion.',{workspaceId:id,...moveToolInput.shape},false,({workspaceId,...v})=>moveTool(f.db,{...a,actionConfirmed:true},workspaceId,v));
  register('check_account_home','Check the current account Home metadata revision without loading app previews or source. A changed revision requires an authorized Home reload; this is not an access grant.',{},true,()=>homeRevision(f.db,a),true);
+ // L1.3: card miniatures for the cards on screen, asked for after the cards are shown.
+ register('read_home_snapshots','Read small card miniatures (column names and up to three sample rows) for the listed apps on Home. Each app is checked again; apps that cannot be read are left out. Never executes code.',snapshotQuery.shape,true,(v,extra)=>homeSnapshots(f.db,a,v,extra?.signal),true);
  register('read_account_home','Read all authorized projects and apps directly from the connected account database.',homeQuery.shape,true,(v,extra)=>accountHome(f.db,a,v,extra?.signal));
  register('read_account_schema','Read the account database catalog across authorized data areas. Each table includes its workspaceId for subsequent reads and approved writes.',accountCatalogRequest.shape,true,v=>accountCatalog(f.db,a,v));
  register('read_workspace_home','List authorized project and resource metadata for Home. Never executes code or returns source, records or bearer links.',{workspaceId:id,...homeQuery.shape},true,({workspaceId,...v},extra)=>workspaceHome(f.db,a,workspaceId,v,extra?.signal));

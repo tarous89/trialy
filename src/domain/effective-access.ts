@@ -35,7 +35,13 @@ export async function toolPolicy(db:Connection,a:Actor,p:any,toolId:string,withS
  const sections=withSource||(p.permission_rules??[]).some((r:any)=>r.kind==='app_section'&&r.resourceId===toolId);
  const c=(await db.query(sections?`SELECT *,${MEMBER_ROLE} FROM workspace_components WHERE id=$1 AND workspace_id=$2`:TOOL_POLICY_QUERY,[toolId,p.id,a.userId])).rows[0];if(!c)fail(404,'not_found','App unavailable');
  const parents:string[]=[];let current=c.project_id;
- while(current){if(parents.includes(current))fail(409,'folder_cycle','Invalid project hierarchy');parents.push(current);const n=(await db.query('SELECT * FROM workspace_nodes WHERE id=$1 AND workspace_id=$2',[current,p.id])).rows[0];if(!n||(p.role!=='owner'&&n.allowed_users!==null&&!n.allowed_users.includes(a.userId))||(a.origin==='ai'&&!n.ai_enabled))fail(403,'tool_access','Project access is restricted');current=n.parent_id;}
+ while(current){if(parents.includes(current))fail(409,'folder_cycle','Invalid project hierarchy');parents.push(current);const n=(await db.query('SELECT * FROM workspace_nodes WHERE id=$1 AND workspace_id=$2',[current,p.id])).rows[0];toolProjectStep(p,a,n);current=n.parent_id;}
+ return toolDecision(p,a,c,parents);
+}
+/** One project on an app's chain (toolPolicy). Pure: shared with the batched app index (src/workspace/app-index.ts). */
+export function toolProjectStep(p:any,a:Actor,n:any){if(!n||(p.role!=='owner'&&n.allowed_users!==null&&!n.allowed_users.includes(a.userId))||(a.origin==='ai'&&!n.ai_enabled))fail(403,'tool_access','Project access is restricted');}
+/** The app decision once its row (with member_role) and project chain are known. Pure: no query. */
+export function toolDecision(p:any,a:Actor,c:any,parents:string[]){
  if((p.role!=='owner'&&c.allowed_users!==null&&!c.allowed_users.includes(a.userId))||(a.origin==='ai'&&!c.ai_enabled))fail(403,'tool_access','App access is restricted');
  const grant=resourceGrant(p,a,'tool',c.id,parents);if(!grant.read)fail(403,'tool_access','You do not have access to this app');
  // Legacy source may contain copied values; only reviewed bound resources support scoped sharing.
@@ -48,15 +54,27 @@ export async function toolPolicy(db:Connection,a:Actor,p:any,toolId:string,withS
  return {c,grant,scopes,role};
 }
 export async function applyTypePolicy(db:Connection,a:Actor,p:any,type:any){
- const owner=p.role==='owner',legacy=owner||(p.direct_data!==false&&(!p.allowed_types||p.allowed_types.includes(type.id)));
+ const owner=p.role==='owner';
  // A4: an assistant with Data = Blocked sees no table; with View only it reads and changes nothing.
  const dataLevel=a.origin==='ai'?(await assistantLevels(db,a,p)).data:'edit';
- if(a.origin==='ai'&&(dataLevel==='blocked'||p.ai_hidden_types?.includes(type.id)))return {...p,typeId:type.id,read_fields:[],write_fields:[],scope_project:null};
- if(!owner&&p.database_browse===false&&!a.accessToolId)return {...p,typeId:type.id,read_fields:[],write_fields:[],scope_project:null};
+ if(a.origin==='ai'&&(dataLevel==='blocked'||p.ai_hidden_types?.includes(type.id)))return noTable(p,type);
+ if(!owner&&p.database_browse===false&&!a.accessToolId)return noTable(p,type);
+ const appRole=!owner&&type.origin_app_id&&p.direct_data!==false?(await db.query(APP_TABLE_ROLE,[type.origin_app_id,a.userId])).rows[0]?.role??null:undefined;
+ if(appRole===null)return noTable(p,type);
+ const tool=a.accessToolId?await toolPolicy(db,a,p,a.accessToolId):null;
+ return typePolicyFor(a,p,type,{dataLevel,appRole,tool});
+}
+const noTable=(p:any,type:any)=>({...p,typeId:type.id,read_fields:[],write_fields:[],scope_project:null});
+/** applyTypePolicy once its lookups are known: the assistant's Data level, the person's role on the app that owns
+ * the table (undefined when not asked), and the app decision (toolPolicy) when read inside an app. Pure: no query.
+ * Shared with the batched app index (src/workspace/app-index.ts), so both apply the same rules. */
+export function typePolicyFor(a:Actor,p:any,type:any,{dataLevel,appRole,tool}:{dataLevel:string;appRole:string|null|undefined;tool:ReturnType<typeof toolDecision>|null}){
+ const owner=p.role==='owner',legacy=owner||(p.direct_data!==false&&(!p.allowed_types||p.allowed_types.includes(type.id)));
+ if(a.origin==='ai'&&(dataLevel==='blocked'||p.ai_hidden_types?.includes(type.id)))return noTable(p,type);
+ if(!owner&&p.database_browse===false&&!a.accessToolId)return noTable(p,type);
  // A2: an app's own table follows the person's role on that app: no role, no table; Viewer reads only. Guests keep their scoped sharing.
  let appViewOnly=false;
- if(!owner&&type.origin_app_id&&p.direct_data!==false){const role=(await db.query(APP_TABLE_ROLE,[type.origin_app_id,a.userId])).rows[0]?.role;if(!role)return {...p,typeId:type.id,read_fields:[],write_fields:[],scope_project:null};appViewOnly=role==='viewer';}
- const tool=a.accessToolId?await toolPolicy(db,a,p,a.accessToolId):null;
+ if(!owner&&type.origin_app_id&&p.direct_data!==false){if(!appRole)return noTable(p,type);appViewOnly=appRole==='viewer';}
  const bound=tool?.c.bindings.find((b:any)=>b.typeId===type.id);
  const source=tool?.scopes.filter(s=>s.typeId===type.id&&(!s.toolId||s.toolId===tool.c.id)&&(s.projectId===null||s.projectId===tool.c.project_id&&tool.c.manifest?.scope==='project'))??[];
  const sectionRead=tool?sectionFields(p,a,tool.c,type.id):null,sectionWrite=tool?sectionFields(p,a,tool.c,type.id,true):null;

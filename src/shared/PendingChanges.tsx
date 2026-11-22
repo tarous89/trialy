@@ -2,6 +2,8 @@ import React,{useCallback,useContext,useEffect,useLayoutEffect,useMemo,useRef,us
 import {Button} from './ui/Controls.js';
 import './preview-approval.css';
 import {InstallationPopup} from './DataAccessStep.js';
+import {coordinatedRecheck} from './coordinated-recheck.js';
+import type {WorkspaceRequestOptions} from './workspace-request.js';
 
 /**
  * A6, B1: one approval footer for pending app changes, in every host (website, standalone app, ChatGPT, Claude).
@@ -36,20 +38,24 @@ export function footerLabels(kind:FooterReview['kind'],name?:string|null){
 }
 const reasonText:Record<string,string>={app_changed:'The app changed since this was prepared. Ask your assistant to prepare it again, or discard it.',app_unavailable:'The app is no longer available. Discard this change.',access_changed:'Access to the app or its tables changed since this was prepared. Ask your assistant to prepare it again, or discard it.'};
 
-export function PendingChangesProvider({children,call,workspaceId,onOpen}:{children:React.ReactNode;call:(name:string,args:any)=>Promise<any>;workspaceId?:string|null;onOpen?:(c:PendingChange)=>void}){
+export function PendingChangesProvider({children,call,workspaceId,onOpen}:{children:React.ReactNode;call:(name:string,args:any,options?:WorkspaceRequestOptions)=>Promise<any>;workspaceId?:string|null;onOpen?:(c:PendingChange)=>void}){
  const [changes,setChanges]=useState<PendingChange[]>([]),[review,setReview]=useState<FooterReview|null>(null);
  const latest=useRef(0);
- const refresh=useCallback(()=>{
+ const read=useCallback((background:boolean)=>{
   if(!workspaceId){setChanges([]);return;}
   const n=++latest.current;
-  void call('list_pending_app_changes',{workspaceId}).then(r=>{if(n===latest.current)setChanges(Array.isArray(r?.changes)?r.changes:[]);}).catch(()=>{/* The footer is additive; a failed read keeps the last list. */});
+  return call('list_pending_app_changes',{workspaceId},{background}).then(r=>{if(n===latest.current)setChanges(Array.isArray(r?.changes)?r.changes:[]);}).catch(()=>{/* The footer is additive; a failed read keeps the last list. */});
  },[call,workspaceId]);
+ const refresh=useCallback(()=>{void read(false);},[read]);
  useEffect(()=>{
   refresh();
-  const again=()=>{if(document.visibilityState!=='hidden')refresh();};
+  // Coming back to the tab is not the person's action: one quiet read per focus/visibility burst,
+  // never the global progress bar. Creating, approving or discarding a change stays foreground.
+  const returned=coordinatedRecheck(()=>read(true));
+  const again=()=>{if(document.visibilityState!=='hidden')returned.request('return');};
   window.addEventListener(PENDING_CHANGED,refresh);window.addEventListener('focus',again);document.addEventListener('visibilitychange',again);
-  return()=>{window.removeEventListener(PENDING_CHANGED,refresh);window.removeEventListener('focus',again);document.removeEventListener('visibilitychange',again);};
- },[refresh]);
+  return()=>{returned.dispose();window.removeEventListener(PENDING_CHANGED,refresh);window.removeEventListener('focus',again);document.removeEventListener('visibilitychange',again);};
+ },[refresh,read]);
  const discard=useCallback(async(c:PendingChange)=>{await call('discard_workspace_preview',{workspaceId,previewId:c.previewId});pendingChanged();},[call,workspaceId]);
  const [popup,setPopup]=useState<{kind:'app'|'change';step:any;label:string;resolve:(choices:any|null)=>void}|null>(null);
  const approve=useCallback<Approve>((send,preview,label='Install')=>approveWithReview(send,preview,(kind,step)=>new Promise(resolve=>setPopup({kind,step,label,resolve}))),[]);

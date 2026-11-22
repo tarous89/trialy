@@ -265,3 +265,32 @@ Each sample carries the time, the host (`web`, `chatgpt`, `claude`, `public`), a
 - Only the web host sends samples. ChatGPT and Claude need a transport inside the embedded hosts; that is part of package 5.8. Phones are covered through the web host's `phone` width class.
 - `interaction` currently includes the server round trip of every click, because apps still run on the server. It is the baseline the browser runtime (session 5) is measured against.
 - **No production baseline exists yet.** The first real numbers appear after this change is released and used. Record them here, with the date and sample counts, before session 4 starts changing the save path. Lab numbers from this repository's synthetic fixtures are not a substitute and are not recorded as a baseline.
+
+## Loading speed, session L1: Apps home and archived apps (22 November 2026)
+
+Session L1 of the [loading speed scope](scopes/LOADING_SPEED_2026-11-22.md).
+
+**What changed.**
+- **One lean app index (L1.1).** `appIndex` (`src/workspace/app-index.ts`) decides which apps a person may see for the whole workspace in a fixed number of queries and without reading app code. The rules are the per-app check's own: `toolDecision`, `toolProjectStep` and `typePolicyFor` (`src/domain/effective-access.ts`) are the pure parts of `toolPolicy` and `applyTypePolicy`, now shared by both paths. Saved code is read only in two rare cases: an app with section rules, and an app whose table check fails unless it is a standard tracker. For a member without full access, catalog code is recognized by a hash the database computes, so the code itself never leaves the database. `tests/app-index.test.ts` compares the index with the per-app check, in both directions, for 21 people and assistants on each of four generated accounts (roles, projects closed to people or assistants, archived projects, app allowed users, team default roles, app owners, app and project rules, a section rule, hidden fields, no direct data, an app-owned table, assistant levels).
+- **Apps home reads the index (L1.2).** Projects and Home placements are decided from the same preloaded project rows.
+- **Card miniatures later (L1.3).** `read_home_snapshots` (`POST /api/account/home/snapshots`) returns the miniatures for the cards on screen after the cards are shown. Each app is checked again in that request. It is a quiet read: it never starts or keeps the loading bar.
+- **Archived apps (L1.4).** The Home read returns the restorable archived count (`archivedApps`, per workspace on the account read), so the collapsed "Show archived apps (n)" needs no request. The expanded list takes the index plus one query for the apps, one for their tables and record counts, and one for their automation counts.
+- **Website start (L1.5).** `index.html` draws the page frame before any script. `public/start.js` (a few hundred bytes, no build step) starts the account check and the first Apps home read before the 1 MB main script has downloaded; `src/shared/early-reads.ts` adopts them, once and only while fresh.
+- **Plugins (L1.6).** `open_workspace` carries the first Apps home page (`home`); the widget paints from it, and saved views no longer hold the first paint.
+- **Timings (L1.0).** `home`, `archive` and `templates` join `open`, `interaction` and `save` (migration 098), each from its read starting until it is on screen, target 0.3 s.
+
+**Lab numbers.** Same synthetic account before and after, in-process database (`tests/loading-speed.test.ts` fixture: 200 KB of code per app, one in four archived). Bytes are the rows the server received from the database.
+
+| Account | Read | Before: queries | Before: received | After: queries | After: received |
+| --- | --- | --- | --- | --- | --- |
+| 4 apps, owner | Apps home | 31 | 2.2 MB | 12 | 7 KB |
+| 40 apps, owner | Apps home | 165 | 20.1 MB | 12 | 32 KB |
+| 40 apps, member | Apps home | 164 | 20.1 MB | 11 | 32 KB |
+| 40 apps, owner | Archived count | 62 | 2.0 MB | 3 | 8 KB |
+| 40 apps, owner | Archived list | 82 | 2.0 MB | 6 | 12 KB |
+
+The populated page fixture (`tests/page-performance.test.ts`) now takes 12 queries for Home (was 32) plus 20 for the five miniatures, read afterwards.
+
+**Budgets enforced by tests.** `tests/loading-speed.test.ts` fails the build if Apps home exceeds 14 queries, the archived count 5 or the archived list 6, if Home costs a different number of queries for 4 and 40 apps, or if any of these reads selects app code. The scope's target of 6 for Home is not met: the remaining queries are the account directory, the revision stamp, the access lookup, the projects, the index, the person's own automations and links, Home placements and the read-metadata freshness checks. None grows with the number of apps.
+
+**Still open.** Production numbers before and after (owner action, scope section 7.1); splitting the main script (L1.5); database-side paging and set queries for a person's own standalone automations, links and older automations (L1.2, C4, C5): they grow with that person's automations, not with apps.

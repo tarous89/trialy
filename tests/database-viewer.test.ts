@@ -1,5 +1,5 @@
 import {test} from 'node:test';import assert from 'node:assert/strict';import {randomUUID} from 'node:crypto';import {readFile,readdir} from 'node:fs/promises';import {PGlite} from '@electric-sql/pglite';
-import type {Database,Connection} from '../src/db/database.js';import {Service} from '../src/domain/service.js';import {WorkspaceFoundation} from '../src/workspace/service.js';import {trackerOperation} from '../src/workspace/tracker-template.js';import {accountCatalog} from '../src/workspace/catalog.js';import {accountHome} from '../src/workspace/home.js';import {workspaceHome} from '../src/workspace/home.js';import {databasePage} from '../src/workspace/database-browser.js';import {seedHiddenFields,retired} from './legacy-restrictions.js';
+import type {Database,Connection} from '../src/db/database.js';import {Service} from '../src/domain/service.js';import {WorkspaceFoundation} from '../src/workspace/service.js';import {trackerOperation} from '../src/workspace/tracker-template.js';import {accountCatalog} from '../src/workspace/catalog.js';import {accountHome,homeSnapshots} from '../src/workspace/home.js';import {workspaceHome} from '../src/workspace/home.js';import {databasePage} from '../src/workspace/database-browser.js';import {seedHiddenFields,retired} from './legacy-restrictions.js';
 test('app/plugin share the same default storage and tracker identities; database saves are permission-checked, atomic, reviewed and audited',async()=>{
  const pg=new PGlite();const db:Database={query:(q,v)=>pg.query(q,v) as any,transaction:f=>pg.transaction(tx=>f(tx as Connection)),close:()=>pg.close()};
  try{
@@ -33,7 +33,8 @@ test('app/plugin share the same default storage and tracker identities; database
  assert.deepEqual((await accountHome(db,owner)).resources.map(r=>r.id),(await accountHome(db,ai)).resources.map(r=>r.id));assert.equal((await accountCatalog(db,member)).tables.length,0);
  const rowDraft=await s.preview(owner,w.id,{kind:'create_record',typeId:type,data:{name:'New row',status:'Pending'}});assert.equal((await databasePage(db,owner,w.id,{typeId:type})).total,0);
  const newRow=await s.commit(owner,rowDraft.id,rowDraft.digest);assert.deepEqual(await s.commit(owner,rowDraft.id,rowDraft.digest),newRow);
- const snapshot=(await workspaceHome(db,owner,w.id)).resources[0].snapshot;assert.equal(snapshot.rows[0][0],'New row');assert.equal(snapshot.columns[0],'Company');
+ // Card miniatures are their own later read (loading speed L1.3).
+ const card=(await workspaceHome(db,owner,w.id)).resources[0],snapshot=(await homeSnapshots(db,owner,{items:[{workspaceId:w.id,id:card.id}]})).snapshots[0].snapshot;assert.equal(snapshot.rows[0][0],'New row');assert.equal(snapshot.columns[0],'Company');
  await save({kind:'database_changes',typeId:type,deletions:[{recordId:newRow.objects[0].id,expectedVersion:0}]});
  const a=(await save({kind:'create_record',typeId:type,data:{name:'First',status:'Active'}})).objects[0].id,b=(await save({kind:'create_record',typeId:type,data:{name:'Second'}})).objects[0].id;
  await s.share(owner,w.id,member.userId,'editor',[],null,true);

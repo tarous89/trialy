@@ -1,5 +1,6 @@
 import React,{useEffect,useId,useState} from 'react';
 import {Button} from './ui/Controls.js';
+import {useLoadTiming} from './useLoadTiming.js';
 type Call=(name:string,args:any)=>Promise<any>;
 type Kind='apps'|'automations'|'tables'|'fields';
 const LABEL:Record<Kind,string>={apps:'apps',automations:'automations',tables:'tables',fields:'fields'};
@@ -14,11 +15,14 @@ const remember=(key:string,open:boolean)=>{try{sessionStorage.setItem(key,open?'
  * Muted rows keep text at the design system's muted ink (≥4.5:1) and label each item "Archived".
  */
 /** layout follows the page's own list: Apps grid → muted cards in the same columns; the narrow Database table tree → compact. */
-export function ArchivedItems({call,kind,typeId,refreshKey,onChanged,layout='list'}:{call:Call;kind:Kind;typeId?:string;refreshKey?:unknown;onChanged?:()=>void;layout?:'list'|'grid'|'compact'}){
+/** knownCount: the collapsed count when the page's own read already returned it (Apps home, L1.4); no separate request is made. */
+export function ArchivedItems({call,kind,typeId,refreshKey,onChanged,layout='list',knownCount}:{call:Call;kind:Kind;typeId?:string;refreshKey?:unknown;onChanged?:()=>void;layout?:'list'|'grid'|'compact';knownCount?:number}){
  const storageKey='trialy-archived:'+kind,listId=useId();
  const [data,setData]=useState<any>(null),[open,setOpen]=useState(()=>remembered(storageKey)),[loading,setLoading]=useState(false),[readError,setReadError]=useState(''),[busy,setBusy]=useState(''),[error,setError]=useState(''),[confirming,setConfirming]=useState<{item:any;action:'restore'|'delete';review?:any}|null>(null),[reload,setReload]=useState(0);
- useEffect(()=>{let live=true;setLoading(true);setReadError('');setConfirming(null);setData((old:any)=>old?{...old,items:[]}:null);
-  call('list_archived_items',{kind,...(typeId?{typeId}:{}),...(!open?{summaryOnly:true}:{})}).then(r=>{if(live)setData(r);}).catch(()=>{if(live){setData(null);setReadError('Archived '+LABEL[kind]+' could not be loaded.');}}).finally(()=>{if(live)setLoading(false);});return()=>{live=false;};},[kind,typeId,refreshKey,reload,open]);
+ useEffect(()=>{if(!open&&knownCount!==undefined&&!reload){setReadError('');setConfirming(null);setData({kind,count:knownCount,items:[],summaryOnly:true});setLoading(false);return;}
+  let live=true;setLoading(true);setReadError('');setConfirming(null);setData((old:any)=>old?{...old,items:[]}:null);
+  call('list_archived_items',{kind,...(typeId?{typeId}:{}),...(!open?{summaryOnly:true}:{})}).then(r=>{if(live)setData(r);}).catch(()=>{if(live){setData(null);setReadError('Archived '+LABEL[kind]+' could not be loaded.');}}).finally(()=>{if(live)setLoading(false);});return()=>{live=false;};},[kind,typeId,refreshKey,reload,open,knownCount]);
+ useLoadTiming('archive',loading&&open,!readError&&!!data);
  const items:any[]=data?.items??[];
  if(!data?.count&&!readError&&!open)return null;
  if(data?.count===0&&!loading&&!readError)return null;

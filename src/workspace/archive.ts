@@ -7,6 +7,7 @@ import {archivedFieldsOf} from '../domain/archive.js';
 import {requireCurrentAction,requireHuman} from '../domain/write-authorization.js';
 import {cleanupRemovedAppFields} from './app-cleanup.js';
 import type {WorkspaceFoundation} from './service.js';
+import {appIndex} from './app-index.js';
 
 /** Optional automatic purge (MODULAR_APPS_AND_SHARED_DATA.md §6). Off unless enabled. */
 export const ARCHIVE_PURGE_DAYS=90;
@@ -35,15 +36,18 @@ export async function archivedItems(f:WorkspaceFoundation,a:Actor,w:string,input
  const v=archivedQuery.parse(input),db=f.db,p=await access(db,a,w),owner=p.role==='owner',human=a.origin==='human';
  const items:any[]=[];let count=0;
  if(v.kind==='apps'){
-  const rows=v.templateId?await archivedTemplateApps(db,a,w,v.templateId):(await db.query(`SELECT ${v.summaryOnly?'id,created_by':'id,name,project_id,archived_at,created_by,bindings,version'} FROM workspace_components WHERE workspace_id=$1 AND archived AND deleted_at IS NULL AND ($2::boolean OR created_by=$3) ORDER BY archived_at DESC NULLS LAST,name,id`,[w,owner,a.userId])).rows;
-  for(const r of rows){
-   if(!owner&&r.created_by!==a.userId)continue;
-   try{await f.component(db,a,w,r.id,false);}catch(e){if([403,404].includes((e as any).status))continue;throw e;}
-   if(v.summaryOnly){count++;continue;}
-   const tables=(await db.query("SELECT t.id,t.name,(SELECT count(*)::int FROM records x WHERE x.type_id=t.id AND x.workspace_id=t.workspace_id) AS records FROM entity_types t WHERE t.workspace_id=$1 AND t.deleted_at IS NULL AND t.id::text IN (SELECT b->>'typeId' FROM jsonb_array_elements($2::jsonb) b) ORDER BY t.name,t.id",[w,JSON.stringify(r.bindings)])).rows;
-   const automations=Number((await db.query('SELECT (SELECT count(*) FROM app_monitors WHERE app_id=$1 AND deleted_at IS NULL)+(SELECT count(*) FROM app_actions WHERE app_id=$1 AND deleted_at IS NULL) AS n',[r.id])).rows[0].n);
-   items.push({kind:'app',id:r.id,name:r.name,version:r.version,archivedAt:r.archived_at,canRestore:true,canDelete:owner&&human,deleteBlockedReason:owner?(human?null:'Delete permanently on the TrialAgents website'):'Only the workspace owner can delete permanently',keeps:{tables,automations}});
-  }
+  // L1.4: who may restore which archived app is decided once for the set (appIndex), with the same rules as the per-app check.
+  const restorable=await appIndex(db,a,w,{include:'archived',policy:p}),allowed=new Set(restorable.map(r=>r.id));
+  if(v.summaryOnly&&!v.templateId)return {kind:v.kind,workspaceId:w,count:restorable.length,items:[],summaryOnly:true};
+  const rows=v.templateId?(await archivedTemplateApps(db,a,w,v.templateId)).filter(r=>allowed.has(r.id)):restorable.length?(await db.query('SELECT id,name,project_id,archived_at,created_by,bindings,version FROM workspace_components WHERE workspace_id=$1 AND id=ANY($2::uuid[]) ORDER BY archived_at DESC NULLS LAST,name,id',[w,[...allowed]])).rows:[];
+  if(v.summaryOnly)return {kind:v.kind,workspaceId:w,count:rows.length,items:[],summaryOnly:true};
+  // Tables each app keeps, with record counts, and its automations: one query each for the whole list.
+  const ids=rows.map((r:any)=>r.id);
+  const [tables,automations]=ids.length?await Promise.all([
+   db.query("SELECT c.id AS app_id,t.id,t.name,(SELECT count(*)::int FROM records x WHERE x.type_id=t.id AND x.workspace_id=t.workspace_id) AS records FROM workspace_components c CROSS JOIN LATERAL (SELECT DISTINCT b->>'typeId' AS type_id FROM jsonb_array_elements(c.bindings) b) bt JOIN entity_types t ON t.id::text=bt.type_id AND t.workspace_id=c.workspace_id AND t.deleted_at IS NULL WHERE c.workspace_id=$1 AND c.id=ANY($2::uuid[]) ORDER BY t.name,t.id",[w,ids]).then(r=>r.rows),
+   db.query('SELECT x.app_id,count(*)::int AS n FROM (SELECT app_id FROM app_monitors WHERE app_id=ANY($1::uuid[]) AND deleted_at IS NULL UNION ALL SELECT app_id FROM app_actions WHERE app_id=ANY($1::uuid[]) AND deleted_at IS NULL) x GROUP BY x.app_id',[ids]).then(r=>r.rows),
+  ]):[[],[]];
+  for(const r of rows)items.push({kind:'app',id:r.id,name:r.name,version:r.version,archivedAt:r.archived_at,canRestore:true,canDelete:owner&&human,deleteBlockedReason:owner?(human?null:'Delete permanently on the TrialAgents website'):'Only the workspace owner can delete permanently',keeps:{tables:tables.filter((t:any)=>t.app_id===r.id).map(({app_id,...t}:any)=>t),automations:Number(automations.find((x:any)=>x.app_id===r.id)?.n??0)}});
  }else if(v.kind==='automations'){
   // T1, A9 (6.1, 6.2): owners of the app see its archived automations, archived on their own or with the app.
   const rows=(await db.query(`SELECT d.*,c.name AS app_name,c.archived AS app_archived FROM (

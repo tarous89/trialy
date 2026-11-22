@@ -4,11 +4,13 @@ import React,{useEffect,useRef,useState} from 'react';
 import {Button,SearchField} from './ui/Controls.js';
 import {templateGallery,templateMediaUrl} from './template-gallery.js';
 import {useDataAccessStep} from './DataAccessStep.js';
+import {useLoadTiming} from './useLoadTiming.js';
 type Call=(name:string,args:any)=>Promise<any>;
 export function TemplateCatalog({call}:{call:Call}){
  const platform=React.useContext(AppPlatform);
  const [templates,setTemplates]=useState<any[]>([]),[loading,setLoading]=useState(true),[error,setError]=useState(''),[query,setQuery]=useState(''),[team,setTeam]=useState(''),[workflow,setWorkflow]=useState(''),[busy,setBusy]=useState(''),[selected,setSelected]=useState<any>(null),[expanded,setExpanded]=useState(false);
  useWorkspaceView({view:'templates',templateId:selected?.id,templateVersion:selected?.version});
+ useLoadTiming('templates',loading,!error);
  const requests=useRef(new Map<string,string>()),dialog=useRef<HTMLDialogElement>(null);
  // Existing tables the app can use: connect each one or create a new one (skipped when there are none).
  const dataAccess=useDataAccessStep(call,platform.useTemplate?async(target,choices)=>{const t=templates.find(x=>x.id===target.install.templateId);await platform.useTemplate!(t,target.install.requestKey,{createNew:!!target.install.createNew,dataAccess:choices});return {embedded:true};}:undefined);

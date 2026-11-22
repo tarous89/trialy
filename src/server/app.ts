@@ -14,7 +14,7 @@ import {AccessGrid} from '../domain/access-grid.js';
 import {AssistantLevelSettings} from '../domain/assistant-levels.js';
 import {AccessManagement} from '../domain/access-management.js';
 import {accountCatalog} from '../workspace/catalog.js';
-import {accountHome} from '../workspace/home.js';
+import {accountHome,homeSnapshots} from '../workspace/home.js';
 import {frontendFrameDocument,framePolicy} from '../shared/frontend-frame.js';
 import {addFoundationApi} from './foundation.js';
 import {addReviews} from './reviews.js';
@@ -50,7 +50,7 @@ export function baseApp(requestsPerMinute=180) {
    const mcp=path==='/mcp'||path===CLAUDE_MCP_PATH;
    console.log(JSON.stringify({requestId,method:req.method,path,
     ...(mcp&&['events/list','events/subscribe','events/unsubscribe'].includes(req.body?.method)?{mcpMethod:req.body.method}:{}),
-    ...(mcp&&req.body?.method==='tools/call'&&['run_component_frontend','read_app_data','set_app_context','save_app_records','undo_app_change','prepare_tool_layout','confirm_workspace_change','read_project_component','check_component_access','read_account_home','check_account_home'].includes(req.body.params?.name)?{tool:req.body.params.name}:{}),
+    ...(mcp&&req.body?.method==='tools/call'&&['run_component_frontend','read_app_data','set_app_context','save_app_records','undo_app_change','prepare_tool_layout','confirm_workspace_change','read_project_component','check_component_access','read_account_home','check_account_home','read_home_snapshots'].includes(req.body.params?.name)?{tool:req.body.params.name}:{}),
     durationMs:Math.round(performance.now()-started),...metricSummary(metrics),status:res.statusCode,time:new Date().toISOString()}));
   }});withRequestMetrics(metrics,()=>withReadBatch(next));
  });
@@ -77,6 +77,7 @@ export function addApi(app:express.Express,s:Service,human:RequestHandler) {
  app.post('/api/workspaces/:workspaceId/assistant-levels/organization',async(req,res)=>res.json(await new AssistantLevelSettings(s.db).setMaximum(req.actor!,id.parse(req.params.workspaceId),req.body)));
  app.post('/api/workspaces/:workspaceId/assistant-levels/mine',async(req,res)=>res.json(await new AssistantLevelSettings(s.db).setMine(req.actor!,id.parse(req.params.workspaceId),req.body)));
  app.get('/api/account/home/revision',async(req,res)=>res.json(await homeRevision(s.db,req.actor!)));
+ app.post('/api/account/home/snapshots',async(req,res)=>withResponseCancellation(res,async signal=>res.set('Cache-Control','no-store').json(await homeSnapshots(s.db,req.actor!,req.body,signal))));
  app.post('/api/account/home',async(req,res)=>withResponseCancellation(res,async signal=>res.json(await accountHome(s.db,req.actor!,req.body,signal))));
  // The same read by GET, so the website can start it alongside the account check. No effects.
  app.get('/api/account/home',async(req,res)=>withResponseCancellation(res,async signal=>{const q=z.object({offset:z.coerce.number().int().min(0).optional(),limit:z.coerce.number().int().min(1).max(100).optional(),query:z.string().max(200).optional(),projectId:z.string().max(100).optional(),kind:z.string().max(20).optional(),sort:z.string().max(20).optional()}).strict().parse(req.query);res.set('Cache-Control','no-store').json(await accountHome(s.db,req.actor!,q,signal));}));

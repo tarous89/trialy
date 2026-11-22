@@ -221,7 +221,8 @@ test('archive summaries preserve owner, creator, ancestor, assistant and tenant 
   assert.ok(!queries.some(q=>q.includes('archived_item_usage')||q.includes('count(*)::int FROM records')||q.includes('count(*) FROM app_monitors')));
   return {full,count,total:summary.count};
  });
- const measured=await compare(a,'apps');assert.equal(measured.total,2);assert.equal(measured.full-measured.count,4);console.log('ARCHIVE_SUMMARY_PERFORMANCE',JSON.stringify(measured));
+ const measured=await compare(a,'apps');assert.equal(measured.total,2);// L1.4: the details are batched: three queries more than the count, for any number of apps.
+ assert.equal(measured.full-measured.count,3);console.log('ARCHIVE_SUMMARY_PERFORMANCE',JSON.stringify(measured));
  const empty=await createTable('Archived empty table',['gone']);await pg.query("UPDATE entity_types SET fields='[]',archived_at=now(),archived_fields=$2 WHERE id=$1",[empty,JSON.stringify([{field:{key:'gone',name:'Gone',kind:'text',ai:true},archivedAt:new Date().toISOString(),archivedBy:a.userId}])]);
  assert.equal((await compare(a,'tables')).total,1);assert.equal((await compare(a,'fields',{typeId:empty})).total,1);
  const creator={userId:randomUUID(),origin:'human' as const};

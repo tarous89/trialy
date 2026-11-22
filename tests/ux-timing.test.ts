@@ -12,7 +12,7 @@ test('speed samples are bucketed, summarized against the targets, and carry no i
  try{
   for(const file of (await readdir('migrations')).filter(f=>f.endsWith('.sql')).sort())await pg.exec(await readFile('migrations/'+file,'utf8'));
   const db:Database={query:(q,v)=>pg.query(q,v) as any,transaction:fn=>pg.transaction(tx=>fn(tx as Connection)),close:async()=>{}};
-  assert.deepEqual(UX_TARGET_MS,{open:2500,interaction:1000,save:1000});
+  assert.deepEqual(UX_TARGET_MS,{open:2500,interaction:1000,save:1000,home:300,archive:300,templates:300});
   assert.equal(uxBucket(0),50);assert.equal(uxBucket(100),100);assert.equal(uxBucket(101),200);assert.equal(uxBucket(999999),UX_BUCKETS[UX_BUCKETS.length-1]);
   assert.equal(uxWidth(390),'phone');assert.equal(uxWidth(700),'panel');assert.equal(uxWidth(1440),'desktop');
   const sample=(metric:string,ms:number,width='desktop')=>({metric,ms,host:'web',width});

@@ -110,6 +110,8 @@ The embedded workspace sends a minimal background hint through MCP Apps `ui/upda
 
 ## Performance refresh boundaries
 
+**Loading speed (22 November 2026).** The [loading speed scope](docs/scopes/LOADING_SPEED_2026-11-22.md) is built in four sessions; session L1 is built. Apps home and the archived list decide app access once per request with the lean app index (`src/workspace/app-index.ts`), which shares its rules with the per-app check and must stay equal to it (`tests/app-index.test.ts`). Home never reads app code; card miniatures are a later quiet read (`read_home_snapshots`); the archived count arrives with Home; query budgets are enforced by `tests/loading-speed.test.ts`. Access is never remembered between requests.
+
 Same-workspace/viewer metadata revalidation retains the editor through transient failures; authorization failure or scope changes clear it. Account reads after writes must bypass older pending snapshots, and old checks must not replace newer foreground results. Home idle revision checks cover metadata/access, not record samples or totals; returning/local changes refresh content. Revision aggregates are bounded in memory but still scan metadata, including relevant historical document versions. Keep P05 deploy/chunk recovery, P09's open tracker race, N1 no transaction held across sandbox execution and N3 no cancellation/replay of started actions explicit. CS2/DR2/IU2 are safety work. See [scope](docs/scopes/PLATFORM_AND_APP_PERFORMANCE_2026-11-13.md) and [measurement](docs/PERFORMANCE_MEASUREMENT.md).
 
 ## Where to continue

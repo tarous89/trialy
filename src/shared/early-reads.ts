@@ -3,6 +3,9 @@
  * and only while fresh; anything else falls back to the normal request. */
 const early=new Map<string,{started:number;result:Promise<{ok:true;value:any}|{ok:false}>}>();
 const MAX_AGE_MS=15000;
+// L1.5: reads public/start.js began before this script downloaded. Adopted once, at load.
+const started=typeof window!=='undefined'?(window as any).__trialyEarly:undefined;
+if(started&&typeof started==='object'){for(const [key,entry] of Object.entries<any>(started))if(entry?.result&&typeof entry.started==='number')early.set(key,entry);delete (window as any).__trialyEarly;}
 const canonical=(value:any):any=>Array.isArray(value)?value.map(canonical):value&&typeof value==='object'?Object.fromEntries(Object.keys(value).sort().map(k=>[k,canonical(value[k])])):value;
 export const earlyReadKey=(kind:string,args:unknown)=>kind+':'+JSON.stringify(canonical(args));
 export function primeEarlyRead(key:string,start:()=>Promise<any>){
@@ -16,3 +19,7 @@ export async function takeEarlyRead<T>(key:string,fallback:()=>Promise<T>):Promi
  return result.ok&&Date.now()-entry.started<=MAX_AGE_MS?result.value as T:fallback();
 }
 export function dropEarlyReads(){early.clear();}
+/** Whether a read was already started (by start.ts), so it is not started twice. */
+export const hasEarlyRead=(key:string)=>early.has(key);
+/** The Apps home read a website visit starts with (GET /api/account/home defaults). */
+export const EARLY_HOME={query:'',kind:'all',projectId:'',sort:'updated',offset:0,limit:20};
