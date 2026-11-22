@@ -148,3 +148,13 @@ test('the store applies saved rows and lists the stored reads of changed tables'
  store.drop(stale.slice(1));assert.equal(store.get('records.readMany',{reads:[{typeId:'t2'},{typeId:'t1',limit:5}]}),null);assert.ok(store.get('records.summarize',{typeId:'t3'}));
 });
 
+// G8: a screen that offers Undo is made in the frame from the list the server sent; without a stored list it goes to the server.
+test('undo.list is answered from the stored list and never fetched by itself',()=>{
+ const app=engine.load(effectiveSource(`'use trialagents v2';\nconst u=tools.call('undo.list');return {html:'<p>'+(u.actions[0]?u.actions[0].label:'none')+'</p>',css:'',state:null};`)),store=createStore();
+ const local=createLocalApp({app,version:'v2',store,input:{saved:true,writable:true,appRole:'editor',context:null}}),open={kind:'open',action:'',value:null,form:{}};
+ assert.deepEqual(local.run(null,open),{kind:'server',reason:'read:undo.list'});
+ store.seed([{name:'undo.list',input:{},result:{actions:[{undoId:'u1',label:'Amount changed'}]}}]);
+ const painted:any=local.run(null,open);assert.equal(painted.kind,'painted');assert.equal(painted.output.html,'<p>Amount changed</p>');assert.deepEqual(painted.misses,[]);
+ store.drop([{name:'undo.list',input:{}}]);assert.equal(local.run(null,open).kind,'server');
+ app.dispose();
+});

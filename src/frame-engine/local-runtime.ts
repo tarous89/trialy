@@ -12,6 +12,10 @@ export const FILLABLE_READS=new Set([...RECORD_READS,'documents.list','documents
  'exchange.list','exchange.status','exchange.listSubmissions','exchange.listMessages','exchange.defaultEmail','exchange.prepareEmail','exchange.listEmails','exchange.notifications','exchange.listQuestions','exchange.previewContent','exchange.listResponses','exchange.series']);
 /** Reads the server seeds with a render. */
 export const SEEDED_READS=FILLABLE_READS;
+/** G8: the person's own Undo list for this open view. The server sends it with a screen that asked for it and with every
+ * saved edit, so a screen that offers Undo is still made in the frame. It is never fetched by itself: without a stored
+ * list the event goes to the server. Undoing (undo.run) always runs on the server. */
+export const UNDO_LIST='undo.list';
 /** How long a stored read answers a local render (the same window as the standard tracker's page cache). */
 export const STORE_TTL=120000;
 const STATE_BYTES=100000,HTML_CHARS=200000,CSS_CHARS=50000;
@@ -20,7 +24,7 @@ export function createStore(now=()=>Date.now()):LocalStore{
  let entries=new Map<string,any>();
  return {
   /** Adds the reads a server render made: [{name,input,result}] or [{name,input,error}]. */
-  seed(reads:any[]|undefined,reset=false){if(reset)entries=new Map();const at=now();for(const r of reads??[])if(r&&typeof r.name==='string'&&SEEDED_READS.has(r.name))entries.set(readKey(r.name,r.input),{at,name:r.name,input:r.input,...('error' in r?{error:String(r.error)}:{result:r.result})});},
+  seed(reads:any[]|undefined,reset=false){if(reset)entries=new Map();const at=now();for(const r of reads??[])if(r&&typeof r.name==='string'&&(SEEDED_READS.has(r.name)||r.name===UNDO_LIST))entries.set(readKey(r.name,r.input),{at,name:r.name,input:r.input,...('error' in r?{error:String(r.error)}:{result:r.result})});},
   get(name:string,input:unknown){const hit=entries.get(readKey(name,input));if(!hit||now()-hit.at>STORE_TTL)return null;return hit;},
   snapshot(){return new Map([...entries].map(([k,v])=>[k,structuredClone(v)]));},
   restore(snapshot:Map<string,any>){entries=snapshot;},
@@ -93,6 +97,7 @@ export function createLocalApp({app,version,store,input}:{app:EngineApp;version:
    const misses:{name:string;input:unknown}[]=[],seen=new Set<string>(),saves:any[]=[];let server:string|null=null;const before=version==='v2'?store.snapshot():null;
    const bridge=(raw:string):string=>{
     const request=JSON.parse(raw),name=request?.name,value=request?.input;
+    if(name===UNDO_LIST){const hit=store.get(name,value??{});if(hit&&!('error' in hit))return JSON.stringify(hit.result??null);server??='read:'+name;throw new Error('Server action');}
     if(SEEDED_READS.has(name)){
      const hit=store.get(name,value);
      if(hit){if('error' in hit)throw new Error(hit.error);return JSON.stringify(hit.result??null);}

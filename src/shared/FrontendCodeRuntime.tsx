@@ -169,7 +169,7 @@ export function FrontendCodeRuntime({active=true,component,previewId,initialOutp
    if(result.saved)ux.current?.record('save',performance.now()-runStarted);
    if(!live.current)return;
    // P5: the frame already shows this edit. It takes the saved rows (new versions) and makes its screen again itself.
-   if(result.applied){if(result.notice)chrome.notify(result.notice);frame.current?.contentWindow?.postMessage({kind:'trialy.saved',channel:channel.current,rows:result.saved?.rows??[],invalidated:result.saved?.invalidated??[]},'*');return;}
+   if(result.applied){if(result.notice)chrome.notify(result.notice);frame.current?.contentWindow?.postMessage({kind:'trialy.saved',channel:channel.current,rows:result.saved?.rows??[],invalidated:result.saved?.invalidated??[],...(result.undo?{undo:result.undo}:{})},'*');return;}
    // A completed tracker cell edit or explicit app action approves the visible edits. The server still validates a precise proposal and its digest before committing.
    if(result.proposal&&explicitApproval&&(event.action==='bound-batch'||event.action==='save-layout'&&output.current?.tracker)){
     const p=result.proposal;saveReceipt.current={proposal:p};

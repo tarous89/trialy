@@ -290,10 +290,11 @@ Local measurement (Partnerships 3.0.0, 17 tables, empty workspace, statements pe
 An edit the frame already shows used to run the app twice on the server: once to save and once to make the saved screen, which also replaced everything the frame had stored. Now the frame says the edit is already shown (`optimistic` on the request) and the server runs the app once, saves, and returns the saved rows without a screen. The frame then:
 
 - replaces the same records in its stored reads with the saved rows, so the next edit carries the new version;
-- makes the screen again itself (event `refresh`), with no request;
+- makes the screen again itself, with no request. The app gets the event it always got for the saved screen (`open`, with its state), so what it does then, such as offering Undo, still happens;
+- gets the person's Undo list with the save. `undo.list` is answered in the frame from that list (and from the list a server screen asked for), so a screen that offers Undo no longer forces every event to the server. The list is never fetched by itself: without a stored one the event goes to the server. `undo.run` always runs on the server;
 - fetches the stored reads of the changed tables again in one background `read_app_data` request and shows the result when it arrives (new rows, order, totals).
 
-The server still runs the app's own code for every save, with every platform check. A refused save still comes back as an error and the frame restores the earlier values. Requests without the flag (v1 apps, server mode, a queued event) behave as before. Tests: `browser-runtime` (one run, saved rows, a refused save), `frame-engine` (the store), and the v2 example in the browser speed gate.
+The server still runs the app's own code for every save, with every platform check. A refused save still comes back as an error and the frame restores the earlier values. Requests without the flag (v1 apps, server mode, a queued event) behave as before. If the frame cannot make the saved screen itself, it asks the server for it as before. Tests: `browser-runtime` (one run, saved rows, the Undo list, a refused save), `frame-engine` (the store, the Undo list), and the v2 example in the browser speed gate.
 
 Not changed: each server run still starts a new process that parses the whole app.
 

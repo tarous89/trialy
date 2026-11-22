@@ -11,7 +11,7 @@ import {openRuntimeView,assertRuntimeReadAccess,assertRuntimeScope,assertRuntime
 import {withReadMetadata,ambientReadDatabase,readMetadataScope,primeEntityTypes} from '../db/read-metadata.js';
 import {isCatalogSource} from './catalog-source.js';
 import {browserMode,effectiveSource,isV2Source,runtimeCssFor,runtimeStyles,sourceDigest,SEED_BYTES} from './browser-runtime.js';
-import {SEEDED_READS} from '../frame-engine/local-runtime.js';
+import {SEEDED_READS,UNDO_LIST} from '../frame-engine/local-runtime.js';
 import {FrontendQueue} from './frontend-queue.js';
 import {AppActions} from '../app-services/service.js';
 import {AppMonitoring} from '../app-services/monitoring.js';
@@ -381,9 +381,9 @@ export class WorkspaceFoundation {
    const baseInput={saved:!!request.componentId,writable,...(request.route?{route:request.route}:{}),...(v2?{appRole,context:personContext??null,...(request.viewport?{viewport:request.viewport}:{})}:{})};
    const record=(entry:any)=>{if(!browser||browser.mode==='server'||seedBytes>SEED_BYTES)return;const bytes=Buffer.byteLength(J(entry));seedBytes+=bytes;if(seedBytes<=SEED_BYTES)seed.push(entry);};
    const output=(v2?frontendOutputV2:frontendOutput).parse(await (tracker?((_:string,input:any,call:any)=>renderStandard(tracker.config,tracker.theme,input,call)):execute)(code,{...baseInput,state:request.state,event:request.event},async(name,value)=>{
-    if(!SEEDED_READS.has(name))sideEffects=true;
+    if(!SEEDED_READS.has(name)&&name!==UNDO_LIST)sideEffects=true;
     let result;try{result=await (READ_CAPABILITIES.has(name)?tableUnit(()=>handler(name,value)):handler(name,value));}catch(e){if(SEEDED_READS.has(name)&&e instanceof AppError&&e.status<500)record({name,input:value,error:e.message});throw e;}
-    if(tracker&&name==='records.read')pages.push({request:value,result});else if(SEEDED_READS.has(name))record({name,input:value??{},result});return result;},signal,release?.detachUntil)) as any;
+    if(tracker&&name==='records.read')pages.push({request:value,result});else if(SEEDED_READS.has(name)||name===UNDO_LIST)record({name,input:value??{},result});return result;},signal,release?.detachUntil)) as any;
    signal?.throwIfAborted();
    if(!tracker&&(output.controls?.length??0)>100)fail(400,'control_limit','Custom interfaces support at most 100 controls');
    if(Buffer.byteLength(J(output.state))>100000)fail(400,'state_limit','Interface state is too large');
@@ -445,7 +445,9 @@ export class WorkspaceFoundation {
    // P5 (option B): a v2 edit the frame already shows. The app ran once here and its changes are saved; the frame updates
    // its stored rows from the saved ones and makes the screen again itself, so the app is not run a second time.
    if(saved&&!command&&v2&&request.optimistic&&browser?.mode==='v2'&&!queued.length&&!connectorReviews.length){rerender=null;
-    return {saved,applied:true,queued,viewId,runtime:'trialy-frontend-js-v2',frameUrl:frameUrl(),state:output.state,...(output.notice?{notice:output.notice}:{}),accessVersion:currentPolicy.access_version,accessStamp,temporary:false};}
+    // G8: the person's Undo list after this save, so the frame's own screen can offer Undo without a request.
+    const undo=viewId?await this.listUndo(a,w,{componentId:request.componentId!,viewId}).catch(()=>undefined):undefined;
+    return {saved,applied:true,...(undo?{undo}:{}),queued,viewId,runtime:'trialy-frontend-js-v2',frameUrl:frameUrl(),state:output.state,...(output.notice?{notice:output.notice}:{}),accessVersion:currentPolicy.access_version,accessStamp,temporary:false};}
    const {context:ignoredContext,...shown}=output;
    if(!saved||command)return {queued,...(saved?{saved}:{}),...(connectorReviews.length?{connectorReviews}:{}),...(browserPayload?{browser:browserPayload}:{}),viewId,runtime:v2?'trialy-frontend-js-v2':'trialy-frontend-js-v1',frameUrl:frameUrl(),...shown,css:runtimeCss+output.css,accessVersion:currentPolicy.access_version,accessStamp,controls,connected:!!content.manifest&&!v2,proposal,temporary:!request.componentId,...(tracker?{tracker:{config:tracker.config,theme:tracker.theme,pages,saved:!!request.componentId,writable}}:{})};
   }finally{release?.();}

@@ -79,6 +79,7 @@ test('5.1, 5.3: a v2 app gets its code, reads, kit styles and input for the fram
   const quick=await withRequestMetrics(runs,()=>f.runFrontend(actor,w,{componentId:appId,expectedVersion:version,viewId:open.viewId,browser:{source:false},optimistic:true,requestKey:randomUUID(),state:open.state,event:{kind:'change',action:`edit:${rec.id}:amount:${row.version}`,value:'11',form:{}}}));
   assert.equal(quick.applied,true);assert.equal(quick.html,undefined);assert.equal(runs.sandboxRuns,1);
   assert.equal(quick.saved.status,'saved');assert.equal(quick.saved.rows[0].id,rec.id);assert.equal(quick.saved.rows[0].version,row.version+1);assert.equal(quick.saved.rows[0].data.amount,11);assert.deepEqual(quick.saved.invalidated,[typeId]);
+  assert.equal(quick.undo.actions[0].undoId,quick.saved.undoId,'the Undo list comes with the save');
   // A refused save is still an error for the frame to roll back.
   await assert.rejects(f.runFrontend(actor,w,{componentId:appId,expectedVersion:version,viewId:open.viewId,browser:{source:false},optimistic:true,requestKey:randomUUID(),state:open.state,event:{kind:'change',action:`edit:${rec.id}:amount:${row.version}`,value:'12',form:{}}}),(e:any)=>e.code==='stale_value');
   // records.save is refused outside a person's own click, edit or form (the app sees the refusal; nothing is saved).
