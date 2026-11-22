@@ -26,7 +26,7 @@ An installed catalog app keeps the code of the version it was installed from. Wh
 
 The update is offered only when nothing but the template code would change:
 
-- the saved code is exactly an approved version (changed code, or code of a withdrawn version, is never replaced);
+- the saved code is exactly a published version (changed code is never replaced). A copy of a version that was withdrawn since can still move; the version it moves to is always an approved one;
 - both versions have the same installer schema (tables and fields), options, defaults and helper functions. Generated helpers embed their app's version and kit numbers in a constant; those labels alone may differ, and the installed helpers keep the label they were installed with;
 - a version that changes tables or helpers is not offered here; it is installed as a new app.
 

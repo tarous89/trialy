@@ -83,5 +83,13 @@ Installed apps keep their saved source and keep working; they gain the faster re
 
 Every switched-on app has a rebuilt major version on the kit and the v2 contract: Bio Radars 2.0.0 (Literature Radar 3.0.0, radar kit 2.0.0), Runway 3.0.0, Contracts 2.0.0, Fundraise 3.0.0, Partnerships 3.0.0, Data Room 2.0.0, Investor Updates 2.0.0, Programs 3.0.0 and CRO Selection 3.0.0. They are drafts: the seed still names the earlier versions. Each keeps its predecessor's installer schema, helpers, recommended automations, output contracts and commands, and lists the versions it upgrades in `upgradeFrom`, so owners of installed copies can upgrade them (see [APP_PUBLICATION.md](APP_PUBLICATION.md#upgrading-to-a-new-major-version-71-a3-d41)). The predecessors are archived byte-identical under `archive/<version>/` and their installer entries point there.
 
-To approve one (O4): name it in `templates/catalog-seed.json` (the sync after migrations imports it approved), generate its gallery media and card, and keep the earlier versions approved until installed copies have moved (`D41`; do not list them in `catalog-retirements.json` yet).
+To approve one (O4), the publication change does three things:
+
+- names it in `templates/catalog-seed.json` (a new database then imports it approved);
+- approves the row an earlier deployment already imported as a draft. The sync never changes the status of an existing row, so naming the version in the seed is not enough on the live database: add a one-time migration (as 077 did) or run `node --import tsx scripts/template-catalog.ts approved <id> <version>` with the operator connection;
+- generates its gallery media and card.
+
+Leave `templates/browser-runtime.json` as it is: the earlier version stays switched on there (and tested by `tests/frame-engine.test.ts`) while installed copies still run it, and the rebuilt version needs no entry because v2 code always runs in the browser. Keep the earlier versions approved until installed copies have moved (`D41`; do not list them in `catalog-retirements.json` yet).
+
+If an earlier version is withdrawn later, its unchanged copies can still be upgraded and still run in the browser: the upgrade and the browser switch match a copy against every published version, approved or not (`withdrawnVersion` in `src/workspace/app-update.ts`, `catalogVersion` in `src/workspace/browser-runtime.ts`). One thing is still tied to approval: the rule that lets members with hidden fields or documents open unchanged catalog code (`isCatalogSource`). Withdrawing a version takes that away for its copies, so withdraw only after they have moved.
 

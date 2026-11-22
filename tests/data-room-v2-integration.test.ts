@@ -18,7 +18,9 @@ test('2.0.0: install, open, save directly from a click and an inline edit, go li
   assert.equal(Object.keys(map).length,13);assert.ok(isV2Source(c.source),'the installed app runs the v2 contract');
   const ui=x.app(w,id);
   // Open: an empty app offers its first action; nothing is written while opening.
-  const open=await ui.open();assert.equal(open.runtime,'trialy-frontend-js-v2');assert.match(open.html,/class="k-empty"[\s\S]*data-action="panel:newroom"/);assert.doesNotMatch(open.html,/<header|<h1/);assert.equal(open.proposal,null);
+  const open=await ui.open();assert.equal(open.runtime,'trialy-frontend-js-v2');
+  // The app carries a helper, so it has a manifest; a v2 app's own inputs must still stay usable on the first screen.
+  assert.equal(open.connected,false);assert.match(open.html,/class="k-empty"[\s\S]*data-action="panel:newroom"/);assert.doesNotMatch(open.html,/<header|<h1/);assert.equal(open.proposal,null);
   // A click saves directly: no review, the screen is made again from the saved data, with the platform notice.
   await ui.click('panel:newroom');const made=await ui.submit('create-room',{name:'Series B data room',purpose:'financing',template_id:'builtin:financing',cda_option:'none'});
   assert.ok(made.saved,'saved directly');assert.equal(made.proposal,null);assert.equal(made.notice?.kind,'success');assert.match(made.notice.message,/Room created/);

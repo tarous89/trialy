@@ -133,3 +133,41 @@ test('an owner upgrades an installed copy to a new major version: records, conne
   assert.deepEqual(await readAppUpdate(f,owner,w.id,other.appId),{available:false,reason:'needs_review'});
  }finally{await pg.close();}
 });
+/* 7.1 (D41) with the real catalog: an installed Contracts 1.1.1 moves to the rebuilt 2.0.0 once its owner approves that
+ * version, and still can after 1.1.1 is withdrawn. Until it moves, the withdrawn version keeps running in the browser. */
+test('a real installed copy upgrades to the rebuilt version, also after its own version is withdrawn',async()=>{
+ const pg=new PGlite();
+ try{
+  for(const file of (await readdir('migrations')).filter(f=>f.endsWith('.sql')).sort())await pg.exec(await readFile('migrations/'+file,'utf8'));
+  const db:Database={query:(q,v)=>pg.query(q,v) as any,transaction:fn=>pg.transaction(tx=>fn(tx as Connection)),close:async()=>{}};
+  await syncTemplateCatalog(db);
+  const id='life.contracts',from='1.1.1',to='2.0.0';
+  const owner={userId:randomUUID(),origin:'human' as const},human={...owner,actionConfirmed:true} as any;
+  await db.query('INSERT INTO users(id,subject,email,name) VALUES($1,$2,$3,$4)',[owner.userId,owner.userId,owner.userId+'@example.invalid','Upgrade']);
+  const service=new Service(db),catalog=new AppTemplates(undefined,db),f=new WorkspaceFoundation(db),w=await service.createWorkspace(owner,'Upgrade');
+  const old=await catalog.read({templateId:id,version:from,includeFunctionSource:true});
+  const app=await installCatalogApp(f,human,w.id,{templateId:id,version:from,digest:old.digest,name:old.name,requestKey:randomUUID(),createNew:true});
+  const before=(await f.readComponent(owner,w.id,app.appId)).component;
+  // The rebuilt version is a draft until its owner approves it: nothing is offered.
+  assert.deepEqual(await readAppUpdate(f,owner,w.id,app.appId),{available:false,reason:'current'});
+  await pg.query("UPDATE app_template_catalog SET status='approved',updated_at=now() WHERE template_id=$1 AND version=$2",[id,to]);
+  let offer:any=await readAppUpdate(f,owner,w.id,app.appId);
+  assert.equal(offer.kind,'upgrade');assert.equal(offer.fromVersion,from);assert.equal(offer.toVersion,to);
+  // The earlier version is withdrawn: the copy is still that version, not a customized app.
+  await pg.query("UPDATE app_template_catalog SET status='draft',updated_at=now() WHERE template_id=$1 AND version=$2",[id,from]);
+  offer=await readAppUpdate(f,owner,w.id,app.appId);
+  assert.equal(offer.available,true);assert.equal(offer.kind,'upgrade');assert.equal(offer.toVersion,to);
+  const v1:any=await f.runFrontend(owner,w.id,{componentId:before.id,expectedVersion:before.version,browser:{source:true}});
+  assert.equal(v1.runtime,'trialy-frontend-js-v1');assert.equal(v1.browser.mode,'compat');
+  const prepared:any=await prepareAppUpdate(f,owner,w.id,{componentId:before.id,expectedVersion:before.version,toVersion:to,toDigest:offer.toDigest});
+  await f.confirm(human,w.id,prepared.preview.id,prepared.preview.digest);
+  const after=(await f.readComponent(owner,w.id,app.appId)).component;
+  const config=(s:string)=>JSON.parse(/^const templateConfiguration=(.+);\n/.exec(s)![1]);
+  assert.equal(config(after.source).tableMap,config(before.source).tableMap,'connections carry across');
+  assert.deepEqual(after.bindings,before.bindings);
+  const v2:any=await f.runFrontend(owner,w.id,{componentId:after.id,expectedVersion:after.version,browser:{source:true}});
+  assert.equal(v2.runtime,'trialy-frontend-js-v2');assert.equal(v2.browser.mode,'v2');assert.equal(v2.connected,false);
+  assert.match(v2.html,/class="k-app"/);assert.doesNotMatch(v2.html,/<header|<h1|could not be shown/);
+  assert.deepEqual(await readAppUpdate(f,owner,w.id,app.appId),{available:false,reason:'current'});
+ }finally{await pg.close();}
+});

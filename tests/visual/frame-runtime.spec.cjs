@@ -64,6 +64,8 @@ for(const viewport of WIDTHS)for(const app of data.filter(a=>a.browser.version==
 async function settle(page,n){let last=-1;for(let i=0;i<40;i++){const now=await page.evaluate(()=>window.msgs.length);if(now===last)break;last=now;await page.waitForTimeout(150);}return page.evaluate(n=>({msgs:window.msgs.slice(n)}),n);}
 for(const viewport of WIDTHS)for(const app of data.filter(a=>a.rebuilt))test(`${app.id} ${app.version} (rebuilt) at ${viewport.name} width: screens run in the frame, at most one read, no overflow`,async({page})=>{
  const frame=await openApp(page,app,viewport),times=[],widthClass=viewport.width<480?'phone':viewport.width<800?'panel':'wide';
+ // The frame keeps what the app drew: chart attributes (dashes, label anchors, sizes) are not removed.
+ for(const name of ['stroke-dasharray','text-anchor','font-size']){const drawn=(app.open.html.match(new RegExp('\\s'+name+'="','g'))||[]).length;if(drawn)expect(await frame.locator('['+name+']').count(),`${name} kept on the first screen`).toBe(drawn);}
  for(const screen of app.screensBy[widthClass]){
   const before=await page.evaluate(()=>({...window.requests,n:window.msgs.length}));
   await frame.locator(`[data-action="${screen.action}"]`).first().dispatchEvent('click');

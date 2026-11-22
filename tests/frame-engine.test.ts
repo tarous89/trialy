@@ -22,7 +22,9 @@ import {appExchangeReads} from '../src/domain/external-exchange.js';
 const require=createRequire(import.meta.url);
 const wasm=(await readFile(require.resolve('@jitl/quickjs-wasmfile-release-sync/package.json').replace(/package\.json$/,'')+'dist/emscripten-module.wasm')).buffer;
 const engine=await startEngine({wasm,create:options=>newQuickJSWASMModuleFromVariant(newVariant(variant as any,options) as any)});
-const APPS=CATALOG_APPS;
+// Each app is tested at the version switched on in templates/browser-runtime.json, whatever the seed names: an earlier
+// version stays switched on (and tested) while installed copies still run it, after a rebuilt version is approved (D41).
+const APPS=CATALOG_APPS.flatMap(a=>(browserSwitches().compat[a.id]??[]).map(version=>({...a,version})));
 const seed=JSON.parse(await readFile('templates/catalog-seed.json','utf8'));
 const availability=JSON.parse(await readFile('templates/catalog-availability.json','utf8')).apps;
 
@@ -33,10 +35,13 @@ test('the frame reads exactly what read_app_data serves, and seeds only reads',(
  for(const name of SEEDED_READS)assert.ok(!/propose|save|run|invoke|call|send|create|update|delete/.test(name.split('.')[1]),name);
 });
 
-test('every switched-on catalog app is in this test, and the switch names only versions this test covers',()=>{
+test('every switched-on catalog app runs in the browser, and the switch names only versions this test covers',async()=>{
  const on=Object.entries(availability).filter(([,v]:any)=>v.platform&&v.chatgpt&&v.claude).map(([k])=>k).sort();
- assert.deepEqual(APPS.map(a=>a.id).sort(),on);
- for(const [id,versions] of Object.entries(browserSwitches().compat))for(const version of versions)assert.equal(version,seed[id]?.version,`${id} ${version} is the version tested here`);
+ const tested=new Set(APPS.map(a=>a.id+'@'+a.version));
+ for(const [id,versions] of Object.entries(browserSwitches().compat))for(const version of versions)assert.ok(tested.has(id+'@'+version),`${id} ${version} is tested here`);
+ // The approved version of every switched-on app runs in the browser: it is v2, or its unchanged code is switched on above.
+ for(const id of on){const version=seed[id].version,entry=JSON.parse(await readFile(`templates/apps/${id}-${version}.json`,'utf8'));
+  assert.ok(isV2Source(entry.source)||(browserSwitches().compat[id]??[]).includes(version),`${id} ${version} runs in the browser`);}
 });
 
 for(const app of APPS)test(`${app.id}: every screen renders identically in the frame and on the server, from seeded reads`,async()=>{

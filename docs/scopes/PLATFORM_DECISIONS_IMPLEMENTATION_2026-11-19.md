@@ -594,7 +594,7 @@ How it is built (so later work does not redo it):
 
 Carried over, with the package or person that takes it:
 
-- **Owner actions.** Approve each rebuilt version (O4): name it in `templates/catalog-seed.json`, regenerate gallery media (`scripts/build-template-screenshots.mjs`) and add its gallery card. Old versions stay approved until copies have moved. Publish plugin versions (O3). Update the *Platform Capability Review* app.
+- **Owner actions.** Approve each rebuilt version (O4): name it in `templates/catalog-seed.json`, approve the already imported draft row (a one-time migration or `scripts/template-catalog.ts approved`; see [TEMPLATE_CATALOG.md](../TEMPLATE_CATALOG.md#session-7-rebuild-21-november-2026-drafts)), regenerate gallery media (`scripts/build-template-screenshots.mjs`) and add its gallery card. Old versions stay approved until copies have moved. Publish plugin versions (O3). Update the *Platform Capability Review* app.
 - **Source size.** Partnerships (186k characters), Runway (205k), Investor Updates (206k), Data Room (168k) are under the 240k cap but not much smaller than before: most of what remains is command declarations and business logic, not styles. Cutting further means cutting features.
 - **Browser scripts.** The per-app `scripts/test-*-browser.ts` scripts still exercise the earlier versions; the rebuilt versions are covered by their unit, integration and design tests and the speed gate.
 - **Members in apps.** There is no capability to list workspace members, so linking a team member for notifications (Programs, Partnerships) is done by an assistant through the app's commands.
@@ -602,3 +602,13 @@ Carried over, with the package or person that takes it:
 - **Contrast.** The kit's muted text and tab colours give contrast warnings (about 3.7–3.9:1); some apps darken them locally. Darkening the kit tokens is a style decision for the owner.
 - **Measurements.** Real speed numbers for the rebuilt apps exist only after approval and use (P1, P10).
 
+### Review after session 7 (22 November 2026)
+
+A review of the merged sessions found and fixed four things before any rebuilt version is approved:
+
+- **Charts lost their styling in the frame.** The frame removed `stroke-dasharray`, `text-anchor`, `font-size` and similar drawing attributes, so Runway 3.0.0's forecast lines and chart labels were not shown as drawn. They are kept now, and the speed gate checks it for every rebuilt app.
+- **Inputs on the first screen were switched off** in rebuilt apps that carry helper functions (12 of 16): the rule for v1 bound controls applied to them. It no longer applies to v2 apps.
+- **Approval was blocked by a test.** `tests/frame-engine.test.ts` required the browser switch to name the seed's version, so naming a rebuilt version in the seed failed it. The test now covers the versions the switch names and checks that every approved switched-on version runs in the browser.
+- **A withdrawn version stranded its copies.** They counted as customized: no upgrade and no browser mode. Unchanged copies of a withdrawn version can now upgrade and keep running in the browser. A test installs the real Contracts 1.1.1, withdraws it and upgrades the copy to 2.0.0.
+
+Still open from the same review: the earlier approved versions keep their own header, banners and "prepared for review" wording until copies move; copies older than the versions named in `upgradeFrom` have no upgrade; 11 rebuilt apps dropped the layout option, so a layout change there is a code change; the server path for opening and saving (repeated permission lookups, one sandbox process per event, two runs at a time) and the guidance gaps (record-change shapes, a served example, kit reference, design section) are not addressed yet.

@@ -1,3 +1,14 @@
+## 22 November 2026 — Review after the platform decisions: frame fixes and the path to approving rebuilt apps
+
+A review of sessions 1 to 7 ([notes](docs/scopes/PLATFORM_DECISIONS_IMPLEMENTATION_2026-11-19.md#review-after-session-7-22-november-2026)). Fixed before any rebuilt version is approved:
+
+- **Charts keep their drawing attributes in the app frame** (`stroke-dasharray`, `text-anchor`, `font-size` and similar were removed; Runway 3.0.0's charts lost dashes and label alignment).
+- **A v2 app's inputs work on its first screen** when the app has helper functions (they were switched off by the v1 rule for bound controls).
+- **A rebuilt version can be approved.** The browser test follows the versions switched on in `templates/browser-runtime.json`, not the seed; the catalog guide gives the real approval steps.
+- **Copies of a withdrawn version are not stranded:** they can still upgrade and still run in the browser.
+
+Tests: `app-update` (real Contracts 1.1.1 to 2.0.0, also after withdrawal), `frame-engine`, `data-room-v2-integration`, and the chart-attribute check in `tests/visual/frame-runtime.spec.cjs`.
+
 ## 21 November 2026 — Platform decisions, session 7: catalog rebuild
 
 Last of seven build sessions for the [platform decisions of 19 November](docs/scopes/PLATFORM_DECISIONS_IMPLEMENTATION_2026-11-19.md). Decision codes refer to the [snapshot](docs/scopes/PLATFORM_DECISIONS_SNAPSHOT_2026-11-19.md).

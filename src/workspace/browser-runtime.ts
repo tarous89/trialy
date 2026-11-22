@@ -33,8 +33,11 @@ export function browserSwitches():Switches{
 let catalog:{stamp:string;byHash:Map<string,{templateId:string;version:string}>}|null=null;
 async function catalogVersion(tx:Connection,source:string){
  const body=catalogBody(source);if(!body)return null;
- const s=(await tx.query("SELECT count(*)::int AS n, max(updated_at)::text AS u FROM app_template_catalog WHERE status='approved'")).rows[0],stamp=`${s?.n}|${s?.u}`;
- if(catalog?.stamp!==stamp){const rows=(await tx.query("SELECT template_id,version,payload->>'source' AS source FROM app_template_catalog WHERE status='approved'")).rows;catalog={stamp,byHash:new Map(rows.filter((r:any)=>typeof r.source==='string').map((r:any)=>[sha(r.source),{templateId:r.template_id,version:r.version}]))};}
+ // Only the versions switched on for the browser matter here. A switched-on version keeps running in the browser after
+ // it is withdrawn from the catalog, so copies that have not moved to its replacement do not fall back to server mode (D41).
+ const compat=browserSwitches().compat,ids=Object.keys(compat);
+ const s=(await tx.query("SELECT count(*)::int AS n, max(updated_at)::text AS u FROM app_template_catalog WHERE template_id=ANY($1::text[])",[ids])).rows[0],stamp=`${s?.n}|${s?.u}`;
+ if(catalog?.stamp!==stamp){const rows=(await tx.query("SELECT template_id,version,payload->>'source' AS source FROM app_template_catalog WHERE template_id=ANY($1::text[])",[ids])).rows;catalog={stamp,byHash:new Map(rows.filter((r:any)=>typeof r.source==='string'&&(compat[r.template_id]??[]).includes(r.version)).map((r:any)=>[sha(r.source),{templateId:r.template_id,version:r.version}]))};}
  return catalog.byHash.get(sha(body))??null;
 }
 

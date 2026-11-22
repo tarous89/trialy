@@ -3,7 +3,7 @@ import {z} from 'zod';
 import {id,fail,type Actor} from '../shared/schema.js';
 import {access} from '../domain/permissions.js';
 import {appRole} from '../domain/app-roles.js';
-import {AppTemplates} from './app-templates.js';
+import {AppTemplates,appTemplateEntry} from './app-templates.js';
 import {catalogBody} from './catalog-source.js';
 import type {WorkspaceFoundation} from './service.js';
 import {recentSpeedUpdate} from './speed-updates.js';
@@ -39,16 +39,25 @@ const configLine=/^const templateConfiguration=(.+);\n/;
 const savedConfiguration=(source:string)=>{try{const m=configLine.exec(source);const v=m?JSON.parse(m[1]):{};return v&&typeof v==='object'&&!Array.isArray(v)?v:{};}catch{return {};}};
 const major=(v:string)=>Number(v.split('.')[0]);
 
+/** D41: a copy whose code is exactly a published version that is no longer approved (withdrawn after its replacement
+ * was approved) is still that version, so its owner can move it to an approved one. Only the starting point may be a
+ * withdrawn version; the version it moves to is always an approved one. */
+async function withdrawnVersion(f:WorkspaceFoundation,body:string){
+ const rows=(await f.db.query("SELECT digest,payload FROM app_template_catalog WHERE status<>'approved' AND md5(payload->>'source')=md5($1::text)",[body])).rows;
+ for(const r of rows){if(r.payload?.source!==body)continue;const entry=appTemplateEntry.safeParse(r.payload);if(entry.success)return {...entry.data,digest:r.digest as string};}
+ return null;
+}
+
 async function resolve(f:WorkspaceFoundation,a:Actor,w:string,componentId:string){
  const {component:c}=await f.readComponent(a,w,componentId);
  if(c.archived||c.project_archived||c.format!=='frontend-js'||typeof c.source!=='string')return {c,none:'not_applicable'} as const;
  const body=catalogBody(c.source);if(body===null)return {c,none:'not_catalog'} as const;
- const catalog=new AppTemplates(undefined,f.db),from=await catalog.matching(body);
- // D14: changed code, or a version that is no longer approved, is never replaced.
+ const catalog=new AppTemplates(undefined,f.db),from=await catalog.matching(body)??await withdrawnVersion(f,body);
+ // D14: changed code is never replaced. Unchanged code of a version that was withdrawn since can still move (D41).
  if(!from)return {c,none:'changed_or_unlisted'} as const;
  const candidates=(await catalog.versions(from.id)).filter(t=>!t.deprecated&&newer(t.version,from.version)).reverse();
  if(!candidates.length)return {c,none:'current'} as const;
- const schemas=(await f.db.query("SELECT version,install_schema FROM app_template_catalog WHERE template_id=$1 AND version=ANY($2::text[]) AND status='approved'",[from.id,[from.version,...candidates.map(t=>t.version)]])).rows;
+ const schemas=(await f.db.query("SELECT version,install_schema FROM app_template_catalog WHERE template_id=$1 AND version=ANY($2::text[]) AND (status='approved' OR version=$3)",[from.id,[from.version,...candidates.map(t=>t.version)],from.version])).rows;
  const schema=(version:string)=>canonical(schemas.find(r=>r.version===version)?.install_schema??null);
  // The newest version this copy can move to: an update (only the code changes) or, for a new major version that names
  // this one in upgradeFrom, an upgrade (code and options; same tables and helpers, so records and connections carry across).
