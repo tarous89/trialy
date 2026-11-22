@@ -10,7 +10,6 @@ import {AppTemplates} from '../src/workspace/app-templates.js';
 import {syncTemplateCatalog,installCatalogApp} from '../src/workspace/template-catalog.js';
 import {accountHome} from '../src/workspace/home.js';
 import {AutomationManagement} from '../src/automations/management.js';
-import {TOOL_POLICY_QUERY} from '../src/domain/effective-access.js';
 test('App helpers stay off the Apps page and are listed under their app, also after an app is archived',async()=>{
  const pg=new PGlite(),seen:string[]=[];
  try{
@@ -31,8 +30,8 @@ test('App helpers stay off the Apps page and are listed under their app, also af
   const listed=await new AutomationManagement(db).list(owner,w.id,{});
   assert.deepEqual(listed.helpers.map((h:any)=>h.appId).sort(),apps.map(x=>x.appId).sort());assert.ok(listed.helpers.every((h:any)=>h.names.length>0));
   assert.equal(Number((await db.query('SELECT count(*) FROM foundation_functions WHERE app_id IS NULL OR retired_at IS NOT NULL')).rows[0].count),0);
-  // Table checks made for an app read its permission columns, never its saved source.
-  assert.ok(seen.includes(TOOL_POLICY_QUERY));
+  // The Apps page decides access from the apps' permission columns, never their saved source (loading speed L1.1).
+  assert.deepEqual(seen.filter(q=>/workspace_components/.test(q)&&/(SELECT \*|[\s,(]source[\s,)])/.test(q.replace(/\s+/g,' '))&&!/ AS source\b/.test(q)),[]);
   // A helper the app no longer uses is retired (kept for audit, hidden everywhere) and revived when used again.
   const execution=(await db.query('SELECT execution FROM workspace_components WHERE id=$1',[apps[1].appId])).rows[0].execution;
   await db.query("UPDATE workspace_components SET execution='[]' WHERE id=$1",[apps[1].appId]);
