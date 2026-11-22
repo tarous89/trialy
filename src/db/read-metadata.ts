@@ -21,8 +21,7 @@ const eligible=(sql:string)=>{
   || q==='SELECT fields FROM entity_types WHERE id=$1 AND workspace_id=$2'
   || q==='SELECT source FROM workspace_components WHERE id=$1 AND workspace_id=$2'
   || q==='SELECT allowed_users,ai_enabled FROM document_access WHERE workspace_id=$1 UNION ALL SELECT allowed_users,ai_enabled FROM folder_access WHERE workspace_id=$1'
-  // L2.1: the person's own open app view (the version and read access it was opened with), read before every check of a run.
-  || q==="SELECT * FROM app_runtime_views WHERE id=$1 AND workspace_id=$2 AND user_id=$3 AND app_id=$4 AND (origin=$5 OR ($5='human' AND origin='ai')) AND expires_at>now()"
+  // Not the person's runtime view (app_runtime_views): a run updates its read access (src/workspace/runtime-view.ts).
   // L2.1: an installed app's catalog origin and that published version's installer schema (immutable once published).
   || q==="SELECT snapshot->'catalogOrigin' AS origin FROM revisions WHERE workspace_id=$1 AND object_id=$2 AND object_kind='workspace_component' AND jsonb_typeof(snapshot->'catalogOrigin')='object' ORDER BY version DESC LIMIT 1"
   || q==='SELECT install_schema FROM app_template_catalog WHERE template_id=$1 AND version=$2'
