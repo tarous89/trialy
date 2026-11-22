@@ -226,10 +226,22 @@ export const FRAME_SCRIPT=String.raw`(()=>{'use strict';
  function receiveReads(v){
   const context=pendingReads.get(v.id);if(!context)return;pendingReads.delete(v.id);
   if(!v.failed&&Array.isArray(v.results))store.seed(v.results);
+  if(context.refresh){if(context.seq===eventSeq&&!v.failed)repaintLocal();return;}
   if(context.prefetch){host.postMessage({kind:'trialy.engine',status:'warm'},'*');return;}
   if(context.seq!==eventSeq)return;
   if(v.failed){serverBusy=true;post('trialy.event',{event:context.event,state:context.from});return;}
   if(!runLocal(context.event,context.from,(context.round||0)+1)){serverBusy=true;post('trialy.event',{event:context.event,state:context.from});}
+ }
+ // P5 (option B): the same screen made again here from the store; reads it lacks are fetched as for any local screen.
+ function repaintLocal(){return runLocal({kind:'refresh',action:'',value:null,form:{}},uiState);}
+ // A v2 edit was saved: the saved rows replace the stored ones (new versions), the screen is made again here, and the
+ // stored reads of the changed tables are fetched again in the background (one request) and shown when they arrive.
+ function applySaved(v){
+  if(!store||!browserApp)return;
+  store.apply(v.rows);optimistic=null;repaintLocal();
+  const stale=store.readsOf(v.invalidated);if(!stale.length)return;
+  if(stale.length>12)store.drop(stale.slice(12));
+  const id=++readSeq;pendingReads.set(id,{refresh:true,seq:eventSeq});post('trialy.reads',{id,reads:stale.slice(0,12),refresh:true});
  }
  function serverIdle(v){
   serverBusy=false;
@@ -271,6 +283,7 @@ export const FRAME_SCRIPT=String.raw`(()=>{'use strict';
    const waiting=held;held=[];for(const e of waiting)dispatch(e);
    return;}
   if(v.kind==='trialy.reads-result'){receiveReads(v);return;}
+  if(v.kind==='trialy.saved'){applySaved(v);return;}
   if(v.kind==='trialy.server-idle'){serverIdle(v);return;}
   if(v.kind==='trialy.save-idle'){savingCell=false;root.inert=!!v.blocked;return;}
   if(v.kind==='trialy.action'){footerAction(v.action);return;}

@@ -133,3 +133,18 @@ test('v2 in the frame: records.save shows at once and goes to the server; a miss
   assert.equal(local.run({},{kind:'refresh',action:'edit:r1:amount:3',value:'9',form:{}}).kind,'server');
  }finally{app.dispose();}
 });
+
+// P5: after a save the frame applies the saved rows (new versions) and knows which stored reads to fetch again.
+test('the store applies saved rows and lists the stored reads of changed tables',()=>{
+ const store=createStore();
+ store.seed([{name:'records.read',input:{typeId:'t1',limit:25},result:{rows:[{id:'a',version:1,data:{name:'A',amount:1}},{id:'b',version:1,data:{name:'B',amount:2}}],total:2}},
+  {name:'records.readMany',input:{reads:[{typeId:'t2'},{typeId:'t1',limit:5}]},result:{results:[{rows:[{id:'x',version:3,data:{n:1}}],total:1},{rows:[{id:'a',version:1,data:{name:'A'}}],total:1}]}},
+  {name:'records.summarize',input:{typeId:'t3'},result:{totals:{count:1}}},{name:'documents.list',input:{},result:{documents:[]}}]);
+ store.apply([{id:'a',typeId:'t1',version:2,data:{name:'A',amount:9,hidden:'x'}}]);
+ const first=store.get('records.read',{typeId:'t1',limit:25}).result.rows;
+ assert.deepEqual(first[0],{id:'a',version:2,data:{name:'A',amount:9}});assert.deepEqual(first[1],{id:'b',version:1,data:{name:'B',amount:2}});
+ assert.deepEqual(store.get('records.readMany',{reads:[{typeId:'t2'},{typeId:'t1',limit:5}]}).result.results[1].rows[0],{id:'a',version:2,data:{name:'A'}});
+ const stale=store.readsOf(['t1']);assert.deepEqual(stale.map(r=>r.name),['records.read','records.readMany']);assert.deepEqual(store.readsOf([]),[]);
+ store.drop(stale.slice(1));assert.equal(store.get('records.readMany',{reads:[{typeId:'t2'},{typeId:'t1',limit:5}]}),null);assert.ok(store.get('records.summarize',{typeId:'t3'}));
+});
+

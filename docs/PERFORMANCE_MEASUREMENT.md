@@ -285,5 +285,15 @@ Local measurement (Partnerships 3.0.0, 17 tables, empty workspace, statements pe
 | `read_app_data`, one batch of 12 reads | 78 | 34 |
 | `save_app_records`, one field | 152 | 58 |
 
-Not changed here: the server still runs the app twice for an edit in a v2 app (once to save, once to show the saved screen), and each run starts a new process that parses the whole app.
+### One server run per edit in a v2 app (22 November 2026)
+
+An edit the frame already shows used to run the app twice on the server: once to save and once to make the saved screen, which also replaced everything the frame had stored. Now the frame says the edit is already shown (`optimistic` on the request) and the server runs the app once, saves, and returns the saved rows without a screen. The frame then:
+
+- replaces the same records in its stored reads with the saved rows, so the next edit carries the new version;
+- makes the screen again itself (event `refresh`), with no request;
+- fetches the stored reads of the changed tables again in one background `read_app_data` request and shows the result when it arrives (new rows, order, totals).
+
+The server still runs the app's own code for every save, with every platform check. A refused save still comes back as an error and the frame restores the earlier values. Requests without the flag (v1 apps, server mode, a queued event) behave as before. Tests: `browser-runtime` (one run, saved rows, a refused save), `frame-engine` (the store), and the v2 example in the browser speed gate.
+
+Not changed: each server run still starts a new process that parses the whole app.
 

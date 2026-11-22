@@ -2,7 +2,7 @@
 // frame bundle and the Node tests run the same code. The store holds only what the server already sent this open view
 // (D20: memory only, never the device). Anything with an outside effect is never run here: the event goes to the server.
 import {readKey,type EngineApp} from './engine-core.js';
-export type LocalStore={seed(reads:any[]|undefined,reset?:boolean):void;get(name:string,input:unknown):any;snapshot():Map<string,any>;restore(snapshot:Map<string,any>):void;size():number;patch(changes:any[]|undefined):void};
+export type LocalStore={seed(reads:any[]|undefined,reset?:boolean):void;get(name:string,input:unknown):any;snapshot():Map<string,any>;restore(snapshot:Map<string,any>):void;size():number;patch(changes:any[]|undefined):void;apply(rows:any[]|undefined):void;readsOf(typeIds:string[]|undefined):{name:string;input:unknown}[];drop(reads:{name:string;input:unknown}[]):void};
 export type LocalResult={kind:'painted';output:any;saves:any[];misses:{name:string;input:unknown}[];rollback:Map<string,any>|null}|{kind:'reads';reads:{name:string;input:unknown}[]}|{kind:'server';reason:string};
 
 const RECORD_READS=['records.read','records.readMany','records.get','records.summarize','project.records','project.relationships','roles.list','integrations.list'];
@@ -20,11 +20,26 @@ export function createStore(now=()=>Date.now()):LocalStore{
  let entries=new Map<string,any>();
  return {
   /** Adds the reads a server render made: [{name,input,result}] or [{name,input,error}]. */
-  seed(reads:any[]|undefined,reset=false){if(reset)entries=new Map();const at=now();for(const r of reads??[])if(r&&typeof r.name==='string'&&SEEDED_READS.has(r.name))entries.set(readKey(r.name,r.input),{at,...('error' in r?{error:String(r.error)}:{result:r.result})});},
+  seed(reads:any[]|undefined,reset=false){if(reset)entries=new Map();const at=now();for(const r of reads??[])if(r&&typeof r.name==='string'&&SEEDED_READS.has(r.name))entries.set(readKey(r.name,r.input),{at,name:r.name,input:r.input,...('error' in r?{error:String(r.error)}:{result:r.result})});},
   get(name:string,input:unknown){const hit=entries.get(readKey(name,input));if(!hit||now()-hit.at>STORE_TTL)return null;return hit;},
   snapshot(){return new Map([...entries].map(([k,v])=>[k,structuredClone(v)]));},
   restore(snapshot:Map<string,any>){entries=snapshot;},
   size(){return entries.size;},
+  /** After a save: the saved rows (their new version and values) replace the same records in every stored read, so the
+   * next edit carries the version the save produced. */
+  apply(rows:any[]|undefined){
+   const saved=new Map<string,any>();for(const r of rows??[])if(r&&typeof r.id==='string'&&typeof r.version==='number')saved.set(r.id,r);
+   if(!saved.size)return;
+   const row=(r:any)=>{const s=r&&typeof r==='object'&&typeof r.id==='string'?saved.get(r.id):null;return s?{...r,version:s.version,...(r.data&&typeof r.data==='object'&&s.data&&typeof s.data==='object'?{data:{...r.data,...Object.fromEntries(Object.entries(s.data).filter(([k])=>k in r.data))}}:{})}:r;};
+   const page=(p:any):any=>!p||typeof p!=='object'?p:Array.isArray(p.rows)?{...p,rows:p.rows.map(row)}:Array.isArray(p.records)?{...p,records:p.records.map(row)}:row(p);
+   for(const [k,v] of entries){if(!('result' in v))continue;const r=v.result;entries.set(k,{...v,result:r&&Array.isArray(r.results)?{...r,results:r.results.map(page)}:page(r)});}
+  },
+  /** The stored record reads that touch these tables (to fetch again after a save), oldest first. */
+  readsOf(typeIds:string[]|undefined){
+   const ids=(typeIds??[]).filter(t=>typeof t==='string'&&t);if(!ids.length)return [];
+   return [...entries.values()].filter(v=>typeof v.name==='string'&&RECORD_READS.includes(v.name)&&(v.name.startsWith('project.')||ids.some(t=>JSON.stringify(v.input??{}).includes(t)))).map(v=>({name:v.name,input:v.input}));
+  },
+  drop(reads:{name:string;input:unknown}[]){for(const r of reads)entries.delete(readKey(r.name,r.input));},
   /** v2 optimistic save: changed values show at once in every stored read that holds the record. */
   patch(changes:any[]|undefined){
    const updates=new Map<string,any>(),archived=new Set<string>();

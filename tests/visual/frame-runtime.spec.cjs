@@ -98,6 +98,17 @@ test('v2 example: filtering makes no request, an edit makes one and shows at onc
  // The server refuses the save: the earlier value and screen come back.
  await page.evaluate(()=>window.send({kind:'trialy.server-idle',channel:'gate',failed:true}));
  await expect(frame.locator('input[data-action="edit:d1:amount:1"]')).toHaveValue('100');
+ // P5: the save went through. The frame takes the saved row (its new version) and makes the screen itself; the app is
+ // not run on the server again, and the stored reads of the changed table are fetched once in the background.
+ await frame.locator('input[data-action="edit:d1:amount:1"]').first().fill('180');
+ await frame.locator('input[data-action="edit:d1:amount:1"]').first().blur();
+ await page.waitForFunction(()=>window.requests.events>=2);
+ const mark=await page.evaluate(()=>({...window.requests,n:window.msgs.length}));
+ await page.evaluate(()=>{for(const a of window.answers.values())if(a.result&&Array.isArray(a.result.rows))a.result={...a.result,rows:a.result.rows.map(r=>r.id==='d1'?{...r,version:2,data:{...r.data,amount:180}}:r)};window.send({kind:'trialy.saved',channel:'gate',rows:[{id:'d1',typeId:'deals',version:2,data:{amount:180}}],invalidated:['deals']});window.send({kind:'trialy.server-idle',channel:'gate'});});
+ await expect(frame.locator('input[data-action="edit:d1:amount:2"]')).toHaveValue('180');
+ await page.waitForFunction(n=>window.msgs.slice(n).some(m=>m.kind==='trialy.reads'&&m.refresh),mark.n);
+ const settled=await page.evaluate(()=>window.requests);
+ expect(settled.events-mark.events,'no second server run after the save').toBe(0);expect(settled.reads-mark.reads,'one background read').toBe(1);
  r=await act(page,frame,'[data-action="nav:board"]',{kind:'dispatchEvent',args:['click']});
  expect(r.events+r.reads,'changing screens').toBe(0);
  r=await act(page,frame,'select[data-action="move-menu:d1"]',{kind:'selectOption',args:['Won']});

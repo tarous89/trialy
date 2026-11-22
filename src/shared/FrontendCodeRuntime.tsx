@@ -122,7 +122,7 @@ export function FrontendCodeRuntime({active=true,component,previewId,initialOutp
  const paintPending=useRef(false),freshScreen=useRef(false);
  const send=()=>{paintPending.current=false;const browser=output.current&&browserSent.current!==output.current?output.current.browser:undefined;if(output.current)browserSent.current=output.current;queueMicrotask(()=>{freshScreen.current=false;});if(output.current&&current.current&&!previewId)rememberOutput(current.current,output.current);if(output.current)frame.current?.contentWindow?.postMessage({kind:'trialy.render',channel:channel.current,fresh:freshScreen.current,html:output.current.html,css:output.current.css,controls:output.current.controls,connected:output.current.connected,state:output.current.state,tracker:output.current.tracker,navigationOnly:embedded,fill:output.current.runtime==='trialy-frontend-js-v2',...(browser?{browser,verify:output.current.verify}:{}),appLinks:platformRef.current.enabled,appOrigin:platformRef.current.origin,linkContext:navigationRef.current?.location??parseAppUrl(location.pathname+location.search)??(component?{appId:component.id,workspaceId:component.workspace_id,source:'component'}:null)},'*');};
  useEffect(()=>{if(ready)send();},[platform.enabled,platform.origin]);
- async function run(event:any={kind:'open'}){
+ async function run(event:any={kind:'open'},optimistic=false){
   if(event.action==='tracker:layout'){onLayout?.();return;}if(event.action==='tracker:access'){onAccess?.();return;}
   if(blocked.current)return;if(busyRef.current){if(/^tab:/.test(event.action||''))eventQueue.current=eventQueue.current.filter(e=>!/^tab:/.test(e.action||''));if(eventQueue.current.length<50)eventQueue.current.push(event);return;}cancelPrefetch();busyRef.current=true;setBusy(true);onBusyChange?.(true);setError('');if(event.action==='bound-batch')frame.current?.contentWindow?.postMessage({kind:'trialy.save-start',channel:channel.current,cells:true},'*');
   const runStarted=performance.now();let serverFailed=false;
@@ -157,7 +157,7 @@ export function FrontendCodeRuntime({active=true,component,previewId,initialOutp
     const merged=mergeTrackerSnapshot(output.current,next);output.current=merged;state.current=merged.state;send();prefetch(merged);
     return;
    }
-   const request:any={...(previewId?{previewId}:viewRequest(c)),...browserRequest(c),...(!previewId&&['click','change','submit'].includes(event.kind)&&!navigationRead(event)?{requestKey:actionKey(event)}:{}),state:state.current,event,...(navigationRef.current?{route:navigationRef.current.route}:{})};
+   const request:any={...(previewId?{previewId}:viewRequest(c)),...browserRequest(c),...(!previewId&&['click','change','submit'].includes(event.kind)&&!navigationRead(event)?{requestKey:actionKey(event)}:{}),state:state.current,event,...(optimistic&&!previewId?{optimistic:true}:{}),...(navigationRef.current?{route:navigationRef.current.route}:{})};
    let result;
    try{result=await readFrontend(request);}catch(e){
     // Renew only navigation reads. Never replay a write or discard a local draft.
@@ -168,6 +168,8 @@ export function FrontendCodeRuntime({active=true,component,previewId,initialOutp
    // P10: a direct save is timed from the edit to the saved screen.
    if(result.saved)ux.current?.record('save',performance.now()-runStarted);
    if(!live.current)return;
+   // P5: the frame already shows this edit. It takes the saved rows (new versions) and makes its screen again itself.
+   if(result.applied){if(result.notice)chrome.notify(result.notice);frame.current?.contentWindow?.postMessage({kind:'trialy.saved',channel:channel.current,rows:result.saved?.rows??[],invalidated:result.saved?.invalidated??[]},'*');return;}
    // A completed tracker cell edit or explicit app action approves the visible edits. The server still validates a precise proposal and its digest before committing.
    if(result.proposal&&explicitApproval&&(event.action==='bound-batch'||event.action==='save-layout'&&output.current?.tracker)){
     const p=result.proposal;saveReceipt.current={proposal:p};
@@ -277,7 +279,7 @@ export function FrontendCodeRuntime({active=true,component,previewId,initialOutp
    else if(e.data.kind==='trialy.footer')setFooter(e.data.footer);
    else if(e.data.kind==='trialy.state'){const old=state.current,next=e.data.state;state.current=next;if(old?.tab!==next?.tab||old?.settings!==next?.settings)setViewRevision(n=>n+1);setDetailsOpen(!!next?.detail);if(output.current&&(old?.tab!==next?.tab||JSON.stringify(old?.offsets)!==JSON.stringify(next?.offsets)||JSON.stringify(old?.filters)!==JSON.stringify(next?.filters))){cancelPrefetch();prefetch({...output.current,state:next});}}
    else if(e.data.kind==='trialy.resize'&&!output.current?.tracker&&output.current?.runtime!=='trialy-frontend-js-v2'&&Number.isFinite(e.data.height))setHeight(Math.max(200,Math.min(20000,e.data.height)));
-   else if(e.data.kind==='trialy.event'&&!proposal){state.current=e.data.state??state.current;interaction.current=performance.now();void run(e.data.event);}
+   else if(e.data.kind==='trialy.event'&&!proposal){state.current=e.data.state??state.current;interaction.current=performance.now();void run(e.data.event,e.data.optimistic===true);}
   }
  };window.addEventListener('message',receive);return()=>window.removeEventListener('message',receive);},[proposal]);
  useEffect(()=>{if(!detailsOpen)return;const previous=document.body.style.overflow;document.body.style.overflow='hidden';return()=>{document.body.style.overflow=previous;};},[detailsOpen]);

@@ -442,6 +442,10 @@ export class WorkspaceFoundation {
    if(v2&&request.componentId&&output.context!==undefined&&J(output.context)!==J(personContext??null))await this.setAppContext(a,w,{componentId:request.componentId,context:output.context}).catch(()=>{});
    const browserPayload=!browser?undefined:browser.mode==='server'?{mode:'server',reason:browser.reason}:seedBytes>SEED_BYTES?{mode:'server',reason:'seed_size'}:
     {mode:browser.mode,version:v2?'v2':'v1',digest:sourceDigest(code),reads:seed,reset:sideEffects||!!saved||!!proposal||queued.length>0,input:baseInput,styles:runtimeStyles(content.source),...(request.browser!.source?{source:code}:{})};
+   // P5 (option B): a v2 edit the frame already shows. The app ran once here and its changes are saved; the frame updates
+   // its stored rows from the saved ones and makes the screen again itself, so the app is not run a second time.
+   if(saved&&!command&&v2&&request.optimistic&&browser?.mode==='v2'&&!queued.length&&!connectorReviews.length){rerender=null;
+    return {saved,applied:true,queued,viewId,runtime:'trialy-frontend-js-v2',frameUrl:frameUrl(),state:output.state,...(output.notice?{notice:output.notice}:{}),accessVersion:currentPolicy.access_version,accessStamp,temporary:false};}
    const {context:ignoredContext,...shown}=output;
    if(!saved||command)return {queued,...(saved?{saved}:{}),...(connectorReviews.length?{connectorReviews}:{}),...(browserPayload?{browser:browserPayload}:{}),viewId,runtime:v2?'trialy-frontend-js-v2':'trialy-frontend-js-v1',frameUrl:frameUrl(),...shown,css:runtimeCss+output.css,accessVersion:currentPolicy.access_version,accessStamp,controls,connected:!!content.manifest&&!v2,proposal,temporary:!request.componentId,...(tracker?{tracker:{config:tracker.config,theme:tracker.theme,pages,saved:!!request.componentId,writable}}:{})};
   }finally{release?.();}

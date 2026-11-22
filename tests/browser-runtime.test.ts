@@ -1,4 +1,5 @@
 import test from 'node:test';
+import {createRequestMetrics,withRequestMetrics} from '../src/db/metrics.js';
 import assert from 'node:assert/strict';
 import {PGlite} from '@electric-sql/pglite';
 import {readFile,readdir} from 'node:fs/promises';
@@ -73,6 +74,13 @@ test('5.1, 5.3: a v2 app gets its code, reads, kit styles and input for the fram
   const edited=await f.runFrontend(actor,w,{componentId:appId,expectedVersion:version,viewId:open.viewId,browser:{source:false},requestKey:randomUUID(),state:open.state,event:{kind:'change',action:`edit:${rec.id}:amount:${rec.version}`,value:'9',form:{}}});
   assert.equal(edited.saved.status,'saved');assert.equal(edited.browser.reset,true);assert.equal(edited.browser.reads[0].result.rows[0].data.amount,9);
   assert.equal(edited.proposal,null);
+  // P5: an edit the frame already shows is saved with one run of the app; the frame gets the saved rows, not a screen.
+  const row=edited.saved.rows.find((r:any)=>r.id===rec.id),runs=createRequestMetrics();
+  const quick=await withRequestMetrics(runs,()=>f.runFrontend(actor,w,{componentId:appId,expectedVersion:version,viewId:open.viewId,browser:{source:false},optimistic:true,requestKey:randomUUID(),state:open.state,event:{kind:'change',action:`edit:${rec.id}:amount:${row.version}`,value:'11',form:{}}}));
+  assert.equal(quick.applied,true);assert.equal(quick.html,undefined);assert.equal(runs.sandboxRuns,1);
+  assert.equal(quick.saved.status,'saved');assert.equal(quick.saved.rows[0].id,rec.id);assert.equal(quick.saved.rows[0].version,row.version+1);assert.equal(quick.saved.rows[0].data.amount,11);assert.deepEqual(quick.saved.invalidated,[typeId]);
+  // A refused save is still an error for the frame to roll back.
+  await assert.rejects(f.runFrontend(actor,w,{componentId:appId,expectedVersion:version,viewId:open.viewId,browser:{source:false},optimistic:true,requestKey:randomUUID(),state:open.state,event:{kind:'change',action:`edit:${rec.id}:amount:${row.version}`,value:'12',form:{}}}),(e:any)=>e.code==='stale_value');
   // records.save is refused outside a person's own click, edit or form (the app sees the refusal; nothing is saved).
   await assert.rejects(f.runFrontend(actor,w,{componentId:appId,expectedVersion:version,event:{kind:'refresh',action:'add',value:null,form:{}}}),/execution_failed/);
   assert.equal((await db.query("SELECT count(*)::int AS n FROM records WHERE type_id=$1 AND data->>'name'='New'",[typeId])).rows[0].n,0);
