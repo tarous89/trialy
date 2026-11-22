@@ -7,9 +7,9 @@ import {createHash} from 'node:crypto';
  */
 export {GUIDE_VERSION} from '../shared/guide-version.js';
 const read=(name:string)=>readFileSync(new URL('../../templates/'+name,import.meta.url),'utf8');
-let files:{guide:string;reference:string;checksum:string}|null=null;
+let files:{guide:string;reference:string;example:string;checksum:string}|null=null;
 export function guideFiles(){
- if(!files){const guide=read('APP_GUIDE.md'),reference=read('APP_REFERENCE.md');files={guide,reference,checksum:createHash('sha256').update(guide).update('\0').update(reference).digest('hex')};}
+ if(!files){const guide=read('APP_GUIDE.md'),reference=read('APP_REFERENCE.md'),example=read('APP_EXAMPLE.md');files={guide,reference,example,checksum:createHash('sha256').update(guide).update('\0').update(reference).update('\0').update(example).digest('hex')};}
  return files;
 }
 /** The checksum of the guide and the reference together: one value tells a client whether anything changed. */

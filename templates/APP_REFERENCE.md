@@ -1,8 +1,10 @@
 # TrialAgents technical reference
 
-Version: 2.0.0
+Version: 2.1.0
 
-The technical reference for apps on TrialAgents: runtime, data, saving, exchange, automations and installation. It holds no design rules; design is in the app guide (`read_app_template_guidance` resource `guide`).
+The technical reference for apps on TrialAgents: runtime, data, saving, exchange, automations and installation. It holds no design rules; design is in the app guide (`read_app_template_guidance` resource `guide`). A complete small app that runs as written is resource `example`.
+
+**New apps use the v2 contract.** Start the code with `'use trialagents v2';`, use the kit, save with `records.save`. Such an app changes screens in the browser without a request. The v1 parts of this reference (`records.propose`, `controls`, layout profiles) are for maintaining existing v1 apps; do not write new code with them.
 
 ## App runtime
 
@@ -42,13 +44,13 @@ Which code runs in the browser:
 - `notice: {kind: 'info' | 'success' | 'error', message}` — shown as the platform's one message.
 - `context` — any small JSON value (at most 4 KB). Remembered for this person and app and returned as `input.context`.
 
-`html` is at most 200,000 characters and is sanitized by the frame (no scripts, no event attributes, no remote resources). `css` is at most 50,000 characters. The runtime adds the platform styles in front of the app's own.
+`html` is at most 200,000 characters and is cleaned by the frame (see *What the frame keeps*). `css` is at most 50,000 characters together with the platform styles the runtime puts in front of it (about 9,000 for a v2 app), so an app's own styles have about 40,000.
 
 ### The v2 contract
 
 Put `'use trialagents v2';` on the first line of the code. A v2 app:
 
-- saves with `tools.call('records.save', {changes})` — create, update or archive changes, at most 50 per action — from a person's own click, change or submit (or an app command with a request key). The value shows at once; the server saves it in one request with the platform's checks and the screen refreshes from the saved data. A refused save (validation, permission, someone changed the same value first) brings the earlier value back with a message. Saving while opening is refused.
+- saves with `tools.call('records.save', {changes})` — create, update or archive changes, at most 50 per action — from a person's own click, change or submit (or an app command with a request key). The value shows at once; the server saves it in one request with the platform's checks, and the screen is then made again with event `open` and the saved rows (their new versions). A new record appears when the changed table has been read again, a moment later. A refused save (validation, permission, someone changed the same value first) brings the earlier value back with a message. Saving while opening is refused.
 - treats a read that is still on its way as **pending**: in the browser, a missing read returns `{pending: true, rows: [], total: null}` (or `{pending: true}`) at once and the screen is made again when the data arrives. Show such data as loading, never as empty or zero.
 - reads only what the screen shows. Reads are kept per request, so a screen that reads the same thing as the last one needs nothing new; filter and sort data already loaded in code where possible.
 - gets the kit (below) and the platform styles; it does not carry its own copy of them.
@@ -60,9 +62,45 @@ v1 code keeps working unchanged: `records.propose` from a person's own action sa
 
 Reads (answered in the browser when the frame has them): `records.read`, `records.readMany` (up to 12 reads), `records.get`, `records.summarize` (totals on the full data), `project.records`, `project.relationships`, `roles.list`, `integrations.list`, `documents.list`, `documents.search`, `documents.text`, `documents.quote`, `files.list` and the exchange reads (`exchange.list`, `exchange.status`, `exchange.listSubmissions`, `exchange.listMessages`, `exchange.listEmails`, `exchange.defaultEmail`, `exchange.prepareEmail`, `exchange.notifications`, `exchange.listQuestions`, `exchange.previewContent`, `exchange.listResponses`, `exchange.series`).
 
-Server only: `records.propose` (v1), `records.save` (v2), `undo.list`, `undo.run`, `layout.propose`, `functions.invoke`, `functions.status`, `actions.*`, `connectors.*`, the exchange writes, `files.text`, `files.image`.
+`undo.list` is answered in the browser after a save and on a screen the server made with it; otherwise it runs on the server. Ask for it only when the app wants to offer Undo (after a save), not on every screen.
+
+Server only: `records.propose` (v1), `records.save` (v2), `undo.run`, `layout.propose`, `functions.invoke`, `functions.status`, `actions.*`, `connectors.*`, the exchange writes, `files.text`, `files.image`.
 
 Limits per event: 100 capability calls, a 4 MB read budget, 15 seconds.
+
+### Shapes
+
+| Call | Input | Result |
+| --- | --- | --- |
+| `records.read` | `{typeId, limit?, offset?, q?, sort?, filters?}`. `limit` 0 to 100 (default 25). `q` searches the readable bound fields. `sort` is `{field, direction: 'asc' \| 'desc'}`, one field. `filters` is `{field: 'value'}` for up to 8 fields; each must equal the value (a multi-value field must contain it). | `{tableName, rows: [{id, version, data}], total, limit, offset}`. `data` holds the bound fields the person may read. A restricted table gives `{unavailable: true, message, rows: [], total: null}`. In the browser a read on its way gives `{pending: true, rows: [], total: null}`. |
+| `records.readMany` | `{reads: [...]}`, 1 to 12 `records.read` inputs. | `{results: [...]}` in the same order. |
+| `records.summarize` | `{typeId, metric?, groupBy?, q?}`; `metric` and `groupBy` are bound field keys. Not available to an app whose manifest scope is `project`. | `{totals: {count, sum, average, minimum, maximum, unavailable}, groups, groupsTruncated, metric}` over all matching records. Pending: `{pending: true, totals: null, groups: []}`. |
+| `records.save` (v2) | `{changes: [...]}`, 1 to 50 of: `{kind: 'create_record', typeId, data}`; `{kind: 'update_record', recordId, expectedVersion, data}` with only the changed fields in `data`; `{kind: 'archive_record', recordId, expectedVersion}`. | `{status: 'saving', count}`. The saved values are in the reads of the next screen. |
+| `undo.list` | none | `{actions: [{undoId, label, at}]}`, newest first. |
+| `undo.run` | `{undoId}`, from the person's click. | The change is reversed; the next screen shows it. |
+
+### Events the app receives
+
+The frame turns what a person does into one event, `input.event = {kind, action, value, form}`:
+
+- **Click** on any element with `data-action` (or inside one): `kind: 'click'`.
+- **Change** of an `input`, `select` or `textarea` with `data-action`: `kind: 'change'`, with the value (a checkbox gives `true` or `false`). It comes when the field is left or Enter is pressed. Add `data-ui-state` to an `input` or `textarea` to get it on every keystroke (search while typing).
+- **Submit** of a `<form data-action="...">`: `kind: 'submit'`, with the named fields in `event.form`. A control inside a form also carries the form's values.
+- **Drag and drop:** an element with `draggable="true" data-drag="<id>"` dropped on one with `data-drop="<id>" data-drop-action="<action>"` sends a change event `<action>` with value `<dragId>><dropId>`. Always offer the same move without dragging (as `kit.board` does).
+- **Open and refresh:** `open` when the app opens and after a save; `refresh` when the same screen is made again with fresh data.
+
+Nothing else reaches the app: no key presses or shortcuts, no hover, scrolling, focus, timers, double clicks, clipboard or file downloads. Design for click, change and submit.
+
+### What the frame keeps
+
+The frame removes everything not listed here, without an error.
+
+- **Elements:** `div span p h1`–`h6 section article header footer main nav aside ul ol li dl dt dd table thead tbody tfoot tr th td caption colgroup col form label input textarea select option optgroup button fieldset legend output progress meter details summary br hr pre code blockquote strong em b i u s small sub sup a img`, and for drawings `svg g path rect circle ellipse line polyline polygon text tspan defs linearGradient radialGradient stop clipPath title desc`. No `canvas`, `iframe`, `video`, `audio`, `dialog`, `datalist`, `use` or `script`.
+- **Attributes:** `class id style title role tabindex name value placeholder disabled readonly required checked selected multiple min max step minlength maxlength rows cols colspan rowspan scope for width height alt hidden inert draggable`, every `aria-*`, the data attributes named in this reference (`data-action`, `data-ui-state`, `data-drag`, `data-drop`, `data-drop-action`, `data-label`, `data-trialy-open`, `data-trialy-integration`, `data-trialy-document`), and for drawings `viewBox d x y x1 y1 x2 y2 cx cy r rx ry points dx dy fill fill-opacity fill-rule stroke stroke-width stroke-linecap stroke-linejoin stroke-dasharray stroke-dashoffset stroke-opacity opacity transform text-anchor dominant-baseline font-size font-weight offset stop-color stop-opacity preserveAspectRatio xmlns`. Other `data-*` attributes are removed.
+- **Inputs:** types `text number date datetime-local month week time email tel url checkbox radio range color hidden`; any other type becomes `text`.
+- **Images:** `<img>` with an embedded `data:image/png|jpeg|gif|webp;base64,` source. No remote images.
+- **Links:** `<a href>` to `https:`, `http:`, `mailto:`, `tel:`, an app link, or `platform:access`, `platform:logs`, `platform:automations`. Outside links open in a new tab.
+- **Charts** are drawn as inline SVG with the elements and attributes above; colours and fonts may also be set in `css`.
 
 ### The kit (v2)
 
@@ -84,7 +122,20 @@ Limits per event: 100 capability calls, a 4 MB read budget, 15 seconds.
 | `kit.notice(kind, message)` | The value for `output.notice`. |
 | `kit.stat(label, value)`, `kit.button(label, action, {primary})`, `kit.esc(text)` | Small parts. |
 
-The styles use `k-` class names and `--k-` tokens (`read_app_design` lists them). Example: the v2 example app in `scripts/lib/v2-example.ts`.
+Shapes the helpers take:
+
+- `kit.nav`: `items` are `{id, label}`. `{side:true}` with `kit.layout(nav, body, {side:true})` gives side navigation; `prefix` replaces `nav:`.
+- `kit.table`: a column is `{key, label, render?, edit?}`. Rows are records (`{id, version, data}`) or plain objects. `render(row)` returns HTML and must escape text with `kit.esc`. `edit` is `{kind, options?, readOnly?}`; kinds are `text`, `number`, `money`, `date`, `select` (with `options`, a list of strings) and `boolean`. `empty` is the HTML shown when there are no rows.
+- `kit.cell` sends a change event with action `edit:<recordId>:<field>:<version>`. `kit.edit(event, {field: kind})` returns `{recordId, field, version, value}` or `null`; give the kind of number and boolean fields so the value is converted.
+- `kit.board`: `columns` are `{id, label, cards}`, a card is `{id, label, html}`; `html` is yours and must be escaped. A drop sends the change event `action` with value `cardId>columnId`; the menu on each card sends `<action>-menu:<cardId>` with the column as value. `kit.move(event, action)` returns `{cardId, columnId}` for both.
+- `kit.panel`: `{title, body, close?}`; the close button sends `panel:close` unless `close` names another action.
+- `kit.empty`: `{title, text?, action?: {label, action}}`.
+- `kit.pager`: sends `<action>:<offset>` (`page:<offset>` by default).
+- `kit.picker`: `{label, action?, value, options: [{value, label}]}`; sends a change event `context` unless `action` is given.
+- `kit.settings`: `{action?, fields: [{name, label, value, options?}]}`; a form that submits `settings:save` with the values in `event.form`. It returns nothing for editors and viewers.
+- `kit.button(label, action, {primary?, disabled?, ariaLabel?})`.
+
+Classes for your own markup: `k-card` (a bordered block), `k-grid` (cards side by side that wrap), `k-row` (items in a line that wrap; `k-grow` takes the free space), `k-field` (a label above a control), `k-pill` (a small status label), `k-muted` and `k-small` (quiet and small text), `k-stat`, `k-button` and `k-button--primary`. The styles sit in a CSS layer, so an app's own rules win without `!important`; an app may set the `--k-` tokens on `.k-app` to change colours, radius and spacing. `read_app_design` lists the tokens.
 
 ### Speed gates
 
@@ -135,6 +186,8 @@ The platform checks every read an app makes against the caller's own permissions
 - Custom source has app-level access only; hiding HTML is not a boundary. Protected standard tabs cannot attach functions or assets or copy restricted bindings to an unrestricted tab.
 
 ## Runtime and data contract
+
+This section also covers v1 apps. For a v2 app, read `records.save` where it says `records.propose`; `controls`, `templateLayoutSchema` and layout profiles are v1 only.
 
 - `frontend-js` apps use the isolated render/event contract and declared bindings, and return validated HTML, CSS and serializable state with escaped text and attributes. No network, DOM execution in generated source, host cookies, filesystem, embedded secrets or private APIs; outbound requests go through approved connectors and background services.
 - The host prepends `templateConfiguration` and `templateBindings` to catalog source (`AppTemplates.operation`); catalog `source` must not declare them. Configuration lives in `options`/`defaults`.
@@ -356,7 +409,7 @@ Contract: `src/automations/recipes-schema.ts`. Requires `APP_AUTOMATION_RECIPES_
 - `instructions`: discovery, setup, configuration, preview, approval, update and recovery, referring to the usage and automation guides. Everything an assistant needs is in `instructions` and `documentation`; repo-only files are not available over MCP.
 - `documentation.quickStart` (ordered steps, inputs, defaults); `dataContract` (fields, relationships, scalar or multiple, required fields, display names versus IDs, persistence, bindings, section IDs and inheritance, or that there is no database); `interactionContract` (supported controls, confirmation, cancellation; automations managed on the platform); `lifecycle` (preview versus saved app, revisions, stable identities, retries and receipts, disabled state, archive suspension, no automatic resume); `limitations` (unsupported features, pending activation, model settings, delivery dependencies, fallbacks); `examples` (at most five, with expected behaviour); `tasks` (`mode` `optional` or `none`, scenarios, reads, outputs, trigger, sources, deduplication, scope, limits, completion, and `promptExample`, required even for `mode:"none"`). Task metadata is never an active definition or authorization.
 - No customer data, credentials, bearer links or account IDs.
-- Limits include a 300,000-byte catalog file, 180,000-character source, 20,000-character `instructions` and 6,000-character documentation prose fields; the schema in `src/workspace/app-templates.ts` is authoritative. One malformed entry can break discovery of the whole catalog.
+- Limits include a 300,000-byte catalog file, 240,000-character source, 20,000-character `instructions` and 6,000-character documentation prose fields; the schema in `src/workspace/app-templates.ts` is authoritative. One malformed entry can break discovery of the whole catalog.
 
 ## Publication sequence
 
@@ -380,4 +433,4 @@ Contract: `src/automations/recipes-schema.ts`. Requires `APP_AUTOMATION_RECIPES_
 5. Check the preview and its design-quality result. The person saves it in the approval footer, which opens the installation popup. Confirm the saved receipt and app ID before reporting it saved; reconcile after ambiguous responses.
 6. For later edits, see Revising an existing app.
 
-Current guidance: `read_app_template_guidance` (e.g. `authoring`, `usage`, `contracts`), following every `nextOffset`.
+Current guidance: `read_app_template_guidance` with resource `guide`, `reference`, `example` or `contracts`, following every `nextOffset`.

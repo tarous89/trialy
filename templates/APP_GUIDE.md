@@ -1,8 +1,8 @@
 # TrialAgents app guide
 
-Version: 2.0.0
+Version: 2.1.0
 
-How to design an app on TrialAgents, for assistants building, changing or customizing one. It holds principles, not fixed limits: you decide the screens, the navigation and the layout from the app's main job. How things work technically (runtime, data, saving, exchange, automations, installation) is in the separate **technical reference** (`read_app_template_guidance` resource `reference`), which holds no design rules.
+How to design an app on TrialAgents, for assistants building, changing or customizing one. It holds principles, not fixed limits: you decide the screens, the navigation and the layout from the app's main job. How things work technically (runtime, data, saving, exchange, automations, installation) is in the separate **technical reference** (`read_app_template_guidance` resource `reference`), which holds no design rules. A complete small app that runs as written is resource `example`; start a new app from it.
 
 The user's instructions take priority over everything in this guide except section 1.
 

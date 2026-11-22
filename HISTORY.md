@@ -11,6 +11,8 @@ Server speed (P6, P8), same review: an app request makes far fewer database look
 
 One server run per edit (P5): an edit a v2 app already shows in the browser is saved with one run of the app instead of two. The browser takes the saved rows, makes its screen again itself and refreshes the changed tables' data in one background read; the rest of what it had loaded is kept. The person's Undo list comes with the save, so the browser's own screen still offers Undo.
 
+Guidance for assistants (G11, G12), guide version 2.1.0, same review: the technical reference now gives the exact shape of every data call and its result, the events an app receives, the markup the frame keeps, and the kit's arguments and classes; a complete example app is served as resource `example` and is run by the tests as written; guidance, tool descriptions and the workspace guide say that new apps use the v2 contract; stale wording (code never runs in the browser, the assistant confirms an app change, ChatGPT-only wording served to Claude) is corrected. The plugin packages carry the same text once they are published again (O3).
+
 Tests: `app-update` (real Contracts 1.1.1 to 2.0.0, also after withdrawal), `frame-engine`, `data-room-v2-integration`, `read-metadata` (batched table lookups), and the chart-attribute check in `tests/visual/frame-runtime.spec.cjs`.
 
 ## 21 November 2026 — Platform decisions, session 7: catalog rebuild
