@@ -33,3 +33,23 @@ test('PostgreSQL parser functions are excluded from cloned transaction metadata'
  const db:Database={query:async()=>{calls++;return {rows:[row] as any,rowCount:1,_parsers:[(value:string)=>value],_types:{getTypeParser:()=>String}};},transaction:fn=>fn(db),close:async()=>{}};
  await withReadMetadata(db,async inner=>{const first=await inner.query(sql,['t','w']);assert.deepEqual(Object.keys(first).sort(),['rowCount','rows']);first.rows[0].fields[0].key='changed';const second=await inner.query(sql,['t','w']);assert.equal(second.rows[0].fields[0].key,'name');assert.equal(second.rowCount,1);});assert.equal(calls,2);assert.equal(row.fields[0].key,'name');
 });
+/* P6: the definitions of an app's tables are loaded with one query per unit and verified with one query at its end. */
+test('table definitions are loaded and verified together, give the same rows, and a change still discards the response',async()=>{
+ const {primeEntityTypes}=await import('../src/db/read-metadata.js');
+ const w='11111111-1111-4111-8111-111111111111',ids=['aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa1','aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa2','aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa3'];
+ const fields='SELECT fields FROM entity_types WHERE id=$1 AND workspace_id=$2';
+ let table:Record<string,any>=Object.fromEntries(ids.slice(0,2).map((id,i)=>[id,{id,workspace_id:w,name:'T'+i,version:1,fields:[{key:'name'}]}])),single=0,batch=0;
+ const db:Database={query:async(q:string,v:any=[])=>{
+  if(q.includes('id=ANY')){batch++;return {rows:(v[1] as string[]).filter(id=>table[id]).map(id=>structuredClone(table[id]))} as any;}
+  single++;const row=table[v[0]];return {rows:row?[q.startsWith('SELECT fields')?{fields:structuredClone(row.fields)}:structuredClone(row)]:[]} as any;},transaction:fn=>fn(db),close:async()=>{}};
+ await withReadMetadata(db,async scoped=>{
+  await primeEntityTypes(scoped,w,ids);
+  for(const id of ids){assert.deepEqual((await scoped.query(sql,[id,w])).rows,table[id]?[table[id]]:[]);assert.deepEqual((await scoped.query(fields,[id,w])).rows,table[id]?[{fields:table[id].fields}]:[]);}
+ });
+ assert.equal(single,0,'no lookup per table');assert.equal(batch,2,'one query to load and one to verify');
+ // A table changed, or removed, while the unit ran: nothing is returned.
+ await assert.rejects(withReadMetadata(db,async scoped=>{await primeEntityTypes(scoped,w,ids);await scoped.query(sql,[ids[0],w]);table={...table,[ids[0]]:{...table[ids[0]],version:2}};return 'must not return';}),/Access or schema changed/);
+ await assert.rejects(withReadMetadata(db,async scoped=>{await primeEntityTypes(scoped,w,ids);await scoped.query(fields,[ids[1],w]);const {[ids[1]]:gone,...rest}=table;table=rest;return 'must not return';}),/Access or schema changed/);
+ // Outside a unit, and for one table, nothing is loaded ahead.
+ batch=0;await primeEntityTypes(db,w,ids);await withReadMetadata(db,scoped=>primeEntityTypes(scoped,w,[ids[0]]));assert.equal(batch,0);
+});

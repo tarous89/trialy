@@ -47,7 +47,7 @@ export class AppCapabilities{
  readonly pageRecords=new Map<string,any>();
  readonly resolvedPages=new Map<string,any>();
  readonly pageReader:DerivedReader;
- private batchedReads=0;
+ private batchedReads=0;private inBatch=false;
  constructor(private host:CapabilityHost,private a:Actor,private w:string,private ctx:CapabilityContext){
   const bound=Object.fromEntries(ctx.content.bindings.map((b:any)=>[b.typeId,b.fields]));
   this.pageReader=new DerivedReader(host.db,a,w,Object.keys(bound),bound);
@@ -84,7 +84,9 @@ export class AppCapabilities{
   if(name==='records.readMany'){
    const v=z.object({reads:z.array(z.unknown()).min(1).max(READ_BATCH_LIMIT)}).strict().parse(value);
    if((this.batchedReads+=v.reads.length)>LIMITS.calls)fail(400,'capability_limit','This app made too many reads');
-   const results=[];for(const read of v.reads){ctx.signal?.throwIfAborted();results.push(await this.call('records.read',read));}
+   // The app is rechecked once for the batch, before its first read; each read is still checked against its own table.
+   await ctx.recheck?.();
+   const results=[];this.inBatch=true;try{for(const read of v.reads){ctx.signal?.throwIfAborted();results.push(await this.call('records.read',read));}}finally{this.inBatch=false;}
    return {results};
   }
   // P3 (4.3): totals and calculations on the full matching data, never just the loaded page.
@@ -99,7 +101,7 @@ export class AppCapabilities{
   if(name==='records.read'){
    if((ctx.draftTables??[]).includes((value as any)?.typeId)){const v=frontendRead.parse(value);return {rows:[],total:0,limit:v.limit,offset:v.offset};}
    const v=frontendRead.parse(value),binding=content.bindings.find((b:any)=>b.typeId===v.typeId);if(!binding)fail(403,'binding_required','Table is not bound to this component');
-   await ctx.recheck?.();
+   if(!this.inBatch)await ctx.recheck?.();
    let linkedTable;try{linkedTable=await this.tableAccess(v.typeId);}catch(e){if((e as any).status===403||(e as any).status===404)return {unavailable:true,message:'This table is restricted',rows:[],total:null,limit:v.limit,offset:v.offset};throw e;}const readableKeys=visibleFields(linkedTable.type.fields,linkedTable.policy,a).filter(f=>binding.fields.includes(f.key)).map(f=>f.key);
    if(Object.keys(v.filters).length>8||Object.keys(v.filters).some(k=>!readableKeys.includes(k)))fail(403,'filter_field','Filter only readable bound fields');
    const sortField=v.sort?linkedTable.type.fields.find((f:any)=>f.key===v.sort!.field&&readableKeys.includes(f.key)):undefined;

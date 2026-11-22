@@ -8,7 +8,7 @@ import {appAutomationCopies,copyAppAutomations} from '../automations/copy.js';
 import {monitoringReceiptRuns} from '../app-services/monitoring-guard.js';
 import {appSections,sectionGrant,projectAppSections,validateSectionRevision} from '../domain/app-sections.js';
 import {openRuntimeView,assertRuntimeReadAccess,assertRuntimeScope,assertRuntimeWriteSchema,incompatible} from './runtime-view.js';
-import {withReadMetadata,ambientReadDatabase,readMetadataScope} from '../db/read-metadata.js';
+import {withReadMetadata,ambientReadDatabase,readMetadataScope,primeEntityTypes} from '../db/read-metadata.js';
 import {isCatalogSource} from './catalog-source.js';
 import {browserMode,effectiveSource,isV2Source,runtimeCssFor,runtimeStyles,sourceDigest,SEED_BYTES} from './browser-runtime.js';
 import {SEEDED_READS} from '../frame-engine/local-runtime.js';
@@ -64,7 +64,10 @@ import {isExchangeOperation,exchangeReview as externalExchangeReview,commitExcha
 const exchangeRecords=(op:any)=>{const r=isExchangeOperation(op)?(op as any).records:null;return r?{kind:'apply_component_records' as const,componentId:r.componentId,expectedVersion:r.expectedVersion,...(r.viewId?{viewId:r.viewId}:{}),changes:r.changes}:null;};
 const withoutRecords=(op:any)=>{const {records,...rest}=op;return rest;};
 const J=JSON.stringify;
-const activeFrontends=new FrontendQueue(2),activeDraftFrontends=new FrontendQueue(1,8);
+/** P8: how many app runs one server process executes at once (default 2). Each run is its own short-lived process of
+ * up to about 100 MB, so raise APP_RUNTIME_CONCURRENCY (1 to 16) only on an instance with the memory and CPU for it. */
+const runSlots=()=>{const n=Number(process.env.APP_RUNTIME_CONCURRENCY??2);return Number.isInteger(n)&&n>=1&&n<=16?n:2;};
+const activeFrontends=new FrontendQueue(runSlots(),Math.max(16,runSlots()*8)),activeDraftFrontends=new FrontendQueue(1,8);
 /** 5.1: a screen rendered after a save replaces everything the frame had stored for this app. */
 const resetBrowser=(r:any)=>r?.browser?.mode&&r.browser.mode!=='server'?{...r,browser:{...r.browser,reset:true}}:r;
 const customFrontendSession=Symbol('custom frontend needs independent capability transactions');
@@ -99,6 +102,7 @@ export class WorkspaceFoundation {
   const c=(await tx.query('SELECT * FROM workspace_components WHERE id=$1 AND workspace_id=$2',[id,w])).rows[0];
   if(!c||c.deleted_at)fail(404,'not_found','Component not found');
   if(c.source_access!=='bindings')await this.componentSourcePolicy(tx,a,w,c.source);
+  await primeEntityTypes(tx,w,(Array.isArray(c.bindings)?c.bindings:[]).map((b:any)=>b?.typeId).filter((t:any)=>typeof t==='string'));
   const p=await access(tx,a,w);if(!namesOnly)requireAssistantApps(p,a,false);const chain=await this.nodeAccess(tx,a,w,c.project_id);
   if((p.role!=='owner'&&c.allowed_users!==null&&!c.allowed_users.includes(a.userId))||(a.origin==='ai'&&!c.ai_enabled))fail(404,'not_found','Component not found');
   const {role:app_role}=await toolPolicy(tx,a,p,id);if(validateBindings&&!standardTracker(c.source))await this.componentBindings(tx,a,w,c.archived?await this.availableBindings(tx,w,c.bindings):c.bindings,c.archived);if(!namesOnly)await this.componentAssets(tx,a,w,c.assets);
@@ -222,10 +226,12 @@ export class WorkspaceFoundation {
   let content:any,version:number|undefined,viewId=request.viewId;let draftTables:string[]=[];let draftSchema=false;
   if(request.componentId){const runtime=await unit(()=>this.runtimeComponent(this.db,a,w,request.componentId!,request.expectedVersion,viewId));assertRuntimeScope(runtime.latest,runtime.c);content=runtime.c;version=content.version;viewId=runtime.view.id;}
   else {const draft=(await this.db.query('SELECT * FROM workspace_previews WHERE id=$1 AND workspace_id=$2 AND user_id=$3 AND expires_at>now()',[request.previewId,w,a.userId])).rows[0];if(!draft||!['save_component','create_tracker'].includes(draft.body.operation.kind)||draft.body.operation.content.format!=='frontend-js')fail(404,'not_found','Code preview unavailable');await this.validate(this.db,a,w,draft.body.operation);content={...draft.body.operation.content,project_id:draft.body.operation.setup?.projectId??draft.body.operation.projectId};draftTables=(draft.body.operation.setup?.newTables??[]).map((t:any)=>t.id);draftSchema=!!(draftTables.length||draft.body.operation.setup?.extendTables?.length);}
+  // P6: each unit below loads the definitions of the app's tables in one query instead of one query per table.
+  const boundTypes=(Array.isArray(content.bindings)?content.bindings:[]).map((b:any)=>b?.typeId).filter((t:any)=>typeof t==='string'),tableUnit=<T>(read:()=>Promise<T>)=>unit(async()=>{await primeEntityTypes(this.db,w,boundTypes);return read();});
   signal?.throwIfAborted();
   if(this.frontendSession===true&&!standardTracker(content.source))throw customFrontendSession;
   if(content.sectionsEmpty)return {html:'<p>No sections are shared with you.</p>',css:'',state:{},version,viewId,accessVersion:(await access(this.db,a,w)).access_version,accessStamp:await this.componentAccessStamp(a,w,content)};
-  if(!draftSchema&&!request.viewId)await unit(()=>validateResource(this.db,a,w,content,true)); // create_tracker validation checks generated bindings, including virtual tables.
+  if(!draftSchema&&!request.viewId)await tableUnit(()=>validateResource(this.db,a,w,content,true)); // create_tracker validation checks generated bindings, including virtual tables.
   if(request.event.action.startsWith('bound:')||request.event.action==='bound-batch'){
    if(!request.componentId||!content.manifest)fail(403,'preview_read_only','Open a saved connected resource');
    const edits=request.event.action==='bound-batch'?Object.entries(request.event.form):[[request.event.action,request.event.value]];
@@ -262,10 +268,10 @@ export class WorkspaceFoundation {
    signal?.throwIfAborted();
    // Only queued admission needs to repeat the checks made just above.
    if(release?.waited){
-    if(request.componentId){const runtime=await this.runtimeComponent(this.db,a,w,request.componentId,version,viewId);assertRuntimeScope(runtime.latest,content);}
+    if(request.componentId){const runtime=await unit(()=>this.runtimeComponent(this.db,a,w,request.componentId!,version,viewId));assertRuntimeScope(runtime.latest,content);}
     else {const draft=(await this.db.query('SELECT * FROM workspace_previews WHERE id=$1 AND workspace_id=$2 AND user_id=$3 AND expires_at>now()',[request.previewId,w,a.userId])).rows[0];if(!draft)fail(404,'not_found','Code preview unavailable');await this.validate(this.db,a,w,draft.body.operation);}
    }
-   const currentPolicy=await access(this.db,a,w),accessStamp=request.componentId?await unit(()=>this.componentAccessStamp(a,w,content)):undefined;
+   const currentPolicy=await access(this.db,a,w),accessStamp=request.componentId?await tableUnit(()=>this.componentAccessStamp(a,w,content)):undefined;
    const tracker=knownTracker,pages:any[]=[];
    // 5.1, 5.2, 5.3: whether the frame may also run this app, and the reads it needs to make the next screens itself.
    const v2=!tracker&&isV2Source(content.source),code=tracker?content.source:effectiveSource(content.source);
@@ -376,13 +382,13 @@ export class WorkspaceFoundation {
    const record=(entry:any)=>{if(!browser||browser.mode==='server'||seedBytes>SEED_BYTES)return;const bytes=Buffer.byteLength(J(entry));seedBytes+=bytes;if(seedBytes<=SEED_BYTES)seed.push(entry);};
    const output=(v2?frontendOutputV2:frontendOutput).parse(await (tracker?((_:string,input:any,call:any)=>renderStandard(tracker.config,tracker.theme,input,call)):execute)(code,{...baseInput,state:request.state,event:request.event},async(name,value)=>{
     if(!SEEDED_READS.has(name))sideEffects=true;
-    let result;try{result=await (READ_CAPABILITIES.has(name)?unit(()=>handler(name,value)):handler(name,value));}catch(e){if(SEEDED_READS.has(name)&&e instanceof AppError&&e.status<500)record({name,input:value,error:e.message});throw e;}
+    let result;try{result=await (READ_CAPABILITIES.has(name)?tableUnit(()=>handler(name,value)):handler(name,value));}catch(e){if(SEEDED_READS.has(name)&&e instanceof AppError&&e.status<500)record({name,input:value,error:e.message});throw e;}
     if(tracker&&name==='records.read')pages.push({request:value,result});else if(SEEDED_READS.has(name))record({name,input:value??{},result});return result;},signal,release?.detachUntil)) as any;
    signal?.throwIfAborted();
    if(!tracker&&(output.controls?.length??0)>100)fail(400,'control_limit','Custom interfaces support at most 100 controls');
    if(Buffer.byteLength(J(output.state))>100000)fail(400,'state_limit','Interface state is too large');
    // Recheck after execution; a concurrent revoke/edit must not release its output.
-   if(request.componentId){const runtime=await this.runtimeComponent(this.db,a,w,request.componentId,version,viewId);assertRuntimeScope(runtime.latest,content);if((await access(this.db,a,w)).access_version!==currentPolicy.access_version)fail(409,'access_changed','Permissions changed while this action was running. Try again.');}
+   if(request.componentId){const runtime=await unit(()=>this.runtimeComponent(this.db,a,w,request.componentId!,version,viewId));assertRuntimeScope(runtime.latest,content);if((await access(this.db,a,w)).access_version!==currentPolicy.access_version)fail(409,'access_changed','Permissions changed while this action was running. Try again.');}
    else {const draft=(await this.db.query('SELECT * FROM workspace_previews WHERE id=$1 AND workspace_id=$2 AND user_id=$3 AND expires_at>now()',[request.previewId,w,a.userId])).rows[0];if(!draft)fail(409,'preview_expired','Preview unavailable');await this.validate(this.db,a,w,draft.body.operation);}
    const runtimeCss=tracker?'':runtimeCssFor(content.source,output.html);
    if(runtimeCss.length+output.css.length>50000)fail(400,'css_limit','App styles exceed the frame size limit.');
@@ -406,7 +412,8 @@ export class WorkspaceFoundation {
     const resolved=resolvedCache.get(record.id)??await controlReader.read(record);resolvedCache.set(record.id,resolved);
     controls.push({recordId:item.recordId,fieldId:item.fieldId,slot:item.slot,label:definition.label??field.name,kind:field.kind,display:tracker?.config.tabs.flatMap((t:any)=>t.columns).find((c:any)=>c.fieldId===definition.id)?.display??field.renderer,rendered:resolved.display?.[field.key],multiple:!!field.multiple,value:resolved.data[field.key]??null,options:field.options??[],editable:!!request.componentId&&definition.mode==='write'&&!derived(field)&&!policy.archived&&policy.write_fields.includes(field.key)&&['text','number','money','date','boolean','select'].includes(field.kind),action:'bound:'+definition.id+':'+record.id+':'+record.version});
    }
-   if(request.componentId){const runtime=await this.runtimeComponent(this.db,a,w,request.componentId,version,viewId);assertRuntimeScope(runtime.latest,content);if((await access(this.db,a,w)).access_version!==currentPolicy.access_version)fail(409,'access_changed','Permissions changed while this action was running. Try again.');}
+   // The check after execution is repeated only when bound controls were read since (v1 apps); otherwise nothing ran in between.
+   if(request.componentId&&(output.controls?.length??0)>0){const runtime=await unit(()=>this.runtimeComponent(this.db,a,w,request.componentId!,version,viewId));assertRuntimeScope(runtime.latest,content);if((await access(this.db,a,w)).access_version!==currentPolicy.access_version)fail(409,'access_changed','Permissions changed while this action was running. Try again.');}
    if(new Set(controls.map(c=>c.slot)).size!==controls.length)fail(400,'duplicate_control','Control slots must be unique');
    signal?.throwIfAborted();
    // Once this write transaction starts, let it finish and retain its receipts.
@@ -502,11 +509,13 @@ export class WorkspaceFoundation {
   // changes still take it exclusively and so never interleave with a save. Records themselves are locked row by row.
   await tx.query('SELECT id FROM workspaces WHERE id=$1 FOR SHARE',[w]);
   const unchanged:any[]=[],changes=await this.mergeConcurrentEdits(tx,a,w,v,unchanged);
-  await this.validate(tx,a,w,{kind:'apply_component_records',componentId:v.componentId,expectedVersion:v.expectedVersion,...(v.viewId?{viewId:v.viewId}:{}),changes:[...changes,...unchanged]});
+  // P6: the checks before the write only read; inside this unit a repeated permission or table lookup runs once and is
+  // verified before the unit ends. Nothing is written inside it.
+  await withReadMetadata(adapter(tx),db=>this.validate(db,a,w,{kind:'apply_component_records',componentId:v.componentId,expectedVersion:v.expectedVersion,...(v.viewId?{viewId:v.viewId}:{}),changes:[...changes,...unchanged]}));
   if(!changes.length){requireAssistantChange(await access(tx,a,w,true),a,'bulk_records');const result={status:'saved',requestKey:v.requestKey,rows:[],invalidated:[],undoId:null,unchanged:true,savedAt:new Date().toISOString()};await tx.query('INSERT INTO commit_receipts(preview_id,actor_id,workspace_id,digest,result) VALUES($1,$2,$3,$4,$5)',[v.requestKey,a.userId,w,digest,J(result)]);return result;}
   const service=new Service(adapter(tx));
   const applied=await service.applyRecordChanges(tx,a,w,changes as RecordChange[],{kind:'approval',id:v.requestKey,digest,context:'app_direct_edit'});
-  const component=await this.component(tx,a,w,v.componentId,!v.viewId);
+  const component=await withReadMetadata(adapter(tx),db=>this.component(db,a,w,v.componentId,!v.viewId));
   await this.linkCreatedRecords(tx,a,w,component,changes,applied.objects,applied.policy,{kind:'approval',id:v.requestKey,digest,context:'app_direct_edit'});
   await audit(tx,a,applied.policy,'component.records_applied',v.componentId,null,{componentVersion:v.expectedVersion,records:applied.objects,direct:true,requestKey:v.requestKey});
   const rows=await this.appRows(tx,a,w,component,applied.objects.map(o=>o.id));

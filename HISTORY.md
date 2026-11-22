@@ -7,7 +7,9 @@ A review of sessions 1 to 7 ([notes](docs/scopes/PLATFORM_DECISIONS_IMPLEMENTATI
 - **A rebuilt version can be approved.** The browser test follows the versions switched on in `templates/browser-runtime.json`, not the seed; the catalog guide gives the real approval steps.
 - **Copies of a withdrawn version are not stranded:** they can still upgrade and still run in the browser.
 
-Tests: `app-update` (real Contracts 1.1.1 to 2.0.0, also after withdrawal), `frame-engine`, `data-room-v2-integration`, and the chart-attribute check in `tests/visual/frame-runtime.spec.cjs`.
+Server speed (P6, P8), same review: an app request makes far fewer database lookups without dropping a check. Table definitions for all of an app's tables load and verify in one query each per unit of work; every app check shares its lookups; a read batch rechecks the app once; a direct save shares lookups in its checks. Measured locally on Partnerships 3.0.0: app open 435 to 80 statements, a server click 463 to 88, a 12-read batch 78 to 34, a one-field save 152 to 58 ([details](docs/PERFORMANCE_MEASUREMENT.md#fewer-lookups-per-app-request-22-november-2026)). `APP_RUNTIME_CONCURRENCY` sets how many app runs a server process executes at once (default 2).
+
+Tests: `app-update` (real Contracts 1.1.1 to 2.0.0, also after withdrawal), `frame-engine`, `data-room-v2-integration`, `read-metadata` (batched table lookups), and the chart-attribute check in `tests/visual/frame-runtime.spec.cjs`.
 
 ## 21 November 2026 — Platform decisions, session 7: catalog rebuild
 

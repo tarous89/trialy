@@ -265,3 +265,25 @@ Each sample carries the time, the host (`web`, `chatgpt`, `claude`, `public`), a
 - Only the web host sends samples. ChatGPT and Claude need a transport inside the embedded hosts; that is part of package 5.8. Phones are covered through the web host's `phone` width class.
 - `interaction` currently includes the server round trip of every click, because apps still run on the server. It is the baseline the browser runtime (session 5) is measured against.
 - **No production baseline exists yet.** The first real numbers appear after this change is released and used. Record them here, with the date and sample counts, before session 4 starts changing the save path. Lab numbers from this repository's synthetic fixtures are not a substitute and are not recorded as a baseline.
+
+## Fewer lookups per app request (22 November 2026)
+
+From the review after the platform decisions (P6, P8). No check was removed; repeated lookups are shared inside one unit of work and verified before that unit returns, as before.
+
+- **Table definitions together.** A unit loads the definitions of all of an app's tables with one query and verifies them with one query at its end (`primeEntityTypes` and the batched verification in `src/db/read-metadata.ts`), instead of one or two queries per table each time.
+- **Every app check is a unit.** The checks after queued admission and after execution now share lookups like the first check does. The second check after execution runs only when bound controls were read in between (v1 apps); otherwise nothing ran between the two.
+- **One app recheck per read batch.** `records.readMany` rechecks the app once before its reads; each read is still checked against its own table.
+- **Direct saves.** The checks before the write, and the app read after it, each share lookups inside their own unit. Nothing is written inside a unit.
+- **Concurrent app runs.** `APP_RUNTIME_CONCURRENCY` sets how many app runs one server process executes at once (default 2, 1 to 16). Each run is its own process of up to about 100 MB; raise it only on an instance with the memory and CPU for it.
+
+Local measurement (Partnerships 3.0.0, 17 tables, empty workspace, statements per request; times are not comparable with production):
+
+| Request | Before | After |
+| --- | --- | --- |
+| App open (first screen) | 435 | 80 |
+| A click that runs on the server | 463 | 88 |
+| `read_app_data`, one batch of 12 reads | 78 | 34 |
+| `save_app_records`, one field | 152 | 58 |
+
+Not changed here: the server still runs the app twice for an edit in a v2 app (once to save, once to show the saved screen), and each run starts a new process that parses the whole app.
+

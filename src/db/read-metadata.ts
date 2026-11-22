@@ -24,6 +24,12 @@ const eligible=(sql:string)=>{
 // Bounded per request. Large accounts need one entry per app, project and table in each actor scope;
 // beyond the bound every lookup would be repeated in full.
 const ENTRY_LIMIT=4096;
+// Table definitions are looked up one table at a time by many checks. Inside one unit they can be loaded for all of an
+// app's tables in one query (primeEntityTypes) and verified in one query at the end; the results are the same rows.
+const TYPE_ROW='SELECT * FROM entity_types WHERE id=$1 AND workspace_id=$2',TYPE_FIELDS='SELECT fields FROM entity_types WHERE id=$1 AND workspace_id=$2';
+const TYPE_BATCH='SELECT * FROM entity_types WHERE workspace_id=$1 AND id=ANY($2::uuid[])';
+const UUID=/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+const primers=new WeakMap<Database,(workspaceId:string,typeIds:string[])=>Promise<void>>();
 const sessions=new WeakSet<Database>();
 /** Request-local reuse with an uncached final check of every reused result.
  * A concurrent permission/schema/source change rejects the entire response.
@@ -51,15 +57,35 @@ export async function withReadMetadata<T>(db:Database,read:(db:Database)=>Promis
  };
  const scoped:Database={query,transaction:fn=>db.transaction(fn),close:async()=>{}};
  sessions.add(scoped);originals.set(scoped,db);
+ // One query loads the definitions of several tables into this unit. Entries start unused: one that is then used is
+ // verified at the end like any other reused result.
+ primers.set(scoped,async(workspaceId,typeIds)=>{
+  const context=structuredClone(databaseContext()),keyOf=(sql:string,typeId:string)=>JSON.stringify([context,sql,[typeId,workspaceId]]);
+  const missing=[...new Set(typeIds)].filter(t=>UUID.test(t)&&!entries.has(keyOf(TYPE_ROW,t)));
+  if(missing.length<2||entries.size+missing.length*2>ENTRY_LIMIT)return;
+  let rows:any[];try{rows=(await db.query(TYPE_BATCH,[workspaceId,missing])).rows;}catch{return;}
+  const by=new Map(rows.map((r:any)=>[r.id,r]));
+  for(const t of missing){const row=by.get(t);
+   for(const [sql,found] of [[TYPE_ROW,row?[row]:[]],[TYPE_FIELDS,row?[{fields:row.fields}]:[]]] as [string,any[]][]){const key=keyOf(sql,t);if(!entries.has(key))entries.set(key,{sql,values:[t,workspaceId],context,result:Promise.resolve({rows:found,rowCount:found.length}),hits:0});}}
+ });
  try{
   const value=await read(scoped);
-  // Deliberately bypass the cache. Bounded sequential checks avoid pool floods.
-  for(const entry of entries.values())if(entry.hits){
+  const changed=()=>fail(409,'access_changed','Access or schema changed; reload this page');
+  // Deliberately bypass the cache. Table definitions are verified together, one query per workspace and caller.
+  const tables=new Map<string,{context:Entry['context'];workspaceId:string;entries:Entry[]}>();
+  for(const entry of entries.values())if(entry.hits&&(entry.sql===TYPE_ROW||entry.sql===TYPE_FIELDS)&&UUID.test(String(entry.values[0]))){
+   const key=JSON.stringify([entry.context,entry.values[1]]),group=tables.get(key)??{context:entry.context,workspaceId:entry.values[1] as string,entries:[] as Entry[]};group.entries.push(entry);tables.set(key,group);}
+  for(const group of tables.values()){
+   const current=await withDatabaseContext(group.context,()=>db.query(TYPE_BATCH,[group.workspaceId,[...new Set(group.entries.map(e=>e.values[0]))]])),by=new Map(current.rows.map((r:any)=>[r.id,r]));
+   for(const entry of group.entries){const row=by.get(entry.values[0]),now=entry.sql===TYPE_ROW?(row?[row]:[]):(row?[{fields:row.fields}]:[]);if(!isDeepStrictEqual(now,(await entry.result).rows))changed();}
+  }
+  // Bounded sequential checks avoid pool floods.
+  for(const entry of entries.values())if(entry.hits&&!(entry.sql===TYPE_ROW||entry.sql===TYPE_FIELDS)||entry.hits&&!UUID.test(String(entry.values[0]))){
    const current=await withDatabaseContext(entry.context,()=>db.query(entry.sql,entry.values));
-   if(!isDeepStrictEqual(current.rows,(await entry.result).rows))fail(409,'access_changed','Access or schema changed; reload this page');
+   if(!isDeepStrictEqual(current.rows,(await entry.result).rows))changed();
   }
   return value;
- }finally{entries.clear();sessions.delete(scoped);originals.delete(scoped);}
+ }finally{entries.clear();sessions.delete(scoped);originals.delete(scoped);primers.delete(scoped);}
 }
 /** Explicit freshness boundary for reads that already recheck authorization. */
 export function freshReadDatabase(db:Database):Database{return originals.get(db)??db;}
@@ -80,4 +106,10 @@ export function readMetadataScope<T>(db:Database,read:()=>Promise<T>):Promise<T>
  const base=ambientDatabases.has(db)?originals.get(db):undefined;
  if(!base||ambient.getStore())return read();
  return withReadMetadata(base,scoped=>ambient.run({base,scoped},read));
+}
+/** Loads the definitions of these tables into the current unit with one query (see withReadMetadata). Outside a unit,
+ * or for a single table, it does nothing; every later lookup is then made as before. */
+export async function primeEntityTypes(db:Database|Connection,workspaceId:string,typeIds:string[]):Promise<void>{
+ const scope=ambient.getStore(),target=sessions.has(db as Database)?db as Database:scope&&(scope.base===db||originals.get(db as Database)===scope.base)?scope.scoped:undefined;
+ await (target&&primers.get(target))?.(workspaceId,typeIds);
 }
