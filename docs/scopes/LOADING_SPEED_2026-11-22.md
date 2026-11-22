@@ -17,7 +17,7 @@ The scope changes the order of work, everywhere, to the same three steps:
 
 1. **Frame at once.** The page frame, navigation and headings appear without waiting for any request.
 2. **Basics next.** One small request returns basic details only (names, kinds, dates, counts). On a return visit the last known basics are shown immediately and then checked.
-3. **Details last.** Anything that needs processing (card miniatures, record counts, other tabs' data, checks for newer versions) loads after the screen is usable, in the background.
+3. **Details last.** Anything that needs processing (card miniatures, record counts, other tabs' data, checks for newer versions) loads after the screen is usable, in the background and without the loading bar. In an app, every other tab is prepared this way right after Overview, not when it is clicked.
 
 The work is four build sessions, each one pull request.
 
@@ -90,7 +90,8 @@ Proposed, to be confirmed against the L1.0 baseline. "Shown" means visible and u
 | Archived apps list | within 0.3 s of expanding | at once | at most 3 queries for any number of apps |
 | Templates | within 0.3 s | at once | 1 query; nothing re-read while the catalog is unchanged |
 | Individual app, Overview | within 1 s | frame and name at once, content within 0.5 s | at most 25 queries; app code not sent when the browser already holds it |
-| Individual app, other tabs | at once when prepared; otherwise within 0.5 s | same | one batched read per tab |
+| Individual app, other tabs | prepared in the background right after Overview, so at once; if opened before that finishes, layout at once and data within 0.5 s | same | one batched read for all other tabs, or one per tab when a tab is too large |
+| Loading bar | stops when the main content is shown, on every surface | same | none |
 | Plugins, any surface | no round trip between the assistant's result and first paint | same | as above |
 
 One limit that cannot be removed: in ChatGPT and Claude the assistant itself takes time to decide to open TrialAgents and to deliver the result. That time is outside the platform. Everything after the result arrives is in scope.
@@ -111,7 +112,9 @@ One limit that cannot be removed: in ChatGPT and Claude the assistant itself tak
 
 **F. App code is downloaded once.** App code is addressed by its fingerprint and cached by the browser permanently, like the app frame already is (`src/server/app.ts:44`). Opening an app sends data, not 200 KB of code.
 
-**G. Overview first.** Opening an app loads what Overview needs. Other tabs' data is fetched when the tab is opened or prepared in the background after Overview is shown. The v2 contract already allows a read to return "pending" (`docs/FRONTEND_CODE.md`).
+**G. Overview first, every other tab straight after.** Opening an app loads what Overview needs and shows it. As soon as Overview is visible, every other tab is prepared in the background, automatically and without the loading bar, so that opening a tab needs no request. A tab opened before its preparation has finished shows its layout at once and fills in when its data arrives; that wait joins the request already running rather than starting a second one. The v2 contract already allows a read to return "pending" (`docs/FRONTEND_CODE.md`).
+
+**I. The loading bar follows the main content only.** On every surface and host the global loading bar stops when the main content is shown: the cards, the template list, an app's Overview. Details that are still loading (miniatures, counts, other tabs, version checks) never start the bar and never keep it visible. A detail that is still loading shows a quiet placeholder in its own place. The bar remains for what a person starts on purpose: a search, a save, an explicit Refresh.
 
 **H. Permission results are reused inside one request, never between requests.** A request works out the person's access once and reuses it for every table and read in that request. Nothing about access is remembered across requests, so removing access still takes effect on the next request.
 
@@ -128,7 +131,7 @@ Each surface lists what changes on each host. "Both plugins" means ChatGPT and C
 | L1.0 | Baseline: read production logs and `ux:report`; add timings for Apps home, archive and templates next to the existing app timings; add query-count tests that hold the section 3 budgets | yes | yes |
 | L1.1 | Lean app index (A) with a test that compares it with today's per-app check on generated accounts, both directions | yes | yes |
 | L1.2 | Apps home reads the index; database-side paging and sorting; standalone automations, links and older automations in set queries (C4, C5) | yes | yes |
-| L1.3 | Card miniatures as a later batched request for visible cards only (B); cards never wait for them | yes | yes |
+| L1.3 | Card miniatures as a later batched request for visible cards only (B); cards never wait for them. Loading bar rule (I) applied to every surface, with browser tests that hold a detail request open and check the bar is gone | yes | yes |
 | L1.4 | Archived count comes with the index; expanded list in at most 3 queries, record and automation counts as later details (C7) | yes | yes |
 | L1.5 | Frame at once, one start request, split script (C) | yes | not applicable |
 | L1.6 | "Open workspace" result carries the first index page; the widget paints from it (E) | not applicable | yes |
@@ -140,7 +143,7 @@ Each surface lists what changes on each host. "Both plugins" means ChatGPT and C
 | L2.1 | One-pass open: the app is read once, access worked out once per request (H), reads batched; budget 25 queries (C11) | yes | yes |
 | L2.2 | App code by fingerprint, cached permanently (F) | yes | yes |
 | L2.3 | Browser-mode apps: the browser builds the first screen from data; the server stops building a copy that is thrown away (C10). Server mode stays as the fallback | yes | yes |
-| L2.4 | Overview first, other tabs on demand or prepared after Overview (G) | yes | yes |
+| L2.4 | Overview first; every other tab prepared in the background right after it, quietly (G). Preparation is paused while the person is saving or the page is hidden, and bounded for very large tabs | yes | yes |
 | L2.5 | App frame and name shown at once when opened from a card; the app frame document and engine are prepared while the Apps page is idle | yes | yes |
 | L2.6 | "Open app" result carries the first screen; account and table list no longer hold the app back (C13) | not applicable | yes |
 | L2.7 | Report which installed apps are in server mode and why; move compatible ones to browser mode; list the rest for the owner (C12) | yes | yes |
@@ -178,6 +181,7 @@ Open points are resolved this way unless the owner says otherwise.
 5. **Server mode stays** as the fallback for apps and hosts that cannot run in the browser.
 6. **No app template changes** in sessions L1 to L3. If Overview-first (L2.4) needs a template change for a catalog app, it is listed for approval rather than made.
 7. **Saved data, receipts and approvals are untouched.** This scope changes reads and the order of loading only.
+8. **Background preparation yields.** It never delays a click, a save or the tab the person actually opened, and it stops when the page is hidden. Tabs prepared in the background are refreshed after a save, as today's prepared screens are.
 
 ---
 
@@ -199,6 +203,7 @@ Open points are resolved this way unless the owner says otherwise.
 | Last known basics show something stale | Marked as being checked; replaced on the server's answer; cleared on sign-out and account change; no records stored |
 | Plugins refuse storage or direct images | Each of L3.3 and L4.1 has a fallback that keeps today's behavior |
 | Browser-only first screen differs from the server's | Server mode fallback; the existing "must be identical" check runs in tests for every switched-on catalog version instead of on every open |
+| Preparing every tab adds server work for tabs nobody opens | One batched read after Overview instead of one per tab; paused when hidden or saving; L1.0 timings show whether a size limit per tab is needed |
 | Budgets drift back | Query-count tests from L1.0 fail the build when a budget is exceeded |
 
 ---
