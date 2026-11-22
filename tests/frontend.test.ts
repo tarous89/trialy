@@ -63,7 +63,7 @@ test('Frontend code: read-only drafts, bound reads, reviewed atomic writes, stal
  await assert.rejects(f.runFrontend(ai,w.id,request));
  const runtime=(f as any).runtimeComponent.bind(f);let checks=0;(f as any).runtimeComponent=async(...args:any[])=>{checks++;return runtime(...args);};
  const final=await f.runFrontend(a,w.id,{componentId:saved.id,expectedVersion:0});assert.equal((final.state as any).data.name,'Concurrent update');
- assert.equal(checks,4); // initial authorization, records.read, and two final freshness checks; no immediate-admission repeat
+ assert.equal(checks,3); // initial authorization, records.read, and the freshness check after execution; no immediate-admission repeat, and no second final check when no bound controls were read
  // The current publication can be native while an authorized older view is
  // custom. Never queue that old view inside the native renderer's transaction.
  const native=await trackerOperation(f,a,w.id,{name:'Native publication',description:'Fixture',omitSource:true,showExample:false,tabs:[{name:'Contacts',typeId:table,columns:[{field:'name'}]}]});
