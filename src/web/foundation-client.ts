@@ -102,6 +102,7 @@ export function foundationClient(api:(path:string,method?:string,body?:unknown,o
  list_archived_items:[`${o}/archived?kind=${encodeURIComponent(v.kind)}${v.typeId?'&typeId='+encodeURIComponent(v.typeId):''}${v.templateId?'&templateId='+encodeURIComponent(v.templateId):''}${v.summaryOnly===undefined?'':'&summaryOnly='+String(v.summaryOnly)}`],
  delete_archived_item:[`${o}/archived/delete`,'POST',clean],
  check_account_home:['/api/account/home/revision'],
+ read_home_snapshots:['/api/account/home/snapshots','POST',v],
  read_account_home:['/api/account/home','POST',Object.fromEntries(Object.entries(v).filter(([k])=>k!=='workspaceId'))],
  read_account_schema:['/api/account/schema','POST',{offset:v.offset??0,limit:v.limit??25}],
  reference_options:[`/api/workspaces/${v.workspaceId}/types/${v.typeId}/references/${encodeURIComponent(v.field)}?q=${encodeURIComponent(v.query??'')}&offset=${v.offset??0}`],

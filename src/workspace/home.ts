@@ -11,14 +11,22 @@ import {access,typeAccess,visibleFields} from '../domain/permissions.js';
 import {assistantEnabled} from '../domain/effective-access.js';
 import {WorkspaceFoundation} from './service.js';
 import {Foundation} from '../foundation/service.js';
+import {appIndex,nodeChain,workspaceNodes} from './app-index.js';
 export const homeQuery=z.object({offset:z.number().int().min(0).default(0),limit:z.number().int().min(1).max(100).default(20),query:z.string().max(200).default(''),projectId:z.string().default(''),kind:z.enum(['all','tracker','form','visualization','automation']).default('all'),sort:z.enum(['updated','name']).default('updated')});
 export async function workspaceHome(db:Database,a:Actor,w:string,input:unknown={},signal?:AbortSignal){signal?.throwIfAborted();const result=await withReadMetadata(cancellableReads(db,signal),db=>workspaceHomeRead(db,a,w,input,signal));signal?.throwIfAborted();return result;}
 async function workspaceHomeRead(db:Database,a:Actor,w:string,input:unknown={},signal?:AbortSignal){
  const q=homeQuery.parse(input);
- const p=await access(db,a,w),f=new WorkspaceFoundation(db),engine=new Foundation(db);
- const [tree,components]=await Promise.all([f.nodes(a,w),f.components(a,w)]);signal?.throwIfAborted();
- const projects=tree.nodes.filter(n=>n.kind==='project'&&!n.effective_archived).map(n=>({id:n.id,name:n.name,createdAt:n.created_at}));
- const resources:any[]=components.filter(c=>!c.archived&&!c.project_archived).map(c=>({id:c.id,name:c.name,kind:['tracker','form','visualization'].includes(c.resource_kind)?c.resource_kind:'generic',source:'component',projectIds:c.project_id?[c.project_id]:[],updatedAt:c.updated_at??c.created_at,description:c.resource_kind==='generic'?'Saved custom interface':''}));
+ // L1.1, L1.2: one lean index of the apps this person may see (no app code), decided with the same rules as the per-app check.
+ const p=await access(db,a,w),f=new WorkspaceFoundation(db),engine=new Foundation(db),nodes=await workspaceNodes(db,w);
+ const index=await appIndex(db,a,w,{policy:p,nodes});signal?.throwIfAborted();
+ const components=index.filter(c=>!c.archived);
+ // Projects, as WorkspaceFoundation.nodes() lists them. A member without full access sees only projects that hold an app they can open.
+ const scoped=p.allowed_types!==null||p.hidden_fields.length,allowed=new Set<string>();
+ if(scoped)for(const c of components)for(const n of chainOrNone(p,a,nodes,c.project_id))allowed.add(n.id);
+ const projects=[...nodes.values()].filter(n=>n.kind==='project'&&(!scoped||allowed.has(n.id))).flatMap(n=>{const chain=chainOrNone(p,a,nodes,n.id);return chain.length&&!chain.some(x=>x.archived)?[{id:n.id,name:n.name,createdAt:n.created_at}]:[];});
+ // Restorable archived apps: the count arrives with the cards (L1.4), with no further request.
+ const archivedApps=index.filter(c=>c.archived).length;
+ const resources:any[]=components.filter(c=>!c.project_archived).map(c=>({id:c.id,name:c.name,kind:['tracker','form','visualization'].includes(c.resource_kind)?c.resource_kind:'generic',source:'component',projectIds:c.project_id?[c.project_id]:[],updatedAt:c.created_at,description:c.resource_kind==='generic'?'Saved custom interface':''}));
  // Automation source is never loaded or executed for Home thumbnails.
  if(a.origin==='ai'?assistantEnabled(p,a):p.ai_enabled&&(p.role==='owner'||p.user_ai)){
   const functions=await engine.functions(a,w),schedules=await engine.schedules(a,w);
@@ -29,7 +37,7 @@ async function workspaceHomeRead(db:Database,a:Actor,w:string,input:unknown={},s
  for(const job of await new Service(db).automations(a,w))resources.push({id:job.id,name:job.name,kind:'automation',source:'legacy',projectIds:[],updatedAt:job.created_at,description:`${job.paused?'Paused':'Active'} · every ${job.interval_minutes} minutes`,status:job.paused?'Paused':'Active'});
  const placements=(await db.query("SELECT 'component' AS source,id AS tool_id,home_project_id AS project_id,home_placement_version AS version FROM workspace_components WHERE workspace_id=$1 AND home_placement_version>0 UNION ALL SELECT 'function',id,home_project_id,home_placement_version FROM foundation_functions WHERE workspace_id=$1 AND home_placement_version>0 UNION ALL SELECT 'collection',id,home_project_id,home_placement_version FROM external_links WHERE workspace_id=$1 AND home_placement_version>0 UNION ALL SELECT 'legacy',id,home_project_id,home_placement_version FROM automations WHERE workspace_id=$1 AND home_placement_version>0",[w])).rows;
  for(let i=resources.length-1;i>=0;i--){const r=resources[i],placement=placements.find(x=>x.source===r.source&&x.tool_id===r.id);r.placementVersion=placement?.version??0;r.canMove=p.role==='owner'||p.role==='editor';
-  if(placement){try{if(placement.project_id)await f.activeNode(db,a,w,placement.project_id);r.projectIds=placement.project_id?[placement.project_id]:[];}catch{resources.splice(i,1);}}
+  if(placement){const chain=placement.project_id?chainOrNone(p,a,nodes,placement.project_id):[];if(placement.project_id&&(!chain.length||chain.some(n=>n.archived)))resources.splice(i,1);else r.projectIds=placement.project_id?[placement.project_id]:[];}
  }
  // ChatGPT can recover its own drafts. Published app lists never include them.
  const previews=a.origin==='ai'?await f.pending(a,w):[];
@@ -40,27 +48,8 @@ async function workspaceHomeRead(db:Database,a:Actor,w:string,input:unknown={},s
  }
  const matches=resources.filter(r=>(!q.projectId||(q.projectId==='unassigned'?r.projectIds.length===0:r.projectIds.includes(q.projectId)))&&(q.kind==='all'||r.kind===q.kind)&&(!q.query||`${r.name} ${r.description}`.toLowerCase().includes(q.query.toLowerCase()))).sort((a,b)=>q.sort==='name'?a.name.localeCompare(b.name)||a.id.localeCompare(b.id):new Date(b.updatedAt).getTime()-new Date(a.updatedAt).getTime()||a.id.localeCompare(b.id));
  const page=matches.slice(q.offset,q.offset+q.limit);
- // Build a bounded, permission-checked miniature without executing saved code.
- const samples=new Map<string,ReturnType<typeof databasePage>>();
- for(const resource of page){signal?.throwIfAborted();
-  const c=components.find(c=>c.id===resource.id);if(!c)continue;
-  try{
-   const saved=(await f.readComponent(a,w,c.id)).component,standard=standardTracker(saved.source);
-   if(standard){
-    const tab=standard.config.tabs.find((t:any)=>t.visible!==false);if(!tab)continue;
-    const sampleArgs={typeId:tab.typeId,limit:3,...(c.manifest?.scope==='project'&&c.project_id?{projectId:c.project_id}:{})},sampleKey=JSON.stringify(sampleArgs);
-    if(!samples.has(sampleKey))samples.set(sampleKey,databasePage(db,a,w,sampleArgs));
-    const sample=await samples.get(sampleKey)!;
-    const columns=tab.columns.filter((col:any)=>col.visible!==false&&sample.table.fields.some((field:any)=>field.key===col.field&&field.readable)).slice(0,4);
-    resource.snapshot={kind:'table',tabs:standard.config.tabs.filter((t:any)=>t.visible!==false).map((t:any)=>t.name).slice(0,4),columns:columns.map((col:any)=>col.label),rows:sample.rows.map((r:any)=>columns.map((col:any)=>{const value=r.data[col.field];return String(Array.isArray(value)?value.join(', '):value??'').slice(0,80);})),total:sample.total};
-   }else if(c.bindings?.length){
-    const binding=c.bindings[0],resolved=await typeAccess(db,a,w,binding.typeId);
-    resource.snapshot={kind:'fields',columns:visibleFields(resolved.type.fields,resolved.policy,a).filter(field=>binding.fields.includes(field.key)).slice(0,4).map(field=>field.name)};
-   }
-  }catch(e){if(![403,404,409].includes((e as any).status))throw e;}
- }
-
- return {projects,resources:page,total:matches.length,nextOffset:q.offset+q.limit<matches.length?q.offset+q.limit:null};
+ // Card miniatures are a later, separate read for the cards on screen (homeSnapshots, L1.3).
+ return {projects,resources:page,total:matches.length,nextOffset:q.offset+q.limit<matches.length?q.offset+q.limit:null,archivedApps};
 }
 
 /** Account Home spans authorized storage containers; each item retains its scope. */
@@ -71,18 +60,55 @@ async function accountHomeRead(db:Database,a:Actor,input:unknown={},signal?:Abor
  const q=homeQuery.parse(input),spaces=await new Service(db).workspaces(a),projects:any[]=[],resources:any[]=[];
  // Stamp BEFORE content; reused permission reads still receive the final freshness check.
  const stamp=await homeRevisionForWorkspaces(db,a,spaces);signal?.throwIfAborted();
- let total=0;
+ // Restorable archived apps per workspace, for each "Show archived" count (L1.4).
+ let total=0;const archivedApps:Record<string,number>={};
  for(const space of spaces){signal?.throwIfAborted();
   let offset=0;
   do{
    // The account already owns cancellation and metadata reuse for this read.
    const page=await workspaceHomeRead(db,a,space.id,{...q,offset,limit:Math.min(100,q.offset+q.limit-offset)},signal);
-   if(offset===0){projects.push(...page.projects.map(p=>({...p,workspaceId:space.id})));total+=page.total;}
+   if(offset===0){projects.push(...page.projects.map(p=>({...p,workspaceId:space.id})));total+=page.total;archivedApps[space.id]=page.archivedApps;}
    resources.push(...page.resources.map(r=>({...r,workspaceId:space.id})));
    if(page.nextOffset===null||page.nextOffset>=q.offset+q.limit)break;
    offset=page.nextOffset;
   }while(true);
  }
  resources.sort((a,b)=>q.sort==='name'?a.name.localeCompare(b.name)||a.id.localeCompare(b.id):new Date(b.updatedAt).getTime()-new Date(a.updatedAt).getTime()||a.id.localeCompare(b.id));
- return {projects,resources:resources.slice(q.offset,q.offset+q.limit),total,nextOffset:q.offset+q.limit<total?q.offset+q.limit:null,...stamp};
+ return {projects,resources:resources.slice(q.offset,q.offset+q.limit),total,nextOffset:q.offset+q.limit<total?q.offset+q.limit:null,archivedApps,...stamp};
+}
+
+/** A project chain as nodeAccess walks it, or none when the person cannot open it. */
+function chainOrNone(p:any,a:Actor,nodes:Map<string,any>,id:string|null){try{return nodeChain(p,a,nodes,id);}catch{return [];}}
+
+export const snapshotQuery=z.object({items:z.array(z.object({workspaceId:z.string().uuid(),id:z.string().uuid()})).max(40)}).strict();
+/**
+ * L1.3 (choice B): card miniatures, read after the cards are shown, for the cards on screen only.
+ * Each app is checked again in this request (component(), typeAccess); nothing comes from the earlier list read.
+ * A miniature that fails is left out: its card keeps its cover. Saved code is never executed.
+ */
+export async function homeSnapshots(db:Database,a:Actor,input:unknown,signal?:AbortSignal){
+ const v=snapshotQuery.parse(input);signal?.throwIfAborted();
+ return withReadMetadata(cancellableReads(db,signal),async db=>{
+  const f=new WorkspaceFoundation(db),samples=new Map<string,ReturnType<typeof databasePage>>(),snapshots:any[]=[];
+  for(const {workspaceId:w,id} of v.items){signal?.throwIfAborted();
+   try{
+    const c=(await f.readComponent(a,w,id)).component;if(c.archived||c.project_archived)continue;
+    const standard=standardTracker(c.source);
+    let snapshot:any=null;
+    if(standard){
+     const tab=standard.config.tabs.find((t:any)=>t.visible!==false);if(!tab)continue;
+     const sampleArgs={typeId:tab.typeId,limit:3,...(c.manifest?.scope==='project'&&c.project_id?{projectId:c.project_id}:{})},sampleKey=JSON.stringify([w,sampleArgs]);
+     if(!samples.has(sampleKey))samples.set(sampleKey,databasePage(db,a,w,sampleArgs));
+     const sample=await samples.get(sampleKey)!;
+     const columns=tab.columns.filter((col:any)=>col.visible!==false&&sample.table.fields.some((field:any)=>field.key===col.field&&field.readable)).slice(0,4);
+     snapshot={kind:'table',tabs:standard.config.tabs.filter((t:any)=>t.visible!==false).map((t:any)=>t.name).slice(0,4),columns:columns.map((col:any)=>col.label),rows:sample.rows.map((r:any)=>columns.map((col:any)=>{const value=r.data[col.field];return String(Array.isArray(value)?value.join(', '):value??'').slice(0,80);})),total:sample.total};
+    }else if(c.bindings?.length){
+     const binding=c.bindings[0],resolved=await typeAccess(db,a,w,binding.typeId);
+     snapshot={kind:'fields',columns:visibleFields(resolved.type.fields,resolved.policy,a).filter(field=>binding.fields.includes(field.key)).slice(0,4).map(field=>field.name)};
+    }
+    if(snapshot)snapshots.push({workspaceId:w,id:c.id,snapshot});
+   }catch(e){if(![403,404,409].includes((e as any).status))throw e;}
+  }
+  return {snapshots};
+ });
 }

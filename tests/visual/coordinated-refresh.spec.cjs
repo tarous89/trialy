@@ -13,7 +13,7 @@ function counters(page){const c={home:0,revision:0,revisionDone:0,archive:0,me:0
 const tick=async(page,ms=30100)=>{await page.clock.fastForward(ms);await page.clock.runFor(120);};
 
 for(const embedded of [false,true])test(`Idle Home checks metadata without rebuilding content or archives (${embedded?'embedded':'web'})`,async({page})=>{
- await page.clock.install();const c=counters(page),{root}=await openHome(page,embedded);await expect.poll(()=>c.archive).toBeGreaterThan(0);
+ await page.clock.install();const c=counters(page),{root}=await openHome(page,embedded);await expect.poll(()=>c.home).toBeGreaterThan(0);await expect(root.getByRole(embedded?'button':'link',{name:'Open Simple app fixture',exact:true})).toBeVisible();expect(c.archive,'the archived count comes with the Home read (L1.4)').toBe(0);
  const start={...c};await tick(page);await expect.poll(()=>c.revisionDone).toBe(start.revisionDone+1);await page.clock.runFor(20);await tick(page);await expect.poll(()=>c.revisionDone).toBe(start.revisionDone+2);
  expect(c.home).toBe(start.home);expect(c.archive).toBe(start.archive);
  await burst(root);await page.clock.runFor(1200);await expect.poll(()=>c.home).toBe(start.home+1);await expect(root.getByRole(embedded?'button':'link',{name:'Open Simple app fixture',exact:true})).toBeVisible();
@@ -25,7 +25,7 @@ test('Hidden pages pause automatic reads and return checks merge while requests 
  await page.clock.install();let hold=false,release;const gate=new Promise(r=>release=r);
  await page.route('**/api/account/home',async route=>{if(hold)await gate;await route.continue();});
  await page.route('**/api/me',async route=>{if(hold)await gate;await route.continue();});
- const c=counters(page),{root}=await openHome(page);await expect.poll(()=>c.archive).toBeGreaterThan(0);const start={...c};
+ const c=counters(page),{root}=await openHome(page);await expect.poll(()=>c.home).toBeGreaterThan(0);await expect(root.getByRole('link',{name:'Open Simple app fixture',exact:true})).toBeVisible();expect(c.archive,'the archived count comes with the Home read (L1.4)').toBe(0);const start={...c};
  await page.evaluate(()=>Object.defineProperty(document,'visibilityState',{configurable:true,get:()=>'hidden'}));await burst(root);await tick(page,60100);expect(c.home).toBe(start.home);expect(c.revision).toBe(start.revision);expect(c.me).toBe(start.me);
  await page.evaluate(()=>Object.defineProperty(document,'visibilityState',{configurable:true,get:()=>'visible'}));hold=true;await burst(root);await page.clock.runFor(120);await expect.poll(()=>c.home).toBe(start.home+1);await expect.poll(()=>c.me).toBe(start.me+1);
  await page.clock.runFor(1100);await burst(root);await page.clock.runFor(1200);expect(c.home).toBe(start.home+1);expect(c.me).toBe(start.me+1);
@@ -79,7 +79,7 @@ test('Open apps keep periodic access checks without automatic execution; explici
 
 test('An embedded host with an older tool catalog falls back to authorized Home reads',async({page})=>{
  await page.clock.install();await page.route('**/fixture/tool',route=>route.request().postDataJSON().name==='check_account_home'?route.fulfill({json:{isError:true,structuredContent:{error:{code:-32601}},content:[{type:'text',text:'Unknown tool check_account_home'}]}}):route.continue());
- const c=counters(page),{root}=await openHome(page,true);await expect.poll(()=>c.archive).toBeGreaterThan(0);const start=c.home;await tick(page);await expect.poll(()=>c.home).toBe(start+1);await expect(root.getByRole('button',{name:'Open Simple app fixture',exact:true})).toBeVisible();
+ const c=counters(page),{root}=await openHome(page,true);await expect.poll(()=>c.home).toBeGreaterThan(0);await expect(root.getByRole('button',{name:'Open Simple app fixture',exact:true})).toBeVisible();expect(c.archive,'the archived count comes with the Home read (L1.4)').toBe(0);const start=c.home;await tick(page);await expect.poll(()=>c.home).toBe(start+1);await expect(root.getByRole('button',{name:'Open Simple app fixture',exact:true})).toBeVisible();
 });
 
 test('A mounted embedded app pauses checks while its platform panel is hidden',async({page})=>{

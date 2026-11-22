@@ -12,7 +12,7 @@ import {schemaCatalog} from '../../src/workspace/catalog.js';
 import {AccessGrid} from '../../src/domain/access-grid.js';
 import {prepareToolLayout} from '../../src/workspace/tool-layout.js';
 import express from 'express';import {PGlite} from '@electric-sql/pglite';import {readFile,readdir,mkdir} from 'node:fs/promises';import {randomUUID} from 'node:crypto';import assert from 'node:assert/strict';
-import {baseApp} from '../../src/server/app.js';import {Service} from '../../src/domain/service.js';import {WorkspaceFoundation} from '../../src/workspace/service.js';import {trackerOperation} from '../../src/workspace/tracker-template.js';import {workspaceHome} from '../../src/workspace/home.js';import type {Database,Connection} from '../../src/db/database.js';
+import {baseApp} from '../../src/server/app.js';import {Service} from '../../src/domain/service.js';import {WorkspaceFoundation} from '../../src/workspace/service.js';import {trackerOperation} from '../../src/workspace/tracker-template.js';import {workspaceHome,homeSnapshots} from '../../src/workspace/home.js';import type {Database,Connection} from '../../src/db/database.js';
 
 export async function fixture(){
  const pg=new PGlite();const db:Database={query:(q,v)=>pg.query(q,v) as any,transaction:fn=>pg.transaction(tx=>fn(tx as Connection)),close:()=>pg.close()};
@@ -37,6 +37,7 @@ export async function fixture(){
   if(name==='open_workspace')return {screen:'home',uiBuild:'acceptance',viewerId:actor.userId,workspaces:[w],workspaceId:w.id,types:await s.types(actor,w.id)};
   if(name==='read_connected_account')return {connected:true};
   if(name==='check_account_home')return homeRevision(db,{...actor,origin:'ai'});
+  if(name==='read_home_snapshots')return homeSnapshots(db,{...actor,origin:'ai'},v);
   if(name==='read_account_home'){const stamp=await homeRevision(db,{...actor,origin:'ai'});const home=await workspaceHome(db,{...actor,origin:'ai'},w.id,v);return {...home,...stamp,resources:[{id:preview.id,workspaceId:w.id,name:'Saved preview card',kind:'tracker',source:'preview',projectIds:[],status:'Preview',updatedAt:new Date().toISOString()},...home.resources],total:home.total+1};}
   if(name==='prepare_ai_revision')return f.prepareRenderedTracker({...actor,origin:'ai'},w.id,v.operation);
   if(name==='begin_app_update')return f.beginAppUpdate({...actor,origin:'ai'},w.id,v.componentId,v.expectedVersion);

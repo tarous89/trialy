@@ -4,13 +4,16 @@ const metadataPath=/\/api\/workspaces\/[^/]+\/(types|views)$/;
 const archivePath='**/organization/archived?**';
 const callsFor=page=>{const calls=[];page.on('request',r=>calls.push(new URL(r.url())));return calls;};
 const metadataCalls=calls=>calls.filter(u=>metadataPath.test(u.pathname));
+// L1.4: the collapsed archived count arrives with the Home read. Report one archived app there.
+const oneArchived=home=>{home.archivedApps=typeof home.archivedApps==='number'?1:Object.fromEntries(Object.keys(home.archivedApps??{}).map(k=>[k,1]));};
+const webHomeWithArchive=page=>page.route('**/api/account/home',async route=>{const response=await route.fetch().catch(()=>null);if(!response)return;const json=await response.json();oneArchived(json);await route.fulfill({response,json});});
 
 test('Home and Database use their own data without eager workspace schemas or views',async({page})=>{
  const calls=callsFor(page);await openPlatform(page,base+'/app-home');
  await expect(page.getByRole('link',{name:'Open Simple app fixture',exact:true})).toBeVisible();
- await expect.poll(()=>calls.filter(u=>u.pathname.endsWith('/organization/archived')).length).toBeGreaterThan(0);
  expect(metadataCalls(calls)).toHaveLength(0);
- expect(calls.filter(u=>u.pathname.endsWith('/organization/archived')).every(u=>u.searchParams.get('summaryOnly')==='true')).toBe(true);
+ // The collapsed archived count comes with the Home read (L1.4): no archive request until it is expanded.
+ expect(calls.filter(u=>u.pathname.endsWith('/organization/archived'))).toHaveLength(0);
  await page.getByRole('navigation',{name:'Main navigation',exact:true}).getByRole('button',{name:'Database',exact:true}).click();
  await expect.poll(()=>calls.some(u=>u.pathname==='/api/account/schema')).toBe(true);
  await expect(page.getByRole('heading',{name:'App companies',exact:true})).toBeVisible();
@@ -75,6 +78,7 @@ test('Collapsed archives defer details, recover from failures and ignore late ex
   if(details===2)await pending;
   await route.fulfill({json:{kind:'apps',count:1,items:[item]}});
  });
+ await webHomeWithArchive(page);
  await openPlatform(page,base+'/app-home');await page.getByRole('button',{name:'Show archived apps (1)',exact:true}).click();
  await expect(page.getByRole('alert').filter({hasText:'Archived apps could not be loaded.'})).toBeVisible();
  await page.getByRole('button',{name:'Retry',exact:true}).click();await expect(page.getByRole('status').filter({hasText:'Loading archived apps'})).toBeVisible();
@@ -97,10 +101,10 @@ test('Expanded archives retain real restore and permanent-delete workflows',asyn
  const remaining=await call('list_archived_items',{kind:'apps'});expect(remaining.items.some(i=>i.id===f.id)).toBe(false);
 });
 
-test('Embedded Home requests a summary first and original details on expansion',async({page})=>{
+test('Embedded Home takes the archived count from its Home read and original details on expansion',async({page})=>{
  const f=await(await page.request.get(base+'/fixture/apps')).json(),reads=[];
- await page.route('**/fixture/tool',route=>{const v=route.request().postDataJSON();if(v.name!=='list_archived_items')return route.continue();reads.push(v.arguments);return route.fulfill({json:{content:[],structuredContent:{result:{kind:'apps',count:1,items:v.arguments.summaryOnly?[]:[{kind:'app',id:f.appId,name:'Embedded archived app',version:1,canRestore:true,canDelete:false}]}}}});});
+ await page.route('**/fixture/tool',async route=>{const v=route.request().postDataJSON();if(v.name==='read_account_home'){const response=await route.fetch().catch(()=>null);if(!response)return;const json=await response.json();oneArchived(json.structuredContent.result);return route.fulfill({response,json});}if(v.name!=='list_archived_items')return route.continue();reads.push(v.arguments);return route.fulfill({json:{content:[],structuredContent:{result:{kind:'apps',count:1,items:v.arguments.summaryOnly?[]:[{kind:'app',id:f.appId,name:'Embedded archived app',version:1,canRestore:true,canDelete:false}]}}}});});
  await page.goto(base+'/?apps=1');await page.waitForFunction(()=>window.hostReady);await page.evaluate(r=>window.deliver(r),{screen:'home',workspaceId:f.workspaceId,viewerId:'fixture',workspaces:[],types:[]});
  const root=page.frameLocator('#app');await root.getByRole('button',{name:'Show archived apps (1)',exact:true}).click();await expect(root.getByText('Embedded archived app',{exact:true})).toBeVisible();
- expect(reads.length).toBeGreaterThanOrEqual(2);expect(reads.slice(0,-1).every(r=>r.summaryOnly===true)).toBe(true);expect(reads.at(-1).summaryOnly).toBeUndefined();
+ expect(reads.length).toBeGreaterThanOrEqual(1);expect(reads.every(r=>r.summaryOnly===undefined)).toBe(true);
 });
