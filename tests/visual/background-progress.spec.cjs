@@ -57,6 +57,12 @@ for(const embedded of [false,true]){
  });
 }
 
+for(const embedded of [false,true])test(`Return-to-tab pending-change read is merged and quiet (${embedded?'embedded':'web'})`,async({page})=>{
+ await page.clock.install();const {root}=await open(page,embedded),gate=deferred();let reads=0;
+ await intercept(page,async(route,op)=>{if(op.name==='list_pending_app_changes'||new URL(route.request().url()).pathname.endsWith('/pending-app-changes')){reads++;await gate.promise;}});
+ await burst(root);await page.clock.runFor(400);await expect.poll(()=>reads).toBe(1);await page.clock.runFor(400);await expect(bar(root)).toHaveCount(0);expect(reads).toBe(1);gate.release();
+});
+
 test('A quiet failed account check surfaces its error without a global loading bar',async({page})=>{
  await page.clock.install();const {root}=await open(page,false),gate=deferred();let checks=0;
  await intercept(page,async(route,op)=>{if(op.name==='account'){checks++;await gate.promise;await fail(route,false,503);return true;}});
