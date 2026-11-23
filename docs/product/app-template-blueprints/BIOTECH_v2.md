@@ -25,6 +25,7 @@
 | 08 Data Room | [apps/DATA_ROOM.md](apps/DATA_ROOM.md) | Scope approved (13 Nov); hosted rooms (only) on external exchange + room extension ([§5](../EXTERNAL_EXCHANGE.md#5-room-extension-for-data-room)); build as PR A (platform) then PR B (app); includes Diligence Q&A (12) |
 | 04 Contracts | [apps/CONTRACTS.md](apps/CONTRACTS.md) | `life.contracts` 1.0.0 published (#141) |
 | 05 CRO Selection | [apps/CRO_SELECTION.md](apps/CRO_SELECTION.md) | Scoped (13 Nov); build after External exchange PR #147 is merged |
+| 16 CRO Oversight | [apps/CRO_OVERSIGHT.md](apps/CRO_OVERSIGHT.md) | Scoped (15 Nov); `life.cro-oversight` 2.0.0 replaces 1.2.1; all service providers; risk-based oversight plan, deliverables, KPIs, issues, governance meetings and an oversight log as evidence; the assistant reads provider reports into sourced proposals; no platform work (one PR) |
 
 All apps follow [modular apps and shared data](../MODULAR_APPS_AND_SHARED_DATA.md): core contract v1 roles, the add-app dialog (Connect / Create new per table, access), and **in-app integrations** — an app keeps its own table for data another app can provide, offers one subtle "Add <app>" / "Use its data" line, and reads the provider read-only once the user chooses it. There is no "not connected" state. Contracts for every output role are in `templates/contracts/outputs.json` (readable via `read_app_template_guidance(resource:"contracts")`).
 
@@ -47,7 +48,7 @@ All apps follow [modular apps and shared data](../MODULAR_APPS_AND_SHARED_DATA.m
 | 13 | BT2-13 | **Lab Records** | Experiments, protocols and results linked to programs and outsourced studies. | CSO, scientists | Benchling | Extended | adapt `experiment-notebook` |
 | 14 | BT2-14 | **Board** | Formal governance: minutes, resolutions, written consents and board action items (pre-reads live in 06). | CEO, company secretary | BoardPro (+ Carta board consents) | Extended | **new** |
 | 15 | BT2-15 | **IP Portfolio** | Patent families, deadlines, costs and freedom-to-operate actions. | CEO, CSO, IP counsel | Anaqua | Extended | **new** |
-| 16 | BT2-16 | **CRO Oversight** | Vendor deliverables, KPIs, issues and governance during studies. | ClinOps, PM | Veeva Vault CTMS | Clinical-stage | adapt `cro-oversight` |
+| 16 | BT2-16 | **CRO Oversight** | Oversee CROs and other service providers during studies: oversight plan, deliverables, KPIs, issues, governance and evidence of oversight. | ClinOps, PM | Veeva Vault CTMS (+ ICH E6(R3) oversight practice) | Clinical-stage | replaces `cro-oversight` (2.0.0) |
 | 17 | BT2-17 | **Site Finder** | Shortlist sites and investigators from trial history and track feasibility. | ClinOps, CMO | Veeva Study Startup + Citeline Sitetrove | Clinical-stage · **TrialAgents edge** | merge `co-site-feasibility` + `investigator-crm` |
 | 18 | BT2-18 | **Deal Comps** | Comparable deals and valuation assumptions for negotiations. | CEO, BD, CFO | DealForma | Extended | **new** |
 | 19 | BT2-19 | **Grants** | Non-dilutive funding calls, applications, awards and reporting. | CEO, CFO, CSO | Instrumentl | Extended | adapt `grant-pipeline` (EU sources) |
@@ -205,14 +206,9 @@ Merged into [Data Room (08)](apps/DATA_ROOM.md) on 13 November 2026: the questio
 - **Assistant angle:** summarise portfolio coverage per program for 08 and investor diligence.
 
 ### BT2-16 — CRO Oversight (rank 16, Clinical-stage)
-*Vendor deliverables, KPIs, issues and governance during studies.*  
+*Oversee CROs and other service providers during studies.*  
 *Long name: CRO & Vendor Oversight*
-- **Users / job:** sponsor-side oversight of CROs and key vendors during studies: deliverables, KPIs, issues and escalations.
-- **Reference app:** Veeva Vault CTMS — sponsor oversight and monitoring KPI rollups (a small operational slice).
-- **In scope:** vendor deliverables, study-level KPIs (aggregate), issues and escalations, governance meetings, performance reviews. **Out:** CTMS/eTMF replacement, patient-level data.
-- **Records:** Deliverable; KPI value; Issue; Governance meeting. Shared: Study, Organization, Agreement.
-- **Screens:** Oversight overview · Deliverables · KPIs · Issues & escalations · Governance log.
-- **Assistant angle:** prepare governance meeting agendas and minutes drafts; reuse the v1 `cro-oversight` package.
+- **Final scope:** [apps/CRO_OVERSIGHT.md](apps/CRO_OVERSIGHT.md) (15 Nov 2026). `life.cro-oversight` 2.0.0 replaces 1.2.1. An engagement (provider × study) has a risk-based oversight plan (presets per provider type or drafted from the award or SOW); deliverables, KPI values and issues are tracked against it; every review and governance meeting is recorded in an oversight log that exports as an evidence pack. The assistant reads provider reports into proposals with source quotes and drafts agendas, minutes and monthly reviews. Aggregate data only. Starts from CRO Selection's award, reads provider-owed obligations from Contracts and milestones from Programs. Four install automations (weekly digest, monthly review drafts, agenda draft, critical issue notice).
 
 ### BT2-17 — Site Finder (rank 17, Clinical-stage · TrialAgents edge)
 *Shortlist sites and investigators from trial history and track feasibility.*  
