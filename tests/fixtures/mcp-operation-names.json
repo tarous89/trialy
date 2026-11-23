@@ -1,5 +1,6 @@
 [
   "approval_portal",
+  "automation_work",
   "begin_app_update",
   "cancel_code_run",
   "check_component_access",
