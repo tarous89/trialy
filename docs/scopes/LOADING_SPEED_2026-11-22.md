@@ -1,7 +1,7 @@
 # Loading speed scope: Apps home, archived apps, templates and individual apps
 
 **Date:** 22 November 2026
-**Status:** sessions L1 and L2 built (with the open items listed in section 9); L3 and L4 are a plan. Nothing else in it is built until the progress table (section 9) says so.
+**Status:** sessions L1, L2 and L3 built (with the open items listed in section 9); L4 is a plan. Nothing else in it is built until the progress table (section 9) says so.
 **Covers:** four surfaces (Apps home, archived apps, templates, an individual app) on three hosts (website, ChatGPT plugin, Claude plugin).
 **Goal:** every surface opens as fast as technically possible. What is already known is shown at once; anything that needs processing arrives afterwards and never holds the page back.
 **Read at commit:** `1c19eef`. File and line references are in section 2.
@@ -166,7 +166,9 @@ Each surface lists what changes on each host. "Both plugins" means ChatGPT and C
 | L4.1 | Last known basics (D) for Apps home, archived count, templates and each app's frame | yes | where the host permits storage; otherwise unchanged |
 | L4.2 | Response compression and caching headers checked on every static and list response | yes | yes |
 | L4.3 | Capacity: database connection settings and instance size against the measured load (owner action for the plan, section 7) | yes | yes |
-| L4.4 | Acceptance in real ChatGPT and Claude on desktop and phone, and on the website at phone width; before and after numbers recorded | yes | yes |
+| L4.4 | Acceptance in real ChatGPT and Claude on desktop and phone, and on the website at phone width; before and after numbers recorded. Includes whether each host loads card images and widget code from the platform origin (L3.3, L4.5) | yes | yes |
+| L4.5 | Widget in two parts (owner decision 23 November, section 6 item 9): the first part holds only what the first screen needs and stays inside the widget; everything else is one download started right after the first screen is shown, quietly. It loads from the platform origin; where the host refuses, through the assistant; if both fail, those screens show a retry. A build switch puts everything back in one file | not applicable | yes |
+| L4.6 | Claude's inline app frame uses the widget's font instead of a second copy (owner decision 23 November, section 6 item 10) | not applicable | yes |
 
 ---
 
@@ -182,6 +184,8 @@ Open points are resolved this way unless the owner says otherwise.
 6. **No app template changes** in sessions L1 to L3. If Overview-first (L2.4) needs a template change for a catalog app, it is listed for approval rather than made.
 7. **Saved data, receipts and approvals are untouched.** This scope changes reads and the order of loading only.
 8. **Background preparation yields.** It never delays a click, a save or the tab the person actually opened, and it stops when the page is hidden. Tabs prepared in the background are refreshed after a save, as today's prepared screens are.
+9. **Widget split (decided 23 November 2026).** The Inter font stays inside the widget (no font change on first paint). The platform origin stays in the widget's resource domains (card images, L4.5). Pages the first screen does not show leave the widget file and load together right after first paint (L4.5); a screen opened before they arrive shows its frame at once and fills in, without a second download.
+10. **Claude's inline app frame stays** (app opens stay immediate in Claude); only its duplicate font copy is removed (L4.6).
 
 ---
 
@@ -215,7 +219,7 @@ Open points are resolved this way unless the owner says otherwise.
 | Before L1 | built | none yet (branch `claude/zealous-cori-10snwn`) | Tab-return loading bar fixed, commit `1c19eef` |
 | L1 | built, except the items below | branch `claude/upbeat-allen-lcc5wd` | See below |
 | L2 | built, except the items below | branch `claude/clever-einstein-ei8d6h` | See below |
-| L3 | not started | | |
+| L3 | built, except the items below | branch `ccr-e560ba20-0arkla` | See below |
 | L4 | not started | | |
 
 ### Session L1 in detail
@@ -245,3 +249,17 @@ Measured before and after in [performance measurement](../PERFORMANCE_MEASUREMEN
 | L2.5 | partly built | Name and loading frame at once from a card; the website prefetches the frame document while idle. Not built: preparing the engine ahead |
 | L2.6 | built | `open_app` carries the first screen as widget-only result metadata; account and table list load alongside |
 | L2.7 | partly built | `npm run apps:runtime-report` (owner, read-only). All 16 catalog apps offered on every channel are switched on; the 16 hidden from a channel have no browser test and stay on server mode; customized copies stay on server mode and are listed per workspace |
+
+### Session L3 in detail
+
+Measured before and after in [performance measurement](../PERFORMANCE_MEASUREMENT.md#loading-speed-session-l3-templates-and-the-plugin-path-23-november-2026). The template list is one query and, with a held fingerprint, a 63-byte answer instead of 22 KB; the 16 card images went from 1.85 MB (website) and 16 tool calls carrying 2.46 MB (plugins) to 640 KB loaded as images; a plugin tool call went from about 6.2 ms to 2.7 to 5.6 ms depending on its tool group and a tool list from about 42 ms to 10 ms (in-process); the widget file from 2.57 MB to 1.84 MB.
+
+| Package | Status | Notes |
+| --- | --- | --- |
+| L3.1 | built | The list carries a catalog fingerprint (channel, approved versions and digests); `list_app_templates` with `catalog` answers only `{catalog, unchanged:true}`. The catalog read is one query and returns no template payload the server already holds. The website and the widget show the list they already hold at once and check the fingerprint quietly (rule I). Budget in `tests/loading-speed-templates.test.ts`. Not built: keeping the list across page loads (L4.1); today it is held for the life of the page or widget |
+| L3.2 | built | 720×480 card images (`resources/template-gallery/cards/`, `scripts/build-template-cards.mjs`, checked in `npm run build`), about 40 KB instead of 115 KB. Website card and screenshot addresses with the exact digest are `private, max-age=31536000, immutable`; the server keeps served media in memory by digest (approval and channel still checked per request, one query) |
+| L3.3 | built, unverified in the real hosts | The widget declares the platform origin in its resource domains and loads cards from a public, digest-exact address (`/template-cards/:channel/:id/:version/:digest.jpg`, catalog pictures only, `public, immutable`). Where the host refuses, the cards on screen are read in one `read_app_template_cards` request (up to 12 per request); if that fails, each card is read with `read_app_template_media` as before. Whether ChatGPT and Claude honour the resource domain is owner action 7.4 |
+| L3.4 | built | Previews are addressed by digest and kept for good (website), or kept by the widget for its life (plugins). Hovering or focusing a card prepares its preview quietly: the website in a hidden frame that runs no scripts (a `fetch` would not fill the frame's cache entry), the widget with `read_app_template_media` |
+| L3.5 | partly built | A tool list is answered from a prepared list per endpoint variant (sign-in, assistant, widget build, configuration; never account data). A tool call registers only its tool and runs only the tool group that holds it (`src/server/mcp-sections.ts`), learned from a full build; an unknown tool falls back to the full build. Handlers and authorization are built per request with that request's actor. Not built: tools in the large workspace group (`workspace/core`, about 90 tools) still build that group's descriptors per call; splitting it further means restructuring `addWorkspaceMcp` |
+| L3.6 | partly built, rest decided | Measured: 2.57 MB = script 1.90 MB (zod 454 KB of which 261 KB translations, the two 810 px brand marks inlined as 495 KB, react-dom 210 KB, MCP client 150 KB, app pages) + styles 669 KB (of which the Inter font 470 KB). Removed: zod's translations and the full-size brand marks (96 px copies). Now 1.84 MB (budget 1.9 MB in the test). Decided by the owner on 23 November (section 6, items 9 and 10): the font stays inside the widget; pages the first screen does not show move to L4.5; Claude's inline app frame stays and loses its second font copy in L4.6 |
+

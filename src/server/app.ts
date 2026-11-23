@@ -1,3 +1,4 @@
+import {addTemplateCardRoute} from './apps.js';
 import {importReport} from '../domain/import-report.js';
 import {withResponseCancellation} from './response-cancellation.js';
 import {recordUxTiming} from './ux-timing.js';
@@ -63,6 +64,8 @@ export function addApi(app:express.Express,s:Service,human:RequestHandler) {
  addInvitations(app,s,human);
  // L2.5: the app frame's address, so the Apps page can prepare it while idle (relative: same origin, cached by version).
  app.get('/api/config',(_req,res)=>res.json({frameUrl:'/frontend/frame?v='+frameVersion(),simpleApps:process.env.SIMPLE_APPS_ENABLED==='true',brand:process.env.BRAND_NAME??'TrialAgents',demo:process.env.LOCAL_DEMO==='true'&&process.env.NODE_ENV!=='production'}));
+ // L3.3: catalog card images for the plugin widget, before sign-in is required (catalog pictures, no account data).
+ if(process.env.SIMPLE_APPS_ENABLED==='true')addTemplateCardRoute(app,s.db);
  app.use('/api',human);app.use('/api',(_req,res,next)=>{res.set('Cache-Control','no-store');next();});
  addSubscription(app,s);
  addReviews(app,s);

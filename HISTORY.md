@@ -1,3 +1,16 @@
+## 23 November 2026 — Loading speed, session L3: templates and the plugin path
+
+Third of four build sessions of the [loading speed scope](docs/scopes/LOADING_SPEED_2026-11-22.md). Package numbers refer to that scope.
+
+- **Template list by fingerprint (L3.1).** The template list is one database query and carries a fingerprint of the catalog. Coming back to the templates shows the list already held at once and checks the fingerprint quietly; while the catalog is unchanged the answer is 63 bytes instead of 22 KB and no template is read again.
+- **Card images at card size (L3.2).** Cards use 720×480 images (about 40 KB instead of 115 KB), kept by the browser for good under the template's fingerprint.
+- **Plugin card images (L3.3).** The ChatGPT and Claude widget loads card images directly from the platform where the host allows it; otherwise the cards on screen come in one batched request, and if that fails each card is read on its own as before. Before, every card was its own request through the assistant.
+- **Previews ready on hover (L3.4).** Hovering or focusing a card prepares its interactive preview quietly; previews are kept by fingerprint.
+- **Lighter plugin requests (L3.5).** A tool list is answered from a prepared list; a tool call builds only its own tool group instead of about 200 tools. Who may do what is still worked out on every request.
+- **Smaller widget (L3.6).** The plugin widget went from 2.57 MB to 1.84 MB: validation translations it never shows and full-size logos are gone.
+
+Not built: keeping the template list across page loads (L4.1) and splitting the largest tool group. Owner decisions for the widget: the font stays inside it; pages the first screen does not show load together right after it (L4.5); Claude's inline app frame stays without its second font copy (L4.6). Tests: `loading-speed-templates`, browser tests in `template-loading`, updated `embedded-shell` and `platform-catalog`.
+
 ## 22 November 2026 — Loading speed, session L2: individual apps
 
 Second of four build sessions of the [loading speed scope](docs/scopes/LOADING_SPEED_2026-11-22.md). Package numbers refer to that scope.
