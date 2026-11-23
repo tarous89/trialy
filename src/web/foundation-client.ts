@@ -100,7 +100,7 @@ export function foundationClient(api:(path:string,method?:string,body?:unknown,o
  read_effective_access:[`/api/workspaces/${v.workspaceId}/effective-access`],
  explain_effective_access:[`/api/workspaces/${v.workspaceId}/effective-access/${v.subject}`],
  update_effective_access:[`/api/workspaces/${v.workspaceId}/effective-access`,'POST',v.change],
- list_archived_items:[`${o}/archived?kind=${encodeURIComponent(v.kind)}${v.typeId?'&typeId='+encodeURIComponent(v.typeId):''}${v.templateId?'&templateId='+encodeURIComponent(v.templateId):''}${v.summaryOnly===undefined?'':'&summaryOnly='+String(v.summaryOnly)}`],
+ list_archived_items:[`${o}/archived?kind=${encodeURIComponent(v.kind)}${v.typeId?'&typeId='+encodeURIComponent(v.typeId):''}${v.templateId?'&templateId='+encodeURIComponent(v.templateId):''}${v.summaryOnly===undefined?'':'&summaryOnly='+String(v.summaryOnly)}${v.brief===undefined?'':'&brief='+String(v.brief)}`],
  delete_archived_item:[`${o}/archived/delete`,'POST',clean],
  check_account_home:['/api/account/home/revision'],
  read_home_snapshots:['/api/account/home/snapshots','POST',v],

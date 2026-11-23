@@ -46,12 +46,12 @@ for(const embedded of [false,true]){
   const {root}=await open(page,embedded);await expect(root.getByRole('button',{name:'Show archived apps (1)',exact:true})).toBeVisible();expect(summaries).toBe(0);
   await root.getByRole('button',{name:'Show archived apps (1)',exact:true}).click();await page.clock.runFor(250);await expect.poll(()=>details).toBe(1);await expect(root.getByRole('status').filter({hasText:'Loading archived apps'})).toBeVisible();await expect(bar(root)).toBeVisible();detail.release();await expect(bar(root)).toHaveCount(0);
  });
- test(`Card miniatures load after the cards without the loading bar (${host})`,async({page})=>{
-  // L1.3, rule I: a detail still loading never starts or keeps the loading bar.
-  await page.clock.install();const gate=deferred();let reads=0;
-  await intercept(page,async(_route,op)=>{if(is(op,'snapshots')){reads++;await gate.promise;}});
-  const {root}=await open(page,embedded);await expect.poll(()=>reads).toBe(1);await page.clock.runFor(250);await expect(bar(root)).toHaveCount(0);
-  gate.release();await expect(root.locator('.ty-tool-snapshot').first()).toBeVisible();await expect(bar(root)).toHaveCount(0);
+ test(`App cards draw their fixed cover at once and ask for no miniatures (${host})`,async({page})=>{
+  // App cards are a colorful cover with the app's name, drawn from the Home read: nothing is fetched or swapped in later.
+  await page.clock.install();let reads=0;
+  await intercept(page,async(_route,op)=>{if(is(op,'snapshots'))reads++;});
+  const {root}=await open(page,embedded);await expect(root.locator('.ty-app-cover-wordmark').first()).toBeVisible();
+  await page.clock.runFor(1000);expect(reads).toBe(0);await expect(root.locator('.ty-app-cover-window')).toHaveCount(0);await expect(bar(root)).toHaveCount(0);
  });
  test(`App access checks stay quiet while explicit Refresh stays visible (${host})`,async({page})=>{
   await page.clock.install();const {root}=await open(page,embedded,true),access=deferred(),refresh=deferred();let checks=0,runs=0;

@@ -49,6 +49,8 @@ test('archive then restore keeps every field and brings automations back switche
  // Archived items are listed only for restore; default automation lists hide them.
  const apps=await run(()=>archivedItems(f,a,w.id,{kind:'apps'}));assert.equal(apps.count,1);assert.equal(apps.items[0].canDelete,true);assert.deepEqual(apps.items[0].keeps.tables.map((x:any)=>x.id),[table]);
  const automations=await run(()=>archivedItems(f,a,w.id,{kind:'automations'}));assert.deepEqual(automations.items.map((x:any)=>x.id).sort(),[monitor,action].sort());assert.ok(automations.items.every((x:any)=>!x.canDelete&&x.restoreVia.id===app));
+ // The Apps page list asks for names only: what restore and delete need, without the kept tables and record counts.
+ const brief=await run(()=>archivedItems(f,a,w.id,{kind:'apps',brief:true}));assert.equal(brief.count,1);const {keeps:_keeps,...full}=apps.items[0];assert.deepEqual(brief.items[0],full);assert.equal('keeps' in brief.items[0],false);
  for(const kind of ['apps','automations']){const summary=await run(()=>archivedItems(f,a,w.id,{kind,summaryOnly:true}));assert.equal(summary.count,kind==='apps'?1:2);assert.deepEqual(summary.items,[]);}
  const ai=await run(()=>archivedItems(f,{...a,origin:'ai'},w.id,{kind:'apps'}));assert.equal(ai.items[0].canDelete,false);
  // A live app with the same name makes the restored app "(restored)".

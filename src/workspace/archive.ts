@@ -12,7 +12,7 @@ import {appIndex} from './app-index.js';
 /** Optional automatic purge (MODULAR_APPS_AND_SHARED_DATA.md §6). Off unless enabled. */
 export const ARCHIVE_PURGE_DAYS=90;
 export const archivePurgeEnabled=(env:NodeJS.ProcessEnv=process.env)=>env.ARCHIVE_PURGE_ENABLED==='true';
-export const archivedQuery=z.object({kind:z.enum(['apps','automations','tables','fields']),typeId:id.optional(),templateId:z.string().max(80).optional(),summaryOnly:z.boolean().optional()}).strict();
+export const archivedQuery=z.object({kind:z.enum(['apps','automations','tables','fields']),typeId:id.optional(),templateId:z.string().max(80).optional(),summaryOnly:z.boolean().optional(),brief:z.boolean().optional()}).strict();
 export const archivedDeletion=z.object({kind:z.enum(['app','automation','table','field']),id,key:z.string().regex(/^[a-z][a-z0-9_]{0,63}$/).optional(),confirmed:z.literal(true)}).strict();
 
 const USES:Record<string,string>={field:'Referenced by another field',view:'Used by a saved view',link:'Used by a shared form or view',scope:'Used by a maintenance scope',function:'Used by a function',connector:'Used by a connector',automation:'Used by an automation',cross_table_link:'Linked to records in another table',table_mapping:'Used by a table mapping'};
@@ -41,13 +41,16 @@ export async function archivedItems(f:WorkspaceFoundation,a:Actor,w:string,input
   if(v.summaryOnly&&!v.templateId)return {kind:v.kind,workspaceId:w,count:restorable.length,items:[],summaryOnly:true};
   const rows=v.templateId?(await archivedTemplateApps(db,a,w,v.templateId)).filter(r=>allowed.has(r.id)):restorable.length?(await db.query('SELECT id,name,project_id,archived_at,created_by,bindings,version FROM workspace_components WHERE workspace_id=$1 AND id=ANY($2::uuid[]) ORDER BY archived_at DESC NULLS LAST,name,id',[w,[...allowed]])).rows:[];
   if(v.summaryOnly)return {kind:v.kind,workspaceId:w,count:rows.length,items:[],summaryOnly:true};
+  const base=(r:any)=>({kind:'app',id:r.id,name:r.name,version:r.version,archivedAt:r.archived_at,canRestore:true,canDelete:owner&&human,deleteBlockedReason:owner?(human?null:'Delete permanently on the TrialAgents website'):'Only the workspace owner can delete permanently'});
+  // brief: names only for the Apps page list; record counts per kept table are skipped (they are the slow part).
+  if(v.brief){for(const r of rows)items.push(base(r));return {kind:v.kind,workspaceId:w,count:items.length,items,brief:true};}
   // Tables each app keeps, with record counts, and its automations: one query each for the whole list.
   const ids=rows.map((r:any)=>r.id);
   const [tables,automations]=ids.length?await Promise.all([
    db.query("SELECT c.id AS app_id,t.id,t.name,(SELECT count(*)::int FROM records x WHERE x.type_id=t.id AND x.workspace_id=t.workspace_id) AS records FROM workspace_components c CROSS JOIN LATERAL (SELECT DISTINCT b->>'typeId' AS type_id FROM jsonb_array_elements(c.bindings) b) bt JOIN entity_types t ON t.id::text=bt.type_id AND t.workspace_id=c.workspace_id AND t.deleted_at IS NULL WHERE c.workspace_id=$1 AND c.id=ANY($2::uuid[]) ORDER BY t.name,t.id",[w,ids]).then(r=>r.rows),
    db.query('SELECT x.app_id,count(*)::int AS n FROM (SELECT app_id FROM app_monitors WHERE app_id=ANY($1::uuid[]) AND deleted_at IS NULL UNION ALL SELECT app_id FROM app_actions WHERE app_id=ANY($1::uuid[]) AND deleted_at IS NULL) x GROUP BY x.app_id',[ids]).then(r=>r.rows),
   ]):[[],[]];
-  for(const r of rows)items.push({kind:'app',id:r.id,name:r.name,version:r.version,archivedAt:r.archived_at,canRestore:true,canDelete:owner&&human,deleteBlockedReason:owner?(human?null:'Delete permanently on the TrialAgents website'):'Only the workspace owner can delete permanently',keeps:{tables:tables.filter((t:any)=>t.app_id===r.id).map(({app_id,...t}:any)=>t),automations:Number(automations.find((x:any)=>x.app_id===r.id)?.n??0)}});
+  for(const r of rows)items.push({...base(r),keeps:{tables:tables.filter((t:any)=>t.app_id===r.id).map(({app_id,...t}:any)=>t),automations:Number(automations.find((x:any)=>x.app_id===r.id)?.n??0)}});
  }else if(v.kind==='automations'){
   // T1, A9 (6.1, 6.2): owners of the app see its archived automations, archived on their own or with the app.
   const rows=(await db.query(`SELECT d.*,c.name AS app_name,c.archived AS app_archived FROM (
