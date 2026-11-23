@@ -22,6 +22,7 @@
     "recovery:rehearse": "node --import tsx scripts/rehearse-recovery.ts",
     "db:runtime-audit": "node --env-file-if-exists=.env --import tsx scripts/runtime-audit.ts",
     "ux:report": "node --env-file-if-exists=.env --import tsx scripts/ux-timing-report.ts",
+    "apps:runtime-report": "node --env-file-if-exists=.env --import tsx scripts/runtime-mode-report.ts",
     "test:visual": "playwright test"
   },
   "dependencies": {

@@ -8,7 +8,7 @@ import {appAutomationCopies,copyAppAutomations} from '../automations/copy.js';
 import {monitoringReceiptRuns} from '../app-services/monitoring-guard.js';
 import {appSections,sectionGrant,projectAppSections,validateSectionRevision} from '../domain/app-sections.js';
 import {openRuntimeView,assertRuntimeReadAccess,assertRuntimeScope,assertRuntimeWriteSchema,incompatible} from './runtime-view.js';
-import {withReadMetadata,ambientReadDatabase,readMetadataScope} from '../db/read-metadata.js';
+import {withReadMetadata,ambientReadDatabase,readMetadataScope,inReadMetadata,primeById} from '../db/read-metadata.js';
 import {isCatalogSource} from './catalog-source.js';
 import {browserMode,effectiveSource,isV2Source,runtimeCssFor,runtimeStyles,sourceDigest,SEED_BYTES} from './browser-runtime.js';
 import {SEEDED_READS} from '../frame-engine/local-runtime.js';
@@ -98,6 +98,8 @@ export class WorkspaceFoundation {
   a={...a,accessToolId:id};
   const c=(await tx.query('SELECT * FROM workspace_components WHERE id=$1 AND workspace_id=$2',[id,w])).rows[0];
   if(!c||c.deleted_at)fail(404,'not_found','Component not found');
+  // L2.1: inside a request-wide scope (app open), the app's tables are looked up together, once.
+  await primeById(tx as Database,'entity_types',(c.bindings??[]).map((b:any)=>b.typeId),w);
   if(c.source_access!=='bindings')await this.componentSourcePolicy(tx,a,w,c.source);
   const p=await access(tx,a,w);if(!namesOnly)requireAssistantApps(p,a,false);const chain=await this.nodeAccess(tx,a,w,c.project_id);
   if((p.role!=='owner'&&c.allowed_users!==null&&!c.allowed_users.includes(a.userId))||(a.origin==='ai'&&!c.ai_enabled))fail(404,'not_found','Component not found');
@@ -197,6 +199,16 @@ export class WorkspaceFoundation {
   if(process.env.APP_COMMANDS_ENABLED==='false')return out;
   for(const r of roles)if(r.typeId&&(r.readOnly||r.linked)){const info=await roleWriterInfo(this,a,w,r.typeId,r.role);if(info)out[r.role]={appName:info.appName,canOpen:info.canOpen};}
   return out;
+ }
+ /** L2.1 (architecture H): the entry point of one request that runs an app. A request that opens a screen (no save key)
+  * works out access once: identical permission and schema lookups are reused by every check and read of the run and
+  * verified uncached before the response is released, as for app open (readComponent). Events that may save keep their
+  * own per-unit checks. Nothing is kept between requests. */
+ async runFrontendRequest(a:Actor,w:string,input:unknown,signal?:AbortSignal):Promise<any>{
+  const r=frontendRequest.safeParse(input);
+  if(!r.success||!r.data.componentId||r.data.event.kind!=='open'||r.data.requestKey||this.frontendSession||inReadMetadata(this.db))return this.runFrontend(a,w,input,signal);
+  const actor={...a,accessToolId:r.data.componentId};
+  return withActor(actor,()=>withReadMetadata(this.db,db=>(Object.create(this,{db:{value:db}}) as WorkspaceFoundation).runFrontend(actor,w,input,signal)));
  }
  async runFrontend(a:Actor,w:string,input:unknown,signal?:AbortSignal):Promise<any>{
   signal?.throwIfAborted();
@@ -434,7 +446,7 @@ export class WorkspaceFoundation {
    // G4 (5.3): a v2 app's changed working context is remembered for this person.
    if(v2&&request.componentId&&output.context!==undefined&&J(output.context)!==J(personContext??null))await this.setAppContext(a,w,{componentId:request.componentId,context:output.context}).catch(()=>{});
    const browserPayload=!browser?undefined:browser.mode==='server'?{mode:'server',reason:browser.reason}:seedBytes>SEED_BYTES?{mode:'server',reason:'seed_size'}:
-    {mode:browser.mode,version:v2?'v2':'v1',digest:sourceDigest(code),reads:seed,reset:sideEffects||!!saved||!!proposal||queued.length>0,input:baseInput,styles:runtimeStyles(content.source),...(request.browser!.source?{source:code}:{})};
+    {mode:browser.mode,version:v2?'v2':'v1',digest:sourceDigest(code),reads:seed,reset:sideEffects||!!saved||!!proposal||queued.length>0,input:baseInput,styles:runtimeStyles(content.source),...(request.browser!.source&&!request.browser!.have.includes(sourceDigest(code))?{source:code}:{})};
    const {context:ignoredContext,...shown}=output;
    if(!saved||command)return {queued,...(saved?{saved}:{}),...(connectorReviews.length?{connectorReviews}:{}),...(browserPayload?{browser:browserPayload}:{}),viewId,runtime:v2?'trialy-frontend-js-v2':'trialy-frontend-js-v1',frameUrl:frameUrl(),...shown,css:runtimeCss+output.css,accessVersion:currentPolicy.access_version,accessStamp,controls,connected:!!content.manifest,proposal,temporary:!request.componentId,...(tracker?{tracker:{config:tracker.config,theme:tracker.theme,pages,saved:!!request.componentId,writable}}:{})};
   }finally{release?.();}
@@ -750,14 +762,33 @@ export class WorkspaceFoundation {
   * A custom app's first render is optional here: if it cannot be produced (busy runtime, an error
   * in the app), the read still succeeds and the client renders and reports exactly as before.
   * 'optional' applies that to every app kind (the website's open by link, which had no render before). */
- async readComponent(a:Actor,w:string,id:string,includeOutput:boolean|'optional'=false,route?:unknown){
+ async readComponent(a:Actor,w:string,id:string,includeOutput:boolean|'optional'=false,route?:unknown,browser?:unknown):Promise<{workspaceId:string;workspaceFoundation:true;component:any;initialOutput?:any}>{
+  // L2.1 (architecture H): opening an app works out access once for the whole request. Identical permission and schema
+  // lookups (the app, its project, each table, the person's access) run once and are reused by every check and read of
+  // this open; each reused result is verified uncached before the response is released. Nothing is kept between requests.
+  // The app's own context (as checkComponentAccess and runFrontend use) is set first, so the read and the first screen share it.
+  if(includeOutput&&a.accessToolId!==id)return withActor({...a,accessToolId:id},()=>this.readComponent({...a,accessToolId:id},w,id,includeOutput,route,browser));
+  if(includeOutput&&!inReadMetadata(this.db))return withReadMetadata(this.db,db=>(Object.create(this,{db:{value:db}}) as WorkspaceFoundation).readComponent(a,w,id,includeOutput,route,browser));
   const component=projectAppSections(await access(this.db,a,w),a,await this.component(this.db,a,w,id));let initialOutput:any;
   if(includeOutput&&!component.archived&&!component.project_archived){
-   const request={componentId:id,expectedVersion:component.version,event:{kind:'open'},...(route?{route}:{})};
+   // L2.2: a browser-capable app's first screen also carries what the frame needs to run it (seeded reads; its code
+   // only when the host does not already hold it), so the first click needs no request.
+   const request={componentId:id,expectedVersion:component.version,event:{kind:'open'},...(route?{route}:{}),...(browser&&component.format==='frontend-js'&&!standardTracker(component.source)?{browser}:{})};
    if(includeOutput===true&&(standardTracker(component.source)||component.sectionsEmpty))initialOutput=await this.runFrontend(a,w,request);
    else if(component.format==='frontend-js'||standardTracker(component.source)||component.sectionsEmpty)try{initialOutput=await this.runFrontend(a,w,request);}catch{initialOutput=undefined;}
   }
   return {workspaceId:w,workspaceFoundation:true,component,...(initialOutput?{initialOutput}:{})};
+ }
+ /** L2.2 (architecture F): an app's code by its fingerprint, for a host that caches it (the website keeps it in the
+  * browser's cache, so opening the app again sends data, not code). The same checks as opening the app apply; only the
+  * code of the app's current version, as it runs in the frame, is served, and only for apps that run in the browser. */
+ async appCode(a:Actor,w:string,id:string,digest:string):Promise<string>{
+  if(a.accessToolId!==id)return withActor({...a,accessToolId:id},()=>this.appCode({...a,accessToolId:id},w,id,digest));
+  const c=projectAppSections(await access(this.db,a,w),a,await this.component(this.db,a,w,id));
+  if(c.archived||c.project_archived||c.sectionsEmpty||standardTracker(c.source))fail(404,'not_found','App code unavailable');
+  if((await browserMode(this.db,c,{kind:'open'})).mode==='server')fail(404,'not_found','App code unavailable');
+  const code=effectiveSource(c.source);if(sourceDigest(code)!==digest)fail(404,'not_found','This app version is no longer current');
+  return code;
  }
  async componentHistory(a:Actor,w:string,id:string){
   const current=await this.component(this.db,a,w,id),p=await access(this.db,a,w);

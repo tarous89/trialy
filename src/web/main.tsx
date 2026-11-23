@@ -13,7 +13,8 @@ import {PublicApp,JoinApp} from './PublicApp.js';
 import {AccountEntry} from './AccountEntry.js';
 import {appSignInReturn} from '../shared/app-route.js';
 import {AppPlatform} from '../shared/AppPlatform.js';
-import {StandaloneApp} from '../shared/StandaloneApp.js';
+import {StandaloneApp,appResolveHeaders} from '../shared/StandaloneApp.js';
+import {fetchAppCode} from '../shared/app-code.js';
 import {ConnectorsPanel} from '../shared/ConnectorsPanel.js';
 import {CreationCenter} from '../shared/CreationCenter.js';
 import {AccessPage} from '../shared/AccessPanel.js';
@@ -71,6 +72,13 @@ const queryParams=new URLSearchParams(location.search);if(queryParams.get('tab')
 const reviewParams=new URLSearchParams(location.search||sessionStorage.getItem('trialy.review')||'');
 const legacy=queryParams.get('legacy')==='1';
 const foundationCall=foundationClient(api);
+/** L2.5: while the page is idle, the app frame document (about 0.7 MB compressed, cached by version) is fetched ahead, so
+ * the first app opened from Apps does not wait for it. A hint only: nothing runs, and a refused prefetch changes nothing. */
+function prepareFrame(url:unknown){
+ if(typeof url!=='string'||!url.startsWith('/frontend/frame?')||document.querySelector('link[data-trialy-frame]'))return;
+ const add=()=>{const link=document.createElement('link');link.rel='prefetch';link.href=url;link.setAttribute('data-trialy-frame','');document.head.appendChild(link);};
+ const idle=(window as any).requestIdleCallback;if(typeof idle==='function')idle(add,{timeout:5000});else setTimeout(add,2000);
+}
 function App(){
  const [configReady,setConfigReady]=useState(false);
  const [creationKind,setCreationKind]=useState(new URLSearchParams(location.search).get('new')==='project'?'project':'app'),[homeRevision,setHomeRevision]=useState(0);
@@ -108,9 +116,9 @@ function App(){
  useEffect(()=>{
   // Start this screen's first read with the account check instead of after it.
   const app=parseAppUrl(location.pathname+location.search);
-  if(app)primeEarlyRead(earlyReadKey('app',app),()=>api('/api/apps/resolve','GET',undefined,{headers:{'X-App-Location':JSON.stringify(app)}}));
+  if(app)primeEarlyRead(earlyReadKey('app',app),()=>api('/api/apps/resolve','GET',undefined,{headers:appResolveHeaders(app)}));
   else if(tab==='home'&&!hasEarlyRead(earlyReadKey('home',EARLY_HOME)))primeEarlyRead(earlyReadKey('home',EARLY_HOME),()=>api('/api/account/home'));
-  void api('/api/config').then(setConfig).finally(()=>setConfigReady(true));void loadMe();},[]);
+  void api('/api/config').then(c=>{setConfig(c);prepareFrame(c?.frameUrl);}).finally(()=>setConfigReady(true));void loadMe();},[]);
  async function run(fn:()=>Promise<void>){setBusy(true);setError('');setNotice('');try{await fn();}catch(e){setError((e as Error).message);}finally{setBusy(false);}}
  async function loadRecords(){const request=++recordRequest.current;setRows([]);setTotal(0);setSummary(null);if(typeId&&selected&&metadata.ready){
   const queryParams=new URLSearchParams({limit:'25',offset:String(offset),q:query});if(activeView)queryParams.set('viewId',activeView.id);
@@ -137,7 +145,7 @@ function App(){
  // The same frame index.html draws before any script (L1.5), kept until the account check returns.
  if(boot)return <div className="ty-boot" aria-busy="true" aria-label="Opening TrialAgents"><div className="ty-boot-side"/><div className="ty-boot-main"><div className="ty-boot-head"/><div className="ty-boot-body"><div className="ty-boot-bar"/><div className="ty-boot-grid"><div className="ty-boot-card"/><div className="ty-boot-card"/><div className="ty-boot-card"/></div></div></div></div>;
  if(!me)return <AccountEntry brand={config.brand} signInHref={config.simpleApps&&appSignInReturn(location.pathname+location.search)?'/auth/login?returnTo='+encodeURIComponent(location.pathname+location.search):'/auth/login'} onDemo={config.demo?()=>run(async()=>{await api('/auth/demo','POST',{});await loadMe({},true);}):undefined} error={error}/>;
- return <AppPlatform.Provider value={{enabled:config.simpleApps,origin:location.origin,uxHost:'web',reportUx}}><PendingChangesProvider call={foundationCall} workspaceId={config.simpleApps?workspace:null} onOpen={c=>location.assign(appUrl({workspaceId:workspace,appId:c.previewId,source:'preview'}))}><WorkspaceShell onNew={kind=>{setCreationKind(kind);setTab(kind==='app'?'templates':'create');const url=new URL(location.href);url.searchParams.set('tab',kind==='app'?'templates':'create');window.history.replaceState({},'',url);}} selected={tab==='templates'?'templates':tab==='automations'?'automations':tab==='connectors'?'connectors':tab==='access'?'settings':tab==='access-control'?'access-control':tab==='logs'?'logs':['database','data'].includes(tab)?'database':'home'} onNavigate={d=>setTab(d==='settings'?'access':d)} accountName={me.name??'Account'} accountEmail={me.email}>{accountMismatch&&<div role="alert" className="ty-account-mismatch"><strong>This account cannot access the database opened from ChatGPT or Claude.</strong><p>Sign in with the same TrialAgents account connected to the plugin, or ask its owner for access.</p><button onClick={()=>run(async()=>{sessionStorage.setItem('trialy.review','?workspaceId='+encodeURIComponent(reviewParams.get('workspaceId')??''));await api('/auth/logout','POST',{});location.href='/auth/login';})}>Sign in with another account</button></div>}<section className={['home','logs','automations'].includes(tab)?'ty-live-content':`ty-page ty-fixed ${tab==='access'?'ty-settings-page':''}`}>
+ return <AppPlatform.Provider value={{enabled:config.simpleApps,origin:location.origin,uxHost:'web',reportUx,loadAppCode:fetchAppCode}}><PendingChangesProvider call={foundationCall} workspaceId={config.simpleApps?workspace:null} onOpen={c=>location.assign(appUrl({workspaceId:workspace,appId:c.previewId,source:'preview'}))}><WorkspaceShell onNew={kind=>{setCreationKind(kind);setTab(kind==='app'?'templates':'create');const url=new URL(location.href);url.searchParams.set('tab',kind==='app'?'templates':'create');window.history.replaceState({},'',url);}} selected={tab==='templates'?'templates':tab==='automations'?'automations':tab==='connectors'?'connectors':tab==='access'?'settings':tab==='access-control'?'access-control':tab==='logs'?'logs':['database','data'].includes(tab)?'database':'home'} onNavigate={d=>setTab(d==='settings'?'access':d)} accountName={me.name??'Account'} accountEmail={me.email}>{accountMismatch&&<div role="alert" className="ty-account-mismatch"><strong>This account cannot access the database opened from ChatGPT or Claude.</strong><p>Sign in with the same TrialAgents account connected to the plugin, or ask its owner for access.</p><button onClick={()=>run(async()=>{sessionStorage.setItem('trialy.review','?workspaceId='+encodeURIComponent(reviewParams.get('workspaceId')??''));await api('/auth/logout','POST',{});location.href='/auth/login';})}>Sign in with another account</button></div>}<section className={['home','logs','automations'].includes(tab)?'ty-live-content':`ty-page ty-fixed ${tab==='access'?'ty-settings-page':''}`}>
  {config.simpleApps&&workspace&&tab==='templates'&&<TemplateCatalog call={(name,args)=>foundationCall(name,{workspaceId:workspace,...args})}/>}
  {config.simpleApps&&workspace&&tab==='apps'&&<AppServicesPanel onAutomations={()=>setTab('automations')} call={(name,args)=>foundationCall(name,{workspaceId:workspace,...args})} reviewId={reviewParams.get('serviceReview')??undefined} appId={reviewParams.get('serviceApp')??undefined}/>}
  {config.simpleApps&&tab==='connectors'&&<ConnectorsPanel workspaceId={workspace} call={foundationCall} initialConnectionId={reviewParams.get('connectionId')??undefined} initialReviewId={reviewParams.get('connectorReview')??undefined}/>}

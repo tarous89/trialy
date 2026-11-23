@@ -98,7 +98,9 @@ export function addLocalAuth(app:Express,db:Database,base:string,mfaKey=process.
   await new Promise<void>((resolve,reject)=>req.session.destroy(e=>e?reject(e):resolve()));
   res.clearCookie('trialy_session');res.json({ok:true,signInRequired:true});
  });
- app.post('/auth/logout',(req,res)=>{if(!req.session.csrf||(!req.session.csrf||req.get('x-csrf-token')!==req.session.csrf))fail(403,'csrf','Refresh and retry');req.session.destroy(()=>{res.clearCookie('trialy_session');res.json({ok:true});});});
+ app.post('/auth/logout',(req,res)=>{if(!req.session.csrf||(!req.session.csrf||req.get('x-csrf-token')!==req.session.csrf))fail(403,'csrf','Refresh and retry');req.session.destroy(()=>{res.clearCookie('trialy_session');
+  // L2.2: app code is kept in the browser's cache by fingerprint; signing out removes it from this browser.
+  res.set('Clear-Site-Data','"cache"');res.json({ok:true});});});
  app.use(mcpAuthRouter({provider,issuerUrl:new URL(base),resourceServerUrl:new URL(base+'/mcp'),scopesSupported:['trialy'],resourceName:'TrialAgents'}));
  const human:RequestHandler=(req,_res,next)=>{if(!req.session.userId)fail(401,'unauthenticated','Sign in to TrialAgents');if(!['GET','HEAD','OPTIONS'].includes(req.method)&&(!req.session.csrf||req.get('x-csrf-token')!==req.session.csrf))fail(403,'csrf','Refresh and retry');req.actor={userId:req.session.userId,origin:'human'};withActor(req.actor,next);};
  // Each MCP endpoint only accepts tokens issued for it, so ChatGPT and Claude stay separate principals.

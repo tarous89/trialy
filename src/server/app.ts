@@ -50,7 +50,7 @@ export function baseApp(requestsPerMinute=180) {
    const mcp=path==='/mcp'||path===CLAUDE_MCP_PATH;
    console.log(JSON.stringify({requestId,method:req.method,path,
     ...(mcp&&['events/list','events/subscribe','events/unsubscribe'].includes(req.body?.method)?{mcpMethod:req.body.method}:{}),
-    ...(mcp&&req.body?.method==='tools/call'&&['run_component_frontend','read_app_data','set_app_context','save_app_records','undo_app_change','prepare_tool_layout','confirm_workspace_change','read_project_component','check_component_access','read_account_home','check_account_home','read_home_snapshots'].includes(req.body.params?.name)?{tool:req.body.params.name}:{}),
+    ...(mcp&&req.body?.method==='tools/call'&&['run_component_frontend','read_app_data','read_app_code','set_app_context','save_app_records','undo_app_change','prepare_tool_layout','confirm_workspace_change','read_project_component','check_component_access','read_account_home','check_account_home','read_home_snapshots'].includes(req.body.params?.name)?{tool:req.body.params.name}:{}),
     durationMs:Math.round(performance.now()-started),...metricSummary(metrics),status:res.statusCode,time:new Date().toISOString()}));
   }});withRequestMetrics(metrics,()=>withReadBatch(next));
  });
@@ -61,7 +61,8 @@ export function addApi(app:express.Express,s:Service,human:RequestHandler) {
  addExternal(app,s,human);
  addExternalExchange(app,s);
  addInvitations(app,s,human);
- app.get('/api/config',(_req,res)=>res.json({simpleApps:process.env.SIMPLE_APPS_ENABLED==='true',brand:process.env.BRAND_NAME??'TrialAgents',demo:process.env.LOCAL_DEMO==='true'&&process.env.NODE_ENV!=='production'}));
+ // L2.5: the app frame's address, so the Apps page can prepare it while idle (relative: same origin, cached by version).
+ app.get('/api/config',(_req,res)=>res.json({frameUrl:'/frontend/frame?v='+frameVersion(),simpleApps:process.env.SIMPLE_APPS_ENABLED==='true',brand:process.env.BRAND_NAME??'TrialAgents',demo:process.env.LOCAL_DEMO==='true'&&process.env.NODE_ENV!=='production'}));
  app.use('/api',human);app.use('/api',(_req,res,next)=>{res.set('Cache-Control','no-store');next();});
  addSubscription(app,s);
  addReviews(app,s);

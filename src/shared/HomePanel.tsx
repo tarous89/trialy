@@ -3,6 +3,7 @@ import {AppDuplicateDialog} from './AppDuplicateDialog.js';
 import {SystemNotice} from './SystemNotice.js';
 import {AppUnavailable} from './AppUnavailable.js';
 import {AppPlatform} from './AppPlatform.js';
+import {openBrowserRequest} from './FrontendCodeRuntime.js';
 import {PagePagination,PagedScreen} from './ui/PagePagination.js';
 import {EmbeddedNavigation} from './ui/PageNavigation.js';
 import {continueCreationInChat} from './creation.js';
@@ -62,20 +63,25 @@ export function HomePanel({workspaceId,loadHome,loadTypes,types,call,onDocuments
   return()=>{controller.abort();if(snapshotsAsked.current===data.resources)snapshotsAsked.current=undefined;};
  },[data,loading]);
  useEffect(()=>{try{localStorage.setItem('trialy-layout:'+workspaceId+':'+(viewerId??'session'),state.layout);}catch{}},[workspaceId,state.layout]);
+ const [openingName,setOpeningName]=useState('');
  useEffect(()=>{if(screen==='home'&&!loading)window.scrollTo(0,scroll.current);},[screen,loading]);
  useEffect(()=>{const navigate=(e:Event)=>{opening.current++;setError('');if((e as CustomEvent).detail==='home'){setScreen('home');setOffset(0);setState(s=>({...s,projectId:'',kind:'all',query:''}));setSelected(null);setProposal(null);setRefresh(r=>r+1);}};window.addEventListener('trialy:navigate',navigate);return()=>window.removeEventListener('trialy:navigate',navigate);},[]);
  const back=()=>{opening.current++;setScreen('home');setSelected(null);setProposal(null);setError('');setRefresh(r=>r+1);};
- async function open(r:HomeResource&{source?:string;revisionId?:string}){lastOpen.current=r;const request=++opening.current;setError('');const targetWorkspace=r.workspaceId??workspaceId;activeWorkspace.current=targetWorkspace;scroll.current=window.scrollY;try{
+ async function open(r:HomeResource&{source?:string;revisionId?:string}){lastOpen.current=r;const request=++opening.current;setError('');const targetWorkspace=r.workspaceId??workspaceId;activeWorkspace.current=targetWorkspace;scroll.current=window.scrollY;
+ // L2.5: an app opened from its card shows its frame and name at once; its first screen fills in when it arrives.
+ if(r.source==='component'||r.source==='preview'){setOpeningName(r.name??'');setScreen('opening');}
+ try{
   if(r.source==='preview'){
    const resolved=await call('resolve_tracker_preview',{workspaceId:targetWorkspace,previewId:r.id});if(request!==opening.current)return;
    if(resolved.screen==='tracker-unavailable')throw Error(resolved.message);
    if(resolved.component){setSelected({...resolved.component,initialOutput:resolved.initialOutput});setScreen('component');}
    else{setSelected({...resolved.preview,initialOutput:resolved.initialOutput});setScreen('preview');}
-  }else if(r.source==='component'){const result=await call('read_project_component',{workspaceId:targetWorkspace,componentId:r.id,includeOutput:true});if(request!==opening.current)return;setSelected({...result.component,initialOutput:result.initialOutput});setScreen('component');}
+  }else if(r.source==='component'){const browser=openBrowserRequest(),result=await call('read_project_component',{workspaceId:targetWorkspace,componentId:r.id,includeOutput:true,...(browser?{browser}:{})});if(request!==opening.current)return;setSelected({...result.component,initialOutput:result.initialOutput});setScreen('component');}
   else{if(r.source==='function'&&loadTypes){const ts=await loadTypes(targetWorkspace);if(request!==opening.current)return;setEditorTypes(ts);}setSelected(r);setScreen(r.source==='function'?'automation':r.source==='legacy'?'legacy':'collections');}
- }catch(e){if(request===opening.current){setUnavailableReason((e as any)?.code==='manifest_stale'?'schema':[401,403,404].includes((e as any)?.status)?'missing':'load');if(screen==='home')setScreen('unavailable');}}}
+ }catch(e){if(request===opening.current){setUnavailableReason((e as any)?.code==='manifest_stale'?'schema':[401,403,404].includes((e as any)?.status)?'missing':'load');setScreen(now=>now==='opening'?(['home','unavailable'].includes(screen)?'unavailable':screen):screen==='home'?'unavailable':now);}}}
 
  async function move(r:HomeResource,projectId:string|null){if(moving.current)return;activeWorkspace.current=r.workspaceId??workspaceId;if(projectId&&data.projects.find((p:any)=>p.id===projectId)?.workspaceId&&data.projects.find((p:any)=>p.id===projectId).workspaceId!==activeWorkspace.current){setError('These items have separate access permissions. Ask ChatGPT or Claude to help transfer this app.');return;}moving.current=true;setSaving(true);setError('');setMoveNotice('');try{const receipt=await invoke('move_tool',{toolId:r.id,source:r.source,projectId,expectedVersion:r.placementVersion??0,confirmed:true});setData((old:any)=>({...old,resources:old.resources.map((item:any)=>item.id===r.id&&(item.workspaceId??workspaceId)===(r.workspaceId??workspaceId)?{...item,projectIds:projectId?[projectId]:[],placementVersion:receipt.version}:item)}));setMoveNotice(projectId?'Moved to '+data.projects.find((p:any)=>p.id===projectId)?.name:'Moved to Apps');setRefresh(n=>n+1);}catch(e){setError((e as Error).message);}finally{moving.current=false;setSaving(false);}}
+ if(screen==='opening')return <section className="ty-page ty-fixed ty-app-opening" aria-busy="true">{!embedded&&<Button variant="quiet" onClick={back}>← Apps</Button>}<h1>{openingName}</h1><div className="ty-runtime-loading" aria-label="Loading app"/></section>;
  if(screen==='unavailable')return <AppUnavailable onHome={back} reason={unavailableReason} onRetry={()=>{if(lastOpen.current)void open(lastOpen.current);}}/>;
  if(screen==='project-settings')return <ProjectSettings projectId={selected.id} call={invoke} onDeleted={()=>{setState(s=>({...s,projectId:''}));back();}}/>;
  if(screen==='preview')return <>{!embedded&&<Button variant="quiet" onClick={back}>← Apps</Button>}<TrackerDraft key={selected.id+':'+selected.digest} initialOutput={selected.initialOutput} preview={selected} call={invoke} onSaved={component=>{if(embedded){back();return;}setSelected(component);setScreen('component');}} onDiscard={back} onProposal={setProposal}/></>;

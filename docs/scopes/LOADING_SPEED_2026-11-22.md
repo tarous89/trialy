@@ -1,7 +1,7 @@
 # Loading speed scope: Apps home, archived apps, templates and individual apps
 
 **Date:** 22 November 2026
-**Status:** session L1 built; L2 to L4 are a plan. Nothing else in it is built until the progress table (section 9) says so.
+**Status:** sessions L1 and L2 built (with the open items listed in section 9); L3 and L4 are a plan. Nothing else in it is built until the progress table (section 9) says so.
 **Covers:** four surfaces (Apps home, archived apps, templates, an individual app) on three hosts (website, ChatGPT plugin, Claude plugin).
 **Goal:** every surface opens as fast as technically possible. What is already known is shown at once; anything that needs processing arrives afterwards and never holds the page back.
 **Read at commit:** `1c19eef`. File and line references are in section 2.
@@ -214,7 +214,7 @@ Open points are resolved this way unless the owner says otherwise.
 | --- | --- | --- | --- |
 | Before L1 | built | none yet (branch `claude/zealous-cori-10snwn`) | Tab-return loading bar fixed, commit `1c19eef` |
 | L1 | built, except the items below | branch `claude/upbeat-allen-lcc5wd` | See below |
-| L2 | not started | | |
+| L2 | built, except the items below | branch `claude/clever-einstein-ei8d6h` | See below |
 | L3 | not started | | |
 | L4 | not started | | |
 
@@ -231,3 +231,17 @@ Measured before and after in [performance measurement](../PERFORMANCE_MEASUREMEN
 | L1.4 | built | Count with the Home read, no request; list in 3 queries beyond the count. Record and automation counts are batched into the list request rather than a later one |
 | L1.5 | partly built | Frame drawn by `index.html` before any script; `public/start.js` starts the account check and Home read before the main script downloads. Not built: splitting the main script |
 | L1.6 | built | `open_workspace` carries the first Home page; saved views no longer hold the widget's first paint |
+
+### Session L2 in detail
+
+Measured before and after in [performance measurement](../PERFORMANCE_MEASUREMENT.md#loading-speed-session-l2-individual-apps-22-november-2026). Opening Runway (13 tables) went from 596 queries to 58 for the owner (679 to 63 for a member); a frame open from 527 to 56; the plugin open from two requests (70 + 527 queries) to one (58).
+
+| Package | Status | Notes |
+| --- | --- | --- |
+| L2.1 | built, budget above target | One request-wide scope per open (`readComponent` with its first screen, `runFrontendRequest` for frame opens) in the app's own database context; tables read in one query; reused rows verified per table; short pages need no count. Budget in `tests/loading-speed-apps.test.ts`: 52 platform queries plus the app's own data reads, not the scope's 25 (measured 43 to 48; the measurement page lists what remains, mostly the runtime view read before each of the app's reads). Events that may save keep their per-unit checks |
+| L2.2 | partly built | Frame payloads never carry code the host holds (`browser.have`); every open carries the frame's reads; code by fingerprint (website URL cached by the browser, cleared on sign-out; plugins `read_app_code`), or taken from the app's metadata when the fingerprint matches. Not built: the open still carries `component.source` for the settings, layout and code editors, so the code still travels once per open |
+| L2.3 | not built | The server still makes the first screen of browser-mode apps. Making it in the browser needs the reads first (a second round trip on a first visit) and would lose the identical-screen check; to be weighed with last known basics (L4.1) |
+| L2.4 | built | Standard trackers prepare every other visible tab (at most 8), browser-mode apps their linked screens, right after Overview; quiet, paused while hidden or saving, stopped when the person acts; bounded by 8 screens, 12 reads per request and the 2 MB seed limit |
+| L2.5 | partly built | Name and loading frame at once from a card; the website prefetches the frame document while idle. Not built: preparing the engine ahead |
+| L2.6 | built | `open_app` carries the first screen as widget-only result metadata; account and table list load alongside |
+| L2.7 | partly built | `npm run apps:runtime-report` (owner, read-only). All 16 catalog apps offered on every channel are switched on; the 16 hidden from a channel have no browser test and stay on server mode; customized copies stay on server mode and are listed per workspace |

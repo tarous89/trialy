@@ -7,7 +7,9 @@ export const frontendRequest=z.object({
  /** P5 (4.4): one key per save attempt, so a retried save never saves twice. */
  requestKey:id.optional(),
  /** 5.1: the frame can run this app itself; ask for the reads this screen made (and the app's code when the frame lacks it). */
- browser:z.object({source:z.boolean().default(false)}).strict().optional(),
+ browser:z.object({source:z.boolean().default(false),
+  /** L2.2: fingerprints (sourceDigest) of the app code the host already holds; code with one of them is never sent again. */
+  have:z.array(z.string().regex(/^[0-9a-f]{32}$/)).max(16).default([])}).strict().optional(),
  /** 5.4: the frame's width class and pointer, passed to v2 apps as input.viewport. */
  viewport:z.object({width:z.enum(['phone','panel','wide']),coarse:z.boolean().default(false)}).strict().optional(),
  state:z.unknown().default(null),event:z.object({kind:z.enum(['open','click','change','submit','command','refresh']),action:z.string().max(200).default(''),value:z.union([z.string().max(50000),z.boolean(),z.null()]).default(null),form:z.record(z.string().max(100),z.union([z.string().max(50000),z.boolean()])).default({})}).strict().default({kind:'open',action:'',value:null,form:{}})
