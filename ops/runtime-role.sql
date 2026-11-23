@@ -58,6 +58,8 @@ GRANT INSERT ON support_requests TO trialy_runtime;
 GRANT SELECT,INSERT,UPDATE ON connectors,connector_credentials,connector_reviews,connector_invocations TO trialy_runtime;
 
 GRANT SELECT,INSERT,UPDATE ON app_actions,app_action_runs,app_service_jobs,app_service_previews TO trialy_runtime;
+-- Approval screen: Decline removes an unsaved automation review (the query never touches a saved one).
+GRANT DELETE ON app_service_previews TO trialy_runtime;
 GRANT INSERT ON notification_events TO trialy_runtime;
 GRANT SELECT ON notification_events TO trialy_worker;
 GRANT SELECT,INSERT ON notification_suppressions TO trialy_worker;

@@ -19,7 +19,7 @@ import {FoundationPanel} from './FoundationPanel.js';
 import {CollectionsPanel} from './CollectionsPanel.js';
 import {ChangeSummary} from './ChangeSummary.js';
 import {Button} from './ui/Controls.js';
-import {PendingChangesProvider,ProposalReview,type PendingChange} from './PendingChanges.js';
+import {PendingChangesProvider,ProposalReview,type PendingChange,type WaitingReview} from './PendingChanges.js';
 import './ui/design.css';import './ui/brand.css';import './ui/scroll.css';import './app-pages.css';
 import {AppOpeningFrame} from './AppOpeningFrame.js';
 import {firstScreenShown} from './first-screen.js';
@@ -51,8 +51,10 @@ export function StandaloneApp({signedIn,loading=false,call,api,accountName='Acco
 
  // A6, B1: pending app changes come back from the server; Review opens the change itself, never approves it blind.
  const openPending=(c:PendingChange)=>{if(!current)return;const next=appUrl({workspaceId:current.workspaceId,appId:c.previewId,source:'preview'});if(dirty.current||proposal){setPending(next);return;}setReset(n=>n+1);assign(next);};
+ // Approval screen: an automation review opens on the website's review page, which shows its exact details and Approve.
+ const openReview=(r:WaitingReview)=>{if(!current)return;const next=r.source==='automation'?'/?tab=apps&workspaceId='+encodeURIComponent(current.workspaceId)+'&serviceReview='+encodeURIComponent(r.reviewId):'/?tab=review&workspaceId='+encodeURIComponent(current.workspaceId)+'&waitingReview='+encodeURIComponent(r.source+':'+r.reviewId);if(dirty.current||proposal){setPending(next);return;}location.assign(next);};
  const pendingCall=useCallback((name:string,args:any,options?:WorkspaceRequestOptions)=>call(name,args,options),[call]);
- return <AppPlatform.Provider value={{enabled:true,origin:location.origin,loadAppCode:fetchAppCode}}><PendingChangesProvider call={pendingCall} workspaceId={signedIn?current?.workspaceId:null} onOpen={openPending}><WorkspaceShell headerActions={component&&current?<AssistantLinks iconsOnly prompt={'Customize my TrialAgents app (app ID '+current.appId+', workspace ID '+current.workspaceId+'). Read the saved app before making changes.'}/>:undefined} appView selected="home" accountName={accountName} accountEmail={accountEmail} onNavigate={platformNavigate} onNew={kind=>platformNavigate("create",kind)}><AppNavigation.Provider value={current?{route:current.route,reset,navigate,setDirty}:null}>
+ return <AppPlatform.Provider value={{enabled:true,origin:location.origin,loadAppCode:fetchAppCode}}><PendingChangesProvider call={pendingCall} workspaceId={signedIn?current?.workspaceId:null} onOpen={openPending} onOpenReview={openReview}><WorkspaceShell headerActions={component&&current?<AssistantLinks iconsOnly prompt={'Customize my TrialAgents app (app ID '+current.appId+', workspace ID '+current.workspaceId+'). Read the saved app before making changes.'}/>:undefined} appView selected="home" accountName={accountName} accountEmail={accountEmail} onNavigate={platformNavigate} onNew={kind=>platformNavigate("create",kind)}><AppNavigation.Provider value={current?{route:current.route,reset,navigate,setDirty}:null}>
  {!current?<AppUnavailable onHome={goHome}/>:loading?<div aria-busy="true" aria-label="Loading app"/>:!signedIn?<section className="ty-empty"><h1>Sign in to open this app</h1><a className="ty-button ty-button--primary" href={'/auth/login?returnTo='+encodeURIComponent(appUrl(current))}>Sign in</a></section>:<>
  {automationNotice&&<SystemNotice message="App added. Automation setup continues in the background." onDismiss={()=>setAutomationNotice(false)}><button onClick={()=>platformNavigate('automations')}>View Automations</button></SystemNotice>}
  {error&&<SystemNotice error message={error} onDismiss={()=>setError('')}/>}{!loaded&&(loadFailed?([403,404].includes(loadStatus)&&noAccess)||<AppUnavailable onHome={goHome} reason={[401,403,404].includes(loadStatus)?'missing':'load'} onRetry={()=>setReload(n=>n+1)}/>:remembered?<AppOpeningFrame name={remembered.name} tabs={remembered.tabs}/>:<div aria-busy="true" aria-label="Loading app"/>)}

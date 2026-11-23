@@ -7,6 +7,7 @@ export {TemplateCatalog} from '../shared/TemplateCatalog.js';
 export {AccountProfile} from './AccountProfile.js';
 export {Subscription} from './Subscription.js';
 export {AppServicesPanel} from '../shared/AppServicesPanel.js';
+export {WaitingReviewPage} from '../shared/WaitingReviewPage.js';
 export {ConnectorsPanel,ConnectorReview} from '../shared/ConnectorsPanel.js';
 export {CreationCenter} from '../shared/CreationCenter.js';
 export {AccessPage,AccessPanel} from '../shared/AccessPanel.js';

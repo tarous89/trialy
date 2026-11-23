@@ -46,6 +46,17 @@ export function recordDue(value:unknown,t:Extract<ActionConfig['trigger'],{kind:
  if(/^\d{4}-\d{2}-\d{2}$/.test(value)){const from=new Date(value+'T00:00:00Z');date=nextDaily(t,new Date(from.getTime()-36*3600000));for(let i=0;i<4;i++){const local=new Intl.DateTimeFormat('en-CA',{timeZone:t.timeZone,year:'numeric',month:'2-digit',day:'2-digit'}).format(date);if(local===value)break;date=nextDaily(t,date);} }else date=new Date(value);
  if(!Number.isFinite(date.getTime()))return null;return new Date(date.getTime()+t.offsetMinutes*60000);
 }
+/** Reviews that appear on the approval screen; sharing reviews are made by the person and confirmed where they were made. */
+export const WAITING_REVIEW_KINDS=['automation_setup','monitoring','action','automation_control','automation_recipe'];
+function waitingTitle(kind:string,body:any):string{
+ const name=(v:unknown)=>typeof v==='string'&&v.trim()?v.trim().slice(0,120):null;
+ if(kind==='automation_setup')return 'Background runner for automations';
+ if(kind==='monitoring')return 'Research automation: '+(name(body?.change?.config?.name)??'new research');
+ if(kind==='action')return 'App action: '+(name(body?.config?.name)??'new action');
+ if(kind==='automation_control')return (body?.change?.enabled?'Turn on ':'Turn off ')+(name(body?.automation?.name)??'an automation');
+ return 'App automation: '+(name(body?.title)??name(body?.name)??name(body?.recipe?.name)??'app feature');
+}
+
 export class AppActions{
  readonly f:WorkspaceFoundation;
  constructor(readonly db:Database){this.f=new WorkspaceFoundation(db);}
@@ -83,6 +94,14 @@ export class AppActions{
   if(body.actionId){const row=await this.row(a,w,body.actionId);if(row.user_id!==a.userId||row.app_id!==body.config.appId||row.version!==body.expectedVersion)fail(409,'action_changed','Reload the action');}
   const previewId=randomUUID(),digest=checksum(J(body));await this.db.query("INSERT INTO app_service_previews(id,workspace_id,user_id,kind,body,digest,assistant) VALUES($1,$2,$3,'action',$4,$5,$6)",[previewId,w,a.userId,J(body),digest,actorAssistant(a)]);return {id:previewId,kind:'action',digest,body,recipientResolution,...chatServiceReview(w,previewId,'action',digest,body),reviewUrl:appPublicUrl()+'/?tab=apps&workspaceId='+w+'&serviceReview='+previewId,status:'review_required'};
  }
+ /** Approval screen: automation reviews an assistant prepared that wait for the person (unsaved, unexpired, newest first). */
+ async waiting(a:Actor,w:string){await access(this.db,a,w);
+  const rows=(await this.db.query("SELECT id,kind,body,digest,assistant,expires_at FROM app_service_previews WHERE workspace_id=$1 AND user_id=$2 AND consumed_at IS NULL AND expires_at>now() AND assistant IS NOT NULL AND kind=ANY($3) ORDER BY expires_at DESC LIMIT 50",[w,a.userId,WAITING_REVIEW_KINDS])).rows;
+  return rows.map((r:any)=>({reviewId:r.id,digest:r.digest,kind:r.kind,title:waitingTitle(r.kind,r.body),assistant:r.assistant,expiresAt:new Date(r.expires_at).toISOString()}));}
+ /** Decline on the approval screen: removes an unsaved review the person does not want. A saved one is never removed. */
+ async decline(a:Actor,w:string,previewId:string){requireCurrentAction(a);await access(this.db,a,w);
+  const r=(await this.db.query('DELETE FROM app_service_previews WHERE id=$1 AND workspace_id=$2 AND user_id=$3 AND consumed_at IS NULL AND kind=ANY($4) RETURNING id',[previewId,w,a.userId,WAITING_REVIEW_KINDS])).rows[0];
+  if(!r)fail(404,'not_found','Review unavailable or already saved');return {status:'declined',reviewId:previewId};}
  async preview(a:Actor,w:string,previewId:string){await access(this.db,a,w);const r=(await this.db.query('SELECT * FROM app_service_previews WHERE id=$1 AND workspace_id=$2 AND user_id=$3 AND expires_at>now()',[previewId,w,a.userId])).rows[0];if(!r)fail(404,'not_found','Review unavailable');return r;}
  async confirm(a:Actor,w:string,previewId:string,digest:string,review?:string){requireCurrentAction(a);return this.db.transaction(async tx=>{await tx.query('SELECT id FROM workspaces WHERE id=$1 FOR UPDATE',[w]);const service=new AppActions(adapter(tx));await tx.query('SELECT id FROM app_service_previews WHERE id=$1 AND workspace_id=$2 AND user_id=$3 FOR UPDATE',[previewId,w,a.userId]);const r=await service.preview(a,w,previewId);if(r.kind!=='action'||r.digest!==digest)fail(409,'review_changed','Review changed');await tx.query('SELECT id FROM app_service_previews WHERE id=$1 FOR UPDATE',[previewId]);const p=await access(tx,a,w,true);requireAssistantApps(p,a,true);await requireAutomationManager(tx,a,w,r.body?.config?.appId??null);checkServiceReview(a,w,r,review);if(r.consumed_at)return r.result;const v=actionChange.parse(r.body),current=v.actionId?await service.row(a,w,v.actionId):null;if(current)requireAutomationOwner(a,ownedBy(current));const owner:Assistant|null=current?ownedBy(current):ownedBy(r)??actorAssistant(a),checked=await service.validate(asOwner(a,owner),w,v.config),actionId=v.actionId??randomUUID();let version=0;if(notificationEmail(v.config))await notificationRecipients(adapter(tx),a,w,v.config);
    if(v.actionId){const old=await service.row(a,w,actionId);if(old.user_id!==a.userId||old.version!==v.expectedVersion||old.app_id!==v.config.appId)fail(409,'action_changed','Action changed');version=old.version+1;await tx.query('UPDATE app_actions SET config=$2,version=$3,scope_stamp=$4,next_at=$5,approved_by=$6,approved_at=now(),last_error=NULL,copy_review_required=false,needs_attention_cause=NULL,needs_attention_at=NULL,scan_cursor=CASE WHEN $8 THEN scan_cursor ELSE NULL END,event_cursor=CASE WHEN $8 THEN event_cursor ELSE (SELECT coalesce(max(event_sequence),0) FROM audit_events WHERE workspace_id=$7) END WHERE id=$1',[actionId,J(v.config),version,checked.stamp,nextAction(v.config),a.userId,w,J(old.config.trigger)===J(v.config.trigger)]);}

@@ -19,6 +19,7 @@ import {accountCatalog} from '../workspace/catalog.js';
 import {accountHome,homeSnapshots} from '../workspace/home.js';
 import {frontendFrameDocument,framePolicy} from '../shared/frontend-frame.js';
 import {addFoundationApi} from './foundation.js';
+import {addWaitingReviewsApi} from './waiting-reviews.js';
 import {addReviews} from './reviews.js';
 import {addInvitations} from './invitations.js';
 import {addExternal} from './external.js';
@@ -78,6 +79,7 @@ export function addApi(app:express.Express,s:Service,human:RequestHandler) {
  addSubscription(app,s);
  addReviews(app,s);
  addFoundationApi(app,s);
+ addWaitingReviewsApi(app,s);
  app.post('/api/account/profile',async(req,res)=>{const v=z.object({firstName:z.string().trim().min(1).max(100),lastName:z.string().trim().min(1).max(100)}).strict().parse(req.body);const u=(await s.db.query("UPDATE users SET first_name=$2,last_name=$3,name=$2||' '||$3 WHERE id=$1 RETURNING id,name,email,first_name,last_name",[req.actor!.userId,v.firstName,v.lastName])).rows[0];res.json(u);});
  app.post('/api/account/initialize',async(req,res)=>res.json({workspaces:await s.ensureAccount(req.actor!)}));
  app.post('/api/account/schema',async(req,res)=>res.json(await accountCatalog(s.db,req.actor!,req.body)));
