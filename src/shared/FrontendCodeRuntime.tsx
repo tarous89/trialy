@@ -9,7 +9,9 @@ import {useWorkspaceView} from './WorkspaceView.js';
 import {SystemNotice} from './SystemNotice.js';
 import {parseAppUrl} from './app-route.js';
 import {AppPlatform,AppNavigation} from './AppPlatform.js';
-import {ConnectorReview} from './ConnectorsPanel.js';
+import {appScreen} from './app-screens.js';
+// L4.5: shown only on the website (the plugins link to the review); supplied by the host.
+const ConnectorReview=appScreen('ConnectorReview');
 import {mergeTrackerSnapshot,SNAPSHOT_TTL} from './tracker-cache.js';
 import {FrontendReads} from './frontend-reads.js';
 import {retryFrontendBusy} from './frontend-retry.js';

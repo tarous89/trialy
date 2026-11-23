@@ -354,3 +354,39 @@ Session L3 of the [loading speed scope](scopes/LOADING_SPEED_2026-11-22.md).
 **Budgets enforced by tests.** `tests/loading-speed-templates.test.ts` fails the build when the template list takes more than one query on any channel, when an unchanged catalog reads a payload again or sends more than the fingerprint, when a card is missing, stale, not 720×480 or over 60 KB, when an exact media address is not kept for good, when the public card address serves another digest, an unknown channel, a switched-off or a withdrawn app, when the prepared tool list differs from a full build for any caller, when two people's calls on one server see each other's account or a removed access survives to the next request, and when `dist/embed.html` exceeds 1.9 MB. `tests/visual/template-loading.spec.cjs` checks in a browser that a hovered card's preview opens from the cache, that refused card images come in batched requests with no loading bar, that allowed ones need no tool request, and that returning to the templates sends only the fingerprint.
 
 **Still open.** Keeping the template list across page loads is L4.1. Whether ChatGPT and Claude load images from the declared resource domain is untested in the real hosts (owner action 7.4); the batched read covers a refusal. The `workspace/core` tool group (about 90 tools) is still built in full for each of its calls. The widget still inlines the Inter font (470 KB as base64), every page of the workspace, and, for Claude, the app frame document (1.28 MB with a second copy of the font); decided on 23 November: the font stays; the other pages move out in L4.5; the frame stays and loses its font copy in L4.6 (scope, section 6).
+
+## Loading speed, session L4: instant return visits and capacity (23 November 2026)
+
+Session L4 of the [loading speed scope](scopes/LOADING_SPEED_2026-11-22.md). The capacity recommendation and the real-host checklist are in [L4 owner actions](scopes/LOADING_SPEED_L4_OWNER_ACTIONS.md).
+
+**What changed.**
+- **Last known basics (L4.1).** `src/shared/last-known.ts` keeps, per person and on this device, what Apps home (cards, projects, the archived count), the template list and an app's frame (name, tab names) last showed. It keeps no records, card miniatures, drafts, code or access. A return visit shows them at once. Home marks them "Checking for changes…" and replaces them with a quiet read; the website's early Home read is quiet too when the device remembers Home. Another person's sign-in, sign-out, a session that ends (401) and the account security actions clear them; an app that answers 401, 403 or 404 is forgotten. They stand in for a screen's first read only; a changed revision or lost access forgets them. Where the host refuses storage (expected in sandboxed plugin frames) nothing changes.
+- **Compression and caching (L4.2).** `baseApp` compresses every response over 1 KB that the client accepts compressed (Brotli, else gzip), except event streams. Caching headers were checked on every static and list response and left as they were: fingerprinted files are kept for good, unhashed files (`start.js`, the font, the brand marks) are revalidated with an ETag so a release is seen at once (an existing rule, `tests/static-assets.test.ts`), and lists and account answers are `no-store`. The widget's second part is kept for good.
+- **Widget in two parts (L4.5).** See the scope, section 9. Part one is built as one scope-hoisted bundle, as before. A first version that turned every chunk into a CommonJS module made the first screen's script about 150 ms slower at 4× CPU throttling and was replaced. Part two shares part one's modules through a table of namespaces.
+- **Claude's inline frame without its own font (L4.6).**
+
+**Lab numbers.** Byte counts are from the build. Wire bytes are from a local server (`compression` defaults, Brotli quality 4), measured with the same script against an `origin/main` worktree and this branch. Startup is Chromium loading the widget file on its own (no host) at 4× CPU throttling, median of 21 runs alternating before and after, measured while nothing else ran.
+
+| Measure | Before | After |
+| --- | --- | --- |
+| `dist/embed.html` (ChatGPT resource) | 1,843,145 bytes | 1,592,706 bytes |
+| Widget second part, downloaded after the first screen | none | 280,372 bytes (77 KB compressed), once, kept for good |
+| Claude resource (widget with the inline app frame) | 3,127,470 bytes (two copies of the font) | 2,407,263 bytes (one copy) |
+| Widget startup at 4× CPU throttling: load event / script time | 1,144 ms / 370 ms | 997 ms / 365 ms: no measurable difference in script time (repeated rounds of 9 to 21 runs varied by ±15% either way) |
+| Website script `assets/index-*.js` on the wire | 1,017,584 bytes (not compressed by the app) | 278,512 bytes (Brotli) |
+| Website styles on the wire | 216,589 bytes | 42,315 bytes |
+| App frame document (`/frontend/frame?v=…`) on the wire | 1,278,617 bytes | 685,270 bytes |
+| Template list (`POST /api/app-templates/list`) on the wire | 22,077 bytes | 7,696 bytes |
+| MCP `tools/list` on the wire | 517,109 bytes | 40,021 bytes |
+| MCP `resources/read` of the widget on the wire | 1,881,375 bytes | 675,251 bytes |
+| `/start.js`, `/fonts/inter-variable.woff2`, `/trialagents-mark-*-96.png` | `public, max-age=0` with ETag (revalidated) | unchanged (deliberate: see above) |
+| Apps home on a return visit (website) | skeleton until the read returns | cards at once from last known basics; the read is quiet |
+| App reload on the website | an empty busy area until the app resolves | its name (and tab names, for standard trackers) at once |
+| Web process memory with both widget resources and the frame loaded | 173 MB resident, 58 MB heap | 161 MB resident, 55 MB heap |
+| Compression cost per large response (one core) | none | 29 ms for the 1.67 MB widget resource, 21 ms for the 1.0 MB website script (Brotli 4); both are cached by browsers for good |
+
+Not measured: whether Render compressed responses at its edge before this change (if it did, the wire columns' "before" overstate the gain), and anything in the real hosts.
+
+**Budgets enforced by tests.** `tests/loading-speed-return.test.ts` fails the build when last known basics hold a record, a miniature or a draft, are shown to another person, survive sign-out, exceed 12 KB for 20 cards, or fail when storage is refused. It also fails when `dist/embed.html` exceeds 1.65 MB or the second part 300 KB, when a page of the second part is found in the widget file or the first screen's text is missing from it, when the second part's address is not public, exact, immutable and compressed, or `read_widget_part` returns anything else, when the single-file switch leaves a second file, when the Claude resource carries the font twice or exceeds 2.55 MB, and when any static or list response checked there is uncompressed or cached differently from the table above. `tests/visual/return-visits.spec.cjs` holds the second part's download open (from the platform origin, then through the assistant) and Home's checking read open, and checks that the loading bar stays hidden, that a page opened early shows its frame and joins the one download, that Retry works when both ways fail, and that an app reload shows its last known name.
+
+**Still open.** Whether ChatGPT and Claude load the second part and card images from the platform origin, and whether they allow storage in the widget (owner checklist A and C). The app runtime, its layout editor, the approval footer and the styles stay in part one, because the first screen uses them. The website's main script is still one file (L1.5).

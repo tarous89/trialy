@@ -3,7 +3,10 @@ import type {WorkspaceRequestOptions} from './workspace-request.js';
 import {AppPlatform,AppNavigation} from './AppPlatform.js';
 import {readStandardConfig} from './standard-tool.js';
 import {ToolLayout} from './ToolLayout.js';
-import {AccessButton,AccessPanel} from './AccessPanel.js';
+import {AccessButton} from './AccessButton.js';
+import {appScreen} from './app-screens.js';
+// L4.5: the app's access screen is supplied by the host (the widget loads it after the first screen).
+const AccessPanel=appScreen('AccessPanel');
 import {PageBack} from './ui/PageNavigation.js';
 import {useAccessRecheck} from './useAccessRecheck.js';
 import {FrontendCodeRuntime} from './FrontendCodeRuntime.js';

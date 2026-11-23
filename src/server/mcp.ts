@@ -1,3 +1,4 @@
+import {widgetPart,WIDGET_PART_FILE} from './widget-parts.js';
 import {accountHome} from '../workspace/home.js';
 import {EARLY_HOME} from '../shared/early-reads.js';
 import {importReport} from '../domain/import-report.js';
@@ -75,6 +76,12 @@ export function addMcp(app:Express,s:Service,authenticate:RequestHandler,options
   sections.run('workspace',()=>addWorkspaceMcp(server,new WorkspaceFoundation(s.db),actor,safe,metadata));
   sections.run('foundation',()=>addFoundationMcp(server,new Foundation(s.db,s),actor,safe,metadata));
   registerWorkspaceResources(server,bundle,[new URL(appPublicUrl()).origin,oauthPublicUrl()],host,[new URL(appPublicUrl()).origin]);
+  // L4.5: the widget's second part, for hosts that refuse scripts from the platform origin. Widget only; public code.
+  server.registerTool('read_widget_part',{title:'Read widget part',description:'Widget only: the code of the workspace pages the first screen does not show, for hosts that do not load it from the platform. No account data.',inputSchema:{file:z.string().regex(WIDGET_PART_FILE)},annotations:{readOnlyHint:true,destructiveHint:false,openWorldHint:false},_meta:{securitySchemes:[{type:'noauth'}],ui:{visibility:['app']}}},async({file})=>{
+   const part=await widgetPart();
+   if(!part||part.file!==file)return {isError:true,content:[{type:'text' as const,text:'This widget part is not available. Reopen TrialAgents.'}]};
+   return {content:[],structuredContent:{file,integrity:part.integrity},_meta:{widgetPart:part.text}};
+  });
   server.registerTool('read_connected_account',{title:'Connected account',description:'Display the authenticated TrialAgents account identity in the app sidebar. Identity is delivered only to the app.',inputSchema:{},annotations:{readOnlyHint:true,destructiveHint:false,openWorldHint:false},_meta:{...backgroundMetadata(metadata),ui:{visibility:['app']}}},async()=>{
    const response=await safe(async()=>({connected:true,viewerId:actor.userId}))({});if('isError' in response&&response.isError)return response;
    const account=(await s.db.query('SELECT name,email FROM users WHERE id=$1',[actor.userId])).rows[0];

@@ -3,8 +3,7 @@ import {readFile} from 'node:fs/promises';
 import {ResourceTemplate,type McpServer} from '@modelcontextprotocol/sdk/server/mcp.js';
 import {McpError,ErrorCode} from '@modelcontextprotocol/sdk/types.js';
 import {frontendFrameDocument} from '../shared/frontend-frame.js';
-import {bundledAppFont} from '../workspace/design-quality.js';
-import {withInlineFrameDocument} from './claude-frame.js';
+import {withInlineFrameDocument,WIDGET_FONT_SLOT} from './claude-frame.js';
 // Content-addressed resources prevent a cached host widget from surviving a UI release.
 let cached:Promise<{html:string;build:string;uri:string}>|undefined,claudeCached:typeof cached;
 export function workspaceResource(host:'chatgpt'|'claude'='chatgpt'){
@@ -13,7 +12,8 @@ export function workspaceResource(host:'chatgpt'|'claude'='chatgpt'){
 async function loadWorkspaceResource(claude:boolean){
  let html=await readFile(new URL('../../dist/embed.html',import.meta.url),'utf8');
  // Claude blocks nested frames from our origin; its widget renders the app frame inline (see claude-frame.ts).
- if(claude)html=withInlineFrameDocument(html,await frontendFrameDocument(bundledAppFont));
+ // L4.6: without a second copy of the font; the widget fills WIDGET_FONT_SLOT with the one in its styles.
+ if(claude)html=withInlineFrameDocument(html,await frontendFrameDocument(WIDGET_FONT_SLOT));
  const build=createHash('sha256').update(html).digest('hex').slice(0,16);
  return {html,build,uri:`ui://trialy/workspace-${build}.html`};
 }
