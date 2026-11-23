@@ -1,7 +1,7 @@
 # Loading speed scope: Apps home, archived apps, templates and individual apps
 
 **Date:** 22 November 2026
-**Status:** sessions L1 to L4 built, with the open items listed in section 9. L4.3 and L4.4 are owner actions: the capacity recommendation and the real-host checklist are in [L4 owner actions](LOADING_SPEED_L4_OWNER_ACTIONS.md), and neither the hosting plan nor the real hosts have been changed or tested.
+**Status:** sessions L1 to L4 built, with the open items listed in section 9; L1.5's script split was finished after L4 (23 November). L4.3 and L4.4 are owner actions: the capacity recommendation and the real-host checklist are in [L4 owner actions](LOADING_SPEED_L4_OWNER_ACTIONS.md), and neither the hosting plan nor the real hosts have been changed or tested.
 **Covers:** four surfaces (Apps home, archived apps, templates, an individual app) on three hosts (website, ChatGPT plugin, Claude plugin).
 **Goal:** every surface opens as fast as technically possible. What is already known is shown at once; anything that needs processing arrives afterwards and never holds the page back.
 **Read at commit:** `1c19eef`. File and line references are in section 2.
@@ -233,7 +233,7 @@ Measured before and after in [performance measurement](../PERFORMANCE_MEASUREMEN
 | L1.2 | partly built | Home reads the index; projects and placements from one project read. Not built: database-side paging and set queries for a person's own standalone automations, links and older automations (they grow with that person's automations, not with apps) |
 | L1.3 | built for Home | Miniatures are `read_home_snapshots`, a quiet later read for the cards on screen, with a browser test that holds it open and checks the bar. Rule I for other surfaces' details comes with those details (L2, L3) |
 | L1.4 | built | Count with the Home read, no request; list in 3 queries beyond the count. Record and automation counts are batched into the list request rather than a later one |
-| L1.5 | partly built | Frame drawn by `index.html` before any script; `public/start.js` starts the account check and Home read before the main script downloads. Not built: splitting the main script |
+| L1.5 | built | Frame drawn by `index.html` before any script; `public/start.js` starts the account check and Home read before the main script downloads. Main script split (23 November, after L4): the main script holds the Apps page and an app's first screen (1,018,099 → 700,026 bytes; 278 KB → 201 KB compressed). Every other signed-in page is one chunk (`src/web/late-pages.ts`, 266 KB, 69 KB compressed) loaded quietly once Home's cards or an app's first screen are shown (`src/shared/first-screen.ts`; after 3 s on any other first page). A page opened before it arrives shows its frame; if the chunk fails, Retry reloads the page (Chromium keeps a failed `import()`, and after a release the old chunk address is gone). Pages with their own address (shared app, join, form, exchange) are a chunk of their own (`src/web/route-pages.ts`), started at once on those addresses only. Home's non-app screens and an app's access screen and connector review come through the same registries as in the widget. zod's translations are left out (as L3.6). Shared helper: `src/shared/lazy-page.tsx`. Budget: `tests/loading-speed-website.test.ts`; browser tests: `tests/visual/website-split.spec.cjs` |
 | L1.6 | built | `open_workspace` carries the first Home page; saved views no longer hold the widget's first paint |
 
 ### Session L2 in detail

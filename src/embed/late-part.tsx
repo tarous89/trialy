@@ -76,8 +76,8 @@ export function useLatePart(){
  useEffect(()=>{const update=()=>changed(n=>n+1);listeners.add(update);void startLatePart();update();return()=>{listeners.delete(update);};},[]);
  return state;
 }
-type FrameProps={failed:boolean;retry:()=>void};
-/** A page of the second part. Until it arrives its frame is shown (heading and a quiet placeholder, no loading bar). */
+import {pageFrame,inlineFrame,type FrameProps} from '../shared/lazy-page.js';
+export {pageFrame,inlineFrame};
 export function lateComponent<K extends keyof LatePagesModule>(name:K,Frame:(props:FrameProps)=>React.ReactElement|null){
  function Late(props:React.ComponentProps<LatePagesModule[K]>){
   const current=useLatePart();
@@ -87,12 +87,3 @@ export function lateComponent<K extends keyof LatePagesModule>(name:K,Frame:(pro
  Late.displayName='Late('+String(name)+')';
  return Late;
 }
-const Failed=({label,retry}:{label:string;retry:()=>void})=><div className="ty-empty" role="alert"><p>{label} could not be loaded.</p><button className="ty-button ty-button--primary" onClick={retry}>Retry</button></div>;
-/** The frame of a full page: its heading at once, the content when the part arrives. */
-export const pageFrame=(title:string)=>function PageFrame({failed,retry}:FrameProps){
- return <section className="ty-page ty-late-page" aria-busy={failed?undefined:true} data-late-page=""><div className="ty-page-heading"><h1>{title}</h1></div>{failed?<Failed label="This page" retry={retry}/>:<div className="ty-runtime-loading" aria-label={'Loading '+title}/>}</section>;
-};
-/** The frame of a part of a page (a dialog or a control). */
-export const inlineFrame=(label:string)=>function InlineFrame({failed,retry}:FrameProps){
- return failed?<Failed label={label} retry={retry}/>:<div className="ty-runtime-loading" aria-label={'Loading '+label} data-late-page=""/>;
-};
