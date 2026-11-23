@@ -13,6 +13,8 @@ export function addPublicAssets(app:Express,root=resolve('dist/web')){
 /** Unhashed public files and every SPA entry point must revalidate after a deployment. */
 export function addWebFallback(app:Express,root=resolve('dist/web')){
  const htmlHeaders={'Cache-Control':'no-cache'};
+ // L4.2 checked: unhashed public files (start.js, the font, the brand marks) keep express's revalidation (max-age=0 with an
+ // ETag, answered 304 when unchanged), so a release that changes them is seen at once (tests/static-assets.test.ts).
  app.use(express.static(root,{setHeaders:(res,path)=>{if(path.endsWith('.html'))res.setHeader('Cache-Control','no-cache');}}));
  app.get('/{*path}',(req,res)=>{
   if(req.path.startsWith('/api/')||req.path.startsWith('/auth/')){res.status(404).json({error:'not_found'});return;}

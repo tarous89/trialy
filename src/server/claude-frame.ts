@@ -4,6 +4,9 @@
  * srcdoc; its own CSP (hash-only scripts, no network) and the iframe sandbox still apply.
  * ChatGPT's resource is not passed through this function.
  */
+/** L4.6 (docs/scopes/LOADING_SPEED_2026-11-22.md, section 6 item 10): the inline frame document carries no font of its own.
+ * The widget puts its own Inter @font-face (already inside the widget's styles) where this marker is (src/embed/main.tsx). */
+export const WIDGET_FONT_SLOT='/*trialy-widget-font*/';
 export function withInlineFrameDocument(html:string,frameDocument:string){
  // ASCII-only JSON: the script hash in the frame CSP must match byte for byte whatever charset the host assumes.
  const data=JSON.stringify(frameDocument).replace(/[<\u007f-\uffff]/g,c=>'\\u'+c.charCodeAt(0).toString(16).padStart(4,'0'));

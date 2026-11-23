@@ -16,6 +16,7 @@ import {AccessGrid} from '../src/domain/access-grid.js';
 import {workspaceResource} from '../src/server/ui-resource.js';
 import {frontendFrameDocument} from '../src/shared/frontend-frame.js';
 import {bundledAppFont} from '../src/workspace/design-quality.js';
+import {WIDGET_FONT_SLOT} from '../src/server/claude-frame.js';
 
 const BASE='https://trialy.example',CLAUDE_CALLBACK='https://claude.ai/api/mcp/auth_callback',CHATGPT_CALLBACK='https://chatgpt.com/connector/oauth/synthetic';
 const accept='application/json, text/event-stream';
@@ -78,7 +79,13 @@ test('Claude connects through its own endpoint and stays a separate principal fr
  assert.equal(chatgptWidget,(await workspaceResource()).html,'ChatGPT widget is unchanged');assert.ok(!chatgptWidget.includes('<script type="application/json" id="trialy-frame-document">'),'ChatGPT widget carries no inline frame');
  assert.ok(claudeWidget.includes('<script type="application/json" id="trialy-host">"claude"</script>'),'Claude widget enables Claude-only controls');assert.ok(!chatgptWidget.includes('<script type="application/json" id="trialy-host">'),'ChatGPT widget has no host marker');
  const frameData=claudeWidget.match(/<script type="application\/json" id="trialy-frame-document">([^<]*)<\/script>/);assert.ok(frameData,'Claude widget carries the app frame document');
- assert.ok(/^[\x00-\x7e]*$/.test(frameData[1]),'Frame document is ASCII-escaped');assert.equal(JSON.parse(frameData[1]),await frontendFrameDocument(bundledAppFont),'Claude frame document matches the served frame');
+ assert.ok(/^[\x00-\x7e]*$/.test(frameData[1]),'Frame document is ASCII-escaped');// L4.6: the inline frame carries no font of its own; the widget puts its own Inter @font-face in WIDGET_FONT_SLOT.
+ const inlineFrame=JSON.parse(frameData[1]);assert.equal(inlineFrame,await frontendFrameDocument(WIDGET_FONT_SLOT),'Claude frame document matches the served frame, without its font');
+ assert.ok(!inlineFrame.includes('data:font/woff2'),'no second copy of the font');
+ const widgetFont=claudeWidget.match(/@font-face\{font-family:Inter;[^}]*\}/)?.[0]??'';assert.match(widgetFont,/data:font\/woff2;base64,/,'the widget carries the font once, in its styles');
+ assert.equal((claudeWidget.match(/data:font\/woff2;base64,/g)??[]).length,1,'one copy of the font in the Claude widget');
+ // Filled in by the widget, the frame is the served frame with the widget's @font-face in place of its own.
+ assert.equal(inlineFrame.replace(WIDGET_FONT_SLOT,widgetFont).length-(await frontendFrameDocument(bundledAppFont)).length,widgetFont.length-bundledAppFont.length);
  // Tokens only work on the endpoint they were issued for.
  assert.equal((await request(app).post('/mcp').set('Authorization','Bearer '+claude.access_token).set('Accept',accept).send(call('open_workspace'))).status,401);
  const chatgpt=await connect(app,browser,CHATGPT_CALLBACK,BASE+'/mcp',false);

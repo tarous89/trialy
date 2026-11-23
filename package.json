@@ -28,6 +28,7 @@
   "dependencies": {
     "@modelcontextprotocol/ext-apps": "^2.0.3",
     "@modelcontextprotocol/sdk": "^1.32.1",
+    "compression": "^1.8.2",
     "connect-pg-simple": "^10.0.0",
     "express": "^5.3.0",
     "express-rate-limit": "^8.7.1",
@@ -46,6 +47,7 @@
   "devDependencies": {
     "@electric-sql/pglite": "^0.5.8",
     "@playwright/test": "1.51.1",
+    "@types/compression": "^1.8.1",
     "@types/connect-pg-simple": "^7.0.3",
     "@types/express": "^5.0.6",
     "@types/express-session": "^1.19.0",

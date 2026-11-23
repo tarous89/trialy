@@ -1,4 +1,5 @@
 import {addTemplateCardRoute} from './apps.js';
+import {addWidgetPartRoute} from './widget-parts.js';
 import {importReport} from '../domain/import-report.js';
 import {withResponseCancellation} from './response-cancellation.js';
 import {recordUxTiming} from './ux-timing.js';
@@ -24,6 +25,7 @@ import {addExternal} from './external.js';
 import {addExternalExchange} from './external-exchange.js';
 import express, { type RequestHandler, type ErrorRequestHandler } from 'express';
 import helmet from 'helmet';
+import compression from 'compression';
 import { rateLimit } from 'express-rate-limit';
 import { z, ZodError } from 'zod';
 import { randomUUID } from 'node:crypto';
@@ -37,6 +39,10 @@ import { templates } from '../domain/templates.js';
  * whole suite arrives from one address, passes a higher number. */
 export function baseApp(requestsPerMinute=180) {
  const app=express();app.disable('x-powered-by');app.use(helmet({contentSecurityPolicy:{directives:{defaultSrc:["'self'"],scriptSrc:["'self'"],styleSrc:["'self'","'unsafe-inline'"],imgSrc:["'self'","data:","blob:"],frameSrc:["'self'",...new Set([new URL(appPublicUrl()).origin,oauthPublicUrl()]),"blob:"],frameAncestors:["'self'"]}}}));
+ // L4.2 (docs/scopes/LOADING_SPEED_2026-11-22.md): responses are compressed (Brotli or gzip, as the browser or host asks),
+ // except event streams, which must reach the client as they are written, and bodies under 1 KB. Compression never changes
+ // what is cached: private and access-dependent answers stay no-store.
+ app.use(compression({threshold:1024,filter:(req,res)=>!/^text\/event-stream/i.test(String(res.getHeader('Content-Type')??''))&&compression.filter(req,res)}));
  // Public stateless frame shell. HTTP sandbox also protects direct navigation.
  let frameDocument:Promise<string>|null=null;
  app.get('/frontend/frame',async(req,res)=>{
@@ -55,6 +61,8 @@ export function baseApp(requestsPerMinute=180) {
     durationMs:Math.round(performance.now()-started),...metricSummary(metrics),status:res.statusCode,time:new Date().toISOString()}));
   }});withRequestMetrics(metrics,()=>withReadBatch(next));
  });
+ // L4.5: the plugin widget's second part, public code loaded by the widget right after its first screen.
+ addWidgetPartRoute(app);
  app.get('/health',(_req,res)=>res.json({status:'ok',service:'trialy'}));return app;
 }
 export function addApi(app:express.Express,s:Service,human:RequestHandler) {

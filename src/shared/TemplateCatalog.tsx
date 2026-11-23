@@ -5,6 +5,7 @@ import {Button,SearchField} from './ui/Controls.js';
 import {templateGallery,templateMediaUrl} from './template-gallery.js';
 import {useDataAccessStep} from './DataAccessStep.js';
 import {useLoadTiming} from './useLoadTiming.js';
+import {knownTemplates,rememberTemplates} from './last-known.js';
 type Call=(name:string,args:any,options?:{background?:boolean})=>Promise<any>;
 /** L3.1: the last template list this page showed, by catalog fingerprint (catalog data only; no account data). */
 let heldCatalog:{catalog:string;templates:any[]}|undefined;
@@ -16,13 +17,14 @@ export function TemplateCatalog({call}:{call:Call}){
  const requests=useRef(new Map<string,string>()),dialog=useRef<HTMLDialogElement>(null);
  // Existing tables the app can use: connect each one or create a new one (skipped when there are none).
  const dataAccess=useDataAccessStep(call,platform.useTemplate?async(target,choices)=>{const t=templates.find(x=>x.id===target.install.templateId);await platform.useTemplate!(t,target.install.requestKey,{createNew:!!target.install.createNew,dataAccess:choices});return {embedded:true};}:undefined);
- useEffect(()=>{let live=true;const held=heldCatalog;
+ // L4.1: the list this person last saw on this device, when this page holds none yet; checked by its fingerprint as above.
+ useEffect(()=>{let live=true;const held=heldCatalog??=knownTemplates();
   const show=(all:any[])=>{setTemplates(all);const id=new URLSearchParams(location.search).get('template');if(id)setSelected(all.find(t=>t.id===id)??null);};
   // L3.1: a list already shown in this page is shown again at once and checked quietly by its catalog fingerprint;
   // while the catalog is unchanged nothing is re-read or re-sent. A changed catalog replaces it.
   if(held){show(held.templates);setLoading(false);}
   void (async()=>{const all=[];let offset:number|null=0,catalog='';while(offset!==null){const r=await call('list_app_templates',{limit:50,offset,...(held&&offset===0?{catalog:held.catalog}:{})},held?{background:true}:undefined);if(r.unchanged)return;catalog=r.catalog;all.push(...r.templates);offset=r.nextOffset;}
-   if(catalog)heldCatalog={catalog,templates:all};if(live)show(all);})().catch(e=>{if(live&&!held)setError(e.message);}).finally(()=>{if(live)setLoading(false);});return()=>{live=false;};},[]);
+   if(catalog){heldCatalog={catalog,templates:all};rememberTemplates(heldCatalog);}if(live)show(all);})().catch(e=>{if(live&&!held)setError(e.message);}).finally(()=>{if(live)setLoading(false);});return()=>{live=false;};},[]);
  useEffect(()=>{if(selected)dialog.current?.showModal();else dialog.current?.close();},[selected]);
  function close(){setSelected(null);setExpanded(false);}
  async function install(t:any,createNew=false){setError('');setBusy(t.id);const key=t.id+'@'+t.version+(createNew?':new':'');const stored='trialy:install-request:'+key;let requestKey=requests.current.get(key);if(!requestKey){try{requestKey=sessionStorage.getItem(stored)??undefined;}catch{}requestKey??=crypto.randomUUID();requests.current.set(key,requestKey);try{sessionStorage.setItem(stored,requestKey);}catch{}}
