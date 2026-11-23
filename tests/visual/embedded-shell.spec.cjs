@@ -20,7 +20,7 @@ for(const width of [1440,390])test(`Embedded sidebar, native gallery and context
  const catalog=root.getByRole('region',{name:'App templates'});await expect(catalog.locator('article')).toHaveCount(16);
  await root.getByLabel('Team',{exact:true}).selectOption('Biotech');await root.getByLabel('Workflow',{exact:true}).selectOption('Finance');
  await expect(catalog.locator('article')).toHaveCount(1);const card=catalog.locator('article');await expect(card.getByRole('button')).toHaveCount(2);
- await expect(card.locator('img')).toHaveJSProperty('naturalWidth',1440);await expect(card.locator('img')).toHaveAttribute('src',/^data:image\/jpeg;base64,/);
+ await expect(card.locator('img')).toHaveJSProperty('naturalWidth',720);await expect(card.locator('img')).toHaveAttribute('src',/^(?:data:image\/jpeg;base64,|https?:\/\/[^/]+\/template-cards\/chatgpt\/)/);
  await root.getByRole('searchbox',{name:'Search templates'}).fill('missing app');await expect(root.getByRole('heading',{name:'No templates match'})).toBeVisible();await root.getByRole('searchbox',{name:'Search templates'}).fill('Cash');
  await card.getByRole('button',{name:'Preview',exact:true}).click();const modal=root.getByRole('dialog',{name:'Runway preview'});
  await expect(root.frameLocator('iframe[title="Runway interactive preview"]').getByRole('heading',{name:'Runway',exact:true})).toBeVisible();

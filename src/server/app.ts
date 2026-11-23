@@ -1,3 +1,5 @@
+import {addTemplateCardRoute} from './apps.js';
+import {addWidgetPartRoute} from './widget-parts.js';
 import {importReport} from '../domain/import-report.js';
 import {withResponseCancellation} from './response-cancellation.js';
 import {recordUxTiming} from './ux-timing.js';
@@ -23,6 +25,7 @@ import {addExternal} from './external.js';
 import {addExternalExchange} from './external-exchange.js';
 import express, { type RequestHandler, type ErrorRequestHandler } from 'express';
 import helmet from 'helmet';
+import compression from 'compression';
 import { rateLimit } from 'express-rate-limit';
 import { z, ZodError } from 'zod';
 import { randomUUID } from 'node:crypto';
@@ -36,6 +39,10 @@ import { templates } from '../domain/templates.js';
  * whole suite arrives from one address, passes a higher number. */
 export function baseApp(requestsPerMinute=180) {
  const app=express();app.disable('x-powered-by');app.use(helmet({contentSecurityPolicy:{directives:{defaultSrc:["'self'"],scriptSrc:["'self'"],styleSrc:["'self'","'unsafe-inline'"],imgSrc:["'self'","data:","blob:"],frameSrc:["'self'",...new Set([new URL(appPublicUrl()).origin,oauthPublicUrl()]),"blob:"],frameAncestors:["'self'"]}}}));
+ // L4.2 (docs/scopes/LOADING_SPEED_2026-11-22.md): responses are compressed (Brotli or gzip, as the browser or host asks),
+ // except event streams, which must reach the client as they are written, and bodies under 1 KB. Compression never changes
+ // what is cached: private and access-dependent answers stay no-store.
+ app.use(compression({threshold:1024,filter:(req,res)=>!/^text\/event-stream/i.test(String(res.getHeader('Content-Type')??''))&&compression.filter(req,res)}));
  // Public stateless frame shell. HTTP sandbox also protects direct navigation.
  let frameDocument:Promise<string>|null=null;
  app.get('/frontend/frame',async(req,res)=>{
@@ -50,10 +57,12 @@ export function baseApp(requestsPerMinute=180) {
    const mcp=path==='/mcp'||path===CLAUDE_MCP_PATH;
    console.log(JSON.stringify({requestId,method:req.method,path,
     ...(mcp&&['events/list','events/subscribe','events/unsubscribe'].includes(req.body?.method)?{mcpMethod:req.body.method}:{}),
-    ...(mcp&&req.body?.method==='tools/call'&&['run_component_frontend','read_app_data','set_app_context','save_app_records','undo_app_change','prepare_tool_layout','confirm_workspace_change','read_project_component','check_component_access','read_account_home','check_account_home','read_home_snapshots'].includes(req.body.params?.name)?{tool:req.body.params.name}:{}),
+    ...(mcp&&req.body?.method==='tools/call'&&['run_component_frontend','read_app_data','read_app_code','set_app_context','save_app_records','undo_app_change','prepare_tool_layout','confirm_workspace_change','read_project_component','check_component_access','read_account_home','check_account_home','read_home_snapshots'].includes(req.body.params?.name)?{tool:req.body.params.name}:{}),
     durationMs:Math.round(performance.now()-started),...metricSummary(metrics),status:res.statusCode,time:new Date().toISOString()}));
   }});withRequestMetrics(metrics,()=>withReadBatch(next));
  });
+ // L4.5: the plugin widget's second part, public code loaded by the widget right after its first screen.
+ addWidgetPartRoute(app);
  app.get('/health',(_req,res)=>res.json({status:'ok',service:'trialy'}));return app;
 }
 export function addApi(app:express.Express,s:Service,human:RequestHandler) {
@@ -61,7 +70,10 @@ export function addApi(app:express.Express,s:Service,human:RequestHandler) {
  addExternal(app,s,human);
  addExternalExchange(app,s);
  addInvitations(app,s,human);
- app.get('/api/config',(_req,res)=>res.json({simpleApps:process.env.SIMPLE_APPS_ENABLED==='true',brand:process.env.BRAND_NAME??'TrialAgents',demo:process.env.LOCAL_DEMO==='true'&&process.env.NODE_ENV!=='production'}));
+ // L2.5: the app frame's address, so the Apps page can prepare it while idle (relative: same origin, cached by version).
+ app.get('/api/config',(_req,res)=>res.json({frameUrl:'/frontend/frame?v='+frameVersion(),simpleApps:process.env.SIMPLE_APPS_ENABLED==='true',brand:process.env.BRAND_NAME??'TrialAgents',demo:process.env.LOCAL_DEMO==='true'&&process.env.NODE_ENV!=='production'}));
+ // L3.3: catalog card images for the plugin widget, before sign-in is required (catalog pictures, no account data).
+ if(process.env.SIMPLE_APPS_ENABLED==='true')addTemplateCardRoute(app,s.db);
  app.use('/api',human);app.use('/api',(_req,res,next)=>{res.set('Cache-Control','no-store');next();});
  addSubscription(app,s);
  addReviews(app,s);

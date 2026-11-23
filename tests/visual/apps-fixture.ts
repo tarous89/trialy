@@ -10,7 +10,7 @@ import type {Actor} from '../../src/shared/schema.js';
 import {WorkspaceFoundation} from '../../src/workspace/service.js';
 import {Service} from '../../src/domain/service.js';
 import {addApi,errors} from '../../src/server/app.js';
-import {addAppApi} from '../../src/server/apps.js';
+import {addAppApi,addTemplateCardRoute} from '../../src/server/apps.js';
 import {addConnectorApi} from '../../src/server/connectors.js';
 import {Connectors} from '../../src/connectors/service.js';
 import {connectorVault} from '../../src/connectors/secrets.js';
@@ -41,7 +41,7 @@ export async function addAppsFixture(app:Express,db:Database,actor:Actor,w:any){
  const revision=await f.preview(actor,w.id,{kind:'save_component',componentId:saved.id,expectedVersion:0,content:{name:'Simple app fixture',format:'frontend-js',sourceAccess:'bindings',source,bindings:[{typeId:companyTable,fields:['name']}]}});await f.confirm(actor,w.id,revision.id,revision.digest);
  app.get('/api/me',(_req,res)=>res.json({user:{id:actor.userId,name:'Fixture',email:'fixture@example.invalid'},csrf:'fixture',workspaces:[{...w,role:'owner'}]}));
  process.env.SIMPLE_APPS_ENABLED='false';addApi(app,s,(req,_res,next)=>{req.actor=actor;next();});process.env.SIMPLE_APPS_ENABLED='true';
- addAppServicesApi(app,f);addAppApi(app,f);addConnectorApi(app,f,{service:connector});
+ addAppServicesApi(app,f);addAppApi(app,f);addTemplateCardRoute(app,db);addConnectorApi(app,f,{service:connector});
  app.post('/fixture/generic-layout',async(_req,res)=>{const op=await trackerOperation(f,actor,w.id,{name:'Generic layout fixture',description:'Layout regression',tabs:[{name:'Companies',typeId:companyTable,columns:[{field:'name'}]}]});const p=await f.preview(actor,w.id,{...op,content:{...op.content,resourceKind:'generic'}}),saved=await f.confirm(actor,w.id,p.id,p.digest);res.json({id:saved.id,workspaceId:w.id,url:appUrl({appId:saved.id,workspaceId:w.id})});});
  app.post('/fixture/approve-starters',async(_req,res)=>{await db.query("UPDATE app_template_catalog SET status='approved' WHERE template_id IN ('simple.calculator','simple.checklist')");res.json({ok:true});});
  app.post('/fixture/reset-starters',async(_req,res)=>{await db.query("UPDATE app_template_catalog SET status='draft' WHERE template_id IN ('simple.calculator','simple.checklist')");res.json({ok:true});});
@@ -67,7 +67,7 @@ export async function addAppsFixture(app:Express,db:Database,actor:Actor,w:any){
  app.post('/fixture/monitoring',async(_req,res)=>{const m=new AppMonitoring(db),draft=await m.prepare(actor,w.id,{config:{name:'Company signal monitoring',appId:saved.id,objective:'Collect relevant company announcements.',instructions:'Review approved public sources, deduplicate against existing records, and summarize relevant changes.',sourcePolicy:'Official announcements; separate facts from inference.',schedule:{description:'Every weekday morning',timeZone:'Europe/Berlin'},readBindings:[{typeId:companyTable,fields:['name']}],writeScopes:[],expiresAt:new Date(Date.now()+86400000).toISOString()}});res.json({workspaceId:w.id,appId:saved.id,reviewId:draft.id});});
  app.post('/fixture/monitoring/:id/run',async(req,res)=>{const m=new AppMonitoring(db),current=await m.read(actor,w.id,req.params.id),run=await m.start(actor,w.id,{monitorId:req.params.id,expectedVersion:current.version,occurrenceKey:crypto.randomUUID()});res.json(await m.finish(actor,w.id,{runId:run.id,status:'no_update',summary:'Checked the configured sources. No relevant changes found.',coverage:{through:new Date(Date.now()-1000).toISOString(),notes:'Configured sources reviewed successfully.'}}));});
  app.use('/assistant-icons',express.static('public/assistant-icons'));app.use('/assets',express.static('dist/web/assets'));app.use('/fonts',express.static('public/fonts'));
- for(const name of ['trialagents-mark-black.png','trialagents-mark-white.png'])app.get('/'+name,(_req,res)=>res.sendFile(path.resolve('public',name)));
+ for(const name of ['trialagents-mark-black.png','trialagents-mark-white.png','trialagents-mark-black-96.png','trialagents-mark-white-96.png'])app.get('/'+name,(_req,res)=>res.sendFile(path.resolve('public',name)));
  for(const route of ['/app-home','/shared-app','/join-app','/exchange','/apps/{*path}'])app.get(route,(_req,res)=>res.sendFile(path.resolve('dist/web/index.html')));
  // External exchange recipient page (docs/product/EXTERNAL_EXCHANGE.md §2.7): one group with a shared document, a requested document and a response form.
  const rfp=await s.previewFile(actor,w.id,{filename:'RFP pack.pdf',mime:'application/pdf',bytes:Buffer.from('%PDF-1.4 fixture request for proposal'),ai:true}),rfpVersion=(await s.commit(actor,rfp.id,rfp.digest)).objects[0].versionId;

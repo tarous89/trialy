@@ -4,64 +4,82 @@ import {accountReads} from './account-reads.js';
 import type {WorkspaceRequestOptions} from '../shared/workspace-request.js';
 import {withWorkspaceActivity} from '../shared/WorkspaceActivity.js';
 import {useWorkspaceMetadata} from './useWorkspaceMetadata.js';
-import {TemplateCatalog} from '../shared/TemplateCatalog.js';
-import {AccountProfile} from './AccountProfile.js';
-import {Subscription} from './Subscription.js';
 import {SystemNotice} from '../shared/SystemNotice.js';
-import {AppServicesPanel} from '../shared/AppServicesPanel.js';
-import {PublicApp,JoinApp} from './PublicApp.js';
 import {AccountEntry} from './AccountEntry.js';
 import {appSignInReturn} from '../shared/app-route.js';
 import {AppPlatform} from '../shared/AppPlatform.js';
-import {StandaloneApp} from '../shared/StandaloneApp.js';
-import {ConnectorsPanel} from '../shared/ConnectorsPanel.js';
-import {CreationCenter} from '../shared/CreationCenter.js';
-import {AccessPage} from '../shared/AccessPanel.js';
-import {SupportForm} from './SupportForm.js';
-import {DatabaseAccess} from './DatabaseAccess.js';
+import {StandaloneApp,appResolveHeaders} from '../shared/StandaloneApp.js';
+import {fetchAppCode} from '../shared/app-code.js';
 import {continueCreationInChat} from '../shared/creation.js';
 import {MultiValueInput} from '../shared/MultiValueInput.js';
 import {HomePanel} from '../shared/HomePanel.js';
-import {LogsPanel} from '../shared/LogsPanel.js';
+import {HomeScreens} from '../shared/home-screens.js';
+import {setLastKnownViewer,forgetLastKnown,lastKnownHomeStored} from '../shared/last-known.js';
 import {WorkspaceShell} from '../shared/ui/WorkspaceShell.js';
 import {useAccessRecheck} from '../shared/useAccessRecheck.js';
-import {ResourcesPanel} from '../shared/ResourcesPanel.js';
-import {DatabasePanel} from '../shared/DatabasePanel.js';
 import {WorkspaceNavigation,ProjectFilter} from '../shared/WorkspaceNavigation.js';
 import '../shared/shell.css';
 import {ReferenceInput} from '../shared/ReferenceInput.js';
-import {ProjectsPanel} from '../shared/ProjectsPanel.js';
-import {FoundationPanel} from '../shared/FoundationPanel.js';
 import {foundationClient} from './foundation-client.js';
-import {Invitations,JoinWorkspace} from './Invitations.js';
-import {AutomationRecord} from './AutomationRecord.js';
-import {TemplateUpgrades} from './TemplateUpgrades.js';
-import {PublicExchange} from './PublicExchange.js';
-import {ExchangeSettings} from './ExchangeSettings.js';
-import {RecipientExchange} from './RecipientExchange.js';
 import {editableData} from '../shared/formulas.js';
 import React, { useEffect, useState, useRef } from 'react';
 import { createRoot } from 'react-dom/client';
-import {RecordHistory} from '../shared/RecordHistory.js';
-import {DocumentText} from '../shared/DocumentText.js';
 import type { Field } from '../shared/schema.js';
 import './style.css';
 import '../shared/views.css';
 import '../shared/ui/setup-editor.css';
-import {FieldEditor} from '../shared/FieldEditor.js';
-import {DocumentControls} from '../shared/DocumentControls.js';
-import {SchemaMigration} from './SchemaMigration.js';
-import {AutomationsPage} from '../shared/AutomationsPage.js';
-import {AutomationBoundary} from '../shared/AutomationSettings.js';
-import {MfaSettings} from './MfaSettings.js';
 import {primeEarlyRead,takeEarlyRead,dropEarlyReads,earlyReadKey,hasEarlyRead,EARLY_HOME} from '../shared/early-reads.js';
 import {parseAppUrl} from '../shared/app-route.js';
-import {AccessRules} from './AccessRules.js';
-import {AccountSecurity} from './AccountSecurity.js';
-import {Connections} from './Connections.js';
-import {WorkspacePolicy} from './WorkspacePolicy.js';
-import {BulkImport} from '../shared/BulkImport.js';
-import {ViewPicker,RecordView} from '../shared/WorkspaceViews.js';
+import {afterFirstScreen} from '../shared/first-screen.js';
+import {lazyModule,lazyComponent,pageFrame,inlineFrame,quietFrame} from '../shared/lazy-page.js';
+import {provideAppScreens,type AppScreenComponents} from '../shared/app-screens.js';
+import type {HomeScreenComponents} from '../shared/home-screens.js';
+/* L1.5 (docs/scopes/LOADING_SPEED_2026-11-22.md, choice C): the Apps page and an app's first screen are this script.
+ * Every other signed-in page is one second chunk (./late-pages.ts), loaded quietly right after the first screen or when
+ * such a page is opened first; pages with their own address are a third chunk (./route-pages.ts), started at once on
+ * those addresses only. A page opened before its chunk arrives shows its frame and fills in. */
+// Retry reloads the page: Chromium keeps a failed import() of the same address, and after a release an open page's
+// old chunk address no longer exists, so loading the current page again is what works in both cases.
+const late=lazyModule(()=>import('./late-pages.js'),{retry:()=>location.reload()});
+type Late=Awaited<ReturnType<typeof late.preload>>&{};
+const page=<K extends keyof Late>(name:K,Frame:Parameters<typeof lazyComponent>[2])=>lazyComponent(late,(m:Late)=>m[name] as any,Frame,String(name)) as unknown as Late[K];
+const TemplateCatalog=page('TemplateCatalog',pageFrame('App templates'));
+const AccountProfile=page('AccountProfile',inlineFrame('Account'));
+const Subscription=page('Subscription',inlineFrame('Subscription'));
+const AppServicesPanel=page('AppServicesPanel',pageFrame('App services'));
+const ConnectorsPanel=page('ConnectorsPanel',pageFrame('Connectors'));
+const CreationCenter=page('CreationCenter',pageFrame('New'));
+const AccessPage=page('AccessPage',pageFrame('Access'));
+const SupportForm=page('SupportForm',inlineFrame('Support'));
+const DatabaseAccess=page('DatabaseAccess',inlineFrame('Database access'));
+const LogsPanel=page('LogsPanel',pageFrame('Logs'));
+const DatabasePanel=page('DatabasePanel',pageFrame('Database'));
+const Invitations=page('Invitations',inlineFrame('Team'));
+const AutomationRecord=page('AutomationRecord',quietFrame());
+const RecordHistory=page('RecordHistory',inlineFrame('Record history'));
+const DocumentText=page('DocumentText',inlineFrame('Document text'));
+const FieldEditor=page('FieldEditor',inlineFrame('Field editor'));
+const DocumentControls=page('DocumentControls',inlineFrame('Document controls'));
+const SchemaMigration=page('SchemaMigration',inlineFrame('Table change'));
+const AutomationsPage=page('AutomationsPage',pageFrame('Automations'));
+const AutomationBoundary=page('AutomationBoundary',quietFrame());
+const MfaSettings=page('MfaSettings',quietFrame());
+const AccountSecurity=page('AccountSecurity',quietFrame());
+const Connections=page('Connections',quietFrame());
+const BulkImport=page('BulkImport',inlineFrame('Import'));
+const ViewPicker=page('ViewPicker',inlineFrame('Saved views'));
+const RecordView=page('RecordView',inlineFrame('Records'));
+const ProjectsPanel=page('ProjectsPanel',pageFrame('Projects'));
+const FoundationPanel=page('FoundationPanel',pageFrame('Automation'));
+const ResourcesPanel=page('ResourcesPanel',inlineFrame('Forms'));
+// Apps home's other screens and an app's access screen and connector review, through their registries.
+const lateHomeScreens:HomeScreenComponents={FoundationPanel,ProjectsPanel,ResourcesPanel,CollectionsPanel:page('CollectionsPanel',pageFrame('Shared links')),ProjectSettings:page('ProjectSettings',pageFrame('Project settings'))};
+provideAppScreens({AccessPanel:page('AccessPanel',pageFrame('Access')),AccessPage,ConnectorReview:page('ConnectorReview',inlineFrame('Connector review'))} as AppScreenComponents);
+/** Pages with their own address draw nothing of the Apps page while their chunk arrives. */
+function bootFrame({failed,retry}:{failed:boolean;retry:()=>void}){return failed?<div className="ty-empty" role="alert"><p>This page could not be loaded.</p><button className="ty-button ty-button--primary" onClick={retry}>Retry</button></div>:<div aria-busy="true" aria-label="Loading page"/>;}
+const routes=lazyModule(()=>import('./route-pages.js'),{retry:()=>location.reload()});
+type Routes=Awaited<ReturnType<typeof routes.preload>>&{};
+const route=<K extends keyof Routes>(name:K)=>lazyComponent(routes,(m:Routes)=>m[name] as any,bootFrame,String(name)) as unknown as Routes[K];
 let csrf='';
 /** The Apps page's first request, exactly as HomePanel makes it; these are also the server's defaults. */
 /** P10: anonymous speed samples, sent quietly in the background. */
@@ -71,6 +89,13 @@ const queryParams=new URLSearchParams(location.search);if(queryParams.get('tab')
 const reviewParams=new URLSearchParams(location.search||sessionStorage.getItem('trialy.review')||'');
 const legacy=queryParams.get('legacy')==='1';
 const foundationCall=foundationClient(api);
+/** L2.5: while the page is idle, the app frame document (about 0.7 MB compressed, cached by version) is fetched ahead, so
+ * the first app opened from Apps does not wait for it. A hint only: nothing runs, and a refused prefetch changes nothing. */
+function prepareFrame(url:unknown){
+ if(typeof url!=='string'||!url.startsWith('/frontend/frame?')||document.querySelector('link[data-trialy-frame]'))return;
+ const add=()=>{const link=document.createElement('link');link.rel='prefetch';link.href=url;link.setAttribute('data-trialy-frame','');document.head.appendChild(link);};
+ const idle=(window as any).requestIdleCallback;if(typeof idle==='function')idle(add,{timeout:5000});else setTimeout(add,2000);
+}
 function App(){
  const [configReady,setConfigReady]=useState(false);
  const [creationKind,setCreationKind]=useState(new URLSearchParams(location.search).get('new')==='project'?'project':'app'),[homeRevision,setHomeRevision]=useState(0);
@@ -104,13 +129,17 @@ function App(){
  useAccessRecheck(()=>loadMe({background:true}),!!me);
  const meReads=useRef(accountReads());
  async function loadMe(options:WorkspaceRequestOptions={},fresh=false){return withWorkspaceActivity(()=>meReads.current.run(isCurrent=>readMe(options,isCurrent),fresh),options);}
- async function readMe(options:WorkspaceRequestOptions,isCurrent:()=>boolean){try{const d=await takeEarlyRead(earlyReadKey('me',{}),()=>api('/api/me','GET',undefined,options));if(!isCurrent())return;csrf=d.csrf;sessionStorage.removeItem('trialy.review');setMe(d.user);if(!d.workspaces.length&&!reviewParams.get('workspaceId')){dropEarlyReads();const initialized=await api('/api/account/initialize','POST',{});d.workspaces=initialized.workspaces;}if(!isCurrent())return;const requested=reviewParams.get('workspaceId');const mismatch=!!requested&&!d.workspaces.some((w:any)=>w.id===requested);setAccountMismatch(mismatch);setWorkspaces(d.workspaces);if(mismatch){setWorkspace('');setBoot(false);return;}setWorkspace(current=>d.workspaces.some((w:any)=>w.id===current)?current:d.workspaces.find((w:any)=>w.id===reviewParams.get('workspaceId'))?.id||d.workspaces[0]?.id||'');}catch(e){if(!isCurrent())return;if(!me||[401,403,404].includes((e as any)?.status)){setMe(null);setWorkspace('');setRows([]);setDocuments([]);setHistory([]);setPreview(null);setVisited([]);}else setError((e as Error).message||'Account access could not be checked. Try again.');}finally{if(isCurrent())setBoot(false);}}
+ async function readMe(options:WorkspaceRequestOptions,isCurrent:()=>boolean){try{const d=await takeEarlyRead(earlyReadKey('me',{}),()=>api('/api/me','GET',undefined,options));if(!isCurrent())return;csrf=d.csrf;sessionStorage.removeItem('trialy.review');setLastKnownViewer(d.user?.id);setMe(d.user);if(!d.workspaces.length&&!reviewParams.get('workspaceId')){dropEarlyReads();const initialized=await api('/api/account/initialize','POST',{});d.workspaces=initialized.workspaces;}if(!isCurrent())return;const requested=reviewParams.get('workspaceId');const mismatch=!!requested&&!d.workspaces.some((w:any)=>w.id===requested);setAccountMismatch(mismatch);setWorkspaces(d.workspaces);if(mismatch){setWorkspace('');setBoot(false);return;}setWorkspace(current=>d.workspaces.some((w:any)=>w.id===current)?current:d.workspaces.find((w:any)=>w.id===reviewParams.get('workspaceId'))?.id||d.workspaces[0]?.id||'');}catch(e){if(!isCurrent())return;if(!me||[401,403,404].includes((e as any)?.status)){if((e as any)?.status===401)forgetLastKnown();setMe(null);setWorkspace('');setRows([]);setDocuments([]);setHistory([]);setPreview(null);setVisited([]);}else setError((e as Error).message||'Account access could not be checked. Try again.');}finally{if(isCurrent())setBoot(false);}}
  useEffect(()=>{
   // Start this screen's first read with the account check instead of after it.
   const app=parseAppUrl(location.pathname+location.search);
-  if(app)primeEarlyRead(earlyReadKey('app',app),()=>api('/api/apps/resolve','GET',undefined,{headers:{'X-App-Location':JSON.stringify(app)}}));
-  else if(tab==='home'&&!hasEarlyRead(earlyReadKey('home',EARLY_HOME)))primeEarlyRead(earlyReadKey('home',EARLY_HOME),()=>api('/api/account/home'));
-  void api('/api/config').then(setConfig).finally(()=>setConfigReady(true));void loadMe();},[]);
+  if(app)primeEarlyRead(earlyReadKey('app',app),()=>api('/api/apps/resolve','GET',undefined,{headers:appResolveHeaders(app)}));
+  // L4.1: quiet when this device remembers Apps home, which is then shown at once while this read checks it.
+  else if(tab==='home'&&!hasEarlyRead(earlyReadKey('home',EARLY_HOME)))primeEarlyRead(earlyReadKey('home',EARLY_HOME),()=>api('/api/account/home','GET',undefined,{background:lastKnownHomeStored()}));
+  void api('/api/config').then(c=>{setConfig(c);prepareFrame(c?.frameUrl);}).finally(()=>setConfigReady(true));void loadMe();},[]);
+ // L1.5: once the first screen's main content is shown (or after 3 s on another first page), the other pages' chunk
+ // is downloaded quietly (never the loading bar).
+ useEffect(()=>{if(boot||!me)return;return afterFirstScreen(()=>void late.preload());},[boot,!!me]);
  async function run(fn:()=>Promise<void>){setBusy(true);setError('');setNotice('');try{await fn();}catch(e){setError((e as Error).message);}finally{setBusy(false);}}
  async function loadRecords(){const request=++recordRequest.current;setRows([]);setTotal(0);setSummary(null);if(typeId&&selected&&metadata.ready){
   const queryParams=new URLSearchParams({limit:'25',offset:String(offset),q:query});if(activeView)queryParams.set('viewId',activeView.id);
@@ -137,12 +166,12 @@ function App(){
  // The same frame index.html draws before any script (L1.5), kept until the account check returns.
  if(boot)return <div className="ty-boot" aria-busy="true" aria-label="Opening TrialAgents"><div className="ty-boot-side"/><div className="ty-boot-main"><div className="ty-boot-head"/><div className="ty-boot-body"><div className="ty-boot-bar"/><div className="ty-boot-grid"><div className="ty-boot-card"/><div className="ty-boot-card"/><div className="ty-boot-card"/></div></div></div></div>;
  if(!me)return <AccountEntry brand={config.brand} signInHref={config.simpleApps&&appSignInReturn(location.pathname+location.search)?'/auth/login?returnTo='+encodeURIComponent(location.pathname+location.search):'/auth/login'} onDemo={config.demo?()=>run(async()=>{await api('/auth/demo','POST',{});await loadMe({},true);}):undefined} error={error}/>;
- return <AppPlatform.Provider value={{enabled:config.simpleApps,origin:location.origin,uxHost:'web',reportUx}}><PendingChangesProvider call={foundationCall} workspaceId={config.simpleApps?workspace:null} onOpen={c=>location.assign(appUrl({workspaceId:workspace,appId:c.previewId,source:'preview'}))}><WorkspaceShell onNew={kind=>{setCreationKind(kind);setTab(kind==='app'?'templates':'create');const url=new URL(location.href);url.searchParams.set('tab',kind==='app'?'templates':'create');window.history.replaceState({},'',url);}} selected={tab==='templates'?'templates':tab==='automations'?'automations':tab==='connectors'?'connectors':tab==='access'?'settings':tab==='access-control'?'access-control':tab==='logs'?'logs':['database','data'].includes(tab)?'database':'home'} onNavigate={d=>setTab(d==='settings'?'access':d)} accountName={me.name??'Account'} accountEmail={me.email}>{accountMismatch&&<div role="alert" className="ty-account-mismatch"><strong>This account cannot access the database opened from ChatGPT or Claude.</strong><p>Sign in with the same TrialAgents account connected to the plugin, or ask its owner for access.</p><button onClick={()=>run(async()=>{sessionStorage.setItem('trialy.review','?workspaceId='+encodeURIComponent(reviewParams.get('workspaceId')??''));await api('/auth/logout','POST',{});location.href='/auth/login';})}>Sign in with another account</button></div>}<section className={['home','logs','automations'].includes(tab)?'ty-live-content':`ty-page ty-fixed ${tab==='access'?'ty-settings-page':''}`}>
- {config.simpleApps&&workspace&&tab==='templates'&&<TemplateCatalog call={(name,args)=>foundationCall(name,{workspaceId:workspace,...args})}/>}
+ return <AppPlatform.Provider value={{enabled:config.simpleApps,origin:location.origin,uxHost:'web',reportUx,loadAppCode:fetchAppCode}}><PendingChangesProvider call={foundationCall} workspaceId={config.simpleApps?workspace:null} onOpen={c=>location.assign(appUrl({workspaceId:workspace,appId:c.previewId,source:'preview'}))}><WorkspaceShell onNew={kind=>{setCreationKind(kind);setTab(kind==='app'?'templates':'create');const url=new URL(location.href);url.searchParams.set('tab',kind==='app'?'templates':'create');window.history.replaceState({},'',url);}} selected={tab==='templates'?'templates':tab==='automations'?'automations':tab==='connectors'?'connectors':tab==='access'?'settings':tab==='access-control'?'access-control':tab==='logs'?'logs':['database','data'].includes(tab)?'database':'home'} onNavigate={d=>setTab(d==='settings'?'access':d)} accountName={me.name??'Account'} accountEmail={me.email}>{accountMismatch&&<div role="alert" className="ty-account-mismatch"><strong>This account cannot access the database opened from ChatGPT or Claude.</strong><p>Sign in with the same TrialAgents account connected to the plugin, or ask its owner for access.</p><button onClick={()=>run(async()=>{sessionStorage.setItem('trialy.review','?workspaceId='+encodeURIComponent(reviewParams.get('workspaceId')??''));forgetLastKnown();await api('/auth/logout','POST',{});location.href='/auth/login';})}>Sign in with another account</button></div>}<section className={['home','logs','automations'].includes(tab)?'ty-live-content':`ty-page ty-fixed ${tab==='access'?'ty-settings-page':''}`}>
+ {config.simpleApps&&workspace&&tab==='templates'&&<TemplateCatalog call={(name,args,options)=>foundationCall(name,{workspaceId:workspace,...args},options)}/>}
  {config.simpleApps&&workspace&&tab==='apps'&&<AppServicesPanel onAutomations={()=>setTab('automations')} call={(name,args)=>foundationCall(name,{workspaceId:workspace,...args})} reviewId={reviewParams.get('serviceReview')??undefined} appId={reviewParams.get('serviceApp')??undefined}/>}
  {config.simpleApps&&tab==='connectors'&&<ConnectorsPanel workspaceId={workspace} call={foundationCall} initialConnectionId={reviewParams.get('connectionId')??undefined} initialReviewId={reviewParams.get('connectorReview')??undefined}/>}
  {workspace&&tab==='create'&&<CreationCenter key={creationKind} kind={creationKind} call={(name,args)=>foundationCall(name,{workspaceId:workspace,...args})} onClose={()=>setTab('home')} onCreated={()=>{setHomeRevision(r=>r+1);setTab('home');void refresh();}}/>}
- {workspace&&visited.includes('home')&&<div hidden={tab!=='home'}><HomePanel loadTypes={id=>api(`/api/workspaces/${id}/types`)} active={tab==='home'} loadHome={(args,options)=>takeEarlyRead(earlyReadKey('home',args),()=>api('/api/account/home','POST',args,options))} onLegacyAutomations={()=>setTab('automations')} viewerId={me.id} key={me.id+':'+workspace+':'+homeRevision} workspaceId={workspace} types={types} call={foundationCall} onDocuments={()=>setTab('documents')}/></div>}
+ {workspace&&visited.includes('home')&&<div hidden={tab!=='home'}><HomeScreens.Provider value={lateHomeScreens}><HomePanel loadTypes={id=>api(`/api/workspaces/${id}/types`)} active={tab==='home'} loadHome={(args,options)=>takeEarlyRead(earlyReadKey('home',args),()=>api('/api/account/home','POST',args,options))} onLegacyAutomations={()=>setTab('automations')} viewerId={me.id} key={me.id+':'+workspace+':'+homeRevision} workspaceId={workspace} types={types} call={foundationCall} onDocuments={()=>setTab('documents')}/></HomeScreens.Provider></div>}
  {workspace&&tab==='logs'&&<LogsPanel key={workspace} workspaceId={workspace} call={foundationCall} initialAppId={reviewParams.get('appId')??undefined}/>}
  {error&&<SystemNotice error message={error} onDismiss={()=>setError('')}/>}{notice&&<SystemNotice message={notice} onDismiss={()=>setNotice('')}/>}
  {workspace&&['trackers','forms','visuals'].includes(tab)&&<ProjectFilter workspaceId={workspace} value={projectId} onChange={setProjectId} call={foundationCall}/>}
@@ -172,7 +201,7 @@ function App(){
  {tab==='access'&&settingsShown==='account'&&<><AccountProfile user={me} api={api} onSaved={setMe}/><AccountSecurity api={api}/><MfaSettings api={api}/></>}
  {workspace&&tab==='access'&&settingsShown==='team'&&<Invitations key={workspace} api={api} base={base} viewerId={me.id} onManageAccess={()=>setTab('access-control')} onSteppedDown={()=>{setSettingsTab('account');void loadMe({},true);}}/>}
  {tab==='access'&&settingsShown==='account'&&<Connections key={workspace||'none'} api={api} call={workspace?(name,args)=>foundationCall(name,{workspaceId:workspace,...args}):undefined}/>}
- {tab==='access'&&settingsShown==='account'&&<div className="settings-card"><div><h2>{me.name}</h2><p>{me.email}</p></div><button onClick={()=>run(async()=>{await api('/auth/logout','POST',{});location.href='/auth/login';})}>Sign out</button></div>}
+ {tab==='access'&&settingsShown==='account'&&<div className="settings-card"><div><h2>{me.name}</h2><p>{me.email}</p></div><button onClick={()=>run(async()=>{forgetLastKnown();await api('/auth/logout','POST',{});location.href='/auth/login';})}>Sign out</button></div>}
 
  </section>
  {databaseAccess&&<div className="overlay"><section className="modal"><button aria-label="Close database access" onClick={()=>setDatabaseAccess(false)}>×</button>{metadataNotice}{metadata.ready&&<DatabaseAccess api={api} base={base} types={types} members={members} onSaved={refresh}/>}</section></div>}
@@ -199,7 +228,11 @@ function App(){
  </WorkspaceShell></PendingChangesProvider></AppPlatform.Provider>;
 }
 function PreviewContent({preview,templates}:{preview:any;templates:any[]}){const s=preview.summary;if(s.fieldChanges?.length)return <pre>{JSON.stringify(s.fieldChanges,null,2)}</pre>;if(['set_workspace_policy','document_controls','migrate_type','upgrade_template','adopt_template','request_review'].includes(s.kind))return <pre>{JSON.stringify(s,null,2)}</pre>;if(s.kind==='install_template'){const t=templates.find(t=>t.id===s.template);return <><p>{t?.description}</p><ul className="preview-list">{t?.tables.map((x:any)=><li key={x.name}><strong>{x.name}</strong><small>{x.fields.map((f:any)=>f.name).join(' · ')}</small></li>)}</ul></>;}if(s.kind==='save_document')return <div className="preview-source"><h3>{s.filename}</h3>{s.documentId&&<p>New version {s.expectedVersion+1}; previous originals are preserved.</p>}<p>{Math.ceil(s.byteSize/1024)} KB · Original file</p><p>{s.ai?'AI access enabled':'Hidden from AI'}</p></div>;if(s.kind==='bulk_records')return <><p>{s.changes.length} record changes will be saved together.</p><pre>{JSON.stringify(s.changes,null,2)}</pre></>;if(s.kind==='create_view'||s.kind==='update_view')return <div className="preview-source"><h3>{s.name}</h3><p>{s.viewKind} view · {s.kind==='update_view'?'New version of saved view':'New saved view'}</p><pre>{JSON.stringify(s.config,null,2)}</pre></div>;if(s.kind==='create_automation')return <div className="preview-source"><h3>{s.name}</h3><p>{s.schedule?.kind==='daily'?`Daily ${s.schedule.time} (${s.schedule.timeZone})`:s.schedule?.kind??`Every ${s.intervalMinutes/60} hours`} · linked to your selected permission</p>{s.action&&<pre>{JSON.stringify(s.action,null,2)}</pre>}{s.conditions&&<pre>{JSON.stringify(s.conditions,null,2)}</pre>}</div>;if(s.kind==='create_type'||s.kind==='update_type')return <><h3>{s.name}</h3><ul className="preview-list">{s.fields.map((f:any)=><li key={f.key}>{f.name}<small>{f.kind} · {f.ai?'AI readable':'Hidden from AI'}</small>{(f.computed||f.lookup||f.renderer)&&<pre>{JSON.stringify({computed:f.computed,lookup:f.lookup,renderer:f.renderer},null,2)}</pre>}</li>)}</ul><details><summary>Exact field definitions and sample calculations</summary><pre>{JSON.stringify({fields:s.fields,calculationPreview:s.calculationPreview},null,2)}</pre></details></>;return <>{s.kind==='restore_record'&&<p>Restore version {s.sourceVersion} as a new revision. Reason: {s.reason}. Resulting state: {s.state.replaceAll('_',' ')}.</p>}<dl className="preview-values">{Object.entries(s.data??{}).map(([k,v])=><React.Fragment key={k}><dt>{k.replaceAll('_',' ')}</dt><dd>{String(v??'—')}</dd></React.Fragment>)}</dl></>;}
-createRoot(document.getElementById('root')!).render(location.pathname==='/shared-app'?<PublicApp/>:location.pathname==='/join-app'?<JoinApp/>:location.pathname==='/collect'?<PublicExchange/>:location.pathname==='/exchange'?<RecipientExchange/>:location.pathname==='/join'?<JoinWorkspace/>:<App/>);
+// Pages with their own address start their chunk now, alongside rendering; the Apps page never loads it.
+const routePage=({'/shared-app':'PublicApp','/join-app':'JoinApp','/collect':'PublicExchange','/exchange':'RecipientExchange','/join':'JoinWorkspace'} as const)[location.pathname as '/join'];
+if(routePage)void routes.preload();
+const RoutePage=routePage?route(routePage):null;
+createRoot(document.getElementById('root')!).render(RoutePage?<RoutePage/>:<App/>);
 
 
 

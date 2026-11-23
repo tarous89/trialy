@@ -1,10 +1,8 @@
+import {templateCardAddress} from '../shared/template-gallery.js';
 import {workspaceRequestOptions,type WorkspaceRequestOptions} from '../shared/workspace-request.js';
 import {withWorkspaceActivity} from '../shared/WorkspaceActivity.js';
-import {TemplateCatalog} from '../shared/TemplateCatalog.js';
 import {WorkspaceView,type WorkspaceViewState} from '../shared/WorkspaceView.js';
 import {createViewContextPublisher,viewContextText} from './view-context.js';
-import {EmbeddedConnectors} from './Connectors.js';
-import {AutomationsPage} from '../shared/AutomationsPage.js';
 import {SystemNotice} from '../shared/SystemNotice.js';
 import {AppUnavailable} from '../shared/AppUnavailable.js';
 import {EmbeddedAppNavigation} from './AppNavigation.js';
@@ -12,8 +10,8 @@ import type {AppRoute} from '../shared/app-route.js';
 import {AppPlatform} from '../shared/AppPlatform.js';
 import {loadTrackerDisplay} from './tracker-loading.js';
 import {DisplayTransition} from './display-transition.js';
-import {CreationCenter} from '../shared/CreationCenter.js';
-import {AccessPage,AccessHost} from '../shared/AccessPanel.js';
+import {AccessHost} from '../shared/access-host.js';
+import {provideAppScreens} from '../shared/app-screens.js';
 import {MultiValueInput} from '../shared/MultiValueInput.js';
 import {TrackerDraft} from '../shared/TrackerDraft.js';
 import {ComponentEditor} from '../shared/ComponentEditor.js';
@@ -21,30 +19,45 @@ import {FrontendCodeRuntime} from '../shared/FrontendCodeRuntime.js';
 import {PendingChangesProvider,ProposalReview,type PendingChange} from '../shared/PendingChanges.js';
 import {ChangeSummary} from '../shared/ChangeSummary.js';
 import {HomePanel} from '../shared/HomePanel.js';
-import {LogsPanel} from '../shared/LogsPanel.js';
 import {WorkspaceShell} from '../shared/ui/WorkspaceShell.js';
-import {ResourcesPanel} from '../shared/ResourcesPanel.js';
-import {DatabasePanel} from '../shared/DatabasePanel.js';
 import {WorkspaceNavigation,ProjectFilter} from '../shared/WorkspaceNavigation.js';
 import {AppShell} from '../shared/AppShell.js';
 declare const __TRIALY_APP_URL__:string;
 import {GuestPreview} from '../shared/GuestPreview.js';
 import {ReferenceInput} from '../shared/ReferenceInput.js';
-import {ProjectsPanel} from '../shared/ProjectsPanel.js';
-import {FoundationPanel} from '../shared/FoundationPanel.js';
 import {editableData} from '../shared/formulas.js';
 import React,{useState,useRef,useEffect} from 'react';
 import {earlyReadKey,EARLY_HOME} from '../shared/early-reads.js';
 import {Icon} from '../shared/ui/Icon.js';
 import {createRoot} from 'react-dom/client';
 import {App} from '@modelcontextprotocol/ext-apps';
-import {RecordHistory} from '../shared/RecordHistory.js';
 import {DocumentText,extractionLabel} from '../shared/DocumentText.js';
-import {FieldEditor} from '../shared/FieldEditor.js';
-import {DocumentControls} from '../shared/DocumentControls.js';
-import {BulkImport} from '../shared/BulkImport.js';
-import {ViewPicker,RecordView} from '../shared/WorkspaceViews.js';
 import type {Field} from '../shared/schema.js';
+import {HomeScreens,type HomeScreenComponents} from '../shared/home-screens.js';
+import {setLastKnownViewer} from '../shared/last-known.js';
+import {configureLatePart,lateComponent,pageFrame,inlineFrame,startLatePart} from './late-part.js';
+// L4.5: pages the first screen never shows come from the widget's second part, downloaded right after the first screen.
+const TemplateCatalog=lateComponent('TemplateCatalog',pageFrame('App templates'));
+const EmbeddedConnectors=lateComponent('EmbeddedConnectors',pageFrame('Connectors'));
+const AutomationsPage=lateComponent('AutomationsPage',pageFrame('Automations'));
+const CreationCenter=lateComponent('CreationCenter',pageFrame('New'));
+const LogsPanel=lateComponent('LogsPanel',pageFrame('Logs'));
+const DatabasePanel=lateComponent('DatabasePanel',pageFrame('Database'));
+const RecordHistory=lateComponent('RecordHistory',inlineFrame('Record history'));
+const FieldEditor=lateComponent('FieldEditor',inlineFrame('Field editor'));
+const DocumentControls=lateComponent('DocumentControls',inlineFrame('Document controls'));
+const BulkImport=lateComponent('BulkImport',inlineFrame('Import'));
+const ViewPicker=lateComponent('ViewPicker',inlineFrame('Saved views'));
+const RecordView=lateComponent('RecordView',inlineFrame('Records'));
+const FoundationPanel=lateComponent('FoundationPanel',pageFrame('Automation'));
+const CollectionsPanel=lateComponent('CollectionsPanel',pageFrame('Shared links'));
+const ProjectSettings=lateComponent('ProjectSettings',pageFrame('Project settings'));
+const ProjectsPanel=lateComponent('ProjectsPanel',pageFrame('Projects'));
+const ResourcesPanel=lateComponent('ResourcesPanel',inlineFrame('Forms'));
+const AccessPage=lateComponent('AccessPage',pageFrame('Access'));
+// The app's access screen and the connector review (website only) come from the second part too.
+provideAppScreens({AccessPanel:lateComponent('AccessPanel',pageFrame('Access')),AccessPage,ConnectorReview:lateComponent('ConnectorReview',inlineFrame('Connector review'))} as any);
+const lateHomeScreens:HomeScreenComponents={FoundationPanel,CollectionsPanel,ProjectSettings,ProjectsPanel,ResourcesPanel} as HomeScreenComponents;
 const bridge=new App({name:'TrialAgents workspace',version:'0.2.37'},{availableDisplayModes:['inline','fullscreen']},{autoResize:true});
 // Only hosts whose server asks for it (Claude) switch to full screen, once per display; others keep their default.
 // Same approach as the Intel workspace: retry when the host reports its display modes later, never re-open after the user exits.
@@ -73,19 +86,43 @@ function useCanExpand(){
 }
 function expandWorkspace(){void bridge.requestDisplayMode({mode:'fullscreen'}).catch(()=>{/* The host keeps the inline view. */});}
 // Present only in the Claude resource: Claude blocks nested frames from the platform origin, so apps render with srcdoc.
-function inlineFrameDocument(){try{const text=document.getElementById('trialy-frame-document')?.textContent;const value=text?JSON.parse(text):undefined;return typeof value==='string'?value:undefined;}catch{return undefined;}}
+// L4.6: the frame document has no font of its own; the widget's Inter @font-face (inside its styles) is put in its place.
+const WIDGET_FONT_SLOT='/*trialy-widget-font*/';
+function widgetFontFace(){for(const style of Array.from(document.querySelectorAll('style'))){const found=style.textContent?.match(/@font-face\{font-family:Inter;[^}]*\}/);if(found)return found[0];}return '';}
+function inlineFrameDocument(){try{const text=document.getElementById('trialy-frame-document')?.textContent;const value=text?JSON.parse(text):undefined;return typeof value==='string'?value.replace(WIDGET_FONT_SLOT,()=>widgetFontFace()):undefined;}catch{return undefined;}}
+/** L2.6: an "open app" result carries the app's first screen as widget-only metadata (never shown to the assistant). */
+function withFirstScreen(result:any){const data=unwrap(result),first=result?._meta?.['trialagents/initialOutput'];return first&&data?.screen==='tracker'&&data.component&&!data.initialOutput?{...data,initialOutput:first}:data;}
 function unwrap(result:any){if(result.isError)throw Object.assign(new Error(result.content?.find((c:any)=>c.type==='text')?.text??'The action could not complete.'),result.structuredContent?.error??{});return result.structuredContent?.result;}
 // D11: inside ChatGPT or Claude, a Save the view sends is the person's click. It goes through the view-only tool;
 // the tool of the same purpose that the assistant can call refuses app changes.
 const viewTool=(name:string)=>name==='confirm_workspace_change'?'approve_workspace_change':name;
+/** call(), returning the whole tool result (with its widget-only metadata) instead of only the result data. */
+async function callResult(name:string,args:Record<string,unknown>={}){name=viewTool(name);const result=await withWorkspaceActivity(()=>bridge.callServerTool({name,arguments:args}),workspaceRequestOptions(name,args,undefined));unwrap(result);return result;}
 async function call(name:string,args:Record<string,unknown>={},options?:WorkspaceRequestOptions){name=viewTool(name);return unwrap(await withWorkspaceActivity(()=>bridge.callServerTool({name,arguments:args},{signal:options?.signal}),workspaceRequestOptions(name,args,options)));}
+configureLatePart({origin:__TRIALY_APP_URL__,readThroughAssistant:async file=>{
+ // Quiet: called directly, never through withWorkspaceActivity, so it never shows the loading bar.
+ const result=await bridge.callServerTool({name:'read_widget_part',arguments:{file}}),text=result.isError?undefined:(result._meta as any)?.widgetPart;
+ if(typeof text!=='string')throw Error('Widget part unavailable');return text;
+}});
 function Workspace(){
  const [trackerRoute,setTrackerRoute]=useState<AppRoute>({path:'/'});
  const [platform,setPlatform]=useState<{enabled:boolean;origin:string;frameDocument?:string}>(()=>({enabled:true,origin:__TRIALY_APP_URL__,frameDocument:inlineFrameDocument()}));
  const [viewDetails,setViewDetails]=useState<Record<string,WorkspaceViewState>>({});
  const reportView=React.useCallback((key:string,value:WorkspaceViewState|null)=>setViewDetails(old=>{const next={...old};if(value)next[key]=value;else delete next[key];return next;}),[]);
  const mediaCache=useRef(new Map<string,Promise<string>>());
- const readTemplateMedia=React.useCallback((id:string,version:string,kind:'screenshot'|'preview')=>{const key=id+'@'+version+':'+kind;let promise=mediaCache.current.get(key);if(!promise){promise=bridge.callServerTool({name:'read_app_template_media',arguments:{templateId:id,version,kind}}).then(r=>{if(r.isError||typeof r._meta?.templateMedia!=='string')throw Error('Template preview unavailable');return r._meta.templateMedia as string;}).catch(e=>{mediaCache.current.delete(key);throw e;});mediaCache.current.set(key,promise);}return promise;},[]);
+ // L3.4: media of an exact version are kept for this view by catalog digest (a preview is read once, when its card is hovered or focused).
+ const readTemplateMedia=React.useCallback((id:string,version:string,kind:'screenshot'|'card'|'preview',digest?:string)=>{const key=id+'@'+version+'#'+(digest??'')+':'+kind;let promise=mediaCache.current.get(key);if(!promise){promise=bridge.callServerTool({name:'read_app_template_media',arguments:{templateId:id,version,kind}}).then(r=>{if(r.isError||typeof r._meta?.templateMedia!=='string')throw Error('Template preview unavailable');return r._meta.templateMedia as string;}).catch(e=>{mediaCache.current.delete(key);throw e;});mediaCache.current.set(key,promise);}return promise;},[]);
+ // L3.3: card images the host will not load directly are read for the cards on screen in one request (at most 12 per
+ // request); if that fails, each card is read on its own as before. Quiet: never the loading bar.
+ const cardQueue=useRef<{items:{t:any;resolve:(v:string)=>void;reject:(e:unknown)=>void}[];timer?:ReturnType<typeof setTimeout>}>({items:[]});
+ const readTemplateCard=React.useCallback((t:{id:string;version:string;digest:string})=>{const key=t.id+'@'+t.version+'#'+t.digest+':card';let promise=mediaCache.current.get(key);if(promise)return promise;
+  promise=new Promise<string>((resolve,reject)=>{const q=cardQueue.current;q.items.push({t,resolve,reject});q.timer??=setTimeout(()=>{const batch=q.items.splice(0);q.timer=undefined;
+   for(let i=0;i<batch.length;i+=12){const part=batch.slice(i,i+12);void bridge.callServerTool({name:'read_app_template_cards',arguments:{items:part.map(x=>({templateId:x.t.id,version:x.t.version}))}}).then(r=>{const cards=r.isError?undefined:r._meta?.templateCards as Record<string,string>|undefined;if(!cards)throw Error('Template cards unavailable');for(const x of part){const v=cards[x.t.id+'@'+x.t.version];if(typeof v==='string')x.resolve(v);else x.reject(Error('Template card unavailable'));}})
+    .catch(()=>{for(const x of part)readTemplateMedia(x.t.id,x.t.version,'card',x.t.digest).then(x.resolve,x.reject);});}
+  },40);}).catch(e=>{mediaCache.current.delete(key);throw e;});
+  mediaCache.current.set(key,promise);return promise;},[readTemplateMedia]);
+ // Where the host allows images from the platform origin (declared in the widget's resource domains), cards load directly.
+ const templateCardUrl=React.useCallback((t:{id:string;version:string;digest:string})=>t.digest?templateCardAddress(new URL(platform.origin).origin,claudeHost?'claude':'chatgpt',t):undefined,[platform.origin]);
  const canExpand=useCanExpand();
  const [identity,setIdentity]=useState<{name?:string;email?:string}>({});
  const [appUpdating,setAppUpdating]=useState(false);
@@ -100,8 +137,14 @@ function Workspace(){
  useEffect(()=>{const open=(e:Event)=>{const d=(e as CustomEvent).detail;if(!d?.destination)return;navigationEpoch.current++;transition.current.reset();setPlatformApp(d.appId??null);setView(d.destination==='access'?'access-control':d.destination);};window.addEventListener('trialy:platform-page',open);return()=>window.removeEventListener('trialy:platform-page',open);},[]);
  const [ready,setReady]=useState(false),[error,setError]=useState(''),[busy,setBusy]=useState(false),[notice,setNotice]=useState('');
  const [state,setState]=useState<any>({workspaces:[],types:[],templates:[]}),[typeId,setTypeId]=useState(''),[rows,setRows]=useState<any[]>([]),[total,setTotal]=useState(0),[offset,setOffset]=useState(0);
+ /** L2.6: the account and table list arrive after the app is shown; until then only the app's workspace is set. */
+ const showDetails=(details:Promise<any>,workspaceId:string,current:()=>boolean)=>{setState((old:any)=>old.workspaceId===workspaceId?old:{...old,workspaceId});void details.then(account=>{if(current())setState(account);}).catch(()=>{});};
  const [form,setForm]=useState<any>(null),[draft,setDraft]=useState<Record<string,any>>({}),[preview,setPreview]=useState<any>(null),[query,setQuery]=useState('');
  const [view,setView]=useState('loading'),[documents,setDocuments]=useState<any[]>([]),[document,setDocument]=useState<any>(null),[search,setSearch]=useState<any>(null),[docQuery,setDocQuery]=useState(''),[versions,setVersions]=useState<any>(null);
+ // L4.5: the second part is downloaded once the first screen is shown and the host connection is up (its fallback goes
+ // through the assistant). A frame and a timeout let the first paint happen first.
+ const firstScreenShown=ready&&view!=='loading';
+ useEffect(()=>{if(!firstScreenShown)return;let timer:ReturnType<typeof setTimeout>|undefined;const frame=requestAnimationFrame(()=>{timer=setTimeout(()=>void startLatePart(),0);});return()=>{cancelAnimationFrame(frame);if(timer)clearTimeout(timer);};},[firstScreenShown]);
  React.useEffect(()=>{setIdentity({});if(!ready||!state.viewerId)return;let active=true;void bridge.callServerTool({name:'read_connected_account',arguments:{}}).then(result=>{if(active&&!result.isError){setIdentity((result._meta as any)?.accountIdentity??{});setPlatform(current=>{const next=(result._meta as any)?.appPlatform;return next?{...next,frameDocument:current.frameDocument}:current;});}}).catch(()=>{});return()=>{active=false;};},[ready,state.viewerId]);
 
  const [organizationIncoming,setOrganizationIncoming]=useState<any>(null);
@@ -111,6 +154,9 @@ function Workspace(){
  const [month,setMonth]=useState(new Date().toISOString().slice(0,7)),[summary,setSummary]=useState<any>(null);
  const [views,setViews]=useState<any[]>([]),[viewId,setViewId]=useState('');
  const stateRef=useRef<any>(state);stateRef.current=state;
+ // L4.1: last known basics are kept for the signed-in person only (where the host allows storage); set during render so
+ // the screens below read them for this person. A different person clears them.
+ setLastKnownViewer(state.viewerId);
  // L1.6: the first Apps home page from the assistant's open_workspace result, used once while fresh (as the website's early reads are).
  const firstHome=useRef<{at:number;viewer:string;value:any}|null>(null);
  const rememberHome=(data:any)=>{firstHome.current=data?.home&&data.viewerId?{at:Date.now(),viewer:data.viewerId,value:data.home}:null;};
@@ -136,10 +182,10 @@ function Workspace(){
   if(!options.dataAccess)throw Error('Review the installation before adding this app.');
   const installed=await call('confirm_data_access',{workspaceId:state.workspaceId,install,...options.dataAccess,confirmed:true});
   setHomeRevision(n=>n+1);
-  const data=await call('open_app',{workspaceId:installed.workspaceId,appId:installed.appId,source:'component'}),{account,resolved,output}=await loadTrackerDisplay(data,call,()=>{});
+  const opened=await callResult('open_app',{workspaceId:installed.workspaceId,appId:installed.appId,source:'component'}),data=withFirstScreen(opened),{details,resolved,output}=await loadTrackerDisplay(data,call,()=>{});
   if(epoch!==navigationEpoch.current)return;
   if(resolved.screen==='tracker-unavailable')throw Error('Your app was installed. Open Apps to try opening it again.');
-  setState(account);setTrackerRoute(resolved.route??{path:'/'});setTrackerOutput(output);setOpenedTracker(resolved.component);setTrackerPreview(null);setView('tracker');setAppUpdating(false);setError('');setNotice(installed.automationStatus==='pending'?'App added. Automation setup continues in the background.':'');
+  showDetails(details,resolved.workspaceId,()=>epoch===navigationEpoch.current);setTrackerRoute(resolved.route??{path:'/'});setTrackerOutput(output);setOpenedTracker(resolved.component);setTrackerPreview(null);setView('tracker');setAppUpdating(false);setError('');setNotice(installed.automationStatus==='pending'?'App added. Automation setup continues in the background.':'');
  }),[state.workspaceId]);
  const contextView=view==='tracker'||(view==='home'&&homeAppActive)?'app':view;
  const details=Object.values(viewDetails).filter(d=>d.view===contextView||(['app','database'].includes(contextView)&&d.view==='access-control'));
@@ -164,20 +210,21 @@ function Workspace(){
  const showPlatform=(message='',workspaceId?:string,destination='home')=>{const epoch=++navigationEpoch.current;transition.current.reset();setView(destination);if(destination==='automations')setAutomationsRevision(n=>n+1);setOpenedTracker(null);setTrackerPreview(null);setTrackerOutput(null);setError(message);void call('open_workspace',workspaceId?{workspaceId}:{}).then(account=>{if(active&&epoch===navigationEpoch.current)setState(account);}).catch(()=>{if(active&&epoch===navigationEpoch.current)retainDisplay();});};
  const retainDisplay=(e?:any)=>{setAppUpdating(false);setUnavailableReason(e?.code==='manifest_stale'?'schema':e&&![401,403,404].includes(e.status)?'load':'missing');setError('');setNotice('');if(!visibleApp.current&&!(visibleSurface.current==='home'&&homeAppVisible.current)){setOpenedTracker(null);setTrackerPreview(null);setTrackerOutput(null);setView('unavailable');}};
  const receive=(result:any)=>{if(!active)return;try{
-  const data=unwrap(result);if(data?.displayIntent==='background')return;
+  const data=withFirstScreen(result);if(data?.displayIntent==='background')return;
   if(data?.preferredDisplayMode==='fullscreen'){fullscreenWanted=true;requestFullscreen();}
   if(['app-link','tracker','tracker-preview'].includes(data?.screen))retryDisplay.current=()=>receive(result);
-  if(data?.screen==='app-link'){const epoch=++navigationEpoch.current;void call('open_app',{appId:data.appId,workspaceId:data.workspaceId,source:data.source??'component',route:data.route??{path:'/'}}).then(display=>{if(active&&epoch===navigationEpoch.current)receive({structuredContent:{result:display}});}).catch(e=>{if(active&&epoch===navigationEpoch.current)retainDisplay(e);});return;}
+  if(data?.screen==='app-link'){const epoch=++navigationEpoch.current;void callResult('open_app',{appId:data.appId,workspaceId:data.workspaceId,source:data.source??'component',route:data.route??{path:'/'}}).then(opened=>{if(active&&epoch===navigationEpoch.current)receive(opened);}).catch(e=>{if(active&&epoch===navigationEpoch.current)retainDisplay(e);});return;}
   if(data?.screen==='automations'){showPlatform('',data.workspaceId,'automations');return;}
   if(data?.screen==='platform'){showPlatform('',data.workspaceId);return;}
   if(data?.guestDraft){setGuest((current:any)=>current?.handle.id===data.handle.id?{...current,...data,bundle:data.bundle??current.bundle}:data);return;}
   const saved=data?.screen==='tracker'&&data.component, draft=data?.screen==='tracker-preview'&&data.preview;
   if(saved||draft){
    const key=data.workspaceId+':'+(saved?'saved:'+saved.id+':'+saved.version+(data.appUpdating?':updating':''):'draft:'+draft.id+':'+draft.digest)+':'+JSON.stringify(data.route??{path:'/'});
-   void transition.current.show(key,()=>{const epoch=++navigationEpoch.current;return loadTrackerDisplay(data,call,account=>{if(active&&epoch===navigationEpoch.current)setState((old:any)=>old.viewerId===account.viewerId?old:{...old,...account});});},({account,resolved,output})=>{
+   let epoch=0;
+   void transition.current.show(key,()=>{epoch=++navigationEpoch.current;return loadTrackerDisplay(data,call,account=>{if(active&&epoch===navigationEpoch.current)setState((old:any)=>old.viewerId===account.viewerId?old:{...old,...account});});},({details,resolved,output})=>{
     if(!active)return;
     if(resolved.screen==='tracker-unavailable'){retainDisplay();return;}
-    setState(account);setTrackerRoute(resolved.route??{path:'/'});setTrackerOutput(output);setOpenedTracker(resolved.component||null);setTrackerPreview(resolved.component?null:resolved.preview||null);setView('tracker');setAppUpdating(!!resolved.appUpdating);setError('');setNotice('');
+    showDetails(details,resolved.workspaceId,()=>active&&epoch===navigationEpoch.current);setTrackerRoute(resolved.route??{path:'/'});setTrackerOutput(output);setOpenedTracker(resolved.component||null);setTrackerPreview(resolved.component?null:resolved.preview||null);setView('tracker');setAppUpdating(!!resolved.appUpdating);setError('');setNotice('');
    },e=>{if(active)retainDisplay(e);});
   }else if(data?.screen==='tracker-unavailable'){retainDisplay();
   }else if(data?.workspaces&&data?.types){
@@ -195,8 +242,8 @@ function Workspace(){
  if(guest)return <WorkspaceShell embedded appView selected="home" onNavigate={()=>openApp()} accountName="Guest" onNew={startNew} onOpenApp={openApp}><GuestPreview key={guest.handle.id} draft={guest} call={call} openLink={async url=>{const r=await bridge.openLink({url});if(r.isError)throw Error('Could not open account');}} onSaved={async receipt=>{await call('list_workspaces');await open(receipt.workspaceId);setView('home');setGuest(null);}}/></WorkspaceShell>;
  // A6, B1: Review in the footer opens the pending change itself; approval happens on screen, in the footer.
  const openPending=(c:PendingChange)=>{if(!state.workspaceId)return;void call('open_app',{appId:c.previewId,workspaceId:state.workspaceId,source:'preview',route:{path:'/'}}).then(display=>receiveRef.current?.({structuredContent:{result:display}})).catch(e=>setError((e as Error).message));};
- return <AppPlatform.Provider value={{...platform,readTemplateMedia,useTemplate,openLink:url=>{void bridge.openLink({url});}}}><WorkspaceView.Provider value={reportView}><AccessHost.Provider value={url=>{void bridge.openLink({url});}}><PendingChangesProvider call={call} workspaceId={state.workspaceId} onOpen={openPending}><WorkspaceShell embedded working={view==='tracker'&&appUpdating} headerActions={canExpand?<button className="ty-host-open" onClick={expandWorkspace} title="Expand the workspace to full screen"><Icon name="expand" size={16}/>Expand</button>:undefined} appView={view==='tracker'||(view==='home'&&homeAppActive)} selected={view==='templates'?'templates':view==='connectors'?'connectors':view==='automations'?'automations':view==='access-control'?'access-control':view==='logs'?'logs':['database','records'].includes(view)?'database':'home'} onNavigate={d=>{if(d==='settings'){openSettings();return;}navigationEpoch.current++;setBusy(false);transition.current.reset();setError('');setNotice('');setView(d);}} accountName={identity.name??(state.viewerId?"Connected":"Account")} accountEmail={identity.email} onNew={startNew} onOpenApp={openApp}><div className="ty-page ty-fixed ty-embed-content">{error&&<SystemNotice error message={error} onDismiss={()=>setError('')}/>}{view==='unavailable'&&<AppUnavailable onHome={returnHome} reason={unavailableReason} onRetry={retryDisplay.current?()=>retryDisplay.current?.():undefined}/>}{notice&&<SystemNotice message={notice} onDismiss={()=>setNotice('')}>{notice.startsWith('App added. Automation setup')&&<button onClick={()=>{setView('automations');setNotice('');}}>View Automations</button>}</SystemNotice>}{view!=='unavailable'&&!ready&&<div aria-busy="true" aria-label="Loading account"/>}{view==='templates'&&state.workspaceId&&<TemplateCatalog call={(name,args)=>call(name,['list_app_templates','read_app_template','read_app_template_media'].includes(name)?args:{workspaceId:state.workspaceId,...args})}/>}
-{view==='create'&&state.workspaceId&&<CreationCenter key={creationKind} kind={creationKind} call={(name,args)=>call(name,{workspaceId:state.workspaceId,...args})} onChat={chatNew} onClose={()=>setView('home')} onCreated={()=>{setHomeRevision(r=>r+1);setView('home');void open(state.workspaceId);}}/>}{state.guestWelcome&&<section className="ty-empty"><h2>Your work, connected.</h2><p>{state.message}</p><button className="primary" onClick={()=>void run(async()=>{await call('list_workspaces');await open();})}>Connect your account</button><p>One account for your projects, trackers, forms, dashboards and automations. No workspace setup.</p></section>}
+ return <AppPlatform.Provider value={{...platform,readTemplateMedia,readTemplateCard,templateCardUrl,useTemplate,openLink:url=>{void bridge.openLink({url});}}}><WorkspaceView.Provider value={reportView}><AccessHost.Provider value={url=>{void bridge.openLink({url});}}><PendingChangesProvider call={call} workspaceId={state.workspaceId} onOpen={openPending}><WorkspaceShell embedded working={view==='tracker'&&appUpdating} headerActions={canExpand?<button className="ty-host-open" onClick={expandWorkspace} title="Expand the workspace to full screen"><Icon name="expand" size={16}/>Expand</button>:undefined} appView={view==='tracker'||(view==='home'&&homeAppActive)} selected={view==='templates'?'templates':view==='connectors'?'connectors':view==='automations'?'automations':view==='access-control'?'access-control':view==='logs'?'logs':['database','records'].includes(view)?'database':'home'} onNavigate={d=>{if(d==='settings'){openSettings();return;}navigationEpoch.current++;setBusy(false);transition.current.reset();setError('');setNotice('');setView(d);}} accountName={identity.name??(state.viewerId?"Connected":"Account")} accountEmail={identity.email} onNew={startNew} onOpenApp={openApp}><div className="ty-page ty-fixed ty-embed-content">{error&&<SystemNotice error message={error} onDismiss={()=>setError('')}/>}{view==='unavailable'&&<AppUnavailable onHome={returnHome} reason={unavailableReason} onRetry={retryDisplay.current?()=>retryDisplay.current?.():undefined}/>}{notice&&<SystemNotice message={notice} onDismiss={()=>setNotice('')}>{notice.startsWith('App added. Automation setup')&&<button onClick={()=>{setView('automations');setNotice('');}}>View Automations</button>}</SystemNotice>}{view!=='unavailable'&&!ready&&<div aria-busy="true" aria-label="Loading account"/>}{view==='templates'&&state.workspaceId&&<TemplateCatalog call={(name,args)=>call(name,['list_app_templates','read_app_template','read_app_template_media'].includes(name)?args:{workspaceId:state.workspaceId,...args})}/>}
+{view==='create'&&state.workspaceId&&<CreationCenter key={creationKind} kind={creationKind} call={(name,args,options)=>call(name,{workspaceId:state.workspaceId,...args},options)} onChat={chatNew} onClose={()=>setView('home')} onCreated={()=>{setHomeRevision(r=>r+1);setView('home');void open(state.workspaceId);}}/>}{state.guestWelcome&&<section className="ty-empty"><h2>Your work, connected.</h2><p>{state.message}</p><button className="primary" onClick={()=>void run(async()=>{await call('list_workspaces');await open();})}>Connect your account</button><p>One account for your projects, trackers, forms, dashboards and automations. No workspace setup.</p></section>}
 
  {!state.guestWelcome&&(state.viewerId||state.workspaceId)&&<><nav>{view==='records'&&<><select aria-label="Table" value={typeId} disabled={busy} onChange={e=>{setTypeId(e.target.value);setViewId('');setForm(null);setVersions(null);setView('records');setQuery('');void run(()=>records(state.workspaceId,e.target.value,0,'',''));}}>{!state.types.length&&<option value="">No tables yet</option>}{state.types.map((t:any)=><option key={t.id} value={t.id}>{t.name}</option>)}</select><button disabled={busy} onClick={()=>{setView('records');setForm({kind:'table'});setDraft({name:'',fields:[{key:'name',name:'Name',kind:'text',required:true,ai:true,multiple:true}]});}}>New table</button>{table&&<><button disabled={busy} onClick={()=>{setForm({kind:'table',table});setDraft({name:table.name,fields:table.fields});}}>Edit fields</button><button disabled={busy} onClick={()=>setImporting(true)}>Import CSV</button></>}{table&&<button disabled={busy} onClick={()=>{setView('records');setForm({kind:'record'});setDraft({});}}>Add record</button>}</>}</nav>
  {view==='records'&&table&&<><form className="search" onSubmit={e=>{e.preventDefault();void run(()=>records(state.workspaceId,typeId,0,query));}}><input placeholder="Search accessible fields" value={query} onChange={e=>setQuery(e.target.value)}/><button disabled={busy}>Search</button></form><ViewPicker key={state.workspaceId+typeId} views={views.filter(v=>v.type_id===typeId)} selectedId={activeView?.id??''} fields={fields} typeId={typeId} busy={busy} onSelect={id=>{setViewId(id);void run(()=>records(state.workspaceId,typeId,0,query,id));}} onPrepare={operation=>run(()=>prepare(operation))}/><RecordView onBulk={operation=>run(()=>prepare(operation))} loadReferences={(f,query,offset)=>call('reference_options',{workspaceId:state.workspaceId,typeId,field:f.key,query,offset})} key={state.workspaceId+typeId+viewId} rows={rows} summary={summary} month={month} onMonth={m=>{setMonth(m);void run(()=>records(state.workspaceId,typeId,0,query,viewId,m));}} fields={fields} kind={activeView?.kind??'table'} config={activeView?.config} total={total} busy={busy} onEdit={r=>{setForm({kind:'record',record:r});setDraft(r.data);}} onHistory={r=>run(async()=>{setForm(null);setVersions(await call('record_versions',{workspaceId:state.workspaceId,recordId:r.id}));})}/><footer><span>{total} records</span><button disabled={!offset||busy} onClick={()=>run(()=>records(state.workspaceId,typeId,offset-25,query))}>Previous</button><button disabled={offset+25>=total||busy} onClick={()=>run(()=>records(state.workspaceId,typeId,offset+25,query))}>Next</button></footer></>}
@@ -206,7 +253,7 @@ function Workspace(){
  {view==='tracker'&&trackerPreview&&(['save_component','create_tracker'].includes(trackerPreview.body?.kind)?<TrackerDraft initialOutput={trackerOutput} key={trackerPreview.id+':'+trackerPreview.digest} preview={trackerPreview} call={call} onProposal={p=>{setTrackerOutput(null);setTrackerPreview(p);}} onSaved={(component,_output,route={path:'/'})=>{navigationEpoch.current++;transition.current.adopt(state.workspaceId+':saved:'+component.id+':'+component.version+':'+JSON.stringify(route));setTrackerRoute({path:'/'});setTrackerOutput(null);setTrackerPreview(null);setOpenedTracker(null);setHomeRevision(r=>r+1);setView('home');setNotice('');}} onDiscard={()=>{setTrackerPreview(null);if(!openedTracker)setView('home');}}/>:<ProposalReview key={trackerPreview.id} proposal={trackerPreview} busy={busy} summary="Your record changes are ready to save." onAction={()=>run(async()=>{const receipt=await call('confirm_workspace_change',{workspaceId:trackerPreview.workspaceId,previewId:trackerPreview.id,digest:trackerPreview.digest,confirmed:true});const data=await call('read_project_component',{workspaceId:trackerPreview.workspaceId,componentId:receipt.id});const output=await call('run_component_frontend',{workspaceId:trackerPreview.workspaceId,request:{componentId:data.component.id,expectedVersion:data.component.version,event:{kind:'open'}}});transition.current.adopt(trackerPreview.workspaceId+':saved:'+data.component.id+':'+data.component.version);setTrackerOutput(output);setTrackerPreview(null);setOpenedTracker(data.component);setNotice('');})} onDismiss={()=>run(async()=>{await call('discard_workspace_preview',{workspaceId:trackerPreview.workspaceId,previewId:trackerPreview.id});setTrackerPreview(null);if(!openedTracker)setView('home');})}/>)}
  </EmbeddedAppNavigation>}
  {view==='home'&&noAccessibleWorkspace&&<section className="ty-access-page"><div className="ty-page-heading"><h1>Apps</h1></div><div className="ty-empty"><h2>Account connected · access not enabled</h2><p>Your TrialAgents account is connected, but no account database is available to ChatGPT. Your owner can review ChatGPT access in TrialAgents.</p><div className="ty-actions"><button className="ty-button ty-button--primary" onClick={()=>void bridge.openLink({url:platform.origin+'/?tab=access-control'})}>Review ChatGPT access</button><button className="ty-button" disabled={busy} onClick={()=>void run(()=>open())}>Check access again</button></div></div></section>}
- {visited.includes('home')&&!noAccessibleWorkspace&&<div hidden={view!=='home'}><WorkspaceView.Provider value={view==='home'?reportView:null}><HomePanel active={view==='home'} onBrowseTemplates={()=>setView('templates')} onAppVisibilityChange={onHomeAppVisibility} onCompose={async message=>{const result=await bridge.sendMessage({role:"user",content:[{type:"text",text:message}]});if(result.isError)throw Error("Could not send the request to chat. Please type it in the conversation.");}} onLegacyAutomations={()=>setView('automations')} viewerId={state.viewerId} key={state.viewerId+':'+state.workspaceId+':'+homeRevision} workspaceId={state.workspaceId??''} types={state.types} call={call} loadHome={homeFromResult} onDocuments={()=>{setView('documents');void run(async()=>setDocuments(await call('list_documents',{workspaceId:state.workspaceId})));}}/></WorkspaceView.Provider></div>}
+ {visited.includes('home')&&!noAccessibleWorkspace&&<div hidden={view!=='home'}><WorkspaceView.Provider value={view==='home'?reportView:null}><HomeScreens.Provider value={lateHomeScreens}><HomePanel active={view==='home'} onBrowseTemplates={()=>setView('templates')} onAppVisibilityChange={onHomeAppVisibility} onCompose={async message=>{const result=await bridge.sendMessage({role:"user",content:[{type:"text",text:message}]});if(result.isError)throw Error("Could not send the request to chat. Please type it in the conversation.");}} onLegacyAutomations={()=>setView('automations')} viewerId={state.viewerId} key={state.viewerId+':'+state.workspaceId+':'+homeRevision} workspaceId={state.workspaceId??''} types={state.types} call={call} loadHome={homeFromResult} onDocuments={()=>{setView('documents');void run(async()=>setDocuments(await call('list_documents',{workspaceId:state.workspaceId})));}}/></HomeScreens.Provider></WorkspaceView.Provider></div>}
  {view==='connectors'&&state.workspaceId&&<EmbeddedConnectors key={state.workspaceId} workspaceId={state.workspaceId} call={call}/>}
  {view==='automations'&&state.workspaceId&&<AutomationsPage key={state.workspaceId+':'+automationsRevision+':'+(platformApp??'')} appId={platformApp??undefined} call={(name,args)=>call(name,{...args,workspaceId:state.workspaceId})}/>}
  {view==='automations'&&!state.workspaceId&&<section className="ty-page"><h1>Automations</h1><p>Connect an accessible account to manage automations.</p></section>}

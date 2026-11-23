@@ -116,7 +116,8 @@ export class AppCapabilities{
     SELECT id,version,(SELECT coalesce(jsonb_object_agg(key,value),'{}'::jsonb) FROM jsonb_each(data) WHERE key=ANY($3::text[])) AS selected
     FROM records WHERE ${where} ORDER BY ${order} LIMIT $4 OFFSET $5) page`,args)).rows;
    if(rows.some((r:any)=>r.data===null))fail(400,'read_limit','A record exceeds the interface read budget');
-   const total=Number((await host.db.query(parameters+`SELECT count(*) AS n FROM records WHERE ${where}`,args)).rows[0].n);
+   // L2.1: a short page (fewer rows than asked, and at least one row or the first page) already gives the exact total.
+   const total=v.limit>0&&rows.length<v.limit&&(rows.length>0||v.offset===0)?v.offset+rows.length:Number((await host.db.query(parameters+`SELECT count(*) AS n FROM records WHERE ${where}`,args)).rows[0].n);
    this.pageReader.prime(v.typeId,linkedTable.type,linkedTable.policy);
    // SQL already applied this exact project scope before returning these rows.
    if(linkedTable.policy.scope_project===(content.manifest?.scope==='project'?content.project_id:null))this.pageReader.authorizeRows(rows.map((r:any)=>r.id));

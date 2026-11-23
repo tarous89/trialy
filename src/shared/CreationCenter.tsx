@@ -7,7 +7,7 @@ import {toolTemplates,loadSourceTables,type ToolTemplate} from './tool-templates
 import {resourceTypes} from './ui/HomeView.js';
 import {Icon} from './ui/Icon.js';
 import {continueCreationInChat} from './creation.js';
-type Call=(name:string,args:any)=>Promise<any>;
+type Call=(name:string,args:any,options?:{background?:boolean})=>Promise<any>;
 export function CreationCenter({kind,call,onClose,onCreated,onChat}:{kind:string;call:Call;onClose:()=>void;onCreated:()=>void;onChat?:()=>void}){
  // I2: a new app is created through the installation popup.
  const approve=useApproveChange();

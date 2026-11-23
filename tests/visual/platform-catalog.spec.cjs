@@ -37,7 +37,7 @@ for(const width of [1440,390])test(`template gallery, filters and fullscreen pre
  const card=catalog.locator('article');await expect(card.getByRole('heading',{name:'Runway',exact:true})).toBeVisible();
  await expect(card.getByRole('button')).toHaveCount(2);await expect(card.getByRole('link')).toHaveCount(0);
  await expect(card.getByText('Customizable and usable in ChatGPT and Claude.')).toBeVisible();
- await expect(card.locator('img')).toHaveJSProperty('naturalWidth',1440);
+ await expect(card.locator('img')).toHaveJSProperty('naturalWidth',720);
  await page.getByRole('searchbox',{name:'Search templates'}).fill('no matching app');await expect(page.getByRole('heading',{name:'No templates match'})).toBeVisible();
  await page.getByRole('searchbox',{name:'Search templates'}).fill('Cash');
  await card.getByRole('button',{name:'Preview',exact:true}).click();

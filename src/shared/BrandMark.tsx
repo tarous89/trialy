@@ -1,6 +1,7 @@
 import React from 'react';
-import lightMark from '/trialagents-mark-white.png?url';
-import darkMark from '/trialagents-mark-black.png?url';
+// L3.6: 96 px copies of the brand marks (shown at 22 to 28 px), not the 810 px originals.
+import lightMark from '/trialagents-mark-white-96.png?url';
+import darkMark from '/trialagents-mark-black-96.png?url';
 
 export const brandMarks={light:lightMark,dark:darkMark};
 /** Bundled assets also work inside the ChatGPT extension's isolated origin. */

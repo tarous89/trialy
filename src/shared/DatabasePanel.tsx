@@ -2,7 +2,7 @@ import {useWorkspaceView} from './WorkspaceView.js';
 import {PagePagination} from './ui/PagePagination.js';
 import {databaseCsv,downloadCsv} from './download.js';
 import {DatabaseColumnContext} from './DatabaseColumnContext.js';
-import {AccessButton} from './AccessPanel.js';
+import {AccessButton} from './AccessButton.js';
 import {DatabaseCreateRow} from './DatabaseCreateRow.js';
 import {ArchivedItems} from './ArchivedItems.js';
 import React,{useEffect,useState,useRef} from 'react';

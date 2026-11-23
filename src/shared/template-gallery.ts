@@ -32,5 +32,8 @@ export const templateGallery:Record<string,{team:string;workflow:string;summary:
  'life.cro-sponsor-updates':{team:'CRO',workflow:'Study delivery',summary:'Collect team updates and prepare reviewed sponsor reports.'},
  'life.co-trial-monitoring-pv':{team:'Clinical operations',workflow:'Study delivery',summary:'Coordinate monitoring actions and partner PV obligations.'}
 };
-/** digest: the listed catalog digest. With it, the browser may keep that exact version's screenshot. */
-export function templateMediaUrl(id:string,version:string,kind:'screenshot'|'preview',digest?:string){return `/api/app-templates/${encodeURIComponent(id)}/${encodeURIComponent(version)}/${kind}${digest&&kind==='screenshot'?'?d='+encodeURIComponent(digest):''}`;}
+/** digest: the listed catalog digest. With it, the browser may keep that exact version's image or preview for good (L3.2, L3.4).
+ * card: the image at the size a card shows it; screenshot: the full-size image. */
+export function templateMediaUrl(id:string,version:string,kind:'screenshot'|'card'|'preview',digest?:string){return `/api/app-templates/${encodeURIComponent(id)}/${encodeURIComponent(version)}/${kind}${digest?'?d='+encodeURIComponent(digest):''}`;}
+/** L3.3: the public card address a plugin widget can load as an image, where its host allows images from the platform origin. */
+export function templateCardAddress(origin:string,channel:'chatgpt'|'claude',t:{id:string;version:string;digest:string}){return `${origin}/template-cards/${channel}/${encodeURIComponent(t.id)}/${encodeURIComponent(t.version)}/${t.digest}.jpg`;}

@@ -8,7 +8,8 @@ import {AppPeople} from './AppPeople.js';
 import {AssistantMaximums} from './AssistantLevels.js';
 import {OlderColumnRestrictions} from './OlderColumnRestrictions.js';
 import {Icon,type IconName} from './ui/Icon.js';
-export const AccessHost=React.createContext<((url:string)=>void)|null>(null);
+import {AccessHost} from './access-host.js';
+export {AccessHost};
 type Call=(name:string,args:any)=>Promise<any>;
 export type AccessScope={kind:'project'|'tool'|'database'|'table'|'column'|'workflow'|'automation'|'app_section'|'external_send';resourceId:string;field?:string;name?:string};
 type State=boolean|'mixed';
@@ -104,5 +105,5 @@ export function AccessPanel({call,scope,onClose,openLink,initialDraft,onDirty,tr
 
  </>}</section>;
 }
-export function AccessButton({call,scope}:{call:Call;scope:AccessScope}){const [open,setOpen]=useState(false);return <><button className="ty-button ty-button--secondary" aria-label={'Access · '+scope.name} onClick={()=>setOpen(true)}>Access</button>{open&&<div className="ty-content-overlay"><div className="ty-access-dialog" role="dialog" aria-modal="true" aria-label={'Access · '+scope.name}><AccessPanel call={call} scope={scope} onClose={()=>setOpen(false)}/></div></div>}</>;}
+export {AccessButton} from './AccessButton.js';
 

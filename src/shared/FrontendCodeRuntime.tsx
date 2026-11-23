@@ -9,7 +9,9 @@ import {useWorkspaceView} from './WorkspaceView.js';
 import {SystemNotice} from './SystemNotice.js';
 import {parseAppUrl} from './app-route.js';
 import {AppPlatform,AppNavigation} from './AppPlatform.js';
-import {ConnectorReview} from './ConnectorsPanel.js';
+import {appScreen} from './app-screens.js';
+// L4.5: shown only on the website (the plugins link to the review); supplied by the host.
+const ConnectorReview=appScreen('ConnectorReview');
 import {mergeTrackerSnapshot,SNAPSHOT_TTL} from './tracker-cache.js';
 import {FrontendReads} from './frontend-reads.js';
 import {retryFrontendBusy} from './frontend-retry.js';
@@ -21,6 +23,7 @@ import {useAccessRecheck} from './useAccessRecheck.js';
 import {AppUnavailable} from './AppUnavailable.js';
 import {IntegrationDialog} from './IntegrationDialog.js';
 import {DocumentUploadDialog} from './DocumentUploadDialog.js';
+import {holdCode,heldCode,heldDigests} from './app-code.js';
 type Call=(name:string,args:Record<string,unknown>,options?:WorkspaceRequestOptions)=>Promise<any>;
 /**
  * P2, D20 (4.7): show first, fill in after. The frame address and each app's last screen are kept in memory only
@@ -29,6 +32,23 @@ type Call=(name:string,args:Record<string,unknown>,options?:WorkspaceRequestOpti
 let knownFrameUrl='';
 /** 5.1: whether this browser's app frame can run apps itself (null until a frame has said). Memory only. */
 let engineAvailable:boolean|null=null;
+/** The code itself when its fingerprint (sourceDigest: SHA-256, first 32 hex digits) is the one given. */
+async function sameCode(code:unknown,digest:string):Promise<string|null>{
+ if(typeof code!=='string'||!globalThis.crypto?.subtle)return null;
+ const hash=new Uint8Array(await crypto.subtle.digest('SHA-256',new TextEncoder().encode(code)));
+ return [...hash].map(b=>b.toString(16).padStart(2,'0')).join('').slice(0,32)===digest?code:null;
+}
+/** L2.4: background preparation yields. It waits while the page is hidden and while `ready` says no (a save is running),
+ * checking again every quarter second, and gives up after a minute (the screen then loads when it is opened). */
+export async function preparationTurn(ready:()=>boolean){
+ const start=Date.now();
+ while(Date.now()-start<60000){if(typeof document==='undefined'||document.visibilityState!=='hidden'){if(ready())return;}await new Promise(r=>setTimeout(r,250));}
+ throw Error('preparation_skipped');
+}
+/** L2.2: what an app open asks for with its first screen, so the frame can run the app itself: the reads that screen made
+ * and never the code inline (the frame fetches the code by its fingerprint afterwards, once). Nothing while this
+ * browser's frame is known to refuse the engine. */
+export function openBrowserRequest(){return engineAvailable===false?undefined:{source:false,have:heldDigests()};}
 const remembered=new Map<string,{output:any;at:number}>(),REMEMBER_MS=120000;
 /** P5 (4.4): one save key per explicit action. Retrying the same action reuses it, so a save whose response was lost is never made twice. */
 const actionKeys=new WeakMap<object,string>();
@@ -72,7 +92,24 @@ export function FrontendCodeRuntime({active=true,component,previewId,initialOutp
  const navigationReads=useRef(new FrontendReads());
  // 5.1: the app code the frame has loaded (app id and version), the browser payload last sent, and the frame's width class.
  const engineLoaded=useRef<string|null>(null),browserSent=useRef<any>(null),viewport=useRef<{width:string;coarse:boolean}|null>(null);
- const browserRequest=(c:any)=>!previewId&&c&&engineAvailable!==false&&!output.current?.tracker?{browser:{source:engineLoaded.current!==c.id+':'+c.version},...(viewport.current?{viewport:viewport.current}:{})}:{};
+ // L2.2: the code comes by its fingerprint (codeFor below); it is asked for inline only when that failed for this app.
+ const codeFailed=useRef(false);
+ const browserRequest=(c:any)=>!previewId&&c&&engineAvailable!==false&&!output.current?.tracker?{browser:{source:codeFailed.current&&engineLoaded.current!==c.id+':'+c.version,have:heldDigests()},...(viewport.current?{viewport:viewport.current}:{})}:{};
+ /** L2.2: the browser payload with the app's code: held already, or fetched once by fingerprint in the background (the
+  * screen is shown meanwhile; the frame starts running the app itself when the code arrives). */
+ function codeFor(b:any){
+  if(!b||b.mode==='server')return b;if(typeof b.source==='string'){holdCode(b.digest,b.source);return b;}
+  const code=heldCode(b.digest);if(code!==undefined)return {...b,source:code};
+  const c=current.current,target=output.current;if(!c||!target)return b;
+  const load=platformRef.current.loadAppCode??((w:string,appId:string,digest:string)=>call('read_app_code',{workspaceId:w,appId,digest},{background:true}).then((r:any)=>typeof r?.code==='string'?r.code:null));
+  // The app's own saved code (already in its metadata) is used when it is exactly the code that ran; otherwise it is fetched.
+  void sameCode(c.source,b.digest).then(own=>own??load(c.workspace_id,c.id,b.digest)).catch(()=>null).then(code=>{
+   if(typeof code!=='string'){codeFailed.current=true;return;}holdCode(b.digest,code);
+   if(!live.current||output.current!==target||target.browser!==b)return;
+   output.current={...target,browser:{...b,source:code}};send();
+  });
+  return b;
+ }
  const requests=useRef(new AbortController());
  // Track each foreground waiter, including a click joining an optional prefetch.
  const readFrontend=(request:any,options:WorkspaceRequestOptions={})=>{
@@ -107,11 +144,13 @@ export function FrontendCodeRuntime({active=true,component,previewId,initialOutp
   clearTimeout(prefetchTimer.current);
   const captured=generation.current,c=current.current,model=result.tracker,st=structuredClone(result.state);
   const visible=model.config.tabs.map((t:any,i:number)=>t.visible!==false?i:-1).filter((i:number)=>i>=0);
-  const candidates=visible.filter((i:number)=>i!==st.tab).sort((a:number,b:number)=>Math.abs(a-st.tab)-Math.abs(b-st.tab)).slice(0,2).map((i:number)=>({action:'tab:'+i,tab:i,offset:st.offsets?.[i]||0}));
+  const candidates=visible.filter((i:number)=>i!==st.tab).sort((a:number,b:number)=>Math.abs(a-st.tab)-Math.abs(b-st.tab)).slice(0,8).map((i:number)=>({action:'tab:'+i,tab:i,offset:st.offsets?.[i]||0}));
   if(st.tab>=0){const page=model.pages.find((p:any)=>p.request.typeId===model.config.tabs[st.tab].typeId&&p.request.limit>0&&p.request.offset===(st.offsets?.[st.tab]||0));if(page&&page.request.offset+page.request.limit<page.result.total)candidates.unshift({action:'next',tab:st.tab,offset:page.request.offset+page.request.limit});}
   const needed=candidates.filter(({tab,offset}:{tab:number;offset:number})=>{const t=model.config.tabs[tab],limit=Math.min(model.config.pageSize||25,Math.max(1,Math.floor(480/t.columns.length))),filters=JSON.stringify(Object.entries(st.filters?.[tab]||{}).filter(([,v])=>v!=='').sort());const page=model.pages.find((p:any)=>p.request.typeId===t.typeId&&(p.request.q||'')===(st.queries?.[tab]||'')&&JSON.stringify(p.request.sort||null)===JSON.stringify(st.sorts?.[tab]?{field:st.sorts[tab],direction:st.sortDescending?'desc':'asc'}:null)&&p.request.limit===limit&&p.request.offset===offset&&JSON.stringify(Object.entries(p.request.filters||{}).sort())===filters&&Date.now()-p.receivedAt<SNAPSHOT_TTL);return !page||page.result.rows.some((r:any)=>t.columns.some((f:any)=>!model.cachedControls?.[f.fieldId+':'+r.id]));});
   if(!needed.length)return;
-  prefetchTimer.current=setTimeout(async()=>{for(const {action} of needed){try{
+  // L2.4 (architecture G): right after the first screen, every other tab is prepared quietly, nearest first; it waits while
+  // the page is hidden and stops when the person acts (generation changes) or a save runs.
+  prefetchTimer.current=setTimeout(async()=>{for(const {action} of needed){try{await preparationTurn(()=>true);}catch{return;}try{
    if(!live.current||busyRef.current||generation.current!==captured)return;
    const next=await readFrontend({...(c?viewRequest(c):{previewId}),...(navigationRef.current?{route:navigationRef.current.route}:{}),state:st,event:{kind:'click',action}},{background:true});
    if(!live.current||generation.current!==captured||busyRef.current||!output.current||next.accessVersion!==output.current.accessVersion)return;
@@ -120,7 +159,7 @@ export function FrontendCodeRuntime({active=true,component,previewId,initialOutp
   }catch{/* Optional prefetch does not replace the view. */}}},150);
  }
  const paintPending=useRef(false),freshScreen=useRef(false);
- const send=()=>{paintPending.current=false;const browser=output.current&&browserSent.current!==output.current?output.current.browser:undefined;if(output.current)browserSent.current=output.current;queueMicrotask(()=>{freshScreen.current=false;});if(output.current&&current.current&&!previewId)rememberOutput(current.current,output.current);if(output.current)frame.current?.contentWindow?.postMessage({kind:'trialy.render',channel:channel.current,fresh:freshScreen.current,html:output.current.html,css:output.current.css,controls:output.current.controls,connected:output.current.connected,state:output.current.state,tracker:output.current.tracker,navigationOnly:embedded,fill:output.current.runtime==='trialy-frontend-js-v2',...(browser?{browser,verify:output.current.verify}:{}),appLinks:platformRef.current.enabled,appOrigin:platformRef.current.origin,linkContext:navigationRef.current?.location??parseAppUrl(location.pathname+location.search)??(component?{appId:component.id,workspaceId:component.workspace_id,source:'component'}:null)},'*');};
+ const send=()=>{paintPending.current=false;const browser=codeFor(output.current&&browserSent.current!==output.current?output.current.browser:undefined);if(output.current)browserSent.current=output.current;queueMicrotask(()=>{freshScreen.current=false;});if(output.current&&current.current&&!previewId)rememberOutput(current.current,output.current);if(output.current)frame.current?.contentWindow?.postMessage({kind:'trialy.render',channel:channel.current,fresh:freshScreen.current,html:output.current.html,css:output.current.css,controls:output.current.controls,connected:output.current.connected,state:output.current.state,tracker:output.current.tracker,navigationOnly:embedded,fill:output.current.runtime==='trialy-frontend-js-v2',...(browser?{browser,verify:output.current.verify}:{}),appLinks:platformRef.current.enabled,appOrigin:platformRef.current.origin,linkContext:navigationRef.current?.location??parseAppUrl(location.pathname+location.search)??(component?{appId:component.id,workspaceId:component.workspace_id,source:'component'}:null)},'*');};
  useEffect(()=>{if(ready)send();},[platform.enabled,platform.origin]);
  async function run(event:any={kind:'open'}){
   if(event.action==='tracker:layout'){onLayout?.();return;}if(event.action==='tracker:access'){onAccess?.();return;}
@@ -242,7 +281,7 @@ export function FrontendCodeRuntime({active=true,component,previewId,initialOutp
   setSavedPhase(null);setAdding(false);blocked.current=false;saveReceipt.current=null;frame.current?.contentWindow?.postMessage({kind:'trialy.save-idle',channel:channel.current,blocked:false},'*');return true;
  }
  async function retrySaved(latest=false){if(busyRef.current)return;if(latest&&saveReceipt.current?.saved)saveReceipt.current.reloadLatest=true;busyRef.current=true;setBusy(true);try{await finishSave();}catch(e){actionError(e);}finally{busyRef.current=false;if(live.current)setBusy(false);}}
- useEffect(()=>{live.current=true;if(requests.current.signal.aborted)requests.current=new AbortController();if(initialOutput){output.current=mergeTrackerSnapshot(null,initialOutput);state.current=initialOutput.state;setStandard(!!initialOutput.tracker);setFill(!!initialOutput.tracker||initialOutput.runtime==='trialy-frontend-js-v2');setFrameUrl(initialOutput.frameUrl);setProposal(initialOutput.proposal);onBusyChange?.(false);prefetch(output.current);}else{const last=!previewId?recall(component):null;if(last){output.current=last;state.current=last.state;setStandard(!!last.tracker);setFill(!!last.tracker||last.runtime==='trialy-frontend-js-v2');setFrameUrl(last.frameUrl);}void run();}return()=>{live.current=false;cancelPrefetch();requests.current.abort();};},[]);
+ useEffect(()=>{live.current=true;if(requests.current.signal.aborted)requests.current=new AbortController();if(initialOutput){output.current=mergeTrackerSnapshot(null,initialOutput);if(output.current.browser&&!output.current.verify)output.current={...output.current,verify:{state:null,event:{kind:'open'}}};state.current=initialOutput.state;setStandard(!!initialOutput.tracker);setFill(!!initialOutput.tracker||initialOutput.runtime==='trialy-frontend-js-v2');setFrameUrl(initialOutput.frameUrl);setProposal(initialOutput.proposal);onBusyChange?.(false);prefetch(output.current);}else{const last=!previewId?recall(component):null;if(last){output.current=last;state.current=last.state;setStandard(!!last.tracker);setFill(!!last.tracker||last.runtime==='trialy-frontend-js-v2');setFrameUrl(last.frameUrl);}void run();}return()=>{live.current=false;cancelPrefetch();requests.current.abort();};},[]);
  const [integration,setIntegration]=useState<{role:string}|null>(null);
  const [upload,setUpload]=useState<{context:string}|null>(null);
  const routeKey=JSON.stringify([navigation?.route,navigation?.reset]),lastRoute=useRef(routeKey),lastReset=useRef(navigation?.reset);
@@ -270,7 +309,9 @@ export function FrontendCodeRuntime({active=true,component,previewId,initialOutp
     if('context' in e.data&&current.current&&JSON.stringify(e.data.context)!==JSON.stringify(output.current.browser?.input?.context??null)){const c=current.current;void call('set_app_context',{request:{componentId:c.id,context:e.data.context}},{background:true}).catch(()=>{});if(output.current.browser?.input)output.current.browser.input.context=e.data.context;}}
    // 5.1: reads a screen made in the frame still needs, filled in one request without running the app.
    else if(e.data.kind==='trialy.reads'&&Array.isArray(e.data.reads)&&current.current&&output.current&&!output.current.tracker){const c=current.current,id=e.data.id,reads=e.data.reads.slice(0,12).map((r:any)=>({name:String(r.name),input:r.input}));
-    void call('read_app_data',{request:{componentId:c.id,expectedVersion:c.version,...(output.current.viewId?{viewId:output.current.viewId}:{}),reads}},{background:true}).then((r:any)=>{if(!live.current)return;if(r?.version!==c.version){setPublishedUpdate(true);throw Error('version');}
+    // L2.4: reads for screens prepared in the background wait while the page is hidden or a save is running.
+    const viewId=output.current.viewId;
+    void (e.data.prefetch?preparationTurn(()=>live.current&&!busyRef.current):Promise.resolve()).then(()=>call('read_app_data',{request:{componentId:c.id,expectedVersion:c.version,...(viewId?{viewId}:{}),reads}},{background:true})).then((r:any)=>{if(!live.current)return;if(r?.version!==c.version){setPublishedUpdate(true);throw Error('version');}
      frame.current?.contentWindow?.postMessage({kind:'trialy.reads-result',channel:channel.current,id,results:reads.map((x:any,i:number)=>r.results[i]?.ok?{...x,result:r.results[i].value}:{...x,error:r.results[i]?.error?.message??'Capability unavailable'})},'*');})
      .catch(()=>{if(live.current)frame.current?.contentWindow?.postMessage({kind:'trialy.reads-result',channel:channel.current,id,failed:true},'*');});}
    else if(e.data.kind==='trialy.rendered'){const now=performance.now();if(opened.current!==null){ux.current?.record('open',now-opened.current);opened.current=null;}else if(interaction.current!==null)ux.current?.record('interaction',now-interaction.current);interaction.current=null;onRendered?.();}

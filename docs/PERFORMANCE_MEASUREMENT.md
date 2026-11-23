@@ -293,4 +293,122 @@ The populated page fixture (`tests/page-performance.test.ts`) now takes 12 queri
 
 **Budgets enforced by tests.** `tests/loading-speed.test.ts` fails the build if Apps home exceeds 14 queries, the archived count 5 or the archived list 6, if Home costs a different number of queries for 4 and 40 apps, or if any of these reads selects app code. The scope's target of 6 for Home is not met: the remaining queries are the account directory, the revision stamp, the access lookup, the projects, the index, the person's own automations and links, Home placements and the read-metadata freshness checks. None grows with the number of apps.
 
-**Still open.** Production numbers before and after (owner action, scope section 7.1); splitting the main script (L1.5); database-side paging and set queries for a person's own standalone automations, links and older automations (L1.2, C4, C5): they grow with that person's automations, not with apps.
+**Still open.** Production numbers before and after (owner action, scope section 7.1); database-side paging and set queries for a person's own standalone automations, links and older automations (L1.2, C4, C5): they grow with that person's automations, not with apps.
+
+## Loading speed, session L2: individual apps (22 November 2026)
+
+Session L2 of the [loading speed scope](scopes/LOADING_SPEED_2026-11-22.md).
+
+**What changed.**
+- **Access worked out once per open (L2.1, architecture H).** Opening an app (`readComponent` with its first screen: the website's `GET /api/apps/resolve`, `read_project_component` with `includeOutput`, `open_app`) and a frame run that opens a screen (`runFrontendRequest`: `run_component_frontend` and `POST …/frontend/run` with event `open` and no save key) now run inside one request-wide `withReadMetadata` scope, in the app's own database context. Identical permission and schema lookups are made once and reused by every check and read of that request. Before the response is released every reused result is read again uncached and compared in full; any difference discards the response (`access_changed`), as before. Nothing is kept between requests. Events that may save keep their earlier per-unit checks.
+- **Fewer, grouped lookups (L2.1).** An app's tables are read in one query (`primeById`) instead of one per table; reused rows of one table are verified in one query; a column lookup (`SELECT fields`, `SELECT source`) is taken from the full row already read. A catalog app's origin and installer schema, the approved provider of a role and the role table list join the reusable lookups. The person's runtime view does not: a run updates its read access, so it is read again before each of the app's reads. A records page shorter than asked gives its exact total without a second count query. The pending-change lookup runs alongside the app read.
+- **Code by fingerprint (L2.2, architecture F).** A frame request names the code fingerprints the host holds (`browser.have`); code with one of them is not sent again. Every app open now also carries the frame's seeded reads (never the code), so the frame starts running the app itself right after the first screen: it takes the code from the app's own metadata when the fingerprint matches, and otherwise fetches it once by fingerprint (website: `GET /api/workspaces/:w/apps/:id/code/:digest`, `private, max-age=31536000, immutable`, signing out sends `Clear-Site-Data: "cache"`; plugins: the app-only `read_app_code`). Both check access like an open and serve only the current code of an app that runs in the frame.
+- **Other tabs prepared after Overview (L2.4, architecture G).** A standard tracker prepares every other visible tab (at most 8), nearest first, instead of the two nearest. A browser-mode custom app prepares its linked screens in the frame (existing `warm`), now right after Overview because the open carries the seeded reads. Both are quiet (no loading bar), wait while the page is hidden and while a save runs, and stop when the person acts.
+- **Opening from a card (L2.5).** The Apps page shows the app's name and loading frame at once and fills in the first screen when it arrives. While the website is idle it prefetches the app frame document (`/api/config` gives its versioned address).
+- **Plugins: result-first open (L2.6, architecture E).** `open_app` carries the first screen in the tool result's widget-only metadata (`_meta['trialagents/initialOutput']`); the assistant's result is unchanged. The widget paints from it; the account and the table list load alongside and no longer hold the app back.
+- **Server-mode report (L2.7).** `npm run apps:runtime-report` (owner, read-only) counts installed apps by mode and reason, lists catalog versions that switching on would move, and names customized apps per workspace. No records or code in its output.
+
+**Lab numbers.** Runway (13 tables, fresh install, 15 reads on open), in-process database, `tests/loading-speed-apps.test.ts` fixture. Data reads are the app's own `records.read` calls; platform queries are everything else.
+
+| Read | Before: queries | After: queries | After: platform queries |
+| --- | --- | --- | --- |
+| App open with first screen (website), owner | 596 | 58 | 43 |
+| App open with first screen (website), member | 679 | 63 | 48 |
+| App open with first screen, assistant | 596 | 57 | 42 |
+| Frame open of a screen (`run_component_frontend`), owner | 527 | 56 | 41 |
+| Plugin open (`open_app` and then the widget's own run), owner | 70 + 527 | 58, no second request | 43 |
+
+Code sent per open of a 200 KB app: before, the app's metadata carried it (about 200 KB) and the first local event fetched it again with the frame's reads (another 200 KB); after, only the metadata copy, and the first event runs in the frame.
+
+**Budget enforced by tests.** `tests/loading-speed-apps.test.ts` fails the build when an app open or a frame open takes more than 52 platform queries for the owner, a member or an assistant, when its first screen differs from a separate run, when the open sends code, or when held code is sent again. The scope's target of 25 is not met: the remaining platform queries are the person's access, the app, its project and the app permission (each read once and verified once), the app's tables (one query and one verification), the runtime view (opened, then read before each of the app's 15 reads), the role and integration lookups the app makes (about 10 for Runway) and the pending change. For a member, the source-access checks add about 5. None grows with the number of tables; the runtime view grows with the number of reads the app makes.
+
+**Still open.** The open response still carries the app's code in its metadata (`component.source`), because the settings, layout and code editors read it; sending data only needs those editors to load code on demand (L2.2). The server still makes the first screen of browser-mode apps (L2.3, not built). The frame engine is not prepared ahead (L2.5). The 16 catalog versions hidden from at least one channel have no browser test and stay on server mode (L2.7). Production numbers before and after remain an owner action (scope section 7.1).
+
+## Loading speed, session L3: templates and the plugin path (23 November 2026)
+
+Session L3 of the [loading speed scope](scopes/LOADING_SPEED_2026-11-22.md).
+
+**What changed.**
+- **Template list by catalog fingerprint (L3.1).** The approved catalog is read in one query that returns a template's payload only when this process does not hold that exact version yet (before: a second query for the payloads, on a cold process). The list carries `catalog`, a fingerprint of the channel and every approved version and digest; `list_app_templates` (and `POST /api/app-templates/list`) with that `catalog` answers only `{catalog, unchanged:true}`. The summaries of one fingerprint are computed once per process. The website and the widget show a list they already hold at once and send the fingerprint as a quiet check (no loading bar); a changed catalog replaces the list.
+- **Card images at the size shown (L3.2).** Each gallery screenshot (1440×960) has a 720×480 card (`resources/template-gallery/cards/`, written by `scripts/build-template-cards.mjs`, whose `--check` runs in `npm run build`). Website card, screenshot and preview addresses carrying the exact catalog digest are `private, max-age=31536000, immutable` (screenshots were 7 days, previews `no-store`). The server keeps the files it served in memory by version and digest; approval and the channel switch are still checked on every request (one query).
+- **Plugin card images (L3.3).** The widget's resource declares the platform origin in `ui.csp.resourceDomains`, and cards load from `GET /template-cards/:channel/:templateId/:version/:digest.jpg`: public (catalog pictures, as `read_app_template_media` needs no sign-in), exact digest only, channel switch applied, `public, max-age=31536000, immutable`, `Cross-Origin-Resource-Policy: cross-origin`. When the host refuses the image, the cards on screen (observed as they come into view) are read in one `read_app_template_cards` call of up to 12 cards; if that call fails, each card falls back to `read_app_template_media` as before. All quiet.
+- **Previews prepared on hover or focus (L3.4).** Website: a hidden, script-less frame loads the exact preview address, so the preview dialog's frame is served from the browser cache (a `fetch` does not help: browsers keep frame documents in their own cache entries). Widget: the preview is read with `read_app_template_media` and kept by version and digest for the life of the widget.
+- **Prepared tool list (L3.5).** `tools/list` is answered from the list a full build produced for the same endpoint variant (sign-in, assistant, widget build, `SIMPLE_APPS_ENABLED`, public origins). `tools/call` registers only the named tool and runs only the tool group that holds it (`src/server/mcp-sections.ts`); which group holds which tool is learned from any build that ran every group. An unknown tool name, or a group map not yet learned, uses the full build. Every handler, and with it every authorization decision, is created per request with that request's actor; nothing about access is kept.
+- **Widget file (L3.6).** The 810 px brand marks were inlined in the widget script as 495 KB of base64; the widget and the website now use 96 px copies (displayed at 22 to 28 px). zod's translations (261 KB; the widget only ever shows English messages) are left out of the widget build.
+
+**Lab numbers.** In-process database (`tests/loading-speed-templates.test.ts` fixture and a scratch measurement of the same code), the 16 apps switched on for the website and ChatGPT, `SIMPLE_APPS_ENABLED=true`. MCP timings are per request through Express and the MCP transport, in process; an empty one-tool MCP server takes 1.9 ms on the same machine.
+
+| Measure | Before | After |
+| --- | --- | --- |
+| Template list, queries (cold process / warm) | 2 / 1 | 1 / 1 |
+| Template list, bytes sent, catalog unchanged | 22,032 | 63 (`unchanged`) |
+| Card images, 16 cards, website | 16 requests, 1,846,338 bytes, kept 7 days | 16 requests, 639,781 bytes, kept for good |
+| Card images, 16 cards, plugins | 16 tool calls through the assistant, 2,461,784 bytes of base64 | 16 image requests (639,781 bytes), no tool call; where refused, 2 tool calls for the cards on screen (853,041 bytes of base64 at most) |
+| Preview open, website | every open from the server (`no-store`), about 242 KB | prepared on hover, opened from the browser cache |
+| Preview open, plugins | read on click | read on hover or focus, kept for the widget's life |
+| `tools/list` (200 tools, 516 KB) | 42 ms | 10 ms |
+| `tools/call` (request total, by tool group) | 6.2 ms for every tool | 2.7 to 3.7 ms for tools outside the workspace group (3.4 ms for the app tools); about 5.6 ms for the `workspace/core` group (measured while other tests ran) |
+| `dist/embed.html` (ChatGPT resource) | 2,574,192 bytes | 1,842,939 bytes |
+| Claude resource (widget with the inline app frame) | 3,858,517 bytes | 3,127,264 bytes |
+
+**Budgets enforced by tests.** `tests/loading-speed-templates.test.ts` fails the build when the template list takes more than one query on any channel, when an unchanged catalog reads a payload again or sends more than the fingerprint, when a card is missing, stale, not 720×480 or over 60 KB, when an exact media address is not kept for good, when the public card address serves another digest, an unknown channel, a switched-off or a withdrawn app, when the prepared tool list differs from a full build for any caller, when two people's calls on one server see each other's account or a removed access survives to the next request, and when `dist/embed.html` exceeds 1.9 MB. `tests/visual/template-loading.spec.cjs` checks in a browser that a hovered card's preview opens from the cache, that refused card images come in batched requests with no loading bar, that allowed ones need no tool request, and that returning to the templates sends only the fingerprint.
+
+**Still open.** Keeping the template list across page loads is L4.1. Whether ChatGPT and Claude load images from the declared resource domain is untested in the real hosts (owner action 7.4); the batched read covers a refusal. The `workspace/core` tool group (about 90 tools) is still built in full for each of its calls. The widget still inlines the Inter font (470 KB as base64), every page of the workspace, and, for Claude, the app frame document (1.28 MB with a second copy of the font); decided on 23 November: the font stays; the other pages move out in L4.5; the frame stays and loses its font copy in L4.6 (scope, section 6).
+
+## Loading speed, session L4: instant return visits and capacity (23 November 2026)
+
+Session L4 of the [loading speed scope](scopes/LOADING_SPEED_2026-11-22.md). The capacity recommendation and the real-host checklist are in [L4 owner actions](scopes/LOADING_SPEED_L4_OWNER_ACTIONS.md).
+
+**What changed.**
+- **Last known basics (L4.1).** `src/shared/last-known.ts` keeps, per person and on this device, what Apps home (cards, projects, the archived count), the template list and an app's frame (name, tab names) last showed. It keeps no records, card miniatures, drafts, code or access. A return visit shows them at once. Home marks them "Checking for changes…" and replaces them with a quiet read; the website's early Home read is quiet too when the device remembers Home. Another person's sign-in, sign-out, a session that ends (401) and the account security actions clear them; an app that answers 401, 403 or 404 is forgotten. They stand in for a screen's first read only; a changed revision or lost access forgets them. Where the host refuses storage (expected in sandboxed plugin frames) nothing changes.
+- **Compression and caching (L4.2).** `baseApp` compresses every response over 1 KB that the client accepts compressed (Brotli, else gzip), except event streams. Caching headers were checked on every static and list response and left as they were: fingerprinted files are kept for good, unhashed files (`start.js`, the font, the brand marks) are revalidated with an ETag so a release is seen at once (an existing rule, `tests/static-assets.test.ts`), and lists and account answers are `no-store`. The widget's second part is kept for good.
+- **Widget in two parts (L4.5).** See the scope, section 9. Part one is built as one scope-hoisted bundle, as before. A first version that turned every chunk into a CommonJS module made the first screen's script about 150 ms slower at 4× CPU throttling and was replaced. Part two shares part one's modules through a table of namespaces.
+- **Claude's inline frame without its own font (L4.6).**
+
+**Lab numbers.** Byte counts are from the build. Wire bytes are from a local server (`compression` defaults, Brotli quality 4), measured with the same script against an `origin/main` worktree and this branch. Startup is Chromium loading the widget file on its own (no host) at 4× CPU throttling, median of 21 runs alternating before and after, measured while nothing else ran.
+
+| Measure | Before | After |
+| --- | --- | --- |
+| `dist/embed.html` (ChatGPT resource) | 1,843,145 bytes | 1,592,706 bytes |
+| Widget second part, downloaded after the first screen | none | 280,372 bytes (77 KB compressed), once, kept for good |
+| Claude resource (widget with the inline app frame) | 3,127,470 bytes (two copies of the font) | 2,407,263 bytes (one copy) |
+| Widget startup at 4× CPU throttling: load event / script time | 1,144 ms / 370 ms | 997 ms / 365 ms: no measurable difference in script time (repeated rounds of 9 to 21 runs varied by ±15% either way) |
+| Website script `assets/index-*.js` on the wire | 1,017,584 bytes (not compressed by the app) | 278,512 bytes (Brotli) |
+| Website styles on the wire | 216,589 bytes | 42,315 bytes |
+| App frame document (`/frontend/frame?v=…`) on the wire | 1,278,617 bytes | 685,270 bytes |
+| Template list (`POST /api/app-templates/list`) on the wire | 22,077 bytes | 7,696 bytes |
+| MCP `tools/list` on the wire | 517,109 bytes | 40,021 bytes |
+| MCP `resources/read` of the widget on the wire | 1,881,375 bytes | 675,251 bytes |
+| `/start.js`, `/fonts/inter-variable.woff2`, `/trialagents-mark-*-96.png` | `public, max-age=0` with ETag (revalidated) | unchanged (deliberate: see above) |
+| Apps home on a return visit (website) | skeleton until the read returns | cards at once from last known basics; the read is quiet |
+| App reload on the website | an empty busy area until the app resolves | its name (and tab names, for standard trackers) at once |
+| Web process memory with both widget resources and the frame loaded | 173 MB resident, 58 MB heap | 161 MB resident, 55 MB heap |
+| Compression cost per large response (one core) | none | 29 ms for the 1.67 MB widget resource, 21 ms for the 1.0 MB website script (Brotli 4); both are cached by browsers for good |
+
+Not measured: whether Render compressed responses at its edge before this change (if it did, the wire columns' "before" overstate the gain), and anything in the real hosts.
+
+**Budgets enforced by tests.** `tests/loading-speed-return.test.ts` fails the build when last known basics hold a record, a miniature or a draft, are shown to another person, survive sign-out, exceed 12 KB for 20 cards, or fail when storage is refused. It also fails when `dist/embed.html` exceeds 1.65 MB or the second part 300 KB, when a page of the second part is found in the widget file or the first screen's text is missing from it, when the second part's address is not public, exact, immutable and compressed, or `read_widget_part` returns anything else, when the single-file switch leaves a second file, when the Claude resource carries the font twice or exceeds 2.55 MB, and when any static or list response checked there is uncompressed or cached differently from the table above. `tests/visual/return-visits.spec.cjs` holds the second part's download open (from the platform origin, then through the assistant) and Home's checking read open, and checks that the loading bar stays hidden, that a page opened early shows its frame and joins the one download, that Retry works when both ways fail, and that an app reload shows its last known name.
+
+**Still open.** Whether ChatGPT and Claude load the second part and card images from the platform origin, and whether they allow storage in the widget (owner checklist A and C). The app runtime, its layout editor, the approval footer and the styles stay in part one, because the first screen uses them.
+
+## Loading speed, L1.5 finished: the website's main script split (23 November 2026)
+
+Package L1.5 of the [loading speed scope](scopes/LOADING_SPEED_2026-11-22.md), finished after session L4.
+
+**What changed.** The website's main script now holds what the Apps page and an app's first screen need. Every other signed-in page (templates, automations, connectors, logs, database, settings, access, creation, the legacy record and document dialogs, Home's non-app screens, an app's access screen and connector review) is one chunk, `src/web/late-pages.ts`. It is downloaded quietly once Home's cards or an app's first screen are shown (`src/shared/first-screen.ts`), or after 3 s when the first page is another one. A page opened before it arrives shows its heading and a quiet placeholder and fills in when it arrives. If the chunk fails, Retry reloads the page: Chromium keeps a failed `import()` of the same address, and after a release a page left open would ask for an address that no longer exists. Pages with their own address (a shared app, joining an app or a workspace, a form, an exchange) are their own chunk, `src/web/route-pages.ts`, started as soon as the main script runs on those addresses. The Apps page never loads it. zod's translations are left out of the website, as L3.6 did for the widget. The shared helper is `src/shared/lazy-page.tsx` (the widget's frames now come from it too).
+
+**Lab numbers.** Byte counts are from the build, compressed sizes are Brotli level 4 (what the server sends). Timings: the browser-test server on this machine, `origin/main` and this branch side by side, a fresh browser context per run, 4× CPU throttling, time from navigation to the first Apps card. Medians: 21 runs without network limits, 7 runs at 1.6 Mbit/s with 150 ms latency.
+
+| Measure | Before | After |
+| --- | --- | --- |
+| Main script `assets/index-*.js` | 1,018,099 bytes (278,393 compressed) | 700,026 bytes (200,617 compressed) |
+| Other signed-in pages, after the first screen | in the main script | `late-pages-*.js` 265,717 bytes (69,472 compressed) plus `Invitations-*.js` 12,045 bytes (4,083) |
+| Pages with their own address | in the main script | `route-pages-*.js` 47,535 bytes (12,841 compressed), on those addresses only |
+| Script on the wire when the first Apps card shows | 279,765 bytes | 201,998 bytes |
+| First Apps card, no network limit | 902 ms | 880 ms (within noise) |
+| First Apps card at 1.6 Mbit/s, 150 ms latency | 2,872 ms | 2,439 ms |
+
+**Budgets enforced by tests.** `tests/loading-speed-website.test.ts` fails the build when the main script exceeds 730 KB or the second chunk 320 KB, when a page of the second chunk is found in the main script or the first screen's text is missing from it, when `index.html` preloads a later chunk, or when any chunk carries zod's translations. `tests/visual/website-split.spec.cjs` holds the second chunk open and checks that it starts by itself after the cards without the loading bar, that a page opened early shows its frame and joins the one download, that the Apps page never loads the address pages' chunk, and that Retry recovers from a failed chunk.
+
+**Still open.** The styles are still one file (207 KB, 38 KB compressed), because the first screens use most of them. Production numbers before and after remain owner action 7.1.
+

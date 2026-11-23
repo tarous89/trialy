@@ -1,3 +1,52 @@
+## 23 November 2026 — Loading speed: the website's main script split (L1.5 finished)
+
+The last open item of [loading speed](docs/scopes/LOADING_SPEED_2026-11-22.md) package L1.5.
+
+- **Smaller first download.** The website now downloads only what the Apps page and an app's first screen need: 200 KB of script instead of 278 KB (compressed). Every other page arrives in one quiet download once the first screen is shown. A page opened before then shows its heading at once and fills in. If that download fails, Retry reloads the page.
+- **Pages with their own address** (shared apps, invitations, forms, exchanges) load their own part only on those addresses.
+- **Validation translations** the website never shows are left out (as in the plugins).
+
+On a slow connection (1.6 Mbit/s) the first Apps card appeared in 2.4 s instead of 2.9 s in the lab. Tests: `loading-speed-website`, browser tests in `website-split`.
+
+## 23 November 2026 — Loading speed, session L4: instant return visits and capacity
+
+Last of four build sessions of the [loading speed scope](docs/scopes/LOADING_SPEED_2026-11-22.md). Package numbers refer to that scope.
+
+- **Last known basics (L4.1).** Coming back to Apps home shows the cards and the archived count at once, marked "Checking for changes…", while a quiet read checks them. Templates and an app's name and tab names are remembered the same way. Only names, kinds, dates and counts are kept, never records, for one person on one device; they are cleared on sign-out or when someone else signs in. In ChatGPT and Claude this works only where the host allows storage.
+- **Compression and caching (L4.2).** Pages, scripts, lists and plugin responses are compressed: the website script travels as 279 KB instead of 1.0 MB. Caching was checked and left as it was: lists and account data are never cached.
+- **Capacity (L4.3).** A recommendation for the owner: a larger database plan now, and a rule for the web plan once production numbers exist ([owner actions](docs/scopes/LOADING_SPEED_L4_OWNER_ACTIONS.md)). Nothing changed in hosting.
+- **Real-host checklist (L4.4).** A checklist for ChatGPT and Claude on desktop and phone, including whether each host loads images and code from the platform ([owner actions](docs/scopes/LOADING_SPEED_L4_OWNER_ACTIONS.md)).
+- **Widget in two parts (L4.5).** The plugin widget now holds only what its first screen needs. Templates, automations, connectors, logs, the database, an app's access settings and Home's other screens arrive in one quiet download right after: from the platform, otherwise through the assistant, otherwise with a Retry. A page opened before the download finishes shows its heading at once. A build switch puts everything back into one file.
+- **One font in Claude (L4.6).** Claude's inline app frame uses the widget's font instead of carrying a second copy; with the split, the Claude resource is about 720 KB smaller.
+
+The app runtime, layout editor, approval footer and styles stay in the widget file because the first screen uses them. Not tested: anything in the real ChatGPT and Claude. Tests: `loading-speed-return`, browser tests in `return-visits`, updated `claude-connector`.
+
+## 23 November 2026 — Loading speed, session L3: templates and the plugin path
+
+Third of four build sessions of the [loading speed scope](docs/scopes/LOADING_SPEED_2026-11-22.md). Package numbers refer to that scope.
+
+- **Template list by fingerprint (L3.1).** The template list is one database query and carries a fingerprint of the catalog. Coming back to the templates shows the list already held at once and checks the fingerprint quietly; while the catalog is unchanged the answer is 63 bytes instead of 22 KB and no template is read again.
+- **Card images at card size (L3.2).** Cards use 720×480 images (about 40 KB instead of 115 KB), kept by the browser for good under the template's fingerprint.
+- **Plugin card images (L3.3).** The ChatGPT and Claude widget loads card images directly from the platform where the host allows it; otherwise the cards on screen come in one batched request, and if that fails each card is read on its own as before. Before, every card was its own request through the assistant.
+- **Previews ready on hover (L3.4).** Hovering or focusing a card prepares its interactive preview quietly; previews are kept by fingerprint.
+- **Lighter plugin requests (L3.5).** A tool list is answered from a prepared list; a tool call builds only its own tool group instead of about 200 tools. Who may do what is still worked out on every request.
+- **Smaller widget (L3.6).** The plugin widget went from 2.57 MB to 1.84 MB: validation translations it never shows and full-size logos are gone.
+
+Not built: keeping the template list across page loads (L4.1) and splitting the largest tool group. Owner decisions for the widget: the font stays inside it; pages the first screen does not show load together right after it (L4.5); Claude's inline app frame stays without its second font copy (L4.6). Tests: `loading-speed-templates`, browser tests in `template-loading`, updated `embedded-shell` and `platform-catalog`.
+
+## 22 November 2026 — Loading speed, session L2: individual apps
+
+Second of four build sessions of the [loading speed scope](docs/scopes/LOADING_SPEED_2026-11-22.md). Package numbers refer to that scope.
+
+- **One pass per open (L2.1).** Opening an app works out the person's access once for the whole request and reuses it for every check and read; every reused result is still checked again before the screen is sent, and nothing is kept between requests. An app's tables are looked up together. Opening Runway went from 596 database queries to 58; a member's from 679 to 63.
+- **App code once (L2.2).** The app frame no longer receives an app's code again with its first click. Opens carry what the frame needs to run the app itself, so the first click runs in the browser; the code is taken from the app already loaded, or fetched once by its fingerprint (cached by the browser on the website, cleared on sign-out).
+- **Other tabs ready (L2.4).** After Overview, every other tab of a tracker (and every linked screen of a browser-run app) is prepared quietly, nearest first, paused while the page is hidden or a save runs.
+- **Opening from a card (L2.5).** The app's name and frame appear at once; the website fetches the app frame ahead while Apps is idle.
+- **Plugins (L2.6).** `open_app` carries the first screen for the widget only, so ChatGPT and Claude show the app without asking again, and no longer wait for the account or table list.
+- **Server-mode report (L2.7).** `npm run apps:runtime-report` lists which installed apps run in the browser and why the others do not.
+
+Not built: sending app data without the app's code in its metadata, making the first screen in the browser (L2.3), preparing the engine ahead. Tests: `loading-speed-apps`.
+
 ## 22 November 2026 — Loading speed, session L1: Apps home and archived apps
 
 First of four build sessions of the [loading speed scope](docs/scopes/LOADING_SPEED_2026-11-22.md). Package numbers refer to that scope.
