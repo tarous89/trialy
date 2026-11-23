@@ -10,17 +10,17 @@ const palettes=[
  ['#f4e5e4','#e2bdb6','#88534c'],
  ['#e2efef','#afd2d2','#31686d'],
 ] as const;
-/** An app keeps its identity across renames, moves and refreshes. No app code runs here. */
+/** An app keeps its identity across renames, moves and refreshes. No app code runs and nothing is fetched here. */
 function identity(r:HomeResource){let h=2166136261;for(const c of r.id)h=Math.imul(h^c.charCodeAt(0),16777619)>>>0;return h;}
 export function appAppearance(r:HomeResource):React.CSSProperties{
  const h=identity(r),[paper,tint,ink]=palettes[h%palettes.length];
  return {'--app-paper':paper,'--app-tint':tint,'--app-ink':ink,'--app-angle':`${110+h%100}deg`,'--tool-tone':ink} as React.CSSProperties;
 }
-export function AppCover({resource:r,children}:{resource:HomeResource;children:React.ReactNode}){
+/** The card's cover: a fixed colorful design with the app's initials and name, drawn at once from the list read. */
+export function AppCover({resource:r}:{resource:HomeResource}){
  const motif=identity(r)%4;
  const initials=r.name.trim().split(/\s+/).slice(0,2).map(word=>Array.from(word)[0]??'').join('').toLocaleUpperCase();
- const hasSnapshot=!!r.preview||!!r.snapshot?.columns.length;
- return <div className={`ty-app-cover ty-app-cover--${motif} ${hasSnapshot?'has-snapshot':'has-monogram'}`}>
+ return <div className={`ty-app-cover ty-app-cover--${motif} has-monogram`}>
   <svg className="ty-app-cover-art" viewBox="0 0 320 180" fill="none" aria-hidden="true">
    {motif===0?<g>{[36,64,92,120].map(radius=><circle key={radius} cx="257" cy="48" r={radius}/>)}</g>
     :motif===1?<g transform="rotate(-28 220 90)">{[0,1,2,3].map(i=><rect key={i} x={130+i*28} y="-35" width="20" height="255" rx="10"/>)}</g>
@@ -28,6 +28,6 @@ export function AppCover({resource:r,children}:{resource:HomeResource;children:R
     :<g>{[0,1,2,3,4].map(i=><path key={i} d={`M${140+i*26} -20 C${20+i*26} 95 ${340+i*26} 90 ${170+i*26} 220`}/>)}</g>}
   </svg>
   <span className="ty-app-cover-mark">{initials||'A'}</span>
-  {hasSnapshot?<div className="ty-app-cover-window">{children}</div>:<span className="ty-app-cover-wordmark">{r.name}</span>}
+  <span className="ty-app-cover-wordmark">{r.name}</span>
  </div>;
 }

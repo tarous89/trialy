@@ -86,7 +86,11 @@ test('Collapsed archives defer details, recover from failures and ignore late ex
  const reply=page.waitForResponse(r=>r.url().includes('/organization/archived')&&!r.url().includes('summaryOnly'));finish();await reply;
  await expect(page.getByRole('button',{name:'Show archived apps (1)',exact:true})).toBeVisible();await expect(page.getByText('Archived fixture',{exact:true})).toHaveCount(0);
  await page.getByRole('button',{name:'Show archived apps (1)',exact:true}).click();await expect(page.getByText('Archived fixture',{exact:true})).toBeVisible();expect(details).toBe(3);
- await page.reload();await expect(page.getByText('Archived fixture',{exact:true})).toBeVisible();expect(details).toBe(4);
+ // Archived apps are hidden by default: a reload starts collapsed and asks for no details. Expanding asks for names only.
+ await page.reload();await expect(page.getByRole('button',{name:'Show archived apps (1)',exact:true})).toBeVisible();await expect(page.getByText('Archived fixture',{exact:true})).toHaveCount(0);expect(details).toBe(3);
+ const brief=page.waitForRequest(r=>r.url().includes('/organization/archived')&&r.url().includes('brief=true'));await page.getByRole('button',{name:'Show archived apps (1)',exact:true}).click();await brief;await expect(page.getByText('Archived fixture',{exact:true})).toBeVisible();expect(details).toBe(4);
+ // Plain text rows: the name, then Restore and Delete as text links; no Archived tag or details.
+ const archivedRow=page.locator('.ty-archived-item').filter({hasText:'Archived fixture'});await expect(archivedRow.locator('.ty-archived-badge,.ty-archived-meta')).toHaveCount(0);await expect(archivedRow.getByRole('button')).toHaveText(['Restore','Delete']);
 });
 
 test('Expanded archives retain real restore and permanent-delete workflows',async({page})=>{
@@ -96,7 +100,7 @@ test('Expanded archives retain real restore and permanent-delete workflows',asyn
  await archive();await openPlatform(page,base+'/app-home');await page.getByRole('button',{name:/^Show archived apps/}).click();
  const row=page.locator('.ty-archived-item').filter({hasText:'Generic layout fixture'});await row.getByRole('button',{name:'Restore',exact:true}).click();await expect(row).toHaveCount(0);
  await expect(page.getByRole('link',{name:'Open Generic layout fixture',exact:true})).toBeVisible();
- await archive();await page.reload();await row.getByRole('button',{name:'Delete',exact:true}).click();
+ await archive();await page.reload();await page.getByRole('button',{name:/^Show archived apps/}).click();await row.getByRole('button',{name:'Delete',exact:true}).click();
  const confirm=page.getByRole('alertdialog');await expect(confirm).toContainText('Deleting this app keeps its');await confirm.getByRole('button',{name:'Delete permanently',exact:true}).click();await expect(row).toHaveCount(0);
  const remaining=await call('list_archived_items',{kind:'apps'});expect(remaining.items.some(i=>i.id===f.id)).toBe(false);
 });
