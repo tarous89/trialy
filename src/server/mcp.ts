@@ -1,3 +1,4 @@
+import {applyAnnotationPolicy} from './tool-annotations.js';
 import {accountHome} from '../workspace/home.js';
 import {EARLY_HOME} from '../shared/early-reads.js';
 import {importReport} from '../domain/import-report.js';
@@ -43,6 +44,7 @@ export function addMcp(app:Express,s:Service,authenticate:RequestHandler,options
  const isCreate=(req:any)=>req.body?.method==='tools/call'&&req.body?.params?.name==='preview_tracker';
  const handler=async(req:any,res:any)=>{
   const actor=req.actor!;const server=new McpServer({name:'trialagents',title:'TrialAgents',version:'0.2.56'},{instructions:claude?claudeServerInstructions:serverInstructions});
+  applyAnnotationPolicy(server);
   if(claude)preferFullscreen(server);
   addTrackerDesignMcp(server);
   addWorkspaceGuidanceMcp(server);
