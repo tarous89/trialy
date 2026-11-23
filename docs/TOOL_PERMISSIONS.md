@@ -43,20 +43,39 @@ created before this change: their saved instructions name those tools.
 Not done, on purpose: hiding the code lab from Claude and removing legacy tools. They are rarely or never called, so
 they cause almost no prompts, and hiding the code lab would remove a capability.
 
+## Step 3, done: approval screen, automations first
+
+The person, not the assistant, now approves automation reviews (runner setup, research, app actions, switching a saved
+automation on or off, app automation features). `confirm_app_service_review` is app-only: only the review page calls it.
+
+- **Assistant flow**: prepare the review, then `show_review` (read-only, opens the exact review in the extension; it
+  returns the website `reviewUrl` for hosts without an extension). Preparation results carry
+  `nextAction: show_review`. `list_waiting_reviews` (read-only) lists what is waiting.
+- **Approval footer** (`src/shared/PendingChanges.tsx`, every host): besides app changes it lists automation reviews an
+  assistant prepared that are unsaved and unexpired, with Review/Open and Decline. Review opens the review page; Approve
+  stays on that page, next to the exact details, so nothing is approved blind.
+- **Review page**: the existing `AppServicesPanel` on the website (`?tab=apps&serviceReview=`) and, in the extension, as
+  a late-loaded page (`view==='review'`). In the extension the page reads the exact review text before confirming, with
+  the digest the person saw.
+- **Decline**: `decline_app_service_review` (app-only) and `DELETE …/app-services/reviews/:id` remove an unsaved review;
+  a saved one is never removed. `ops/runtime-role.sql` grants DELETE on `app_service_previews` for this.
+- Guides updated: `SHARED_AUTOMATIONS.md` (guide 1.7.0), `WORKSPACE.md`, `APP_SERVICES.md`, `APP_REFERENCE.md`, tool
+  descriptions, server instructions, plugin skill tool list. Template sources (`investor-updates`, `investor-crm`) still
+  name `confirm_app_service_review` as the step "a person approves"; that stays true and is left for their next release.
+
 ## Next steps
 
-1. **Saves through the approval footer.** Make `confirm_workspace_change`, `confirm_execution_control`,
-   `confirm_code_changes`, `confirm_function`, `confirm_execution_grant`, `confirm_code_schedule`,
-   `confirm_app_service_review` and `migrate_legacy_monitor` app-only, as `approve_workspace_change` already is. This needs
-   a new screen first: the footer only shows app changes today, so workspace setup changes, code-lab reviews and
-   automation reviews that the assistant prepared have no place where the person sees and approves them, in the
-   extension or on the website. Build a general "waiting for your approval" card (exact details, Approve/Decline) in the
-   footer and on the website, then hide the tools and update the guides, skills and tests.
+1. **Approval screen, other reviews.** Same pattern for workspace changes that are not apps (`confirm_workspace_change`:
+   form links, tracking setup, table mappings), the code lab (`confirm_execution_control`, `confirm_code_changes`,
+   `confirm_function`, `confirm_execution_grant`, `confirm_code_schedule`) and `migrate_legacy_monitor`: list them in the
+   footer, give each a review page with its exact details, then make the tools app-only.
 2. **Data saves stay with the assistant.** Access decides what the assistant may change, so `commit_change` stays callable
    by the model; optionally merge it with `maintain_workspace_records` and writing `invoke_function` into one
    `apply_change`, so a host approves one data tool.
 3. **App-only writes.** Check in both hosts whether calls from the app frame prompt; `set_app_context` and
    `run_component_frontend` only change what is on screen and can be read-only.
+4. **Live check.** In Claude and ChatGPT: prepare an automation, confirm `show_review` opens the review in the extension,
+   approve it there, and confirm no host prompt appeared.
 
-Floor: no prompts for reads, previews, opening views and app changes; one approved tool for data changes the person
-allowed under Access; one for the background runner.
+Floor: no prompts for reads, previews, opening views, app changes and automation approvals; one approved tool for data
+changes the person allowed under Access; one for the background runner.

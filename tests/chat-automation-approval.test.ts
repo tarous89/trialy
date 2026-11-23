@@ -60,7 +60,7 @@ test('ChatGPT confirms exact automation reviews under the real AI identity and r
  let runner:any,monitor:any,action:any;
  await t.test('new tools are quiet and require explicit confirmed exact review; setup replay is idempotent',async()=>{
   const tools=(await rpc('tools/list')).result.tools,tool=tools.find((v:any)=>v.name==='confirm_app_service_review');
-  assert.equal(tool.annotations.readOnlyHint,false);assert.equal(tool.annotations.idempotentHint,true);assert.equal(tool._meta['openai/outputTemplate'],'ui://test');assert.ok(tool.inputSchema.required.includes('review'));assert.ok(tool.inputSchema.required.includes('confirmed'));
+  assert.equal(tool.annotations.readOnlyHint,false);assert.equal(tool.annotations.idempotentHint,true);assert.equal(tool._meta['openai/outputTemplate'],'ui://test');assert.deepEqual(tool._meta.ui.visibility,['app'],'the person approves on the review page; the assistant cannot');assert.ok(tool.inputSchema.required.includes('review'));assert.ok(tool.inputSchema.required.includes('confirmed'));
   const p=saved(await call('prepare_automation_setup',{preferences:{time:'06:00',timeZone:'Europe/Berlin'}}));
   await withActor(ai,()=>assert.rejects(setup.confirm(ai,w.id,p.id,p.digest,p.review),/approve/));
   assert.equal((await confirm(p,{confirmed:false})).isError,true);
@@ -101,6 +101,25 @@ test('ChatGPT confirms exact automation reviews under the real AI identity and r
   action=saved(await confirm(p));assert.equal(action.screen,'automations');assert.equal(action.workspaceId,w.id);assert.equal((await pg.query<any>('SELECT paused FROM app_actions WHERE id=$1',[action.id])).rows[0].paused,false);assert.deepEqual(saved(await confirm(p)),action);
   assert.equal((await pg.query<any>('SELECT count(*) AS n FROM app_service_jobs')).rows[0].n,0);
   assert.equal((await pg.query<any>('SELECT count(*) AS n FROM app_action_runs')).rows[0].n,0);
+ });
+ await t.test('approval screen: waiting reviews, show_review and Decline; the assistant cannot approve',async()=>{
+  const tools=(await rpc('tools/list')).result.tools,find=(n:string)=>tools.find((v:any)=>v.name===n);
+  assert.equal(find('show_review').annotations.readOnlyHint,true,'showing a review never asks the host');assert.equal(find('show_review')._meta['openai/outputTemplate'],'ui://test','it opens the extension');
+  assert.equal(find('list_waiting_reviews').annotations.readOnlyHint,true);assert.deepEqual(find('decline_app_service_review')._meta.ui.visibility,['app']);
+  const p=saved(await call('prepare_app_action',{config:{appId:app.id,appVersion:0,name:'Waiting follow-up',trigger:{kind:'manual'},expiresAt:'2099-01-01T00:00:00Z',steps:[{id:'email',kind:'email',to:'account',subject:'Waiting',text:'Waiting'}]}}));
+  assert.deepEqual(p.nextAction,{operation:'show_review',arguments:{workspaceId:w.id,reviewId:p.id},when:p.nextAction.when},'preparation points the assistant at show_review');
+  const waiting=saved(await call('list_waiting_reviews',{})),row=waiting.find((r:any)=>r.reviewId===p.id);
+  assert.deepEqual({...row,expiresAt:undefined},{reviewId:p.id,digest:p.digest,kind:'action',title:'App action: Waiting follow-up',assistant:'chatgpt',expiresAt:undefined});
+  assert.ok(!waiting.some((r:any)=>r.reviewId===action.id),'a saved review is not waiting');
+  const shown=saved(await call('show_review',{reviewId:p.id}));assert.equal(shown.screen,'review');assert.equal(shown.reviewId,p.id);assert.match(shown.reviewUrl,new RegExp('serviceReview='+p.id));
+  saved(await call('decline_app_service_review',{reviewId:p.id}));
+  assert.ok(!saved(await call('list_waiting_reviews',{})).some((r:any)=>r.reviewId===p.id),'a declined review leaves the list');
+  assert.equal((await call('show_review',{reviewId:p.id})).isError,true);assert.equal((await confirm(p)).isError,true,'a declined review cannot be approved');
+  const done=(await pg.query<any>("SELECT id FROM app_service_previews WHERE consumed_at IS NOT NULL LIMIT 1")).rows[0];
+  assert.equal((await call('decline_app_service_review',{reviewId:done.id})).isError,true,'a saved review is never removed');
+  const human=await withActor(owner,()=>actions.prepare(owner,w.id,{config:{...p.body.config,name:'Made by the person'}}));
+  assert.ok(!saved(await call('list_waiting_reviews',{})).some((r:any)=>r.reviewId===human.id),'a review the person made themselves is not waiting for them');
+  await withActor(owner,()=>new AppActions(db).decline(owner,w.id,human.id));
  });
  await t.test('audit retains AI origin; no human impersonation',async()=>{
   const rows=(await pg.query<any>("SELECT action,origin FROM audit_events WHERE action IN ('automation.setup_approved','monitoring.authorized','app_action.authorized') ORDER BY action")).rows;

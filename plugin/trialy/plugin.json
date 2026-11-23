@@ -58,7 +58,7 @@
             {
               "description": "Saved tracker in a dedicated test account with the subscription/host capabilities required for shared runner setup. Email goes only to that test account.",
               "prompt": "Update my outreach tracker every Friday at 09:00 Europe/Berlin with new eligible companies, then email me when the update completes.",
-              "tools_triggered": "open_app, list_app_automations, read_app_automation_guide, read_automation_setup, prepare_automation_setup if needed, prepare_app_monitoring, prepare_app_action, confirm_app_service_review, read_app_automation_readiness",
+              "tools_triggered": "open_app, list_app_automations, read_app_automation_guide, read_automation_setup, prepare_automation_setup if needed, prepare_app_monitoring, prepare_app_action, show_review, read_app_automation_readiness",
               "expected_behavior": "Reconcile existing definitions and shared runner. Save enabled Friday research and a completion-triggered email to account, using exact reviewed scope. Check readiness including every required action ID. If host setup or permissions block activation, report the specific blocker and preserve the saved app. Never substitute per-app host tasks or claim delivery from setup alone."
             }
           ],
