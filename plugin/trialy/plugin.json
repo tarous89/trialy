@@ -40,19 +40,19 @@
             {
               "description": "Connected clean test tenant; no company/contact tables. Synthetic business data only.",
               "prompt": "Build and save a company outreach tracker with linked companies and contacts, status filters and follow-up dates.",
-              "tools_triggered": "open_workspace, read_workspace_guide, read_account_home, list_app_templates, read_app_design, read_app_template_guidance, read_app_template, prepare_app_from_template (or prepare_tracker when that is the selected design), finalize_app_preview, confirm_workspace_change, open_workspace",
+              "tools_triggered": "open_workspace, read_workspace_guide, read_account_home, list_app_templates, read_app_design, read_app_template_guidance, read_app_template, prepare_app_from_template (or prepare_tracker when that is the selected design), finalize_app_preview, open_workspace",
               "expected_behavior": "Use a suitable current template and real relationship bindings. Prepare one request-keyed draft; finalize once; save the exact finalized digest within this request. Return a save receipt and one app on Home. Examples stay unsaved; schema and app commit together."
             },
             {
               "description": "Connected test tenant; no existing app with this purpose. No stored business data is needed.",
               "prompt": "Build and save a simple calculator that estimates project cost from hours and hourly rate.",
-              "tools_triggered": "open_workspace, read_workspace_guide, read_account_home, list_app_templates, read_app_design, read_app_template_guidance, read_tracker_design, prepare_app, finalize_app_preview, confirm_workspace_change, open_workspace",
+              "tools_triggered": "open_workspace, read_workspace_guide, read_account_home, list_app_templates, read_app_design, read_app_template_guidance, read_tracker_design, prepare_app, finalize_app_preview, open_workspace",
               "expected_behavior": "If no template fits, create an isolated custom app with empty data bindings. Supported controls calculate from user input. No separate authentication, invented connector or unnecessary table. Validate, finalize and save one app."
             },
             {
               "description": "Use the saved company tracker from the second case; add synthetic records first through reviewed changes. Capture app ID/version, field IDs and record values before revision.",
               "prompt": "Rename the Status column label to Outreach stage and keep everything else the same. Save the change.",
-              "tools_triggered": "open_app, read_app, read_workspace_guide, begin_app_update, prepare_tracker_revision (or prepare_app for an existing custom app), finalize_app_preview, confirm_workspace_change, open_workspace",
+              "tools_triggered": "open_app, read_app, read_workspace_guide, begin_app_update, prepare_tracker_revision (or prepare_app for an existing custom app), finalize_app_preview, open_workspace",
               "expected_behavior": "Preserve app ID, records, field keys/types, access and unrelated appearance. Prepare at the current version, finalize the completed revision and save its digest. Reject stale versions; never create a duplicate app for recovery."
             },
             {

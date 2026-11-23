@@ -60,7 +60,7 @@ export function foundationClient(api:(path:string,method?:string,body?:unknown,o
  read_app_automation_feature_contexts:[`${services}/automations/features/contexts?appId=${v.appId}&key=${encodeURIComponent(v.key)}&offset=${v.offset??0}`],
  read_app_automation_features:[`${services}/automations/features?appId=${v.appId}`],
  prepare_app_automation_feature:[`${services}/automations/features/prepare`,'POST',clean],
- list_waiting_reviews:[`${services}/waiting-reviews`],decline_app_service_review:[`${services}/reviews/${v.reviewId}`,'DELETE'],
+ list_waiting_reviews:[`/api/workspaces/${v.workspaceId}/waiting-reviews`],read_waiting_review:[`/api/workspaces/${v.workspaceId}/waiting-reviews/${v.source}/${v.reviewId}`],approve_waiting_review:[`/api/workspaces/${v.workspaceId}/waiting-reviews/${v.source}/${v.reviewId}/approve`,'POST',{digest:v.digest,confirmed:true}],decline_waiting_review:[`/api/workspaces/${v.workspaceId}/waiting-reviews/${v.source}/${v.reviewId}`,'DELETE'],
  read_app_service_review:[`${services}/reviews/${v.reviewId}`],
  confirm_app_service_review:[`${services}/reviews/${v.reviewId}/confirm`,'POST',{digest:v.digest,confirmed:true}],
  list_app_actions:[`${services}/actions?appId=${v.appId??''}&offset=${v.offset??0}`],

@@ -27,6 +27,14 @@ export const NON_DESTRUCTIVE_WRITE_TOOLS:ReadonlySet<string>=new Set(['cancel_co
 /** Writes that stay inside the person's own TrialAgents account (no public internet, no outside recipients). */
 export const CLOSED_WORLD_TOOLS:ReadonlySet<string>=new Set(['confirm_app_service_review','connect_claude_runner']);
 
+/** Saves only the person makes, on a TrialAgents review page (the approval screen, docs/TOOL_PERMISSIONS.md): the host
+ * hides them from the assistant, which prepares the review and calls show_review. The review pages, app frames and the
+ * website still call them. confirm_app_service_review and approve_workspace_change are app-only where they are registered. */
+export const PERSON_ONLY_SAVE_TOOLS:ReadonlySet<string>=new Set([
+ 'confirm_workspace_change','confirm_execution_control','confirm_code_changes','confirm_function','confirm_execution_grant','confirm_code_schedule','migrate_legacy_monitor',
+]);
+const PERSON_ONLY_NOTE='On a TrialAgents review page only, with the person\u2019s click; not available to the assistant, which prepares the change and calls show_review. ';
+
 export function correctedAnnotations(name:string,annotations:Record<string,unknown>|undefined){
  if(!annotations)return annotations;
  if(PREVIEW_ONLY_TOOLS.has(name))return {...annotations,readOnlyHint:true,destructiveHint:false,openWorldHint:false};
@@ -39,5 +47,9 @@ export function correctedAnnotations(name:string,annotations:Record<string,unkno
 /** Applies the policy to every tool registered on this server afterwards. */
 export function applyAnnotationPolicy(server:McpServer){
  const register=server.registerTool.bind(server) as any;
- (server as any).registerTool=(name:string,config:any,handler:any)=>register(name,config?.annotations?{...config,annotations:correctedAnnotations(name,config.annotations)}:config,handler);
+ (server as any).registerTool=(name:string,config:any,handler:any)=>{
+  let next=config?.annotations?{...config,annotations:correctedAnnotations(name,config.annotations)}:config;
+  if(PERSON_ONLY_SAVE_TOOLS.has(name))next={...next,description:PERSON_ONLY_NOTE+(next?.description??''),_meta:{...next?._meta,ui:{...next?._meta?.ui,visibility:['app']}}};
+  return register(name,next,handler);
+ };
 }

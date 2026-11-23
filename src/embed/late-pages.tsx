@@ -9,6 +9,7 @@ export {EmbeddedConnectors} from './Connectors.js';
 export {AutomationsPage} from '../shared/AutomationsPage.js';
 // Approval screen: an automation review the assistant prepared, with its exact details and Approve.
 export {AppServicesPanel} from '../shared/AppServicesPanel.js';
+export {WaitingReviewPage} from '../shared/WaitingReviewPage.js';
 export {CreationCenter} from '../shared/CreationCenter.js';
 export {LogsPanel} from '../shared/LogsPanel.js';
 export {DatabasePanel} from '../shared/DatabasePanel.js';

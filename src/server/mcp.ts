@@ -1,4 +1,5 @@
 import {applyAnnotationPolicy} from './tool-annotations.js';
+import {addWaitingReviewsMcp} from './waiting-reviews.js';
 import {widgetPart,WIDGET_PART_FILE} from './widget-parts.js';
 import {accountHome} from '../workspace/home.js';
 import {EARLY_HOME} from '../shared/early-reads.js';
@@ -70,6 +71,7 @@ export function addMcp(app:Express,s:Service,authenticate:RequestHandler,options
   const result=(data:unknown)=>({content:[{type:'text' as const,text:JSON.stringify(data)}],structuredContent:{result:data}});
   const safe=(fn:(v:any,extra?:{signal?:AbortSignal})=>Promise<any>)=>async(v:any,extra?:{signal?:AbortSignal})=>{try{if(!actor)return {isError:true,content:[{type:'text' as const,text:'Connect your TrialAgents account to access saved work.'}],_meta:{'mcp/www_authenticate':[`Bearer resource_metadata="${oauthPublicUrl(process.env,PLATFORM_ORIGIN)}/.well-known/oauth-protected-resource/mcp"`]}};return result(await fn(v,extra));}catch(e){return {isError:true,structuredContent:{error:{status:e instanceof AppError?e.status:500,code:e instanceof AppError?e.code:'internal',...(e instanceof AppError&&e.details?{details:e.details}:{})}},content:[{type:'text' as const,text:e instanceof AppError?e.message:'The action could not complete. Check its status before retrying.'}]};}};
   sections.run('automations',()=>addAutomationMcp(server,s.db,actor,safe,metadata));
+  sections.run('reviews',()=>addWaitingReviewsMcp(server,s,actor,safe,metadata));
   // Guest drafts rely on ChatGPT's optional sign-in; the Claude endpoint is always signed in.
   if(!claude)sections.run('guest',()=>addGuestMcp(server,new GuestDrafts(s.db),metadata,!!actor));
   server.registerTool('approval_portal',{description:'Legacy app link. Opens Home, not a deferred review queue. Complete agreed actions with the appropriate confirmation operation; opening this link saves nothing.',inputSchema:{workspaceId:id.optional()},annotations:{readOnlyHint:true,destructiveHint:false,openWorldHint:false}},safe(async v=>({url:new URL('/?tab=home'+(v.workspaceId?'&workspaceId='+encodeURIComponent(v.workspaceId):''),appPublicUrl(process.env,PLATFORM_ORIGIN)).href})));

@@ -175,4 +175,4 @@ If a still-enabled connection temporarily loses subscription/verification, pendi
 - **What can write.** Research runs only when the running assistant's Data level is not Blocked, and saves results only with Edit. "Review each change" permissions no longer write: set the automation up again. End dates (`expiresAt`) are optional.
 - **Copies.** A copied automation has no grants and stays off until the user opens and saves it (`copy_review_required`).
 - **Schedules.** Prefer calendar schedules. The organization's minimum research interval (default 60 minutes) applies to after-success schedules and spaces database-triggered research.
-- **Older monitors.** Never create or link a per-app assistant task. Move each older monitor with `read_legacy_monitors` and `migrate_legacy_monitor` after the user agrees to its verification report.
+- **Older monitors.** Never create or link a per-app assistant task. Read each older monitor's verification report with `read_legacy_monitors`, then `show_review` with `source:"legacy_monitors"`; the person moves it on the Automations page.

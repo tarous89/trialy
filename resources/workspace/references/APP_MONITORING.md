@@ -6,7 +6,7 @@ An older monitor is one that `read_app_monitoring` reports with `scheduleManaged
 
 1. Call `read_legacy_monitors`. Each row has a verification report: the saved schedule description, the proposed TrialAgents schedule, the recipients of its email step, where it writes, and its last completed run.
 2. Show the report to the user and agree the schedule. Pass a different `trigger` only when the user chose one.
-3. With the user's agreement, call `migrate_legacy_monitor` with `confirmed:true`. A paused monitor stays paused. An enabled one stays on only when the person's background connection is ready; otherwise it is switched off with the reason.
+3. Call `show_review` with `source:"legacy_monitors"`: the Automations page opens and the person moves the monitor there (you cannot move it). A paused monitor stays paused. An enabled one stays on only when the person's background connection is ready; otherwise it is switched off with the reason.
 4. Tell the user to pause or delete the old task in the assistant. TrialAgents cannot stop it, but from now on it cannot start runs (`start_app_monitor_run` refuses a moved monitor).
 
 Until a monitor is moved, its existing runs still use the cycle below. Do not set up anything new on this path.

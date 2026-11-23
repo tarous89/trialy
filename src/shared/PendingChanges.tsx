@@ -19,8 +19,8 @@ import type {WorkspaceRequestOptions} from './workspace-request.js';
  * Save changes / Discard.
  */
 export type PendingChange={previewId:string;digest:string;componentId:string|null;name:string|null;changeClass:'new'|'revision'|'assistant';status:'ready'|'preparing'|'needs_preparing';reason?:'app_changed'|'app_unavailable'|'access_changed';assistant?:string|null;review?:{title?:string;changes?:string[]}};
-/** Approval screen: a review an assistant prepared outside an app (an automation), waiting for the person. */
-export type WaitingReview={reviewId:string;digest:string;kind:string;title:string;assistant?:string|null;expiresAt:string};
+/** Approval screen: a review an assistant prepared outside an app (automation, workspace change, code lab, code run), waiting for the person. */
+export type WaitingReview={source:'automation'|'workspace'|'code'|'run';reviewId:string;digest:string;kind:string;title:string;assistant?:string|null;expiresAt:string|null;approveWhere?:'here'|'website'};
 export type FooterReview={previewId?:string;kind:'new'|'revision'|'assistant'|'content';name?:string|null;summary?:React.ReactNode;details?:string[];
  onAction:()=>Promise<void>|void;onDismiss:()=>Promise<void>|void;disabled?:boolean;busy?:boolean;actionLabel?:string;status?:PendingChange['status']};
 export type Approve=(call:(name:string,args:any)=>Promise<any>,preview:{id:string;digest:string},label?:string)=>Promise<any|null>;
@@ -32,7 +32,7 @@ export const pendingChanged=()=>{try{window.dispatchEvent(new Event(PENDING_CHAN
 
 /** The review screen's calls: a saved or declined review leaves every footer on the page. */
 export function withReviewRefresh<T extends (name:string,args:any)=>Promise<any>>(call:T):T{
- return (async(name:string,args:any)=>{const r=await call(name,args);if(name==='confirm_app_service_review'||name==='decline_app_service_review')pendingChanged();return r;}) as T;
+ return (async(name:string,args:any)=>{const r=await call(name,args);if(['confirm_app_service_review','approve_waiting_review','decline_waiting_review'].includes(name))pendingChanged();return r;}) as T;
 }
 const ASSISTANT:Record<string,string>={chatgpt:'ChatGPT',claude:'Claude'};
 export function footerLabels(kind:FooterReview['kind'],name?:string|null){
@@ -65,7 +65,7 @@ export function PendingChangesProvider({children,call,workspaceId,onOpen,onOpenR
   return()=>{returned.dispose();window.removeEventListener(PENDING_CHANGED,refresh);window.removeEventListener('focus',again);document.removeEventListener('visibilitychange',again);};
  },[refresh,read]);
  const discard=useCallback(async(c:PendingChange)=>{await call('discard_workspace_preview',{workspaceId,previewId:c.previewId});pendingChanged();},[call,workspaceId]);
- const declineReview=useCallback(async(r:WaitingReview)=>{await call('decline_app_service_review',{workspaceId,reviewId:r.reviewId});pendingChanged();},[call,workspaceId]);
+ const declineReview=useCallback(async(r:WaitingReview)=>{await call('decline_waiting_review',{workspaceId,source:r.source,reviewId:r.reviewId});pendingChanged();},[call,workspaceId]);
  const [popup,setPopup]=useState<{kind:'app'|'change';step:any;label:string;resolve:(choices:any|null)=>void}|null>(null);
  const approve=useCallback<Approve>((send,preview,label='Install')=>approveWithReview(send,preview,(kind,step)=>new Promise(resolve=>setPopup({kind,step,label,resolve}))),[]);
  const value=useMemo(()=>({changes,refresh,review,setReview,open:onOpen,discard,approve,reviews,openReview:onOpenReview,declineReview}),[changes,refresh,review,onOpen,discard,approve,reviews,onOpenReview,declineReview]);
@@ -130,7 +130,7 @@ export function PendingChangesFooter(){
  const more=count>0&&<div className="ty-pending-more">
   <button type="button" className="ty-pending-more-toggle" aria-expanded={list} onClick={()=>setList(!list)}>{review?`${count} more pending ${count===1?'change':'changes'}`:count===1?'1 pending change':`${count} pending changes`}</button>
   {list&&<ul aria-label="Pending changes">{others.map(c=>{const l=footerLabels(c.changeClass,c.name);return <li key={c.previewId}><span>{l.title}{c.assistant&&c.changeClass!=='new'?` · prepared by ${ASSISTANT[c.assistant]??c.assistant}`:''}{c.status==='needs_preparing'?' · needs preparing again':c.status==='preparing'?' · still being prepared':''}</span>
-   <span className="ty-pending-actions">{value.open&&c.status!=='needs_preparing'&&<Button disabled={busy} onClick={()=>{setList(false);value.open!(c);}}>Open</Button>}<Button disabled={busy} onClick={()=>void act(()=>value.discard(c))}>{l.dismiss}</Button></span></li>;})}{waiting.map(r=><li key={r.reviewId}><span>{r.title}{r.assistant?` · prepared by ${ASSISTANT[r.assistant]??r.assistant}`:''}</span>
+   <span className="ty-pending-actions">{value.open&&c.status!=='needs_preparing'&&<Button disabled={busy} onClick={()=>{setList(false);value.open!(c);}}>Open</Button>}<Button disabled={busy} onClick={()=>void act(()=>value.discard(c))}>{l.dismiss}</Button></span></li>;})}{waiting.map(r=><li key={r.source+':'+r.reviewId}><span>{r.title}{r.assistant?` · prepared by ${ASSISTANT[r.assistant]??r.assistant}`:''}</span>
    <span className="ty-pending-actions">{value.openReview&&<Button disabled={busy} onClick={()=>{setList(false);value.openReview!(r);}}>Open</Button>}<Button disabled={busy} onClick={()=>void act(()=>value.declineReview(r))}>Decline</Button></span></li>)}</ul>}
  </div>;
  if(!review){
