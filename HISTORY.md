@@ -9,7 +9,7 @@ Third of four build sessions of the [loading speed scope](docs/scopes/LOADING_SP
 - **Lighter plugin requests (L3.5).** A tool list is answered from a prepared list; a tool call builds only its own tool group instead of about 200 tools. Who may do what is still worked out on every request.
 - **Smaller widget (L3.6).** The plugin widget went from 2.57 MB to 1.84 MB: validation translations it never shows and full-size logos are gone.
 
-Not built: keeping the template list across page loads (L4.1), splitting the largest tool group, and the widget's font, page splitting and Claude's inline app frame (owner decisions, see the scope). Tests: `loading-speed-templates`, browser tests in `template-loading`, updated `embedded-shell` and `platform-catalog`.
+Not built: keeping the template list across page loads (L4.1) and splitting the largest tool group. Owner decisions for the widget: the font stays inside it; pages the first screen does not show load together right after it (L4.5); Claude's inline app frame stays without its second font copy (L4.6). Tests: `loading-speed-templates`, browser tests in `template-loading`, updated `embedded-shell` and `platform-catalog`.
 
 ## 22 November 2026 — Loading speed, session L2: individual apps
 
