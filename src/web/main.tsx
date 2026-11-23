@@ -17,6 +17,7 @@ import {StandaloneApp,appResolveHeaders} from '../shared/StandaloneApp.js';
 import {fetchAppCode} from '../shared/app-code.js';
 import {ConnectorsPanel} from '../shared/ConnectorsPanel.js';
 import {CreationCenter} from '../shared/CreationCenter.js';
+import '../shared/app-screens-direct.js';
 import {AccessPage} from '../shared/AccessPanel.js';
 import {SupportForm} from './SupportForm.js';
 import {DatabaseAccess} from './DatabaseAccess.js';

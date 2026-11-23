@@ -1,3 +1,4 @@
+import '../../src/shared/app-screens-direct.js';
 import {AccessPanel} from '../../src/shared/AccessPanel.js';
 import React from 'react';import {createRoot} from 'react-dom/client';
 import {WorkspaceShell} from '../../src/shared/ui/WorkspaceShell.js';

@@ -25,7 +25,7 @@ import type {Actor} from '../src/shared/schema.js';
  * L4.1 last known basics hold no records and belong to one person; L4.2 static and list responses are compressed and
  * cached as they should be; L4.5 the widget is two parts, the second public, exact and also readable through the
  * assistant, with a single-file switch; L4.6 the Claude widget carries the font once. */
-const WIDGET_BYTES=1_700_000,PART_BYTES=260_000,CLAUDE_BYTES=2_550_000,BASICS_BYTES=12_000;
+const WIDGET_BYTES=1_650_000,PART_BYTES=300_000,CLAUDE_BYTES=2_550_000,BASICS_BYTES=12_000;
 const built=existsSync('dist/embed.html')&&existsSync('dist/widget-parts.json');
 async function setup(){
  const pg=new PGlite();
@@ -69,7 +69,7 @@ test('L4.1: last known basics hold names, kinds, dates and counts only, for one 
  assert.deepEqual(known.appTabNames({source:"return {html:''}"}),[]);
  known.forgetApp('w1','a1');assert.equal(known.knownApp('w1','a1'),undefined,'an app the person lost is forgotten');
  // Old basics are not shown.
- const now=Date.now;try{Date.now=()=>now()+15*86400000;assert.equal(known.knownHome('k'),undefined);}finally{Date.now=now;}
+ const now=Date.now;try{Date.now=()=>now()+8*86400000;assert.equal(known.knownHome('k'),undefined);}finally{Date.now=now;}
  // Another person on this device: everything of the first person is removed.
  known.setLastKnownViewer('bo');assert.equal(known.knownHome('k'),undefined);assert.equal(storage.length,0);
  known.rememberHome('k',home);known.setLastKnownViewer('ada');assert.equal(known.knownHome('k'),undefined,'Bo’s basics are never shown to Ada');
@@ -92,7 +92,7 @@ test('L4.5: the widget is two parts; the second is one public, exact file, also 
  assert.ok(Buffer.byteLength(html)<=WIDGET_BYTES,`dist/embed.html ${Buffer.byteLength(html)} bytes exceeds ${WIDGET_BYTES}`);
  assert.ok(Buffer.byteLength(part)<=PART_BYTES,`second part ${Buffer.byteLength(part)} bytes exceeds ${PART_BYTES}`);
  // Pages the first screen never shows are in the second part only (their own text is a marker).
- for(const marker of ['Find your next app','No automations configured.','No matching records.','Schedule this saved revision','New project name']){
+ for(const marker of ['Find your next app','No automations configured.','No matching records.','Schedule this saved revision','New project name','Confirm access changes','People and roles','Credential header name']){
   assert.ok(part.includes(marker),`${marker} in the second part`);assert.ok(!html.includes(marker),`${marker} not in the widget file`);
  }
  // The first screen's own code stays inside the widget.

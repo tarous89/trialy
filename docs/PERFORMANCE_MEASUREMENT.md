@@ -369,16 +369,16 @@ Session L4 of the [loading speed scope](scopes/LOADING_SPEED_2026-11-22.md). The
 
 | Measure | Before | After |
 | --- | --- | --- |
-| `dist/embed.html` (ChatGPT resource) | 1,843,145 bytes | 1,665,475 bytes |
-| Widget second part, downloaded after the first screen | none | 205,505 bytes (54 KB compressed), once, kept for good |
-| Claude resource (widget with the inline app frame) | 3,127,470 bytes (two copies of the font) | 2,480,032 bytes (one copy) |
-| Widget startup at 4× CPU throttling: load event / script time | 1,027 ms / 355 ms | 971 ms / 368 ms: no measurable difference (repeated rounds of 9 varied by ±15% either way) |
-| Website script `assets/index-*.js` on the wire | 1,017,584 bytes (not compressed by the app) | 278,573 bytes (Brotli) |
+| `dist/embed.html` (ChatGPT resource) | 1,843,145 bytes | 1,592,706 bytes |
+| Widget second part, downloaded after the first screen | none | 280,372 bytes (77 KB compressed), once, kept for good |
+| Claude resource (widget with the inline app frame) | 3,127,470 bytes (two copies of the font) | 2,407,263 bytes (one copy) |
+| Widget startup at 4× CPU throttling: load event / script time | 1,144 ms / 370 ms | 997 ms / 365 ms: no measurable difference in script time (repeated rounds of 9 to 21 runs varied by ±15% either way) |
+| Website script `assets/index-*.js` on the wire | 1,017,584 bytes (not compressed by the app) | 278,512 bytes (Brotli) |
 | Website styles on the wire | 216,589 bytes | 42,315 bytes |
 | App frame document (`/frontend/frame?v=…`) on the wire | 1,278,617 bytes | 685,270 bytes |
 | Template list (`POST /api/app-templates/list`) on the wire | 22,077 bytes | 7,696 bytes |
 | MCP `tools/list` on the wire | 517,109 bytes | 40,021 bytes |
-| MCP `resources/read` of the widget on the wire | 1,881,375 bytes | 694,893 bytes |
+| MCP `resources/read` of the widget on the wire | 1,881,375 bytes | 675,251 bytes |
 | `/start.js`, `/fonts/inter-variable.woff2`, `/trialagents-mark-*-96.png` | `public, max-age=0` with ETag (revalidated) | unchanged (deliberate: see above) |
 | Apps home on a return visit (website) | skeleton until the read returns | cards at once from last known basics; the read is quiet |
 | App reload on the website | an empty busy area until the app resolves | its name (and tab names, for standard trackers) at once |
@@ -387,6 +387,6 @@ Session L4 of the [loading speed scope](scopes/LOADING_SPEED_2026-11-22.md). The
 
 Not measured: whether Render compressed responses at its edge before this change (if it did, the wire columns' "before" overstate the gain), and anything in the real hosts.
 
-**Budgets enforced by tests.** `tests/loading-speed-return.test.ts` fails the build when last known basics hold a record, a miniature or a draft, are shown to another person, survive sign-out, exceed 12 KB for 20 cards, or fail when storage is refused. It also fails when `dist/embed.html` exceeds 1.7 MB or the second part 260 KB, when a page of the second part is found in the widget file or the first screen's text is missing from it, when the second part's address is not public, exact, immutable and compressed, or `read_widget_part` returns anything else, when the single-file switch leaves a second file, when the Claude resource carries the font twice or exceeds 2.55 MB, and when any static or list response checked there is uncompressed or cached differently from the table above. `tests/visual/return-visits.spec.cjs` holds the second part's download open (from the platform origin, then through the assistant) and Home's checking read open, and checks that the loading bar stays hidden, that a page opened early shows its frame and joins the one download, that Retry works when both ways fail, and that an app reload shows its last known name.
+**Budgets enforced by tests.** `tests/loading-speed-return.test.ts` fails the build when last known basics hold a record, a miniature or a draft, are shown to another person, survive sign-out, exceed 12 KB for 20 cards, or fail when storage is refused. It also fails when `dist/embed.html` exceeds 1.65 MB or the second part 300 KB, when a page of the second part is found in the widget file or the first screen's text is missing from it, when the second part's address is not public, exact, immutable and compressed, or `read_widget_part` returns anything else, when the single-file switch leaves a second file, when the Claude resource carries the font twice or exceeds 2.55 MB, and when any static or list response checked there is uncompressed or cached differently from the table above. `tests/visual/return-visits.spec.cjs` holds the second part's download open (from the platform origin, then through the assistant) and Home's checking read open, and checks that the loading bar stays hidden, that a page opened early shows its frame and joins the one download, that Retry works when both ways fail, and that an app reload shows its last known name.
 
-**Still open.** Whether ChatGPT and Claude load the second part and card images from the platform origin, and whether they allow storage in the widget (owner checklist A and C). The app's own settings, sharing and connector review, and the styles, stay in part one. The website's main script is still one file (L1.5).
+**Still open.** Whether ChatGPT and Claude load the second part and card images from the platform origin, and whether they allow storage in the widget (owner checklist A and C). The app runtime, its layout editor, the approval footer and the styles stay in part one, because the first screen uses them. The website's main script is still one file (L1.5).

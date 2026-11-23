@@ -6,10 +6,10 @@ Last of four build sessions of the [loading speed scope](docs/scopes/LOADING_SPE
 - **Compression and caching (L4.2).** Pages, scripts, lists and plugin responses are compressed: the website script travels as 279 KB instead of 1.0 MB. Caching was checked and left as it was: lists and account data are never cached.
 - **Capacity (L4.3).** A recommendation for the owner: a larger database plan now, and a rule for the web plan once production numbers exist ([owner actions](docs/scopes/LOADING_SPEED_L4_OWNER_ACTIONS.md)). Nothing changed in hosting.
 - **Real-host checklist (L4.4).** A checklist for ChatGPT and Claude on desktop and phone, including whether each host loads images and code from the platform ([owner actions](docs/scopes/LOADING_SPEED_L4_OWNER_ACTIONS.md)).
-- **Widget in two parts (L4.5).** The plugin widget now holds only what its first screen needs. Templates, automations, connectors, logs, the database and Home's other screens arrive in one quiet download right after: from the platform, otherwise through the assistant, otherwise with a Retry. A page opened before the download finishes shows its heading at once. A build switch puts everything back into one file.
-- **One font in Claude (L4.6).** Claude's inline app frame uses the widget's font instead of carrying a second copy; the Claude resource is about 650 KB smaller.
+- **Widget in two parts (L4.5).** The plugin widget now holds only what its first screen needs. Templates, automations, connectors, logs, the database, an app's access settings and Home's other screens arrive in one quiet download right after: from the platform, otherwise through the assistant, otherwise with a Retry. A page opened before the download finishes shows its heading at once. A build switch puts everything back into one file.
+- **One font in Claude (L4.6).** Claude's inline app frame uses the widget's font instead of carrying a second copy; with the split, the Claude resource is about 720 KB smaller.
 
-Not built: moving the app's own settings, sharing and connector screens and the styles into the second part; splitting the website's main script. Not tested: anything in the real ChatGPT and Claude. Tests: `loading-speed-return`, browser tests in `return-visits`, updated `claude-connector`.
+Not built: splitting the website's main script (L1.5). The app runtime, layout editor, approval footer and styles stay in the widget file because the first screen uses them. Not tested: anything in the real ChatGPT and Claude. Tests: `loading-speed-return`, browser tests in `return-visits`, updated `claude-connector`.
 
 ## 23 November 2026 — Loading speed, session L3: templates and the plugin path
 

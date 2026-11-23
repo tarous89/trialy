@@ -10,7 +10,8 @@ import type {AppRoute} from '../shared/app-route.js';
 import {AppPlatform} from '../shared/AppPlatform.js';
 import {loadTrackerDisplay} from './tracker-loading.js';
 import {DisplayTransition} from './display-transition.js';
-import {AccessPage,AccessHost} from '../shared/AccessPanel.js';
+import {AccessHost} from '../shared/access-host.js';
+import {provideAppScreens} from '../shared/app-screens.js';
 import {MultiValueInput} from '../shared/MultiValueInput.js';
 import {TrackerDraft} from '../shared/TrackerDraft.js';
 import {ComponentEditor} from '../shared/ComponentEditor.js';
@@ -53,6 +54,9 @@ const CollectionsPanel=lateComponent('CollectionsPanel',pageFrame('Shared links'
 const ProjectSettings=lateComponent('ProjectSettings',pageFrame('Project settings'));
 const ProjectsPanel=lateComponent('ProjectsPanel',pageFrame('Projects'));
 const ResourcesPanel=lateComponent('ResourcesPanel',inlineFrame('Forms'));
+const AccessPage=lateComponent('AccessPage',pageFrame('Access'));
+// The app's access screen and the connector review (website only) come from the second part too.
+provideAppScreens({AccessPanel:lateComponent('AccessPanel',pageFrame('Access')),AccessPage,ConnectorReview:lateComponent('ConnectorReview',inlineFrame('Connector review'))} as any);
 const lateHomeScreens:HomeScreenComponents={FoundationPanel,CollectionsPanel,ProjectSettings,ProjectsPanel,ResourcesPanel} as HomeScreenComponents;
 const bridge=new App({name:'TrialAgents workspace',version:'0.2.37'},{availableDisplayModes:['inline','fullscreen']},{autoResize:true});
 // Only hosts whose server asks for it (Claude) switch to full screen, once per display; others keep their default.

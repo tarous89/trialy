@@ -21,3 +21,6 @@ export {CollectionsPanel} from '../shared/CollectionsPanel.js';
 export {ProjectSettings} from '../shared/ProjectSettings.js';
 export {ProjectsPanel} from '../shared/ProjectsPanel.js';
 export {ResourcesPanel} from '../shared/ResourcesPanel.js';
+// An app's access screens and the connector review (src/shared/app-screens.tsx).
+export {AccessPanel,AccessPage} from '../shared/AccessPanel.js';
+export {ConnectorReview} from '../shared/ConnectorsPanel.js';

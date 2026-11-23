@@ -98,9 +98,12 @@ Record B1, B3, B5 and D1 on this build. The scope has no production "before" num
 
 ---
 
-## 3. Decisions for the owner
+## 3. Decisions for the owner, with recommendations (23 November 2026)
 
-1. **Database plan** (section 1): approve moving `trialy-db` to `basic-1gb`.
-2. **Web plan**: decide after a week of `ux:report` numbers, using the rule in section 1.
-3. **Hosts that refuse the platform origin**: if A3 shows the fallback on a host, the second part costs one extra assistant round trip (about 200 KB, once per widget). Keep it, or ship that host the single-file build (`TRIALY_WIDGET_SINGLE_FILE=1`). The single-file build is one switch for every host today; a per-host choice would need a small change.
-4. **Remembered basics on shared computers**: they are cleared on sign-out and on another person's sign-in, but a person who closes the browser without signing out leaves their app names (no records) on that device for up to 14 days. Keep 14 days, or shorten it.
+| # | Decision | Recommendation | Status |
+| --- | --- | --- | --- |
+| 1 | Database plan | Move `trialy-db` to `basic-1gb` (section 1). | Owner: will change plans later |
+| 2 | Web plan | Keep Starter; after a week of `ux:report`, move up only if the rule in section 1 says so. | Owner: will change plans later |
+| 3 | Hosts that refuse the platform origin | Keep the two-part widget with its fallback for every host. The fallback costs one extra assistant round trip, once per widget, after the first screen, so nobody waits for it. Use `TRIALY_WIDGET_SINGLE_FILE=1` only if checklist A shows a host refusing both the origin and the inline fallback (`window.__trialyLatePart` is `failed`). | Adopted: no change needed |
+| 4 | How long remembered basics stay on a device | 7 days instead of 14. Return visits within a week still open at once, and app names on a shared computer where nobody signed out disappear sooner. | Adopted: 7 days |
+| 5 | New dependency `compression` 1.8.2 | Keep it. `npm audit` reports 9 vulnerabilities, all in other packages already present (zod, playwright, body-parser, hono, qs, fast-uri, ip-address); `compression` and its dependencies (`bytes`, `on-headers`) have none. Handle the existing ones in a separate dependency update. | Adopted: kept |

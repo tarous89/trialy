@@ -9,7 +9,7 @@ import {readStandardConfig} from './standard-tool.js';
  * plugin frame, a private window, storage switched off), every function does nothing and the surfaces behave as before.
  * Showing basics never decides access: every action still goes to the server, which checks access on every request.
  */
-const KEY='trialy-last-known:v1',MAX_AGE_MS=14*86400000,MAX_HOMES=4,MAX_APPS=24;
+const KEY='trialy-last-known:v1',MAX_AGE_MS=7*86400000,MAX_HOMES=4,MAX_APPS=24;
 type Stamped<T>={at:number;value:T};
 type Entry={viewer:string;home:Record<string,Stamped<HomeBasics>>;templates?:Stamped<{catalog:string;templates:any[]}>;apps:Record<string,Stamped<AppBasics>>};
 export type HomeBasics={projects:{id:string;name:string;workspaceId?:string;createdAt?:string}[];resources:any[];total:number;nextOffset:number|null;archivedApps:any;revision?:string;remembered:true};
