@@ -1,3 +1,4 @@
+import {mcpSections} from './mcp-sections.js';
 import {withResponseCancellation} from './response-cancellation.js';
 import {homeRevision} from '../workspace/home-revision.js';
 import {access} from '../domain/permissions.js';
@@ -103,7 +104,10 @@ export function addWorkspaceApi(app:Express,f:WorkspaceFoundation){
 }
 export function addWorkspaceMcp(server:McpServer,f:WorkspaceFoundation,a:Actor,safe:any,metadata:any){
  const quiet=(fn:(v:any)=>Promise<any>)=>safe(async(v:any)=>appPreparationResult(await fn(v)));
- if(process.env.SIMPLE_APPS_ENABLED==='true'){addConnectorMcp(server,f,a,safe,backgroundMetadata(metadata));addAppMcp(server,f,a,safe,metadata);addAppServicesMcp(server,f,a,safe,backgroundMetadata(metadata));}
+ // L3.5: groups of tools, so a plugin tool call builds only the group that holds its tool (src/server/mcp-sections.ts).
+ const sections=mcpSections(server);
+ if(process.env.SIMPLE_APPS_ENABLED==='true'){sections.run('connectors',()=>addConnectorMcp(server,f,a,safe,backgroundMetadata(metadata)));sections.run('apps',()=>addAppMcp(server,f,a,safe,metadata));sections.run('app-services',()=>addAppServicesMcp(server,f,a,safe,backgroundMetadata(metadata)));}
+ sections.run('core',()=>{
  const display=(name:string,description:string,schema:Record<string,z.ZodType>,fn:(v:any)=>Promise<any>)=>server.registerTool(name,{title:name.replaceAll('_',' ').replace(/\btool\b/g,'app').replace(/\btools\b/g,'apps'),description,inputSchema:schema,annotations:{readOnlyHint:true,destructiveHint:false,openWorldHint:false},_meta:metadata},safe(fn));
   server.registerTool('begin_app_update',{title:'Update app',description:'Starts an editing session for an existing app version. Invalidates this user’s older app previews without reopening the extension. Saved records are unchanged.',inputSchema:{workspaceId:id,componentId:id,expectedVersion:z.number().int().min(0)},annotations:{readOnlyHint:false,destructiveHint:false,openWorldHint:false},_meta:backgroundMetadata(metadata)},quiet((v:any)=>f.beginAppUpdate(a,v.workspaceId,v.componentId,v.expectedVersion)));
   server.registerTool('finalize_app_preview',{title:'Review completed app',description:'Required final step for every newly created app, including custom dashboards: mark its exact preview ready after validation and open that app inside the ChatGPT extension for approval, not Home or a separate browser page. Returns the finalized preview and its current digest and shows it in the approval footer (Save for a new app, which opens the installation popup; Approve or Decline for a change). Only the person approves; it does not save the app or its records. Before calling, explain in chat which app changes require saving and why they are needed. This is the only automatic display during preparation; call it once when the complete revision is ready.',inputSchema:{workspaceId:id,previewId:id,digest:z.string().length(64)},annotations:{readOnlyHint:false,destructiveHint:false,openWorldHint:false},_meta:metadata},safe((v:any)=>f.finalizeAppPreview(a,v.workspaceId,v.previewId,v.digest)));
@@ -199,6 +203,7 @@ export function addWorkspaceMcp(server:McpServer,f:WorkspaceFoundation,a:Actor,s
  register('read_shared_identity','Read an accepted same-type identity group: preferred record, retained originals, conflicting values, authorized source observations and incoming relationships. Reading does not merge, overwrite or retarget anything.',{workspaceId:id,recordId:id},true,v=>f.identity(a,v.workspaceId,v.recordId));
  register('find_identity_candidates','Search up to ten authorized types for textual candidates. ChatGPT judges semantic matches; new links and preferred values require approval or an explicit type-scoped permission.',{workspaceId:id,typeIds:z.array(id).min(1).max(10),query:z.string().trim().min(1).max(500)},true,v=>f.candidates(a,v.workspaceId,v.typeIds,v.query));
  register('read_record_evidence','Read source observations and active/revoked identity links. Requires access to all fields of the record and each linked record. Original records remain individually readable using existing record operations.',{workspaceId:id,recordId:id},true,v=>f.evidence(a,v.workspaceId,v.recordId));
+ });
 }
 
 

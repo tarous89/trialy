@@ -20,7 +20,8 @@ export const appTemplateEntry=z.object({...recipeDeclarations,...functionDeclara
  /* 7.1, 7.2: a new major version names the earlier versions it upgrades (same tables and helpers; options may differ),
   * and a version can be declared speed-only by its publisher (applied automatically to unchanged copies, D15). */
  upgradeFrom:z.array(version).max(20).optional(),speedOnly:z.boolean().optional()}).strict();
-export const templateQuery=z.object({query:z.string().max(200).default(''),offset:z.number().int().min(0).default(0),limit:z.number().int().min(1).max(50).default(20)}).strict();
+/** catalog (L3.1): the fingerprint of a list the caller already holds. While the catalog is unchanged the answer is only {catalog,unchanged:true}. */
+export const templateQuery=z.object({query:z.string().max(200).default(''),offset:z.number().int().min(0).default(0),limit:z.number().int().min(1).max(50).default(20),catalog:z.string().regex(/^[a-f0-9]{32}$/).optional()}).strict();
 export const templateRead=z.object({templateId:key,version:version.optional(),includeFunctionSource:z.boolean().default(false)}).strict();
 /** 5.6: guide (design) and reference (technical); authoring and usage are the old names of the same two, kept as aliases. */
 export const templateGuidanceRequest=z.object({resource:z.enum(['guide','reference','authoring','usage','contracts']).default('guide'),offset:z.number().int().min(0).default(0)}).strict();
@@ -38,6 +39,10 @@ const directory=new URL('../../templates/apps/',import.meta.url);
 type CatalogEntry=z.infer<typeof appTemplateEntry>&{digest:string};
 /** Validated payloads of published versions, by identity and digest. Frozen: every caller shares them. */
 const parsedCatalog=new Map<string,CatalogEntry>(),CATALOG_CACHE_LIMIT=500;
+/** L3.1: the latest-version summaries of one catalog fingerprint, sorted by name. Catalog data only (no account data). */
+const listedCatalog=new Map<string,any[]>();
+/** Changes whenever the shape of a listed template changes, so a held list from an older server is sent again. */
+const LIST_FORMAT='list-1';
 function deepFreeze<T>(value:T):T{if(value&&typeof value==='object'&&!Object.isFrozen(value)){Object.freeze(value);for(const v of Object.values(value as object))deepFreeze(v);}return value;}
 /** Publisher-controlled files only. Never load an arbitrary caller URL or filesystem path. */
 export class AppTemplates{
@@ -48,14 +53,12 @@ export class AppTemplates{
   if(this.db){
    // Approval status is read on every call. A published version is immutable (syncTemplateCatalog), so its
    // validated payload is loaded once per process and reused; only versions not yet held are fetched.
-   const approved=(await this.db.query("SELECT template_id,version,digest FROM app_template_catalog WHERE status='approved' ORDER BY template_id,version")).rows;
-   const held=(r:any)=>parsedCatalog.get(r.template_id+'@'+r.version+'#'+r.digest),missing=approved.filter(r=>!held(r));
-   if(missing.length){
-    const rows=(await this.db.query("SELECT template_id,version,digest,payload FROM app_template_catalog WHERE status='approved' AND digest=ANY($1::text[])",[missing.map(r=>r.digest)])).rows;
-    for(const r of rows){if(parsedCatalog.size>=CATALOG_CACHE_LIMIT)parsedCatalog.clear();parsedCatalog.set(r.template_id+'@'+r.version+'#'+r.digest,deepFreeze({...appTemplateEntry.parse(r.payload),digest:r.digest}));}
-   }
-   // A version withdrawn between the two reads is simply left out.
-   return approved.map(held).filter((t):t is CatalogEntry=>!!t);
+   // L3.1: one query. The payload is sent only for versions this process does not hold yet.
+   const approved=(await this.db.query("SELECT template_id,version,digest,CASE WHEN template_id||'@'||version||'#'||digest=ANY($1::text[]) THEN NULL ELSE payload END AS payload FROM app_template_catalog WHERE status='approved' ORDER BY template_id,version",[[...parsedCatalog.keys()]])).rows;
+   const key=(r:any)=>r.template_id+'@'+r.version+'#'+r.digest;
+   for(const r of approved)if(r.payload!==null&&!parsedCatalog.has(key(r))){if(parsedCatalog.size>=CATALOG_CACHE_LIMIT)parsedCatalog.clear();parsedCatalog.set(key(r),deepFreeze({...appTemplateEntry.parse(r.payload),digest:r.digest}));}
+   // A held version dropped by a full cache in between is read again on the next call; it is never served from elsewhere.
+   return approved.map(r=>parsedCatalog.get(key(r))).filter((t):t is CatalogEntry=>!!t);
   }
   const names=(await readdir(this.root)).filter(n=>n.endsWith('.json')).sort();if(names.length>500)fail(500,'catalog_limit','Template catalog exceeds its bounded size');
   const entries=[];const seen=new Set<string>();
@@ -66,11 +69,21 @@ export class AppTemplates{
  async versions(templateId:string){return (await this.allEntries()).filter(t=>t.id===templateId).sort((a,b)=>compare(a.version,b.version));}
  /** The approved version whose code is exactly this saved template code, if any. */
  async matching(body:string){return (await this.allEntries()).find(t=>typeof t.source==='string'&&t.source.length===body.length&&t.source===body)??null;}
- async list(input:unknown={}){
-  const q=templateQuery.parse(input),latest=new Map<string,Awaited<ReturnType<AppTemplates['entries']>>[number]>();
-  for(const t of await this.entries()){const prev=latest.get(t.id);if(!prev||compare(t.version,prev.version)>0)latest.set(t.id,t);}
-  const matches=[...latest.values()].filter(t=>!t.deprecated&&q.query.toLowerCase().split(/\s+/).every(term=>`${t.name} ${t.description} ${t.tags.join(' ')} ${t.whenToUse}`.toLowerCase().includes(term))).sort((a,b)=>a.name.localeCompare(b.name));
-  return {guidance:templateGuidance,templates:matches.slice(q.offset,q.offset+q.limit).map(({source,options,defaults,instructions,documentation,examples,functions,recommendedAutomations,automationFeatures,...summary})=>({...summary,functionCount:readAppFunctions({functions}).functions.length,automationCount:recommendedAutomations?.length??0})),total:matches.length,nextOffset:q.offset+q.limit<matches.length?q.offset+q.limit:null};
+ /** An unchanged catalog (input catalog equal to the current fingerprint) answers {catalog,unchanged:true} only. */
+ async list(input:unknown={}):Promise<{guidance:typeof templateGuidance;catalog:string;templates:any[];total:number;nextOffset:number|null;unchanged?:true}>{
+  const q=templateQuery.parse(input),entries=await this.entries();
+  // L3.1: the fingerprint covers everything a listed template shows (channel, approved versions and their digests).
+  const catalog=createHash('sha256').update(LIST_FORMAT+'|'+(this.channel??'all')+'|'+entries.map(t=>t.id+'@'+t.version+'#'+t.digest).join(',')).digest('hex').slice(0,32);
+  if(q.catalog===catalog)return {catalog,unchanged:true} as any;
+  let all=listedCatalog.get(catalog);
+  if(!all){
+   const latest=new Map<string,CatalogEntry>();
+   for(const t of entries){const prev=latest.get(t.id);if(!prev||compare(t.version,prev.version)>0)latest.set(t.id,t);}
+   all=[...latest.values()].filter(t=>!t.deprecated).sort((a,b)=>a.name.localeCompare(b.name)).map(({source,options,defaults,instructions,documentation,examples,functions,recommendedAutomations,automationFeatures,...summary})=>deepFreeze({...summary,functionCount:readAppFunctions({functions}).functions.length,automationCount:recommendedAutomations?.length??0}));
+   if(listedCatalog.size>=20)listedCatalog.clear();listedCatalog.set(catalog,all);
+  }
+  const terms=q.query.toLowerCase().split(/\s+/),matches=all.filter(t=>terms.every(term=>`${t.name} ${t.description} ${t.tags.join(' ')} ${t.whenToUse}`.toLowerCase().includes(term)));
+  return {guidance:templateGuidance,catalog,templates:matches.slice(q.offset,q.offset+q.limit),total:matches.length,nextOffset:q.offset+q.limit<matches.length?q.offset+q.limit:null};
  }
  async identity(input:unknown){
   const v=templateRead.parse(input);if(this.channel)requireTemplateAvailable(v.templateId,this.channel);
