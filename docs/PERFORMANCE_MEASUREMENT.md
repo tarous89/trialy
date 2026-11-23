@@ -293,7 +293,7 @@ The populated page fixture (`tests/page-performance.test.ts`) now takes 12 queri
 
 **Budgets enforced by tests.** `tests/loading-speed.test.ts` fails the build if Apps home exceeds 14 queries, the archived count 5 or the archived list 6, if Home costs a different number of queries for 4 and 40 apps, or if any of these reads selects app code. The scope's target of 6 for Home is not met: the remaining queries are the account directory, the revision stamp, the access lookup, the projects, the index, the person's own automations and links, Home placements and the read-metadata freshness checks. None grows with the number of apps.
 
-**Still open.** Production numbers before and after (owner action, scope section 7.1); splitting the main script (L1.5); database-side paging and set queries for a person's own standalone automations, links and older automations (L1.2, C4, C5): they grow with that person's automations, not with apps.
+**Still open.** Production numbers before and after (owner action, scope section 7.1); database-side paging and set queries for a person's own standalone automations, links and older automations (L1.2, C4, C5): they grow with that person's automations, not with apps.
 
 ## Loading speed, session L2: individual apps (22 November 2026)
 
@@ -389,4 +389,26 @@ Not measured: whether Render compressed responses at its edge before this change
 
 **Budgets enforced by tests.** `tests/loading-speed-return.test.ts` fails the build when last known basics hold a record, a miniature or a draft, are shown to another person, survive sign-out, exceed 12 KB for 20 cards, or fail when storage is refused. It also fails when `dist/embed.html` exceeds 1.65 MB or the second part 300 KB, when a page of the second part is found in the widget file or the first screen's text is missing from it, when the second part's address is not public, exact, immutable and compressed, or `read_widget_part` returns anything else, when the single-file switch leaves a second file, when the Claude resource carries the font twice or exceeds 2.55 MB, and when any static or list response checked there is uncompressed or cached differently from the table above. `tests/visual/return-visits.spec.cjs` holds the second part's download open (from the platform origin, then through the assistant) and Home's checking read open, and checks that the loading bar stays hidden, that a page opened early shows its frame and joins the one download, that Retry works when both ways fail, and that an app reload shows its last known name.
 
-**Still open.** Whether ChatGPT and Claude load the second part and card images from the platform origin, and whether they allow storage in the widget (owner checklist A and C). The app runtime, its layout editor, the approval footer and the styles stay in part one, because the first screen uses them. The website's main script is still one file (L1.5).
+**Still open.** Whether ChatGPT and Claude load the second part and card images from the platform origin, and whether they allow storage in the widget (owner checklist A and C). The app runtime, its layout editor, the approval footer and the styles stay in part one, because the first screen uses them.
+
+## Loading speed, L1.5 finished: the website's main script split (23 November 2026)
+
+Package L1.5 of the [loading speed scope](scopes/LOADING_SPEED_2026-11-22.md), finished after session L4.
+
+**What changed.** The website's main script now holds what the Apps page and an app's first screen need. Every other signed-in page (templates, automations, connectors, logs, database, settings, access, creation, the legacy record and document dialogs, Home's non-app screens, an app's access screen and connector review) is one chunk, `src/web/late-pages.ts`. It is downloaded quietly once Home's cards or an app's first screen are shown (`src/shared/first-screen.ts`), or after 3 s when the first page is another one. A page opened before it arrives shows its heading and a quiet placeholder and fills in when it arrives. If the chunk fails, Retry reloads the page: Chromium keeps a failed `import()` of the same address, and after a release a page left open would ask for an address that no longer exists. Pages with their own address (a shared app, joining an app or a workspace, a form, an exchange) are their own chunk, `src/web/route-pages.ts`, started as soon as the main script runs on those addresses. The Apps page never loads it. zod's translations are left out of the website, as L3.6 did for the widget. The shared helper is `src/shared/lazy-page.tsx` (the widget's frames now come from it too).
+
+**Lab numbers.** Byte counts are from the build, compressed sizes are Brotli level 4 (what the server sends). Timings: the browser-test server on this machine, `origin/main` and this branch side by side, a fresh browser context per run, 4× CPU throttling, time from navigation to the first Apps card. Medians: 21 runs without network limits, 7 runs at 1.6 Mbit/s with 150 ms latency.
+
+| Measure | Before | After |
+| --- | --- | --- |
+| Main script `assets/index-*.js` | 1,018,099 bytes (278,393 compressed) | 700,026 bytes (200,617 compressed) |
+| Other signed-in pages, after the first screen | in the main script | `late-pages-*.js` 265,717 bytes (69,472 compressed) plus `Invitations-*.js` 12,045 bytes (4,083) |
+| Pages with their own address | in the main script | `route-pages-*.js` 47,535 bytes (12,841 compressed), on those addresses only |
+| Script on the wire when the first Apps card shows | 279,765 bytes | 201,998 bytes |
+| First Apps card, no network limit | 902 ms | 880 ms (within noise) |
+| First Apps card at 1.6 Mbit/s, 150 ms latency | 2,872 ms | 2,439 ms |
+
+**Budgets enforced by tests.** `tests/loading-speed-website.test.ts` fails the build when the main script exceeds 730 KB or the second chunk 320 KB, when a page of the second chunk is found in the main script or the first screen's text is missing from it, when `index.html` preloads a later chunk, or when any chunk carries zod's translations. `tests/visual/website-split.spec.cjs` holds the second chunk open and checks that it starts by itself after the cards without the loading bar, that a page opened early shows its frame and joins the one download, that the Apps page never loads the address pages' chunk, and that Retry recovers from a failed chunk.
+
+**Still open.** The styles are still one file (207 KB, 38 KB compressed), because the first screens use most of them. Production numbers before and after remain owner action 7.1.
+

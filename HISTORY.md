@@ -1,3 +1,13 @@
+## 23 November 2026 — Loading speed: the website's main script split (L1.5 finished)
+
+The last open item of [loading speed](docs/scopes/LOADING_SPEED_2026-11-22.md) package L1.5.
+
+- **Smaller first download.** The website now downloads only what the Apps page and an app's first screen need: 200 KB of script instead of 278 KB (compressed). Every other page arrives in one quiet download once the first screen is shown. A page opened before then shows its heading at once and fills in. If that download fails, Retry reloads the page.
+- **Pages with their own address** (shared apps, invitations, forms, exchanges) load their own part only on those addresses.
+- **Validation translations** the website never shows are left out (as in the plugins).
+
+On a slow connection (1.6 Mbit/s) the first Apps card appeared in 2.4 s instead of 2.9 s in the lab. Tests: `loading-speed-website`, browser tests in `website-split`.
+
 ## 23 November 2026 — Loading speed, session L4: instant return visits and capacity
 
 Last of four build sessions of the [loading speed scope](docs/scopes/LOADING_SPEED_2026-11-22.md). Package numbers refer to that scope.
@@ -9,7 +19,7 @@ Last of four build sessions of the [loading speed scope](docs/scopes/LOADING_SPE
 - **Widget in two parts (L4.5).** The plugin widget now holds only what its first screen needs. Templates, automations, connectors, logs, the database, an app's access settings and Home's other screens arrive in one quiet download right after: from the platform, otherwise through the assistant, otherwise with a Retry. A page opened before the download finishes shows its heading at once. A build switch puts everything back into one file.
 - **One font in Claude (L4.6).** Claude's inline app frame uses the widget's font instead of carrying a second copy; with the split, the Claude resource is about 720 KB smaller.
 
-Not built: splitting the website's main script (L1.5). The app runtime, layout editor, approval footer and styles stay in the widget file because the first screen uses them. Not tested: anything in the real ChatGPT and Claude. Tests: `loading-speed-return`, browser tests in `return-visits`, updated `claude-connector`.
+The app runtime, layout editor, approval footer and styles stay in the widget file because the first screen uses them. Not tested: anything in the real ChatGPT and Claude. Tests: `loading-speed-return`, browser tests in `return-visits`, updated `claude-connector`.
 
 ## 23 November 2026 — Loading speed, session L3: templates and the plugin path
 

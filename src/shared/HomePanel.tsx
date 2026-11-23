@@ -18,6 +18,7 @@ import {TrackerDraft} from './TrackerDraft.js';
 import {ComponentEditor} from './ComponentEditor.js';
 import {useHomeData} from './useHomeData.js';
 import {useHomeScreens} from './home-screens.js';
+import {firstScreenShown} from './first-screen.js';
 import {AppOpeningFrame} from './AppOpeningFrame.js';
 import {knownApp,rememberApp,appTabNames} from './last-known.js';
 import {useLoadTiming} from './useLoadTiming.js';
@@ -43,6 +44,8 @@ export function HomePanel({workspaceId,loadHome,loadTypes,types,call,onDocuments
  const homeData=useHomeData(JSON.stringify([workspaceId,viewerId]),{query:state.query,kind:platform.enabled?'all':state.kind,projectId:state.projectId,sort:state.sort,offset,limit:20},refresh,active&&screen==='home',home,options=>call('check_account_home',{},options));
  const {data,setData,loading,failed:loadFailed}=homeData;
  useLoadTiming('home',loading,!loadFailed);
+ // L1.5: the cards are the first screen's main content; later downloads wait for them.
+ useEffect(()=>{if(active&&!loading)firstScreenShown();},[active,loading]);
  const invoke=(name:string,args:any={},options?:ReadOptions)=>call(name,{workspaceId:activeWorkspace.current,...args},options);
  const snapshotsAsked=useRef<unknown>(undefined);
  // L1.3: card miniatures load after the cards, quietly and for the cards on screen only. A card without one keeps its cover.
