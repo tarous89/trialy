@@ -307,3 +307,61 @@ When the cash forecast is linked to Runway it is read-only. It is labelled "From
 - **`tests/programs.test.ts`** keeps covering the archived 2.1.0.
 
 **Open (not verified here):** real-host Add app in web, ChatGPT and Claude; an unattended digest run on a live runner; live email delivery.
+
+## 15. Next Programs release — approved product requirements
+
+This section defines the target for the next catalog version. Earlier sections document shipped versions. Where the requirements differ, this section governs new implementation. The release number is assigned at publication.
+
+### 15.1 Program and asset identity
+
+Use Program as the primary planning, ownership, stage and reporting unit. Give Assets stable workspace record IDs and model Program–Asset membership as a many-to-many relationship with unique pairs. A single asset can support two indication programs at different stages, and a combination program can reference several assets. Keep indication and stage on the program. Store intrinsic asset properties such as modality on the asset. Preserve existing shared program IDs and fields consumed by other apps.
+
+### 15.2 Milestones and activities
+
+Rename the visible Plan tab to **Milestones**. Retain the stable plan-item identity and the milestone/activity discriminator. A milestone represents a dated outcome and can stand alone. An activity represents work with a start and finish. Show milestones first and expand their activities inline. Offer **Add activity** under a milestone and on the program for work without a milestone. Membership and sequencing have independent semantics (§15.10–11).
+
+### 15.3 Integrated timeline
+
+Provide one expandable Gantt across program, milestone and activity levels. Render program spans, dated milestone markers and activity bars. Derive the program work span from scheduled work, distinguish it from any explicitly agreed program dates, and preserve baseline comparison, functional filters, critical path and date-driver inspection. Display a shared item's canonical dates in each location. Show an unscheduled state when dates are missing.
+
+### 15.4 Optional budgets
+
+Allow an approved budget and currency on any program, milestone or activity. Preserve the distinction between an unset amount and zero. Show the parent envelope, allocated child total and unallocated balance separately. For example, a €300k milestone envelope with €240k allocated leaves €60k. Deduplicate shared records in combined totals. Where a shared cost must be split across parents, use explicit allocations and expose any unallocated amount. Aggregate compatible currencies only, or use an explicit conversion basis. Runway continues to own cash forecasting.
+
+### 15.5 Optional schedule and budget buffers
+
+Support optional earliest/latest dates around a target and a separate budget contingency at all three levels. Display baseline, current forecast and tolerance independently. Validate ordered dates, currency consistency and nonnegative contingency. Distinguish a forecast change within tolerance from a breach. For example, a target of 15 June can have a delivery window through 30 June, and a €300k budget can carry €30k contingency. Retain slip history when a forecast moves within tolerance.
+
+### 15.6 Partner and contact assignments
+
+Allow zero or more partner assignments per program, milestone or activity. Each assignment references a shared Organizations record and optionally specifies its function and one or more People contacts. Keep contact role, email and phone optional, using shared person details for contact information. Surface lower-level assignments in the program summary with their source item. Do not implicitly assign a program partner to every activity. Use the linked-record control in §15.11.
+
+### 15.7 Risks & issues terminology
+
+Rename the visible RAID tab to **Risks & issues**. Keep the four record types Risk, Assumption, Issue and Dependency as filters and preserve the existing register, promotion history, mitigation, review dates and notifications. A Dependency entry in this register describes a dependency for monitoring. Scheduling constraints are explicit links created through §15.10.
+
+### 15.8 Multiple assignees and field cardinality
+
+Support multiple linked people on programs, milestones and activities, with an optional accountable lead. Use stable identities and assignment relationships. Keep scalar semantics for individual dates, amounts, statuses and outcomes. Extend assignment and reminder routing to the applicable workspace members and suppress duplicate notices for the same person and event. Preserve existing owner names when a legacy identity cannot be matched unambiguously.
+
+### 15.9 Risk scope and visibility
+
+Maintain one canonical risk with its mitigation, owner, status and review history. Allow links to multiple affected programs, milestones and activities, or explicit company-wide scope. Aggregate by risk ID so one vendor risk affecting two programs appears once in a portfolio count and in both relevant program views. Unlinking one affected item preserves the risk and its other links.
+
+### 15.10 Scheduling dependencies and shared work
+
+- **Dependencies.** Model each rule with a source record and event and a dependent record and event. Programs and activities expose start and finish events. A milestone exposes one reached event. Allow zero or more rules at program, milestone and activity level, including across programs. Independent work can overlap. All conditions for the same dependent event must be satisfied. A finish constraint alone allows independent start.
+- **Editor.** Use **Dependencies → Add dependency** and a sentence such as “Before this activity can [start], wait for [Clinical supply release] to [finish].” Default to finish-before-start when both events apply. Search by record name, type and program, showing current-program results first. Allow multi-select for identical timing and **Add rule** for different timing. Group saved rules under **To start** and **To finish** and identify outstanding conditions.
+- **Schedule calculation.** Evaluate the full dependency graph for date drivers, critical path and downstream impact. Reject self-links, duplicates and cycles, including cross-program cycles, and identify the loop by accessible item names. Preview affected records and programs before applying date changes. Keep the existing reviewed-save, slip-reason and concurrency behavior. Check access on reads and writes.
+- **Shared work.** Support many-to-many program membership for milestones and activities and many-to-many milestone membership for activities. Offer **Create new** and **Link existing** from the relevant Add control. Keep one canonical record, schedule and budget. Show **Used in…** with accessible locations. Removing from a location removes its membership only. Adding membership does not create a timing rule. A shared item can separately be selected as a dependency.
+
+### 15.11 Standard linked-record picker with inline creation
+
+Use the same interaction for editable business-record relationships across TrialAgents, including Programs assets, partners, contacts and shared work. Provide searchable, access-filtered existing records, single or multiple selection according to field cardinality, and a contextual **+ Add [record type]** when the user may create in the target. Open a compact inline form with the search text prefilled and required target fields. On successful creation select the returned ID, retain the parent draft and allow further selections. On cancellation or validation failure retain the parent draft and prior selections. Removing a selection unlinks that relationship. Enforce target creation and parent linking permissions independently on the server. For references with specialized creation policies, use the applicable target workflow.
+
+### Release compatibility and acceptance
+
+- Version the catalog template, contracts, app commands, screens, assistant guidance, digest helpers and notification recipes together. Provide an explicit upgrade path for saved installs. Preserve existing program and plan-item IDs, published key-milestone outputs, integrations, frozen reports and historical slips.
+- Make upgrade steps idempotent. Map legacy program ownership and item membership to the new relationships. Convert each existing predecessor into an equivalent finish-before-start constraint using the shipped date convention, adapting to reached events for milestones. Keep standalone activities valid. Require review for ambiguous asset identities.
+- Exercise the same workflows through the web interface and assistant commands. Verify one asset in two programs, two dependencies on a cohort opening, a finish-only constraint allowing parallel work, a cross-program cycle rejection, and one activity linked under two milestones with independent unlinking.
+- Verify shared-budget deduplication, an in-tolerance slip and a buffer breach, a multi-program risk, several contacts on one partner assignment, multi-assignee notifications, and inline creation with full, link-only and read-only access. Verify that failed or retried saves preserve drafts and avoid duplicate records and links.
