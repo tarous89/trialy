@@ -53,7 +53,7 @@ async function edit(rows:Row[],id:string,form:Record<string,string>,extra:string
  return render(rows,s,{kind:'submit',action:'form:save',form:{_f:'record',...form}});
 }
 
-test('package: a v2 frontend-js app on its own installer schema, registered as a draft catalog version with gallery media',async()=>{
+test('package: a v2 frontend-js app on its own installer schema, approved in the seed and switched on for all three channels, with gallery media',async()=>{
  assert.equal(entry.version,'1.0.0');assert.equal(entry.engine,'frontend-js');assert.equal(entry.name,'Pipeline');
  assert.equal(entry.source!.split('\n')[0],"'use trialagents v2';");assert.ok(isV2Source(`const templateConfiguration={};\nconst templateBindings=[];\n${entry.source}`));
  const installers=JSON.parse(await readFile('templates/catalog-installers.json','utf8'));assert.equal(installers['life.pipeline@1.0.0'],'templates/source/pipeline/schema.example.json');
@@ -65,7 +65,8 @@ test('package: a v2 frontend-js app on its own installer schema, registered as a
  const src=entry.source!;
  assert.doesNotMatch(src,/localStorage|sessionStorage|FileReader|password|sign.?in|records\.propose|<h1|<header|showModal|<dialog|mailTypes|Owner email notifications|Design review|prepared example/i);
  for(const k of ['quickStart','dataContract','interactionContract','lifecycle','limitations','examples','tasks'])assert.ok((entry.documentation as any)[k],k);
- const seed=JSON.parse(await readFile('templates/catalog-seed.json','utf8'));assert.equal(seed['life.pipeline'],undefined,'a draft until the owner approves it');
+ const seed=JSON.parse(await readFile('templates/catalog-seed.json','utf8'));assert.deepEqual(seed['life.pipeline'],{schema:'templates/source/pipeline/schema.example.json',version:'1.0.0'},'approved by the owner');
+ const {apps}=JSON.parse(await readFile('templates/catalog-availability.json','utf8'));assert.deepEqual(apps['life.pipeline'],{platform:true,chatgpt:true,claude:true});
  const gallery=JSON.parse(await readFile('resources/template-gallery/manifest.json','utf8'));assert.ok(gallery['life.pipeline@1.0.0']);
 });
 
@@ -188,8 +189,7 @@ test('installs from the catalog into new tables with the platform installer',asy
   for(const file of (await readdir('migrations')).filter(f=>f.endsWith('.sql')).sort())await pg.exec(await readFile('migrations/'+file,'utf8'));
   const db:Database={query:(q,v)=>pg.query(q,v) as any,transaction:fn=>pg.transaction(tx=>fn(tx as Connection)),close:async()=>{}};
   await syncTemplateCatalog(db);
-  assert.equal((await db.query("SELECT status FROM app_template_catalog WHERE template_id='life.pipeline' AND version='1.0.0'")).rows[0]?.status,'draft','imported as a draft');
-  await db.query("UPDATE app_template_catalog SET status='approved' WHERE template_id='life.pipeline'");
+  assert.equal((await db.query("SELECT status FROM app_template_catalog WHERE template_id='life.pipeline' AND version='1.0.0'")).rows[0]?.status,'approved','the seed names it, so the sync imports it approved');
   const owner={userId:randomUUID(),origin:'human' as const},human={...owner,actionConfirmed:true} as any;
   await db.query('INSERT INTO users(id,subject,email,name) VALUES($1,$2,$3,$4)',[owner.userId,owner.userId,'pipeline@example.invalid','Pipeline']);
   const w=await new Service(db).createWorkspace(owner,'Pipeline'),f=new WorkspaceFoundation(db),t=await new AppTemplates(undefined,db).read({templateId:'life.pipeline',version:'1.0.0'});

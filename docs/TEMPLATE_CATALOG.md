@@ -35,10 +35,11 @@ Trial Radar (`life.trial-radar`) 1.0.0 was approved by the owner on 15 November 
 
 Investor Updates (`life.investor-updates`) 1.0.0 was built on 15 November 2026 (#189) and approved by the owner on 17 November 2026. It had never been imported, so the seed names it and the catalog sync after migrations imports it approved; no migration. It is a new template, so nothing is retired. Gallery card and screenshot added. Scope: [INVESTOR_UPDATES.md](product/app-template-blueprints/apps/INVESTOR_UPDATES.md); deviations required by platform contracts are listed in `templates/source/investor-updates/QA.md`.
 
-Pipeline (`life.pipeline`) 1.0.0 was added on 24 November 2026 as a draft. It is the platform version of the standalone Pipeline prototype (`prototypes/pipeline`): a portfolio planner for programs, milestones, activities and decisions, with their deliverables, risks and changes. Records are in TrialAgents tables, files are TrialAgents documents, approval uses the platform account, and Settings holds only the currency and date format ([README](../templates/source/pipeline/README.md)).
+Pipeline (`life.pipeline`) 1.0.0 was added on 24 November 2026. It is the platform version of the standalone Pipeline prototype (`prototypes/pipeline`): a portfolio planner for programs, milestones, activities and decisions, with their deliverables, risks and changes. Records are in TrialAgents tables, files are TrialAgents documents, approval uses the platform account, and Settings holds only the currency and date format ([README](../templates/source/pipeline/README.md)).
 - It is a new template, so nothing is retired.
 - The installer entry, gallery card and gallery media are added.
-- It is not in the seed or in `catalog-availability.json` until the owner approves it. To approve it, name 1.0.0 in the seed and give it three switches.
+- The owner approved it the same day. The seed names 1.0.0, so the catalog sync after migrations imports it approved; no migration.
+- It is switched on for all three channels (platform, ChatGPT, Claude).
 
 For CRO Selection, when the owner approves 2.0.0, the publication change does four things:
 - names 2.0.0 in the seed;
@@ -54,7 +55,7 @@ Released files, installer schemas and installed apps stay unchanged.
 
 The channel comes from the caller: signed-in website sessions are `platform`; MCP tokens are AI principals of ChatGPT or Claude. Apps outside the file (test fixtures, unreleased drafts) are not switched off, so a newly approved app must be added to the file; `tests/template-availability.test.ts` fails when a seed app has no entry.
 
-17 November 2026 (owner): the 16 current apps (Runway, Programs, Fundraise, Contracts, Partnerships, Data Room, Investor Updates, CRO Selection and the eight Bio Radars) are on for all three channels. The 16 older apps (Inventory Management, PI Network Management, Grant Pipeline, Site Feasibility Management — Sponsor, Experiment Notebook, Client Signals & CRM, Trial Regulatory Submission, CRO Oversight, Publication Management, Biotech Hiring & Resource Management, CRO Resource Planning, RFP Management, Site Feasibility Management, Investigator CRM, Sponsor Updates — CRO, Trial Monitoring & PV Oversight — Sponsor) are off for all three.
+17 November 2026 (owner): the 16 current apps (Runway, Programs, Fundraise, Contracts, Partnerships, Data Room, Investor Updates, CRO Selection and the eight Bio Radars) are on for all three channels. The 16 older apps (Inventory Management, PI Network Management, Grant Pipeline, Site Feasibility Management — Sponsor, Experiment Notebook, Client Signals & CRM, Trial Regulatory Submission, CRO Oversight, Publication Management, Biotech Hiring & Resource Management, CRO Resource Planning, RFP Management, Site Feasibility Management, Investigator CRM, Sponsor Updates — CRO, Trial Monitoring & PV Oversight — Sponsor) are off for all three. 24 November 2026 (owner): Pipeline is on for all three.
 
 Use the migration/operator database connection in `MIGRATION_DATABASE_URL`:
 

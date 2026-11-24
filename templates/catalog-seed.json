@@ -126,5 +126,9 @@
   "life.investor-updates": {
     "schema": "templates/source/investor-updates/schema.example.json",
     "version": "1.0.1"
+  },
+  "life.pipeline": {
+    "schema": "templates/source/pipeline/schema.example.json",
+    "version": "1.0.0"
   }
 }

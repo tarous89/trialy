@@ -81,6 +81,11 @@
       "chatgpt": true,
       "claude": true
     },
+    "life.pipeline": {
+      "platform": true,
+      "chatgpt": true,
+      "claude": true
+    },
     "life.client-signals-crm": {
       "platform": false,
       "chatgpt": false,

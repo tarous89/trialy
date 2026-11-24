@@ -2,7 +2,7 @@
 
 Pipeline is the platform version of the standalone Pipeline prototype in [prototypes/pipeline](../../../prototypes/pipeline/README.md). It is a portfolio planner for a biotech team: programs, milestones, activities and decisions connected with their deliverables, risks and changes. It keeps the prototype's screens, workflows and rules, and runs on TrialAgents instead of in one browser.
 
-It is a draft catalog version. The catalog sync imports it as a draft. It is not in `templates/catalog-seed.json` until the owner approves it.
+The owner approved it on 24 November 2026. `templates/catalog-seed.json` names it, so the catalog sync imports it approved. It is switched on for the website, ChatGPT and Claude in `templates/catalog-availability.json`.
 
 ## Files
 

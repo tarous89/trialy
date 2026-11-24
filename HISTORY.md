@@ -1,4 +1,4 @@
-## 24 November 2026 — Pipeline 1.0.0: the platform version of the Pipeline prototype (draft)
+## 24 November 2026 — Pipeline 1.0.0: the platform version of the Pipeline prototype (published)
 
 New catalog template `life.pipeline` ([README](templates/source/pipeline/README.md)), built from the standalone prototype in `prototypes/pipeline`. It is a portfolio planner: programs, milestones, activities and decisions, with their deliverables, risks and changes.
 
@@ -8,7 +8,7 @@ New catalog template `life.pipeline` ([README](templates/source/pipeline/README.
 - **Minimal settings.** Settings holds only the currency and date format, for owners. The prototype's per-person email switches and its lookahead and reminder fields are gone; none of them did anything.
 - **Real digest.** The digest is built from the records and can be saved to an archive.
 
-The catalog sync imports it as a draft. The installer entry, gallery card and gallery media are added. It is not in the seed until the owner approves it. Tests: `pipeline`.
+The owner approved it the same day: the seed names 1.0.0, so the catalog sync imports it approved (no migration), and it is switched on for the website, ChatGPT and Claude. The installer entry, gallery card and gallery media are added. Tests: `pipeline`, `template-availability`.
 
 ## 23 November 2026 — Loading speed: the website's main script split (L1.5 finished)
 

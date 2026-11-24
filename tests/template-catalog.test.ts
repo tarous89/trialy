@@ -17,9 +17,9 @@ test('catalog approval, complete suite installation, retry and tenant isolation'
   for(const file of (await readdir('migrations')).filter(f=>f.endsWith('.sql')).sort())await pg.exec(await readFile('migrations/'+file,'utf8'));
   const db:Database={query:(q,v)=>pg.query(q,v) as any,transaction:fn=>pg.transaction(tx=>fn(tx as Connection)),close:async()=>{}};
   await syncTemplateCatalog(db);const catalog=new AppTemplates(undefined,db);
-  assert.equal((await catalog.list({limit:50})).total,32);// 32 approved since migration 077 withdrew Sponsor RFP Management
-  // templates/catalog-availability.json: the 16 current apps are on for the platform, ChatGPT and Claude; the 16 older apps are off everywhere.
-  const list=await new AppTemplates(undefined,db,'platform').list({limit:50});assert.equal(list.total,16);
+  assert.equal((await catalog.list({limit:50})).total,33);// 32 approved since migration 077 withdrew Sponsor RFP Management, plus Pipeline (24 November 2026)
+  // templates/catalog-availability.json: the 17 current apps (the 16 of 17 November and Pipeline) are on for the platform, ChatGPT and Claude; the 16 older apps are off everywhere.
+  const list=await new AppTemplates(undefined,db,'platform').list({limit:50});assert.equal(list.total,17);
   for(const channel of ['chatgpt','claude'] as const)assert.deepEqual((await new AppTemplates(undefined,db,channel).list({limit:50})).templates.map(t=>t.id),list.templates.map(t=>t.id));
   const actor={userId:randomUUID(),origin:'human' as const};await db.query('INSERT INTO users(id,subject,email,name) VALUES($1,$2,$3,$4)',[actor.userId,actor.userId,'catalog@example.invalid','Catalog tester']);
   const service=new Service(db),workspace=await service.createWorkspace(actor,'Catalog'),f=new WorkspaceFoundation(db);
@@ -56,7 +56,7 @@ test('catalog approval, complete suite installation, retry and tenant isolation'
   assert.equal((await db.query('SELECT count(*)::int n FROM entity_types')).rows[0].n,before);
   await db.query("UPDATE app_template_catalog SET install_schema=install_schema - 'zz_invalid' WHERE template_id=$1 AND version=$2",[candidate.id,candidate.version]);
   await pg.exec(await readFile('ops/runtime-role.sql','utf8'));await pg.exec('SET ROLE trialy_runtime');
-  assert.equal((await db.query('SELECT count(DISTINCT template_id)::int n FROM app_template_catalog')).rows[0].n,32);// the runtime role sees approved templates only
+  assert.equal((await db.query('SELECT count(DISTINCT template_id)::int n FROM app_template_catalog')).rows[0].n,33);// the runtime role sees approved templates only
   await assert.rejects(()=>db.query("UPDATE app_template_catalog SET status='approved'"));
   await pg.exec('RESET ROLE');
   const runtime:Database={query:(q,v)=>runtime.transaction(tx=>tx.query(q,v)),transaction:fn=>pg.transaction(async tx=>{await tx.exec('SET LOCAL ROLE trialy_runtime');await setDatabaseContext(tx as Connection);return fn(tx as Connection);}),close:async()=>{}};
@@ -235,7 +235,7 @@ test('the batched-read release of all 16 switched-on apps is the listed version;
   const releases:[string,string,string][]=[['life.cash-runway','2.2.0','2.2.1'],['life.contracts','1.1.0','1.1.1'],['life.cro-selection','2.1.0','2.1.1'],['life.data-room','1.1.0','1.1.1'],['life.investor-crm','2.0.0','2.0.1'],['life.investor-updates','1.0.0','1.0.1'],['life.partnership-tracker','2.2.0','2.2.1'],['life.project-oversight','2.2.0','2.2.1'],
    ['life.deal-radar','1.0.0','1.0.1'],['life.funding-radar','1.0.0','1.0.1'],['life.literature-radar','2.0.0','2.0.1'],['life.market-radar','1.0.0','1.0.1'],['life.patent-radar','1.0.0','1.0.1'],['life.pipeline-radar','1.0.0','1.0.1'],['life.regulatory-radar','1.0.0','1.0.1'],['life.trial-radar','1.0.0','1.0.1']];
   const availability=JSON.parse(await readFile('templates/catalog-availability.json','utf8')).apps;
-  assert.deepEqual(releases.map(r=>r[0]).sort(),Object.keys(availability).filter(id=>availability[id].platform||availability[id].chatgpt||availability[id].claude).sort(),'every switched-on app, and only those');
+  assert.deepEqual(releases.map(r=>r[0]).sort(),Object.keys(availability).filter(id=>id!=='life.pipeline'&&(availability[id].platform||availability[id].chatgpt||availability[id].claude)).sort(),'every app switched on at the time (Pipeline came later), and only those');
   // Live state before this deployment: the earlier versions imported and approved, the new ones not yet imported.
   await syncTemplateCatalog(db);
   for(const [id,old,next] of releases){await pg.query("UPDATE app_template_catalog SET status='approved' WHERE template_id=$1 AND version=$2",[id,old]);await pg.query('DELETE FROM app_template_catalog WHERE template_id=$1 AND version=$2',[id,next]);}

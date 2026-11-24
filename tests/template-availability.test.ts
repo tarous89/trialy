@@ -11,7 +11,7 @@ import {syncTemplateCatalog,installCatalogApp,readCatalogInstallation} from '../
 import {dataAccessStep} from '../src/workspace/data-access.js';
 import {availabilityFile,templateAvailable,templateChannel} from '../src/workspace/template-availability.js';
 
-const current=['life.cash-runway','life.contracts','life.cro-selection','life.data-room','life.deal-radar','life.funding-radar','life.investor-crm','life.investor-updates','life.literature-radar','life.market-radar','life.partnership-tracker','life.patent-radar','life.pipeline-radar','life.project-oversight','life.regulatory-radar','life.trial-radar'];
+const current=['life.cash-runway','life.contracts','life.cro-selection','life.data-room','life.deal-radar','life.funding-radar','life.investor-crm','life.investor-updates','life.literature-radar','life.market-radar','life.partnership-tracker','life.patent-radar','life.pipeline','life.pipeline-radar','life.project-oversight','life.regulatory-radar','life.trial-radar'];
 
 test('every catalog app has platform, ChatGPT and Claude switches; only current apps are on',async()=>{
  const seed=JSON.parse(await readFile('templates/catalog-seed.json','utf8')),{apps}=availabilityFile.parse(JSON.parse(await readFile('templates/catalog-availability.json','utf8')));

@@ -4,7 +4,7 @@
 
 `tests/pipeline.test.ts` runs the catalog version in the production QuickJS runtime with stub tools, as the platform runs a v2 catalog app. It covers:
 
-- **Package.** v2 marker, installer schema and roles, draft status, gallery media. It also checks that the source has none of the standalone prototype's browser storage, file reader, dialog, own header, email preferences or prepared reports.
+- **Package.** v2 marker, installer schema and roles, approval in the seed, all three channel switches on, gallery media. It also checks that the source has none of the standalone prototype's browser storage, file reader, dialog, own header, email preferences or prepared reports.
 - **Screens.** Every screen at wide, panel and phone widths: no header, banner or footer of its own; opening never writes; the screen and program are remembered; Settings is for owners only.
 - **Rules.** Forecasts from changes, and risk rollup to downstream work and ancestors (closing a risk removes it).
 - **Completion.** Completion needs owner approval, which is recorded with the owner and date. Mandatory dependencies gate status. Pending applies only when a decision remains.
