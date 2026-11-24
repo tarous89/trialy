@@ -34,7 +34,9 @@ test('the frame reads exactly what read_app_data serves, and seeds only reads',(
 });
 
 test('every switched-on catalog app is in this test, and the switch names only versions this test covers',()=>{
- const on=Object.entries(availability).filter(([,v]:any)=>v.platform&&v.chatgpt&&v.claude).map(([k])=>k).sort();
+ // v2 apps (for example Pipeline) always run in the browser; this browser-compat test covers the v1 apps.
+ const v2=(id:string)=>!!seed[id]&&isV2Source(require('../templates/apps/'+id+'-'+seed[id].version+'.json').source);
+ const on=Object.entries(availability).filter(([k,v]:any)=>v.platform&&v.chatgpt&&v.claude&&!v2(k)).map(([k])=>k).sort();
  assert.deepEqual(APPS.map(a=>a.id).sort(),on);
  for(const [id,versions] of Object.entries(browserSwitches().compat))for(const version of versions)assert.equal(version,seed[id]?.version,`${id} ${version} is the version tested here`);
 });

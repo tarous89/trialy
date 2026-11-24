@@ -69,7 +69,7 @@ test('catalog approval, complete suite installation, retry and tenant isolation'
   await assert.rejects(()=>templateMedia(catalog,'../../etc/passwd',t.version,'screenshot'));await assert.rejects(()=>installCatalogApp(f,actor,workspace.id,request));
   await assert.rejects(()=>installCatalogApp(f,{...actor,origin:'ai'},workspace.id,request));
   await assert.rejects(()=>installCatalogApp(f,{...actor,userId:randomUUID()},workspace.id,request));
-  assert.equal((await catalog.list({limit:50})).total,31);
+  assert.equal((await catalog.list({limit:50})).total,32);
  }finally{await pg.close();}
 });
 
