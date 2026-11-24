@@ -10,10 +10,10 @@ const plural=(n:number,one:string,many=one+'s')=>`${n} ${n===1?one:many}`;
 /**
  * "Show archived (n)" for Apps, Automations and Database (MODULAR_APPS_AND_SHARED_DATA.md §6).
  * Rendered only when the server returns items, i.e. only for people who can restore them.
- * The list always starts collapsed. Archived apps are plain text rows (name, Restore, Delete):
+ * The list always starts collapsed. Archived apps are small plain cards (name, Restore, Delete):
  * opening the list asks for names only (brief), so it loads at once.
  */
-/** layout: the narrow Database table tree → compact. Archived apps are always simple text rows. */
+/** layout: the narrow Database table tree → compact. Archived apps are always small plain cards side by side. */
 /** knownCount: the collapsed count when the page's own read already returned it (Apps home, L1.4); no separate request is made. */
 export function ArchivedItems({call,kind,typeId,refreshKey,onChanged,layout='list',knownCount}:{call:Call;kind:Kind;typeId?:string;refreshKey?:unknown;onChanged?:()=>void;layout?:'list'|'grid'|'compact';knownCount?:number}){
  const listId=useId(),simple=kind==='apps';

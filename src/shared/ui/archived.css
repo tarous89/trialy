@@ -43,9 +43,12 @@
 .ty-workspace .ty-archived .ty-archive-text-action:disabled{opacity:.5;cursor:not-allowed}
 .ty-workspace .ty-archived--compact .ty-archived-actions{flex-direction:row;flex-wrap:wrap}
 
-/* Archived apps: plain text rows (name, then Restore and Delete as text links), no cards or labels. */
-.ty-workspace .ty-archived--simple .ty-archived-list{gap:0;max-width:720px;border-top:1px solid var(--ty-border)}
-.ty-workspace .ty-archived--simple .ty-archived-item{flex-wrap:nowrap;padding:8px 2px;background:none;border:0;border-bottom:1px solid var(--ty-border);border-radius:0}
-.ty-workspace .ty-archived--simple .ty-archived-body{flex:1 1 auto;overflow:hidden}
-.ty-workspace .ty-archived--simple .ty-archived-name{display:block;font-size:14px;font-weight:400;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.ty-workspace .ty-archived--simple .ty-archived-actions,.ty-workspace .ty-archived--simple .ty-archived-actions>*{width:auto;flex:none}
+/* Archived apps: small plain cards side by side (wrapping like the app cards), each with the
+   app's name and Restore and Delete as text links. No tag, no details. */
+.ty-workspace .ty-archived--simple .ty-archived-list{grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px}
+.ty-workspace .ty-archived--simple .ty-archived-item{flex-direction:column;align-items:stretch;justify-content:space-between;flex-wrap:nowrap;gap:12px;min-height:92px;padding:14px 16px;background:#f1f4f2;border:1px solid var(--ty-border);border-radius:12px}
+.ty-workspace .ty-archived--simple .ty-archived-body{flex:none;min-width:0}
+.ty-workspace .ty-archived--simple .ty-archived-name{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;font-size:14px;font-weight:500;line-height:1.4}
+.ty-workspace .ty-archived--simple .ty-archived-actions{width:auto}
+.ty-workspace .ty-archived--simple .ty-archived-actions>*{width:auto;flex:none}
+@media(max-width:480px){.ty-workspace .ty-archived--simple .ty-archived-list{grid-template-columns:1fr 1fr}}
