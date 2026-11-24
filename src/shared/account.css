@@ -1,6 +1,6 @@
 /* Shared by the browser entry page and server-rendered auth forms.
    Visual values match Intel Agent's auth page; selectors stay scoped to auth. */
-@font-face{font-family:Inter;src:url('/fonts/inter-variable.woff2') format('woff2');font-style:normal;font-weight:100 900;font-display:optional}
+@font-face{font-family:Inter;src:url('/fonts/inter-variable.woff2') format('woff2');font-style:normal;font-weight:100 900;font-display:block}
 .ty-account-entry{min-height:100vh;min-height:100dvh;display:flex;flex-direction:column;background:#f8f8f7;color:#1a1c1e;font-family:Inter,ui-sans-serif,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;font-size:16px;line-height:1.6;-webkit-font-smoothing:antialiased;color-scheme:light}
 .ty-account-entry *{box-sizing:border-box}
 .ty-account-entry a{color:inherit;text-decoration:none}

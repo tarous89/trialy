@@ -33,7 +33,8 @@
 .ty-workspace .ty-resource-grid .ty-preview-badge{position:absolute;top:22px;right:48px;left:auto;margin:0;max-width:calc(100% - 126px);box-shadow:0 2px 8px #17332612}
 @media(max-width:480px){.ty-workspace .ty-resource-grid .ty-resource{height:336px}}
 
-/* The cover already shows the name: grid cards do not repeat it below (the list view, which has no cover, keeps it). */
-.ty-workspace .ty-resource-grid .ty-resource--app .ty-resource-info h3{display:none}
+/* The cover already shows the name: grid cards do not repeat it below (the list view, which has no cover, keeps it).
+   The heading stays for screen readers and in-page search; the cover itself is decorative. */
+.ty-workspace .ty-resource-grid .ty-resource--app .ty-resource-info h3{position:absolute;width:1px;height:1px;min-height:0;max-height:none;margin:-1px;padding:0;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap;border:0}
 .ty-workspace .ty-resource-grid .ty-resource.ty-resource--app{height:296px}
 @media(max-width:480px){.ty-workspace .ty-resource-grid .ty-resource.ty-resource--app{height:286px}}

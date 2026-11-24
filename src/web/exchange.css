@@ -1,5 +1,5 @@
 /* Recipient page for external exchanges: TrialAgents design tokens, light and plain, phone-first. */
-@font-face{font-family:Inter;src:url('/fonts/inter-variable.woff2') format('woff2');font-style:normal;font-weight:100 900;font-display:optional}
+@font-face{font-family:Inter;src:url('/fonts/inter-variable.woff2') format('woff2');font-style:normal;font-weight:100 900;font-display:block}
 .xp{--x-ink:#182220;--x-muted:#4b6057;--x-green:#087b58;--x-green-dark:#066748;--x-border:#d6ddd9;--x-canvas:#f7f9f8;--x-soft:#eef4f1;--x-focus:#287650;--x-danger:#a3261c;--x-warn-bg:#fff4e0;--x-warn-ink:#6b4400;min-height:100dvh;background:var(--x-canvas);color:var(--x-ink);font:16px/1.55 Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;-webkit-font-smoothing:antialiased;color-scheme:light}
 .xp *{box-sizing:border-box}.xp h1,.xp h2,.xp h3,.xp p{margin:0}.xp p,.xp li,.xp label,.xp small{color:var(--x-ink);font-size:inherit;line-height:inherit}.xp a{color:var(--x-green-dark)}.xp .xp-muted,.xp .xp-sender-sub,.xp .xp-row-main small,.xp .xp-field small,.xp .xp-dates small,.xp .xp-msg-meta,.xp .xp-msg-q,.xp .xp-footer{color:var(--x-muted)}.xp button,.xp input,.xp select,.xp textarea{font:inherit;color:inherit}
 .xp :is(button,input,select,textarea,a,[tabindex]):focus-visible{outline:3px solid var(--x-focus);outline-offset:2px;border-radius:6px}
