@@ -242,5 +242,9 @@
   "life.data-room@1.1.1": {
     "catalogDigest": "cd107f2ec042537c55e6a667c9cfc707e16227b7adc99b663a659bd94fdf539c",
     "previewSha256": "c539f057af092ecfc41e3b947bb5a2f2205a6482c8d5b65f7a4e298c42c295c1"
+  },
+  "life.pipeline@1.0.0": {
+    "catalogDigest": "fe32abb1c247995dfc514992b6fb8fae0061810179ed1e4114fb8d05dfad5c1f",
+    "previewSha256": "877940336e57ab3e1de99184fbc61a6f0f8cb337751d3ea2fc6c3fc16ee1fed1"
   }
 }

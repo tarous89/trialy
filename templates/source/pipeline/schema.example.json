@@ -1,0 +1,735 @@
+{
+  "organizations": {
+    "name": "Organizations",
+    "contract": "core.v1",
+    "fields": [
+      {
+        "key": "name",
+        "name": "Name",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "org_type",
+        "name": "Type",
+        "kind": "select",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "options": [
+          "company",
+          "investor",
+          "cro",
+          "cdmo",
+          "site",
+          "funder",
+          "partner",
+          "agency",
+          "other"
+        ]
+      },
+      {
+        "key": "country",
+        "name": "Country",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "website",
+        "name": "Website",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "archived",
+        "name": "Archived",
+        "kind": "boolean",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      }
+    ],
+    "logicalFields": {
+      "name": "name",
+      "org_type": "org_type",
+      "country": "country",
+      "website": "website",
+      "archived": "archived"
+    }
+  },
+  "people": {
+    "name": "People",
+    "contract": "core.v1",
+    "optional": true,
+    "description": "Professional contacts only.",
+    "fields": [
+      {
+        "key": "name",
+        "name": "Name",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "organization_id",
+        "name": "Organization",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "description": "Record ID of an organizations record."
+      },
+      {
+        "key": "title",
+        "name": "Title",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "email",
+        "name": "Email",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "archived",
+        "name": "Archived",
+        "kind": "boolean",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      }
+    ],
+    "logicalFields": {
+      "name": "name",
+      "organization_id": "organization_id",
+      "title": "title",
+      "email": "email",
+      "archived": "archived"
+    }
+  },
+  "pipeline.items": {
+    "name": "Plan items",
+    "description": "Programs, milestones, activities and decisions. A milestone belongs to a program; activities and decisions belong to a program or a milestone.",
+    "contract": "pipeline.v1",
+    "fields": [
+      {
+        "key": "name",
+        "name": "Name",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "item_type",
+        "name": "Record type",
+        "kind": "select",
+        "required": true,
+        "multiple": false,
+        "options": [
+          "Program",
+          "Milestone",
+          "Activity",
+          "Decision"
+        ],
+        "ai": true
+      },
+      {
+        "key": "parent_id",
+        "name": "Parent item",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "description": "Record ID of the parent plan item (a program, or for activities and decisions a program or a milestone). Empty for programs.",
+        "ai": true
+      },
+      {
+        "key": "parent_rule",
+        "name": "Dependency on parent",
+        "kind": "select",
+        "required": false,
+        "multiple": false,
+        "options": [
+          "start",
+          "finish"
+        ],
+        "description": "start: this item must complete before the parent can start; finish: before the parent can complete. Empty: optional.",
+        "ai": true
+      },
+      {
+        "key": "parent_outcome",
+        "name": "Required decision outcome",
+        "kind": "select",
+        "required": false,
+        "multiple": false,
+        "options": [
+          "Approved",
+          "Conditional",
+          "No-go"
+        ],
+        "description": "For a decision with a dependency rule: the outcome the parent needs.",
+        "ai": true
+      },
+      {
+        "key": "description",
+        "name": "Description",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "asset",
+        "name": "Assets",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "description": "Programs only.",
+        "ai": true
+      },
+      {
+        "key": "disease",
+        "name": "Disease",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "description": "Programs only.",
+        "ai": true
+      },
+      {
+        "key": "stage",
+        "name": "Stage",
+        "kind": "select",
+        "required": false,
+        "multiple": false,
+        "options": [
+          "Discovery",
+          "Preclinical",
+          "Phase 1",
+          "Phase 2",
+          "Phase 3"
+        ],
+        "description": "Programs only.",
+        "ai": true
+      },
+      {
+        "key": "start_date",
+        "name": "Baseline start date",
+        "kind": "date",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "end_date",
+        "name": "Baseline end or target date",
+        "kind": "date",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "earliest_date",
+        "name": "Earliest date",
+        "kind": "date",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "latest_date",
+        "name": "Latest date",
+        "kind": "date",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "owner",
+        "name": "Owner",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "status",
+        "name": "Status",
+        "kind": "select",
+        "required": true,
+        "multiple": false,
+        "options": [
+          "Planned",
+          "In progress",
+          "Pending",
+          "On hold",
+          "Completed",
+          "Cancelled"
+        ],
+        "ai": true
+      },
+      {
+        "key": "decision_outcome",
+        "name": "Decision outcome",
+        "kind": "select",
+        "required": false,
+        "multiple": false,
+        "options": [
+          "Approved",
+          "Conditional",
+          "No-go"
+        ],
+        "ai": true
+      },
+      {
+        "key": "budget",
+        "name": "Approved budget",
+        "kind": "number",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "spend",
+        "name": "Spend to date",
+        "kind": "number",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "reserve",
+        "name": "Contingency",
+        "kind": "number",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "team",
+        "name": "Team members",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "description": "Names, separated by commas.",
+        "ai": true
+      },
+      {
+        "key": "organization_ids",
+        "name": "Organizations",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "description": "Record IDs of organizations records, separated by commas.",
+        "ai": true
+      },
+      {
+        "key": "files",
+        "name": "Files",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "description": "JSON list of TrialAgents document versions: [{\"v\":\"<document version ID>\",\"n\":\"<file name>\"}].",
+        "ai": true
+      },
+      {
+        "key": "approved_on",
+        "name": "Completion approved on",
+        "kind": "date",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "approved_owner",
+        "name": "Completion approved for owner",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "description": "The owner named on the item when completion was approved; the record history shows who approved it.",
+        "ai": true
+      },
+      {
+        "key": "client_ref",
+        "name": "Client reference",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "description": "Set by the app when it creates the record, to reopen it after saving.",
+        "ai": true
+      },
+      {
+        "key": "archived",
+        "name": "Archived",
+        "kind": "boolean",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      }
+    ],
+    "logicalFields": {
+      "name": "name",
+      "item_type": "item_type",
+      "parent_id": "parent_id",
+      "parent_rule": "parent_rule",
+      "parent_outcome": "parent_outcome",
+      "description": "description",
+      "asset": "asset",
+      "disease": "disease",
+      "stage": "stage",
+      "start_date": "start_date",
+      "end_date": "end_date",
+      "earliest_date": "earliest_date",
+      "latest_date": "latest_date",
+      "owner": "owner",
+      "status": "status",
+      "decision_outcome": "decision_outcome",
+      "budget": "budget",
+      "spend": "spend",
+      "reserve": "reserve",
+      "team": "team",
+      "organization_ids": "organization_ids",
+      "files": "files",
+      "approved_on": "approved_on",
+      "approved_owner": "approved_owner",
+      "client_ref": "client_ref",
+      "archived": "archived"
+    }
+  },
+  "pipeline.events": {
+    "name": "Events",
+    "description": "Deliverables, risks and changes logged against plan items.",
+    "contract": "pipeline.v1",
+    "fields": [
+      {
+        "key": "name",
+        "name": "Name",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "event_type",
+        "name": "Event type",
+        "kind": "select",
+        "required": true,
+        "multiple": false,
+        "options": [
+          "Deliverable",
+          "Risk",
+          "Change"
+        ],
+        "ai": true
+      },
+      {
+        "key": "item_ids",
+        "name": "Affected plan items",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "description": "Record IDs of pipeline.items records, separated by commas.",
+        "ai": true
+      },
+      {
+        "key": "description",
+        "name": "Description",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "description": "Deliverable content, risk and mitigation, or what changed.",
+        "ai": true
+      },
+      {
+        "key": "event_date",
+        "name": "Date",
+        "kind": "date",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "owner",
+        "name": "Responsible person",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "team",
+        "name": "Team members",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "description": "Names, separated by commas.",
+        "ai": true
+      },
+      {
+        "key": "organization_ids",
+        "name": "Organizations",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "description": "Record IDs of organizations records, separated by commas.",
+        "ai": true
+      },
+      {
+        "key": "signoff",
+        "name": "Signed off by",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "description": "Deliverables only.",
+        "ai": true
+      },
+      {
+        "key": "format",
+        "name": "Format",
+        "kind": "select",
+        "required": false,
+        "multiple": false,
+        "options": [
+          "Decision",
+          "Document",
+          "Information",
+          "Email",
+          "Other"
+        ],
+        "description": "Deliverables only.",
+        "ai": true
+      },
+      {
+        "key": "severity",
+        "name": "Severity",
+        "kind": "select",
+        "required": false,
+        "multiple": false,
+        "options": [
+          "Low",
+          "Medium",
+          "High"
+        ],
+        "description": "Risks only.",
+        "ai": true
+      },
+      {
+        "key": "risk_status",
+        "name": "Risk status",
+        "kind": "select",
+        "required": false,
+        "multiple": false,
+        "options": [
+          "Open",
+          "Closed"
+        ],
+        "description": "Risks only.",
+        "ai": true
+      },
+      {
+        "key": "place",
+        "name": "Location or workstream",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "description": "Changes only.",
+        "ai": true
+      },
+      {
+        "key": "forecasts",
+        "name": "Forecast changes",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "description": "Changes only. JSON object keyed by affected plan item ID: {\"<item ID>\":{\"end\":\"YYYY-MM-DD\",\"budget\":12345}}; either value may be empty.",
+        "ai": true
+      },
+      {
+        "key": "files",
+        "name": "Files",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "description": "JSON list of TrialAgents document versions: [{\"v\":\"<document version ID>\",\"n\":\"<file name>\"}].",
+        "ai": true
+      },
+      {
+        "key": "client_ref",
+        "name": "Client reference",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "description": "Set by the app when it creates the record.",
+        "ai": true
+      },
+      {
+        "key": "archived",
+        "name": "Archived",
+        "kind": "boolean",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      }
+    ],
+    "logicalFields": {
+      "name": "name",
+      "event_type": "event_type",
+      "item_ids": "item_ids",
+      "description": "description",
+      "event_date": "event_date",
+      "owner": "owner",
+      "team": "team",
+      "organization_ids": "organization_ids",
+      "signoff": "signoff",
+      "format": "format",
+      "severity": "severity",
+      "risk_status": "risk_status",
+      "place": "place",
+      "forecasts": "forecasts",
+      "files": "files",
+      "client_ref": "client_ref",
+      "archived": "archived"
+    }
+  },
+  "pipeline.digests": {
+    "name": "Digests",
+    "description": "Weekly and monthly digests saved to the archive, frozen as they were built.",
+    "contract": "pipeline.v1",
+    "fields": [
+      {
+        "key": "title",
+        "name": "Title",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "kind",
+        "name": "Kind",
+        "kind": "select",
+        "required": true,
+        "multiple": false,
+        "options": [
+          "Weekly",
+          "Monthly"
+        ],
+        "ai": true
+      },
+      {
+        "key": "period_start",
+        "name": "Period start",
+        "kind": "date",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "period_end",
+        "name": "Period end",
+        "kind": "date",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "program_id",
+        "name": "Program",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "description": "Record ID of a program plan item when the digest covers one program.",
+        "ai": true
+      },
+      {
+        "key": "contents",
+        "name": "Contents",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "description": "JSON {sections:[{h,p:[...]}],notes:[{h,p:[...]}]}.",
+        "ai": true
+      },
+      {
+        "key": "saved_on",
+        "name": "Saved on",
+        "kind": "date",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "archived",
+        "name": "Archived",
+        "kind": "boolean",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      }
+    ],
+    "logicalFields": {
+      "title": "title",
+      "kind": "kind",
+      "period_start": "period_start",
+      "period_end": "period_end",
+      "program_id": "program_id",
+      "contents": "contents",
+      "saved_on": "saved_on",
+      "archived": "archived"
+    }
+  },
+  "pipeline.settings": {
+    "name": "Pipeline settings",
+    "description": "App settings, one row, changed by the app’s owners.",
+    "contract": "pipeline.v1",
+    "fields": [
+      {
+        "key": "currency",
+        "name": "Budget currency",
+        "kind": "select",
+        "required": false,
+        "multiple": false,
+        "options": [
+          "EUR",
+          "USD",
+          "GBP",
+          "CHF",
+          "CAD",
+          "AUD",
+          "JPY"
+        ],
+        "ai": true
+      },
+      {
+        "key": "date_format",
+        "name": "Date format",
+        "kind": "select",
+        "required": false,
+        "multiple": false,
+        "options": [
+          "D MMM",
+          "DD/MM/YYYY",
+          "MM/DD/YYYY",
+          "YYYY-MM-DD"
+        ],
+        "ai": true
+      }
+    ],
+    "logicalFields": {
+      "currency": "currency",
+      "date_format": "date_format"
+    }
+  }
+}

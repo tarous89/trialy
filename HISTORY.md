@@ -1,3 +1,15 @@
+## 24 November 2026 — Pipeline 1.0.0: the platform version of the Pipeline prototype (draft)
+
+New catalog template `life.pipeline` ([README](templates/source/pipeline/README.md)), built from the standalone prototype in `prototypes/pipeline`. It is a portfolio planner: programs, milestones, activities and decisions, with their deliverables, risks and changes.
+
+- **Kept from the prototype.** The same eight screens and rules: forecasts from dated changes, risk rollup, dependency gating with decision outcomes, the completion review queue, statuses from deliverable evidence, and delete blocked while records name an item.
+- **Data on the platform.** Records are in TrialAgents tables (`pipeline.items`, `pipeline.events`; organizations and contacts on the shared core tables) and save at once. Files are TrialAgents documents.
+- **No identity of its own.** Approval uses the TrialAgents account; the record history shows who approved.
+- **Minimal settings.** Settings holds only the currency and date format, for owners. The prototype's per-person email switches and its lookahead and reminder fields are gone; none of them did anything.
+- **Real digest.** The digest is built from the records and can be saved to an archive.
+
+The catalog sync imports it as a draft. The installer entry, gallery card and gallery media are added. It is not in the seed until the owner approves it. Tests: `pipeline`.
+
 ## 23 November 2026 — Loading speed: the website's main script split (L1.5 finished)
 
 The last open item of [loading speed](docs/scopes/LOADING_SPEED_2026-11-22.md) package L1.5.

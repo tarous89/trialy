@@ -195,6 +195,10 @@
   "source": "e5d673d1cdfd01c4024045867dc415e367d337d341a4c114f080d5277072d91f",
   "card": "acd3fc89233fa7d6e55330521e0a6cb0cefbdc7b510a02a62ffc14ef5604cd76"
  },
+ "life.pipeline@1.0.0": {
+  "source": "60d9860cea41a2309ad7e52e4932f5ede5f3779bf3d867f6f7b37bfe8c7dba70",
+  "card": "e0d1d0ba10755b1abd140615cbf58eb9bf36d11b7f976336926846e593068104"
+ },
  "life.project-oversight@1.0.1": {
   "source": "c2c8f4bd400fba838c93243f25eafbcc403931af3d8aff55f8b4cf38fc1f65a7",
   "card": "1fa49bdf7c4f5e5513a8412ddd314737fd9371a1c67d273262f1cd57c5339d80"

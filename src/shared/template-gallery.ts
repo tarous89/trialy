@@ -4,6 +4,7 @@ export const templateGallery:Record<string,{team:string;workflow:string;summary:
  'life.hiring-resource-management':{team:'Biotech',workflow:'People',summary:'Plan hiring and balance team capacity across your biotech.'},
  'life.inventory-management':{team:'Research',workflow:'Operations',summary:'Track lab supplies, stock movements, and replenishment requests.'},
  'life.project-oversight':{team:'Biotech',workflow:'Operations',summary:'Milestones, dependencies, risks and decisions across all programs.'},
+ 'life.pipeline':{team:'Biotech',workflow:'Operations',summary:'Plan programs, milestones, activities and decisions with their deliverables, risks and changes, and approve completion.'},
  'life.pi-network-management':{team:'CRO',workflow:'Relationships',summary:'Build your investigator network and match expertise to studies.'},
  'life.grant-pipeline':{team:'Research',workflow:'Finance',summary:'Find funding opportunities and manage applications and deadlines.'},
  'life.co-site-feasibility':{team:'Clinical operations',workflow:'Study delivery',summary:'Compare sites and coordinate feasibility and study startup.'},

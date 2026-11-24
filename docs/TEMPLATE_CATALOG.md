@@ -35,6 +35,11 @@ Trial Radar (`life.trial-radar`) 1.0.0 was approved by the owner on 15 November 
 
 Investor Updates (`life.investor-updates`) 1.0.0 was built on 15 November 2026 (#189) and approved by the owner on 17 November 2026. It had never been imported, so the seed names it and the catalog sync after migrations imports it approved; no migration. It is a new template, so nothing is retired. Gallery card and screenshot added. Scope: [INVESTOR_UPDATES.md](product/app-template-blueprints/apps/INVESTOR_UPDATES.md); deviations required by platform contracts are listed in `templates/source/investor-updates/QA.md`.
 
+Pipeline (`life.pipeline`) 1.0.0 was added on 24 November 2026 as a draft. It is the platform version of the standalone Pipeline prototype (`prototypes/pipeline`): a portfolio planner for programs, milestones, activities and decisions, with their deliverables, risks and changes. Records are in TrialAgents tables, files are TrialAgents documents, approval uses the platform account, and Settings holds only the currency and date format ([README](../templates/source/pipeline/README.md)).
+- It is a new template, so nothing is retired.
+- The installer entry, gallery card and gallery media are added.
+- It is not in the seed or in `catalog-availability.json` until the owner approves it. To approve it, name 1.0.0 in the seed and give it three switches.
+
 For CRO Selection, when the owner approves 2.0.0, the publication change does four things:
 - names 2.0.0 in the seed;
 - adds a one-time migration that approves the 2.0.0 draft row and sets both retired versions to `draft` (withdrawn);

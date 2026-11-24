@@ -1,0 +1,311 @@
+{
+ "note": "Fictional sample portfolio (the prototype’s NorthTherapeutics data). Used only by the gallery preview; never installed.",
+ "records": [
+  {
+   "role": "organizations",
+   "id": "00000000-0000-4000-8000-000000000001",
+   "version": 1,
+   "data": {
+    "name": "Clinical supply CDMO",
+    "org_type": "cdmo"
+   }
+  },
+  {
+   "role": "organizations",
+   "id": "00000000-0000-4000-8000-000000000002",
+   "version": 1,
+   "data": {
+    "name": "Preclinical CRO",
+    "org_type": "cro"
+   }
+  },
+  {
+   "role": "people",
+   "id": "00000000-0000-4000-8000-000000000003",
+   "version": 1,
+   "data": {
+    "name": "Elena Rossi",
+    "organization_id": "00000000-0000-4000-8000-000000000001"
+   }
+  },
+  {
+   "role": "people",
+   "id": "00000000-0000-4000-8000-000000000004",
+   "version": 1,
+   "data": {
+    "name": "Jon Ward",
+    "organization_id": "00000000-0000-4000-8000-000000000002"
+   }
+  },
+  {
+   "role": "pipeline.items",
+   "id": "00000000-0000-4000-8000-000000000005",
+   "version": 1,
+   "data": {
+    "status": "Planned",
+    "name": "Lung cancer development",
+    "item_type": "Program",
+    "asset": "NT-101",
+    "disease": "Lung cancer",
+    "stage": "Phase 1",
+    "start_date": "2027-02-01",
+    "end_date": "2027-02-26",
+    "owner": "Maya Chen",
+    "budget": 380000,
+    "spend": 114000
+   }
+  },
+  {
+   "role": "pipeline.items",
+   "id": "00000000-0000-4000-8000-000000000006",
+   "version": 1,
+   "data": {
+    "status": "Pending",
+    "name": "Clinical supply released",
+    "item_type": "Milestone",
+    "parent_id": "00000000-0000-4000-8000-000000000005",
+    "start_date": "2027-02-18",
+    "end_date": "2027-02-18",
+    "owner": "Maya Chen",
+    "budget": 80000
+   }
+  },
+  {
+   "role": "pipeline.items",
+   "id": "00000000-0000-4000-8000-000000000007",
+   "version": 1,
+   "data": {
+    "status": "In progress",
+    "name": "Complete batch review",
+    "item_type": "Activity",
+    "parent_id": "00000000-0000-4000-8000-000000000006",
+    "start_date": "2027-02-08",
+    "end_date": "2027-02-17",
+    "owner": "Maya Chen",
+    "budget": 23000,
+    "organization_ids": "00000000-0000-4000-8000-000000000001"
+   }
+  },
+  {
+   "role": "pipeline.items",
+   "id": "00000000-0000-4000-8000-000000000008",
+   "version": 1,
+   "data": {
+    "status": "Pending",
+    "name": "Release batch for clinical use",
+    "item_type": "Decision",
+    "parent_id": "00000000-0000-4000-8000-000000000006",
+    "parent_rule": "finish",
+    "parent_outcome": "Approved",
+    "start_date": "2027-02-17",
+    "end_date": "2027-02-17",
+    "owner": "Maya Chen",
+    "decision_outcome": "Approved"
+   }
+  },
+  {
+   "role": "pipeline.items",
+   "id": "00000000-0000-4000-8000-000000000009",
+   "version": 1,
+   "data": {
+    "status": "Planned",
+    "name": "Gastric cancer development",
+    "item_type": "Program",
+    "asset": "NT-101",
+    "disease": "Gastric cancer",
+    "stage": "Preclinical",
+    "start_date": "2027-02-02",
+    "end_date": "2027-02-25",
+    "owner": "Alex Reed",
+    "budget": 240000
+   }
+  },
+  {
+   "role": "pipeline.items",
+   "id": "00000000-0000-4000-8000-000000000010",
+   "version": 1,
+   "data": {
+    "status": "Planned",
+    "name": "Preclinical study ready",
+    "item_type": "Milestone",
+    "parent_id": "00000000-0000-4000-8000-000000000009",
+    "start_date": "2027-02-22",
+    "end_date": "2027-02-22",
+    "owner": "Alex Reed",
+    "budget": 92000
+   }
+  },
+  {
+   "role": "pipeline.items",
+   "id": "00000000-0000-4000-8000-000000000011",
+   "version": 1,
+   "data": {
+    "status": "Planned",
+    "name": "Finalize CRO scope",
+    "item_type": "Activity",
+    "parent_id": "00000000-0000-4000-8000-000000000010",
+    "parent_rule": "finish",
+    "start_date": "2027-02-09",
+    "end_date": "2027-02-16",
+    "owner": "Alex Reed",
+    "budget": 12000,
+    "organization_ids": "00000000-0000-4000-8000-000000000002"
+   }
+  },
+  {
+   "role": "pipeline.items",
+   "id": "00000000-0000-4000-8000-000000000012",
+   "version": 1,
+   "data": {
+    "status": "Pending",
+    "name": "Authorize study start",
+    "item_type": "Decision",
+    "parent_id": "00000000-0000-4000-8000-000000000010",
+    "start_date": "2027-02-19",
+    "end_date": "2027-02-19",
+    "owner": "Alex Reed",
+    "decision_outcome": "Approved"
+   }
+  },
+  {
+   "role": "pipeline.items",
+   "id": "00000000-0000-4000-8000-000000000013",
+   "version": 1,
+   "data": {
+    "status": "Planned",
+    "name": "Discovery lead selection",
+    "item_type": "Program",
+    "asset": "NT-301",
+    "stage": "Discovery",
+    "start_date": "2027-02-03",
+    "end_date": "2027-02-26",
+    "owner": "Sam Bell",
+    "budget": 110000
+   }
+  },
+  {
+   "role": "pipeline.items",
+   "id": "00000000-0000-4000-8000-000000000014",
+   "version": 1,
+   "data": {
+    "status": "Planned",
+    "name": "Lead nominated",
+    "item_type": "Milestone",
+    "parent_id": "00000000-0000-4000-8000-000000000013",
+    "start_date": "2027-02-26",
+    "end_date": "2027-02-26",
+    "owner": "Sam Bell",
+    "budget": 35000
+   }
+  },
+  {
+   "role": "pipeline.items",
+   "id": "00000000-0000-4000-8000-000000000015",
+   "version": 1,
+   "data": {
+    "status": "Planned",
+    "name": "Review assay readout",
+    "item_type": "Activity",
+    "parent_id": "00000000-0000-4000-8000-000000000014",
+    "start_date": "2027-02-12",
+    "end_date": "2027-02-23",
+    "owner": "Sam Bell",
+    "budget": 9000
+   }
+  },
+  {
+   "role": "pipeline.items",
+   "id": "00000000-0000-4000-8000-000000000016",
+   "version": 1,
+   "data": {
+    "status": "Completed",
+    "name": "Confirm nomination criteria",
+    "item_type": "Decision",
+    "parent_id": "00000000-0000-4000-8000-000000000013",
+    "start_date": "2027-02-12",
+    "end_date": "2027-02-12",
+    "owner": "Sam Bell",
+    "decision_outcome": "Approved"
+   }
+  },
+  {
+   "role": "pipeline.events",
+   "id": "00000000-0000-4000-8000-000000000017",
+   "version": 1,
+   "data": {
+    "name": "Documentation review added to release plan",
+    "event_type": "Change",
+    "item_ids": "00000000-0000-4000-8000-000000000007",
+    "event_date": "2027-02-16",
+    "owner": "Maya Chen",
+    "description": "An additional documentation review was added before release."
+   }
+  },
+  {
+   "role": "pipeline.events",
+   "id": "00000000-0000-4000-8000-000000000018",
+   "version": 1,
+   "data": {
+    "name": "CRO signature pending",
+    "event_type": "Risk",
+    "item_ids": "00000000-0000-4000-8000-000000000011",
+    "event_date": "2027-02-15",
+    "owner": "Alex Reed",
+    "severity": "Medium",
+    "risk_status": "Open"
+   }
+  },
+  {
+   "role": "pipeline.events",
+   "id": "00000000-0000-4000-8000-000000000019",
+   "version": 1,
+   "data": {
+    "name": "Release date and budget revised",
+    "event_type": "Change",
+    "item_ids": "00000000-0000-4000-8000-000000000007,00000000-0000-4000-8000-000000000006",
+    "event_date": "2027-02-17",
+    "owner": "Maya Chen",
+    "description": "Review completed. Release documentation is awaiting confirmation from the CDMO.",
+    "forecasts": "{\"00000000-0000-4000-8000-000000000006\":{\"end\":\"2027-02-20\",\"budget\":82000}}"
+   }
+  },
+  {
+   "role": "pipeline.events",
+   "id": "00000000-0000-4000-8000-000000000020",
+   "version": 1,
+   "data": {
+    "name": "CRO scope revised",
+    "event_type": "Change",
+    "item_ids": "00000000-0000-4000-8000-000000000010",
+    "event_date": "2027-02-15",
+    "owner": "Alex Reed",
+    "description": "The team requested the final CRO signature."
+   }
+  },
+  {
+   "role": "pipeline.events",
+   "id": "00000000-0000-4000-8000-000000000021",
+   "version": 1,
+   "data": {
+    "name": "Batch review memo",
+    "event_type": "Deliverable",
+    "item_ids": "00000000-0000-4000-8000-000000000007",
+    "event_date": "2027-02-17",
+    "owner": "Maya Chen",
+    "signoff": "Maya Chen",
+    "format": "Email",
+    "organization_ids": "00000000-0000-4000-8000-000000000001",
+    "description": "Batch review findings received from the supply partner."
+   }
+  },
+  {
+   "role": "pipeline.settings",
+   "id": "00000000-0000-4000-8000-000000000022",
+   "version": 1,
+   "data": {
+    "currency": "EUR",
+    "date_format": "D MMM"
+   }
+  }
+ ]
+}

@@ -1,0 +1,85 @@
+{
+  "id": "life.pipeline",
+  "version": "1.0.0",
+  "name": "Pipeline",
+  "description": "Portfolio planner for a biotech team: programs, milestones, activities and decisions connected with their deliverables, risks and changes. An overview of every program (asset, disease, stage, next milestone, time to deadline, spend against forecast budget, health), program cards with expandable milestones, a shared timeline, deliverable, risk and change registers, completion review by the item owner, and weekly or monthly digests built from the records. Risks flag the items they affect, the work that depends on them and their programs; changes revise forecast dates and budgets item by item; dependencies gate when an item can start or complete.",
+  "tags": [
+    "biotech",
+    "portfolio",
+    "pipeline",
+    "programs",
+    "milestones",
+    "decisions",
+    "risks",
+    "deliverables",
+    "timeline",
+    "planning"
+  ],
+  "whenToUse": "A biotech team plans its development portfolio as programs with milestones, activities and decisions, wants to see the next milestone, deadline, budget and risk exposure per program, log deliverables, risks and changes against the plan, gate work on dependencies and decision outcomes, have the owner approve completion when evidence is in, and read a weekly or monthly digest.",
+  "whenNotToUse": "Competitor assets (Pipeline Radar), cash forecasts and runway (Runway), the full program office with function lanes, critical path, RAID scoring, monthly updates and leadership reports (Programs), resource or capacity planning, timesheets, task boards for day-to-day work, regulatory submissions, and sending email or notifications.",
+  "engine": "frontend-js",
+  "defaults": {
+    "tableMap": "{}",
+    "readOnly": false,
+    "asOfOverride": ""
+  },
+  "options": {
+    "tableMap": {
+      "type": "string",
+      "description": "JSON object keyed by stable role key: core data contract v1 role organizations (required) and people (optional, contacts of organizations); app roles pipeline.items, pipeline.events, pipeline.digests and pipeline.settings (contract pipeline.v1). Each value is {typeId:<authorized table UUID>, fields:{<logical key>:<real field key>}, writableFields:[<logical keys>]}. Real keys are lowercase snake_case.",
+      "default": "{}"
+    },
+    "readOnly": {
+      "type": "boolean",
+      "description": "When true, the app saves no records even for users who may edit.",
+      "default": false
+    },
+    "asOfOverride": {
+      "type": "string",
+      "description": "Optional fixed as-of date (YYYY-MM-DD) for previews and tests only. Leave empty: the app uses today’s date from the app runtime.",
+      "default": ""
+    }
+  },
+  "instructions": "Pipeline 1.0.0 is a frontend-js portfolio planner on the v2 app contract and the kit (it declares 'use trialagents v2'). It is the platform version of the standalone Pipeline prototype: the same screens, records and rules, with records in TrialAgents tables, files as TrialAgents documents, completion approval through the platform account, and only app settings. Install it with prepare_app_from_template (pin life.pipeline 1.0.0 and its digest, one requestKey); the installation popup creates or connects organizations (core v1), optionally people, and creates pipeline.items, pipeline.events, pipeline.digests and pipeline.settings. Never add sample records: the app starts empty and every empty screen offers the first action. Plan items: item_type Program, Milestone, Activity or Decision; a milestone’s parent_id is a program, an activity’s or decision’s a program or a milestone; programs have no parent. parent_rule start or finish makes the item a mandatory prerequisite of its parent (parent_outcome is the decision outcome the parent needs). Status values Planned, In progress, Pending, On hold, Completed and Cancelled; Completed needs approved_on and approved_owner equal to owner, set only by the app’s Approve completion action, never by an assistant. Events: event_type Deliverable, Risk or Change; item_ids lists affected plan item IDs separated by commas; a change’s forecasts JSON revises dates and budgets per affected item. Read the plan with the app commands overview.read, plan.read, events.read and digest.read. Record changes are made in the app by a person, or by the user’s assistant through the Database with the same rules.",
+  "documentation": {
+    "quickStart": [
+      "Read the guide, the reference and this template’s documentation; pin life.pipeline 1.0.0 and its digest with one requestKey.",
+      "Overview → Add program, then Add record → Milestone, Activity or Decision under it (Linked items → Belongs to). Pick a dependency (Required to start or Required to complete) where the child gates its parent.",
+      "Log deliverables, risks and changes from Add record, a register, or the plan item’s own form. A change revises forecast dates and budgets item by item.",
+      "When a deliverable is attached to an item whose prerequisites are met, it appears under Overview → Awaiting owner approval; open it and choose Approve completion, then Save.",
+      "Owners may set the budget currency and date format in Settings."
+    ],
+    "dataContract": "Stable role keys. Core data contract v1: organizations (name text*, org_type, country, website, archived) and people (optional: name text*, organization_id text record ID of organizations, title, email, archived), used as the organizations on plan items and events and their contact persons. App contract pipeline.v1: pipeline.items (name text*, item_type select Program/Milestone/Activity/Decision*, parent_id text record ID of the parent item, parent_rule select start/finish, parent_outcome select Approved/Conditional/No-go, description, asset, disease, stage select Discovery/Preclinical/Phase 1/Phase 2/Phase 3, start_date, end_date (target date for milestones and decisions), earliest_date, latest_date, owner text, status select Planned/In progress/Pending/On hold/Completed/Cancelled*, decision_outcome select, budget, spend, reserve numbers, team text (names separated by commas), organization_ids text (record IDs separated by commas), files text (JSON list of {v: document version ID, n: file name}), approved_on date, approved_owner text, client_ref text, archived); pipeline.events (name text*, event_type select Deliverable/Risk/Change*, item_ids text (plan item IDs separated by commas), description, event_date, owner, team, organization_ids, signoff, format select Decision/Document/Information/Email/Other, severity select Low/Medium/High, risk_status select Open/Closed, place, forecasts text (JSON {<item ID>:{end, budget}}), files, client_ref, archived); pipeline.digests (title*, kind select Weekly/Monthly*, period_start, period_end, program_id, contents JSON, saved_on, archived); pipeline.settings (one row: currency select EUR/USD/GBP/CHF/CAD/AUD/JPY, date_format select D MMM/DD/MM/YYYY/MM/DD/YYYY/YYYY-MM-DD). Derived, never stored: forecast dates and budgets (baseline plus dated changes in order, later values superseding earlier ones field by field), risk exposure (the highest open severity over affected items, downstream prerequisite chains and ancestors), event counts and the approval queue.",
+    "interactionContract": "Eight screens in the app’s own side navigation, which folds to icons and then to a row on narrow screens: Overview (active programs, pending decisions, programs at risk; the programs table; upcoming decisions; awaiting owner approval), Programs (program cards with expandable milestones), Timeline (the same structure on a shared scale: bars for durations, flags for milestones, diamonds for decisions), Deliverables, Risks, Changes (registers filtered by responsible person), Digest (All, Weekly or Monthly, per program, archive) and Settings (owners only, input.appRole). Programs and Timeline share their filters (search, program, owner, record, status, and under More filters risk, budget and deadline bounds). The screen and program filter are remembered per person (output.context). Add record opens a side panel; the pencil reopens a record. Save appears when the form has changes; Ignore changes discards them; Duplicate starts a new draft; Delete asks for confirmation and is refused while another record names the item as a parent or affected item. A new plan item reopens after its first save so child items, events and files can be added. Event counts open the item at that history. Files are uploaded through the platform upload and kept in TrialAgents Documents.",
+    "lifecycle": "Unsaved previews never write. Saved apps read their tables on each screen and keep them in the frame for screen changes and filters. Record changes save directly from the person’s own click or form (records.save, at most 50 changes, expectedVersion captured when editing started); a refused save keeps the form open with the platform’s message; Undo is offered for the person’s last action. Saving a record also saves the statuses that deliverable evidence implies (an item with a deliverable moves to In progress, Pending when only decisions remain, or Planned while another start prerequisite is open). Completion approval records the owner’s name and date on the item; the platform’s record history shows who approved it.",
+    "limitations": [
+      "The app sends no email or notifications; the prototype’s per-person email preferences are not part of the platform version.",
+      "Approval is recorded for the item owner by name; owners are text, not workspace members, so the app does not check that the person pressing Approve is the owner. The record history shows who did.",
+      "Organizations are the shared organizations table; a new organization’s contact persons can be added once it is saved.",
+      "Child items, events and files can be added to a new plan item once it has been saved; the app reopens it right after the first save.",
+      "Budgets are shown in the one currency chosen in Settings; amounts are not converted.",
+      "Reads cover up to 1,000 plan items and 1,000 events; beyond that the app says the data is partial."
+    ],
+    "examples": [
+      {
+        "prompt": "What needs my attention in Pipeline this week?",
+        "expectedBehavior": "Runs digest.read with kind Weekly and overview.read, and summarizes changes and deliverables logged this week, open risks, decisions and milestones due in the next seven days, items awaiting owner approval and items past their forecast deadline, by program."
+      },
+      {
+        "prompt": "Which programs are at risk and why?",
+        "expectedBehavior": "Runs plan.read and events.read, lists programs with Medium or High risk exposure and names the open risks and the affected items they come from."
+      },
+      {
+        "prompt": "When is the clinical supply milestone now expected?",
+        "expectedBehavior": "Runs plan.read, finds the milestone and reports its baseline and forecast dates and budgets and the changes that revised them."
+      }
+    ],
+    "tasks": {
+      "mode": "none",
+      "whenUseful": "Pipeline declares no automations: deadlines, decisions, risks and approvals are on Overview, and the Digest is built from the records whenever it is opened.",
+      "readRequirements": "None.",
+      "outputContract": "None: no automation output.",
+      "promptExample": "Show me the weekly Pipeline digest."
+    }
+  }
+}

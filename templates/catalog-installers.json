@@ -78,5 +78,6 @@
   "life.pipeline-radar@2.0.0": "templates/source/radars/pipeline-radar/schema.example.json",
   "life.regulatory-radar@2.0.0": "templates/source/radars/regulatory-radar/schema.example.json",
   "life.trial-radar@2.0.0": "templates/source/radars/trial-radar/schema.example.json",
-  "life.investor-updates@2.0.0": "templates/source/investor-updates/schema.example.json"
+  "life.investor-updates@2.0.0": "templates/source/investor-updates/schema.example.json",
+  "life.pipeline@1.0.0": "templates/source/pipeline/schema.example.json"
 }

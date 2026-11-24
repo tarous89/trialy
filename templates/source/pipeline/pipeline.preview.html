@@ -1,0 +1,1268 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Pipeline fictional preview</title><style>@layer trialagents-kit{:root{--k-ink:#20383d;--k-muted:#71858b;--k-accent:#0a8065;--k-accent-ink:#ffffff;--k-accent-strong:#086b55;--k-line:#e5ece9;--k-light:#f8faf9;--k-paper:#ffffff;--k-soft:#ecf6f2;--k-danger:#b3261e;--k-danger-soft:#fdecea;--k-warning:#8a5a00;--k-warning-soft:#fff4dc;--k-focus:#30ae8b;--k-radius:10px;--k-radius-small:7px;--k-space:16px;--k-font:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif}*{box-sizing:border-box}html,body{height:100%}body{margin:0;background:var(--k-light);color:var(--k-ink);font:15px/1.5 var(--k-font)}button,input,select,textarea{font:inherit;color:inherit}a{color:var(--k-accent)}:focus-visible{outline:2px solid var(--k-focus);outline-offset:2px}.k-app{container-type:inline-size;min-height:100%;display:flex;flex-direction:column}.k-main{flex:1;width:min(1240px,100%);margin:0 auto;padding:clamp(12px,3cqi,32px)}.k-row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}.k-grow{flex:1}.k-muted{color:var(--k-muted)}.k-small{font-size:13px}.k-card{background:var(--k-paper);border:1px solid var(--k-line);border-radius:var(--k-radius);padding:var(--k-space)}.k-grid{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(min(220px,100%),1fr))}.k-stat{background:var(--k-paper);border:1px solid var(--k-line);border-radius:var(--k-radius);padding:14px 16px}.k-stat b{display:block;font-size:24px;line-height:1.2}.k-stat span{font-size:13px;color:var(--k-muted)}.k-button{min-height:40px;padding:0 14px;border-radius:var(--k-radius-small);border:1px solid var(--k-line);background:var(--k-paper);cursor:pointer;font-weight:600;font-size:14px}.k-button--primary{background:var(--k-accent);border-color:var(--k-accent);color:var(--k-accent-ink)}.k-button--primary:active{background:var(--k-accent-strong)}.k-button:disabled{opacity:.55;cursor:default}.k-nav{display:flex;gap:4px;border-bottom:1px solid var(--k-line);overflow-x:auto;scrollbar-width:thin;margin:0 0 16px}.k-nav button{border:0;background:none;min-height:44px;padding:0 12px;white-space:nowrap;color:var(--k-muted);font-weight:650;border-bottom:3px solid transparent;cursor:pointer}.k-nav button[aria-current=page]{color:var(--k-accent);border-bottom-color:var(--k-accent)}.k-layout{display:grid;grid-template-columns:220px minmax(0,1fr);gap:20px}.k-layout>div{min-width:0}.k-layout>.k-nav{flex-direction:column;border:0;margin:0}.k-layout>.k-nav button{text-align:left;border-bottom:0;border-left:3px solid transparent}.k-layout>.k-nav button[aria-current=page]{border-left-color:var(--k-accent)}.k-table-wrap{overflow-x:auto;background:var(--k-paper);border:1px solid var(--k-line);border-radius:var(--k-radius)}.k-table{border-collapse:collapse;width:100%}.k-table th{font-size:12px;color:var(--k-muted);text-align:left;font-weight:650;padding:10px 12px;border-bottom:1px solid var(--k-line);background:#fbfcfb}.k-table td{padding:10px 12px;border-bottom:1px solid var(--k-line);vertical-align:top;overflow-wrap:anywhere}.k-table tr:last-child td{border-bottom:0}.k-cell{width:100%;min-width:90px;min-height:36px;border:1px solid transparent;border-radius:6px;background:transparent;padding:4px 6px}.k-cell:focus{border-color:var(--k-line);background:var(--k-paper)}.k-cell[data-trialy-saving]{background:var(--k-soft)}.k-cell[aria-invalid=true]{background:var(--k-danger-soft);border-color:var(--k-danger)}.k-pill{display:inline-block;padding:1px 9px;border-radius:999px;background:var(--k-soft);font-size:12px;font-weight:650}.k-empty{text-align:center;padding:36px 16px;background:var(--k-paper);border:1px dashed var(--k-line);border-radius:var(--k-radius)}.k-empty h3{margin:0 0 6px}.k-pager{display:flex;gap:8px;align-items:center;justify-content:flex-end;margin-top:10px;font-size:13px;color:var(--k-muted)}.k-panel{position:fixed;inset:0 0 0 auto;width:min(440px,100%);background:var(--k-paper);border-left:1px solid var(--k-line);box-shadow:-8px 0 24px rgba(20,46,41,.12);display:flex;flex-direction:column;z-index:5}.k-panel header{display:flex;align-items:center;gap:8px;padding:12px 16px;border-bottom:1px solid var(--k-line)}.k-panel header h2{flex:1;font-size:17px;margin:0}.k-panel .k-panel-body{overflow:auto;padding:16px;flex:1}.k-board{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(240px,1fr);gap:12px;overflow-x:auto;padding-bottom:6px}.k-column{background:#f1f5f3;border-radius:var(--k-radius);padding:10px;min-height:120px}.k-column h3{font-size:13px;margin:0 0 8px;color:var(--k-muted)}.k-column[data-trialy-over]{outline:2px dashed var(--k-accent)}.k-board-card{background:var(--k-paper);border:1px solid var(--k-line);border-radius:8px;padding:10px;margin-bottom:8px;cursor:grab}.k-board-card select{margin-top:6px;width:100%;min-height:32px}.k-field{display:grid;gap:4px;margin:0 0 12px}.k-field span{font-size:13px;font-weight:600}.k-field input,.k-field select,.k-field textarea{min-height:40px;border:1px solid var(--k-line);border-radius:var(--k-radius-small);padding:6px 10px;background:var(--k-paper)}.k-picker{display:inline-flex;gap:8px;align-items:center}.k-picker select{min-height:40px;border:1px solid var(--k-line);border-radius:var(--k-radius-small);padding:0 10px;background:var(--k-paper)}@container (max-width:720px){ .k-layout{grid-template-columns:1fr}.k-layout>.k-nav{flex-direction:row;border-bottom:1px solid var(--k-line)}.k-layout>.k-nav button{border-left:0;border-bottom:3px solid transparent}.k-layout>.k-nav button[aria-current=page]{border-bottom-color:var(--k-accent)} .k-table-wrap{background:none;border:0;overflow:visible}.k-table thead{display:none}.k-table,.k-table tbody,.k-table tr,.k-table td{display:block;width:100%} .k-table tr{background:var(--k-paper);border:1px solid var(--k-line);border-radius:var(--k-radius);margin-bottom:10px;padding:6px 0} .k-table td{display:grid;grid-template-columns:minmax(90px,40%) 1fr;gap:8px;border:0;padding:6px 12px}.k-table td::before{content:attr(data-label);font-size:12px;color:var(--k-muted);font-weight:650} .k-panel{width:100%;border-left:0} .k-board{grid-auto-flow:row;grid-auto-columns:auto}}}/* Pipeline 1.0.0: the prototype's look (prototypes/pipeline/src/pipeline.css) inside the TrialAgents frame.
+   The platform draws the header, messages and approval footer, so the prototype's header, host menu, design-review
+   dialog and drawer grip are gone. Layout follows the app's own width (container queries), not the window. */
+.pl{background:#f4f6fa;color:#172638;font:16px/1.45 Inter,system-ui,sans-serif;min-height:100%}
+.pl button,.pl input,.pl select,.pl textarea{font:inherit}
+.pl button{cursor:pointer;color:inherit;border:1px solid #ced7e1;border-radius:7px;background:#fff;padding:7px 12px;font-weight:650}
+.pl button:disabled{opacity:.55;cursor:default}
+.pl button:focus-visible,.pl a:focus-visible,.pl select:focus-visible,.pl input:focus-visible{outline:3px solid #268edb;outline-offset:2px}
+.pl svg{width:18px;height:18px;flex:none;vertical-align:middle}
+.pl h1,.pl h2,.pl h3,.pl p{margin:0}.pl h2{font-size:18px;letter-spacing:-.4px}.pl h3{font-size:1rem}
+.pl small,.pl .muted{color:#536478;font-size:.875rem}
+.pl-layout{display:grid;grid-template-columns:207px minmax(0,1fr);min-height:100%}
+.pl-rail{background:#192740;color:#fff;display:flex;flex-direction:column;padding:20px 10px;gap:5px}
+.pl .pl-rail button{display:flex;align-items:center;text-align:left;gap:11px;padding:12px;border:0;background:transparent;color:#e6edf6;font-size:1rem;border-radius:7px}
+.pl .pl-rail button[aria-current=page]{background:#334a70;box-shadow:inset 3px 0 #64e2bc}
+.pl .pl-rail button:last-child{margin-top:auto}
+.pl-rail svg{width:22px;height:22px;stroke-width:2.5}
+.pl-main{padding:clamp(16px,3cqi,42px);max-width:1670px;width:100%;min-width:0}
+.title,.line,.filters,.tabs{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.title,.line{justify-content:space-between}.title{margin:0 0 22px}
+.title h2{font-size:clamp(22px,3cqi,32px);letter-spacing:-1px}
+.pl .primary{background:#14644e;color:#fff;border-color:#14644e;font-weight:650}
+.panel,.card{border:1px solid #d4dce4;border-radius:12px;background:#fff;margin:0 0 16px;overflow:hidden}
+.panel>h2,.pad{padding:16px 20px}
+.strip{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:21px}
+.card{padding:16px 20px;margin:0;border-top:3px solid var(--c,#4161bb)}.card strong{font-size:29px;display:block;font-variant-numeric:tabular-nums;font-weight:400}
+.warnbox{border:1px solid #f0d58a;background:#fff8e1;color:#5c4100;border-radius:9px;padding:10px 14px;margin:0 0 14px;font-size:.9rem}
+.filters{background:#fff;padding:12px;border:1px solid #d4dce4;border-radius:9px;margin:0 0 14px;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,145px),1fr));gap:14px 16px;align-items:end}
+.filters>*{min-width:0}
+.filters label{font-size:.8125rem;font-weight:650;color:#526277}
+.filters select,.filters input{display:block;box-sizing:border-box;width:100%;height:38px;margin-top:4px;padding:6px;border:1px solid #c9d3dd;border-radius:5px;background:#fff;color:#1a2a3f;font-size:.9375rem}
+.filters button{justify-self:start;height:38px}
+.scroll{overflow:auto}
+.pl table{border-collapse:collapse;width:100%;text-align:left}
+.pl td,.pl th{padding:12px 15px;border-top:1px solid #e1e6ec;white-space:nowrap;font-size:.9375rem;font-weight:400}
+.pl th{background:#f5f7fa;color:#526277;font-size:.8125rem;text-transform:uppercase;letter-spacing:.05em;font-weight:650}
+.pl .link{color:#173d6a;font-weight:700;border:0;background:transparent;padding:2px;text-align:left}
+.tag{display:inline-block;border-radius:5px;padding:3px 7px;font-size:.8125rem;background:#e5ebf1;color:#344559}
+.warn{background:#fff0c5;color:#785000}.good{background:#d8f3e6;color:#115735}.risk{background:#ffe1dc;color:#862f21}
+.type{color:var(--c);display:inline-flex;align-items:center;gap:7px;white-space:nowrap}
+.type.decision{background:#fff3bd;color:#735300;padding:1px 5px;border-radius:4px}
+.tabs{margin:0 0 14px}.tabs label{margin-left:auto;font-weight:600}
+.tabs select{border:1px solid #ced7e1;padding:7px;border-radius:6px;background:#fff}
+.pl .tabs button[aria-pressed=true]{color:#fff;background:#223c5c}
+.legend{display:flex;gap:16px;flex-wrap:wrap;padding:12px 16px}
+.chart{min-width:680px;box-sizing:border-box;padding:0 12px 10px}
+.chartrow{display:grid;grid-template-columns:minmax(210px,28%) minmax(220px,1fr) 76px;align-items:center;border-top:1px solid #e0e6eb;min-height:46px}
+.chartrow>div:first-child{padding:7px 14px}.chartrow small{display:block}.chartrow .edit-action{justify-self:center}
+.track{height:46px;position:relative;overflow:hidden;background:repeating-linear-gradient(to right,#dfe5eb 0 1px,transparent 1px 25%)}
+.bar,.diamond{position:absolute;background:var(--c);border:0;padding:0;min-width:8px}
+.bar{height:12px;top:17px;border-radius:4px}
+.diamond{width:14px;height:14px;top:16px;transform:translateX(-50%) rotate(45deg);border-radius:2px}
+.flag{position:absolute;top:8px;color:var(--c);font-size:24px;line-height:26px;transform:translateX(-2px)}
+.ticks{display:flex;justify-content:space-between;font-size:.875rem;padding-right:4px;color:#4b596b}
+.stage-track{display:flex;gap:3px;margin-top:5px;width:86px}.stage-track i{flex:1;height:5px;border-radius:2px;background:#d9e1e6}
+.stage-track i.past{background:#89bcae}.stage-track i.current{background:#14644e}
+.pl .edit-action{display:inline-grid;place-items:center;width:36px;height:36px;border:0;background:transparent;color:#43566c;opacity:.45;padding:0}
+.pl .edit-action:focus-visible,.pl .edit-action:active{opacity:1}
+.edit-action svg{width:19px;height:19px;stroke-width:2.2}
+.note{display:block;white-space:normal;min-width:180px;max-width:34rem}
+.selected-record{background:#e9f4ef}
+.signals{display:inline-flex;gap:4px;flex-wrap:wrap;margin:0 4px}
+.pl .sig{border:0;padding:3px 7px;font-size:12px;font-weight:700;color:#173d6a}
+.sig.risk{color:#855412;background:#fff1d6}.sig.deliverable{background:#dcf4eb}.sig.change{background:#e8effb}
+.program-head{display:flex;align-items:center;justify-content:space-between;padding:4px 16px 4px 0;gap:12px;flex-wrap:wrap}
+.program-head h2{font-size:19px;padding:16px 20px}.program-head>span{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.tree-label{position:relative;padding-inline-start:1.4rem}
+.chartrow>.tree-label{padding-inline-start:calc(14px + 1.4rem)}
+.pl .milestone-toggle{position:relative;border:0;padding:0;margin:0;background:transparent;text-align:left;font:inherit;color:inherit}
+.tree-label .caret{position:absolute;right:100%;width:1.4rem;text-align:center}
+.plan-name{font-weight:700}
+.entry{padding:13px 19px;border-top:1px solid #e0e6ec}
+.bigreport{padding:23px;border-left:5px solid #4c55a8}.bigreport h2{padding:0;margin:6px 0 14px;font-size:23px}.bigreport h3{margin-top:10px}.bigreport p,.bigreport li{margin:4px 0 10px}
+/* Side panel (kit.panel) holding the record form */
+.pl .k-panel{width:min(600px,100%);color:#172638}
+.pl .k-panel header h2{font-size:18px}
+.pl-form .field{display:block;margin:16px 0;font-size:.9375rem;font-weight:600}
+.pl-form .field input,.pl-form .field select,.pl-form .field textarea{display:block;width:100%;margin-top:7px;border:1px solid #bcc9d7;border-radius:7px;padding:9px;background:#fff;font-weight:400}
+.pl-form textarea{resize:vertical;min-height:65px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:0 16px}
+.disc{border-top:1px solid #dbe2e9;margin-top:18px;padding:12px 0}
+.pl .disc-toggle{border:0;background:transparent;padding:0;font-weight:700;color:#173d6a}
+.disc-body{margin-top:8px}
+.risk-summary{padding:12px 14px;background:#f5f7fa;border-radius:8px;margin-top:12px}.risk-summary p{margin-top:5px}
+.approval{display:flex;align-items:center;gap:8px;flex-wrap:wrap;background:#edf5fb;padding:12px;border-radius:8px;margin:12px 0}.approval span{flex:1}
+.hier{margin:18px 0}.hier h3{margin:0 0 6px}
+.hier-row{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr) auto;align-items:end;gap:12px;margin:10px 0}
+.hier-row .field{margin:0}
+.move-hint{grid-column:1/-1}
+.pl .history-entry{display:block;border:0;border-bottom:1px solid #e5eaf0;border-radius:0;width:100%;text-align:left;margin-bottom:8px;padding:9px 0;background:transparent}
+.history-entry strong,.history-entry small{display:block}.history-entry small{font-weight:400;margin-top:4px}
+.participants h3{margin:18px 0 8px}
+.inline-field,.org-row{display:flex;align-items:center;gap:8px}
+.inline-field input,.inline-field select{flex:1;min-width:0;border:1px solid #bcc9d7;padding:9px;border-radius:7px;background:#fff}
+.org-row{padding:10px 0}.org-row>div{flex:1}.org-row small{display:block}
+.pl .chip{display:inline-flex;align-items:center;gap:7px;margin:6px 5px 0 0;font-size:.85rem;background:#f4f7fa}
+.choice-group{margin:20px 0}.choice-group h3{margin-bottom:9px}
+.newchoices{display:grid;grid-template-columns:1fr;gap:10px}
+.pl .newchoices button{display:flex;align-items:center;gap:12px;text-align:left;padding:12px;color:#193e67;font-weight:700}
+.save{display:flex;gap:8px;align-items:center;justify-content:flex-end;flex-wrap:wrap;border-top:1px solid #dce3eb;padding:14px 0;margin-top:20px}
+.pl .save .danger{color:#97382f;margin-right:auto}
+.form-error{color:#953329;margin-top:14px}
+.confirm{background:#fff4f2;border:1px solid #f2c6bf;border-radius:8px;padding:12px;margin-top:14px;display:flex;gap:8px;align-items:center;flex-wrap:wrap}.confirm span{flex:1}
+.gearform{max-width:550px}
+@container (max-width:800px){
+ .pl-layout{grid-template-columns:58px minmax(0,1fr)}.pl-rail{padding:16px 6px}
+ .pl-rail button span{display:none}.pl .pl-rail button{justify-content:center}
+ .strip{gap:5px}.card{padding:10px}.grid{grid-template-columns:1fr}
+}
+@container (max-width:560px){
+ .pl-layout{grid-template-columns:1fr}
+ .pl-rail{flex-direction:row;overflow-x:auto;padding:6px}.pl .pl-rail button:last-child{margin-top:0}
+ .strip{grid-template-columns:1fr}.hier-row{grid-template-columns:1fr}
+}
+</style><body><div style="padding:8px 16px;background:#fff4dc;color:#5c3d00;font:13px Inter,Arial,sans-serif">Fictional demo data (NorthTherapeutics), fixed as of 15 Feb 2027. Edits stay in this page.</div><div id="message" style="padding:0 16px;font:13px Inter,Arial,sans-serif;color:#20383d"></div><div id="surface"></div><script>
+const source="const kit=(()=>{'use strict';\n const esc=v=>String(v??'').replace(/[&<>\"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;',\"'\":'&#39;'})[c]);\n const attr=(k,v)=>v==null||v===false?'':v===true?' '+k:' '+k+'=\"'+esc(v)+'\"';\n const button=(label,action,o={})=>'<button type=\"button\" class=\"k-button'+(o.primary?' k-button--primary':'')+'\"'+attr('data-action',action)+attr('disabled',!!o.disabled)+attr('aria-label',o.ariaLabel)+'>'+esc(label)+'</button>';\n /** Screens: tabs on top, or a side list with side:true; both fold into a scrolling row on narrow screens. */\n const nav=(items,current,o={})=>'<nav class=\"k-nav\" aria-label=\"'+esc(o.label||'Screens')+'\">'+items.map(i=>'<button type=\"button\"'+attr('data-action',(o.prefix||'nav:')+i.id)+(i.id===current?' aria-current=\"page\"':'')+'>'+esc(i.label)+'</button>').join('')+'</nav>';\n const layout=(navHtml,body,o={})=>o.side?'<div class=\"k-layout\">'+navHtml+'<div>'+body+'</div></div>':navHtml+body;\n const page=body=>'<div class=\"k-app\"><main class=\"k-main\">'+body+'</main></div>';\n /** One editable value. Saving is the app's: handle the change event whose action starts with \"edit:\". */\n const cell=(c)=>{const action='edit:'+c.recordId+':'+c.field+(c.version!=null?':'+c.version:''),label=c.label||c.field,v=c.value;\n  if(c.readOnly)return '<span>'+esc(Array.isArray(v)?v.join(', '):v??'—')+'</span>';\n  if(c.kind==='select')return '<select class=\"k-cell\"'+attr('data-action',action)+attr('aria-label',label)+'><option value=\"\">—</option>'+(c.options||[]).map(o=>'<option'+attr('selected',o===v)+'>'+esc(o)+'</option>').join('')+'</select>';\n  if(c.kind==='boolean')return '<input type=\"checkbox\" class=\"k-cell\"'+attr('data-action',action)+attr('aria-label',label)+attr('checked',v===true)+'>';\n  const type=c.kind==='number'||c.kind==='money'?'number':c.kind==='date'?'date':'text';\n  return '<input class=\"k-cell\" type=\"'+type+'\"'+(type==='number'?' step=\"any\"':'')+attr('value',v??'')+attr('data-action',action)+attr('aria-label',label)+'>';};\n /** Reads an \"edit:\" event back: the record, field, version and typed value. */\n const edit=(event,kinds={})=>{const m=/^edit:([^:]+):([a-z][a-z0-9_]*)(?::(\\d+))?$/.exec(event&&event.action||'');if(!m)return null;let value=event.value;const kind=kinds[m[2]];\n  if(kind==='number'||kind==='money')value=value===''||value==null?null:Number(value);if(kind==='boolean')value=value===true||value==='true';if(value==='')value=null;\n  return {recordId:m[1],field:m[2],version:m[3]==null?null:Number(m[3]),value};};\n /** A table that becomes cards on narrow screens. Column render(row) returns HTML; edit:{kind,options} makes it an inline cell. */\n const table=(o)=>{if(!o.rows.length)return o.empty||empty({title:'Nothing here yet'});\n  return '<div class=\"k-table-wrap\"><table class=\"k-table\"><thead><tr>'+o.columns.map(c=>'<th scope=\"col\">'+esc(c.label)+'</th>').join('')+'</tr></thead><tbody>'+o.rows.map(r=>'<tr>'+o.columns.map(c=>'<td'+attr('data-label',c.label)+'>'+(c.render?c.render(r):c.edit?cell({recordId:r.id,version:r.version,field:c.key,label:c.label,value:r.data?r.data[c.key]:r[c.key],...c.edit}):esc((r.data?r.data[c.key]:r[c.key])??'—'))+'</td>').join('')+'</tr>').join('')+'</tbody></table></div>';};\n const empty=(o)=>'<div class=\"k-empty\"><h3>'+esc(o.title)+'</h3>'+(o.text?'<p class=\"k-muted\">'+esc(o.text)+'</p>':'')+(o.action?button(o.action.label,o.action.action,{primary:true}):'')+'</div>';\n const pager=(o)=>{const from=o.total?o.offset+1:0,to=Math.min(o.offset+o.limit,o.total??o.offset+o.limit);return '<div class=\"k-pager\"><span>'+from+'–'+to+(o.total!=null?' of '+o.total:'')+'</span>'+button('Previous',(o.action||'page')+':'+Math.max(0,o.offset-o.limit),{disabled:o.offset<=0})+button('Next',(o.action||'page')+':'+(o.offset+o.limit),{disabled:o.total!=null&&o.offset+o.limit>=o.total})+'</div>';};\n /** A side panel for creating a record or editing many fields; it fills the screen on phones. */\n const panel=(o)=>'<aside class=\"k-panel\" role=\"dialog\" aria-modal=\"true\"'+attr('aria-label',o.title)+'><header><h2>'+esc(o.title)+'</h2>'+button('×',o.close||'panel:close',{ariaLabel:'Close'})+'</header><div class=\"k-panel-body\">'+o.body+'</div></aside>';\n /** A drag-and-drop board. Dropping a card sends the change event o.action with value \"cardId>columnId\"; the menu on each card does the same without dragging. */\n const board=(o)=>'<div class=\"k-board\">'+o.columns.map(col=>'<section class=\"k-column\"'+attr('data-drop',col.id)+attr('data-drop-action',o.action)+'><h3>'+esc(col.label)+' · '+col.cards.length+'</h3>'+col.cards.map(card=>'<article class=\"k-board-card\" draggable=\"true\"'+attr('data-drag',card.id)+'>'+card.html+'<select'+attr('data-action',o.action+'-menu:'+card.id)+attr('aria-label','Move '+(card.label||'card'))+'>'+o.columns.map(c=>'<option'+attr('value',c.id)+attr('selected',c.id===col.id)+'>'+esc(c.label)+'</option>').join('')+'</select></article>').join('')+'</section>').join('')+'</div>';\n /** Reads a board move back (drop or menu): {cardId, columnId}. */\n const move=(event,action)=>{if(!event)return null;if(event.action===action&&typeof event.value==='string'){const [cardId,columnId]=event.value.split('>');return cardId&&columnId?{cardId,columnId}:null;}if((event.action||'').startsWith(action+'-menu:'))return {cardId:event.action.slice(action.length+6),columnId:event.value};return null;};\n /** The working context a person chose (G4), e.g. a program or a fund. */\n const picker=(o)=>'<label class=\"k-picker\"><span>'+esc(o.label)+'</span><select'+attr('data-action',o.action||'context')+'>'+o.options.map(x=>'<option'+attr('value',x.value)+attr('selected',x.value===o.value)+'>'+esc(x.label)+'</option>').join('')+'</select></label>';\n /** Business choices for the app's owners (G6). Returns nothing for editors and viewers. */\n const settings=(o,input)=>input&&input.appRole!=='owner'?'':'<form class=\"k-card\"'+attr('data-action',o.action||'settings:save')+'>'+o.fields.map(f=>'<label class=\"k-field\"><span>'+esc(f.label)+'</span>'+(f.options?'<select'+attr('name',f.name)+'>'+f.options.map(x=>'<option'+attr('selected',x===f.value)+'>'+esc(x)+'</option>').join('')+'</select>':'<input'+attr('name',f.name)+attr('value',f.value??'')+'>')+'</label>').join('')+'<button type=\"submit\" class=\"k-button k-button--primary\">Save</button></form>';\n /** Undo for the person's own last actions in this open app (G8): pass tools.call('undo.list').actions (or the whole result). */\n const undo=(list)=>{const entries=Array.isArray(list)?list:list&&(list.actions||list.entries);return entries&&entries.length?button('Undo '+String(entries[0].label||'last change').toLowerCase(),'undo:'+entries[0].undoId):'';};\n /** The platform message (U2): return it as output.notice. */\n const notice=(kind,message)=>({kind,message:String(message)});\n const stat=(label,value)=>'<div class=\"k-stat\"><b>'+esc(value)+'</b><span>'+esc(label)+'</span></div>';\n return Object.freeze({version:'trialagents.kit.1',esc,attr,button,nav,layout,page,cell,edit,table,empty,pager,panel,board,move,picker,settings,undo,notice,stat});\n})();\n'use trialagents v2';\nconst appCommands=[{\"id\":\"overview.read\",\"label\":\"Read the Overview: programs, next milestones, decisions and items awaiting owner approval\",\"mode\":\"read\",\"input\":{\"type\":\"object\",\"properties\":{},\"additionalProperties\":false}},{\"id\":\"plan.read\",\"label\":\"Read the plan with forecast dates and budgets, dependencies and risk exposure\",\"mode\":\"read\",\"input\":{\"type\":\"object\",\"properties\":{\"program_id\":{\"type\":\"string\",\"format\":\"uuid\"}},\"additionalProperties\":false}},{\"id\":\"events.read\",\"label\":\"Read deliverables, risks and changes with the plan items they affect\",\"mode\":\"read\",\"input\":{\"type\":\"object\",\"properties\":{\"event_type\":{\"type\":\"string\",\"enum\":[\"Deliverable\",\"Risk\",\"Change\"]}},\"additionalProperties\":false}},{\"id\":\"digest.read\",\"label\":\"Read the current weekly or monthly digest\",\"mode\":\"read\",\"input\":{\"type\":\"object\",\"properties\":{\"kind\":{\"type\":\"string\",\"enum\":[\"Weekly\",\"Monthly\"]},\"program_id\":{\"type\":\"string\",\"format\":\"uuid\"}},\"additionalProperties\":false}}];\nconst PIPELINE_CSS=\"/* Pipeline 1.0.0: the prototype's look (prototypes/pipeline/src/pipeline.css) inside the TrialAgents frame.\\n   The platform draws the header, messages and approval footer, so the prototype's header, host menu, design-review\\n   dialog and drawer grip are gone. Layout follows the app's own width (container queries), not the window. */\\n.pl{background:#f4f6fa;color:#172638;font:16px/1.45 Inter,system-ui,sans-serif;min-height:100%}\\n.pl button,.pl input,.pl select,.pl textarea{font:inherit}\\n.pl button{cursor:pointer;color:inherit;border:1px solid #ced7e1;border-radius:7px;background:#fff;padding:7px 12px;font-weight:650}\\n.pl button:disabled{opacity:.55;cursor:default}\\n.pl button:focus-visible,.pl a:focus-visible,.pl select:focus-visible,.pl input:focus-visible{outline:3px solid #268edb;outline-offset:2px}\\n.pl svg{width:18px;height:18px;flex:none;vertical-align:middle}\\n.pl h1,.pl h2,.pl h3,.pl p{margin:0}.pl h2{font-size:18px;letter-spacing:-.4px}.pl h3{font-size:1rem}\\n.pl small,.pl .muted{color:#536478;font-size:.875rem}\\n.pl-layout{display:grid;grid-template-columns:207px minmax(0,1fr);min-height:100%}\\n.pl-rail{background:#192740;color:#fff;display:flex;flex-direction:column;padding:20px 10px;gap:5px}\\n.pl .pl-rail button{display:flex;align-items:center;text-align:left;gap:11px;padding:12px;border:0;background:transparent;color:#e6edf6;font-size:1rem;border-radius:7px}\\n.pl .pl-rail button[aria-current=page]{background:#334a70;box-shadow:inset 3px 0 #64e2bc}\\n.pl .pl-rail button:last-child{margin-top:auto}\\n.pl-rail svg{width:22px;height:22px;stroke-width:2.5}\\n.pl-main{padding:clamp(16px,3cqi,42px);max-width:1670px;width:100%;min-width:0}\\n.title,.line,.filters,.tabs{display:flex;align-items:center;gap:10px;flex-wrap:wrap}\\n.title,.line{justify-content:space-between}.title{margin:0 0 22px}\\n.title h2{font-size:clamp(22px,3cqi,32px);letter-spacing:-1px}\\n.pl .primary{background:#14644e;color:#fff;border-color:#14644e;font-weight:650}\\n.panel,.card{border:1px solid #d4dce4;border-radius:12px;background:#fff;margin:0 0 16px;overflow:hidden}\\n.panel>h2,.pad{padding:16px 20px}\\n.strip{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:21px}\\n.card{padding:16px 20px;margin:0;border-top:3px solid var(--c,#4161bb)}.card strong{font-size:29px;display:block;font-variant-numeric:tabular-nums;font-weight:400}\\n.warnbox{border:1px solid #f0d58a;background:#fff8e1;color:#5c4100;border-radius:9px;padding:10px 14px;margin:0 0 14px;font-size:.9rem}\\n.filters{background:#fff;padding:12px;border:1px solid #d4dce4;border-radius:9px;margin:0 0 14px;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,145px),1fr));gap:14px 16px;align-items:end}\\n.filters>*{min-width:0}\\n.filters label{font-size:.8125rem;font-weight:650;color:#526277}\\n.filters select,.filters input{display:block;box-sizing:border-box;width:100%;height:38px;margin-top:4px;padding:6px;border:1px solid #c9d3dd;border-radius:5px;background:#fff;color:#1a2a3f;font-size:.9375rem}\\n.filters button{justify-self:start;height:38px}\\n.scroll{overflow:auto}\\n.pl table{border-collapse:collapse;width:100%;text-align:left}\\n.pl td,.pl th{padding:12px 15px;border-top:1px solid #e1e6ec;white-space:nowrap;font-size:.9375rem;font-weight:400}\\n.pl th{background:#f5f7fa;color:#526277;font-size:.8125rem;text-transform:uppercase;letter-spacing:.05em;font-weight:650}\\n.pl .link{color:#173d6a;font-weight:700;border:0;background:transparent;padding:2px;text-align:left}\\n.tag{display:inline-block;border-radius:5px;padding:3px 7px;font-size:.8125rem;background:#e5ebf1;color:#344559}\\n.warn{background:#fff0c5;color:#785000}.good{background:#d8f3e6;color:#115735}.risk{background:#ffe1dc;color:#862f21}\\n.type{color:var(--c);display:inline-flex;align-items:center;gap:7px;white-space:nowrap}\\n.type.decision{background:#fff3bd;color:#735300;padding:1px 5px;border-radius:4px}\\n.tabs{margin:0 0 14px}.tabs label{margin-left:auto;font-weight:600}\\n.tabs select{border:1px solid #ced7e1;padding:7px;border-radius:6px;background:#fff}\\n.pl .tabs button[aria-pressed=true]{color:#fff;background:#223c5c}\\n.legend{display:flex;gap:16px;flex-wrap:wrap;padding:12px 16px}\\n.chart{min-width:680px;box-sizing:border-box;padding:0 12px 10px}\\n.chartrow{display:grid;grid-template-columns:minmax(210px,28%) minmax(220px,1fr) 76px;align-items:center;border-top:1px solid #e0e6eb;min-height:46px}\\n.chartrow>div:first-child{padding:7px 14px}.chartrow small{display:block}.chartrow .edit-action{justify-self:center}\\n.track{height:46px;position:relative;overflow:hidden;background:repeating-linear-gradient(to right,#dfe5eb 0 1px,transparent 1px 25%)}\\n.bar,.diamond{position:absolute;background:var(--c);border:0;padding:0;min-width:8px}\\n.bar{height:12px;top:17px;border-radius:4px}\\n.diamond{width:14px;height:14px;top:16px;transform:translateX(-50%) rotate(45deg);border-radius:2px}\\n.flag{position:absolute;top:8px;color:var(--c);font-size:24px;line-height:26px;transform:translateX(-2px)}\\n.ticks{display:flex;justify-content:space-between;font-size:.875rem;padding-right:4px;color:#4b596b}\\n.stage-track{display:flex;gap:3px;margin-top:5px;width:86px}.stage-track i{flex:1;height:5px;border-radius:2px;background:#d9e1e6}\\n.stage-track i.past{background:#89bcae}.stage-track i.current{background:#14644e}\\n.pl .edit-action{display:inline-grid;place-items:center;width:36px;height:36px;border:0;background:transparent;color:#43566c;opacity:.45;padding:0}\\n.pl .edit-action:focus-visible,.pl .edit-action:active{opacity:1}\\n.edit-action svg{width:19px;height:19px;stroke-width:2.2}\\n.note{display:block;white-space:normal;min-width:180px;max-width:34rem}\\n.selected-record{background:#e9f4ef}\\n.signals{display:inline-flex;gap:4px;flex-wrap:wrap;margin:0 4px}\\n.pl .sig{border:0;padding:3px 7px;font-size:12px;font-weight:700;color:#173d6a}\\n.sig.risk{color:#855412;background:#fff1d6}.sig.deliverable{background:#dcf4eb}.sig.change{background:#e8effb}\\n.program-head{display:flex;align-items:center;justify-content:space-between;padding:4px 16px 4px 0;gap:12px;flex-wrap:wrap}\\n.program-head h2{font-size:19px;padding:16px 20px}.program-head>span{display:flex;align-items:center;gap:6px;flex-wrap:wrap}\\n.tree-label{position:relative;padding-inline-start:1.4rem}\\n.chartrow>.tree-label{padding-inline-start:calc(14px + 1.4rem)}\\n.pl .milestone-toggle{position:relative;border:0;padding:0;margin:0;background:transparent;text-align:left;font:inherit;color:inherit}\\n.tree-label .caret{position:absolute;right:100%;width:1.4rem;text-align:center}\\n.plan-name{font-weight:700}\\n.entry{padding:13px 19px;border-top:1px solid #e0e6ec}\\n.bigreport{padding:23px;border-left:5px solid #4c55a8}.bigreport h2{padding:0;margin:6px 0 14px;font-size:23px}.bigreport h3{margin-top:10px}.bigreport p,.bigreport li{margin:4px 0 10px}\\n/* Side panel (kit.panel) holding the record form */\\n.pl .k-panel{width:min(600px,100%);color:#172638}\\n.pl .k-panel header h2{font-size:18px}\\n.pl-form .field{display:block;margin:16px 0;font-size:.9375rem;font-weight:600}\\n.pl-form .field input,.pl-form .field select,.pl-form .field textarea{display:block;width:100%;margin-top:7px;border:1px solid #bcc9d7;border-radius:7px;padding:9px;background:#fff;font-weight:400}\\n.pl-form textarea{resize:vertical;min-height:65px}\\n.grid{display:grid;grid-template-columns:1fr 1fr;gap:0 16px}\\n.disc{border-top:1px solid #dbe2e9;margin-top:18px;padding:12px 0}\\n.pl .disc-toggle{border:0;background:transparent;padding:0;font-weight:700;color:#173d6a}\\n.disc-body{margin-top:8px}\\n.risk-summary{padding:12px 14px;background:#f5f7fa;border-radius:8px;margin-top:12px}.risk-summary p{margin-top:5px}\\n.approval{display:flex;align-items:center;gap:8px;flex-wrap:wrap;background:#edf5fb;padding:12px;border-radius:8px;margin:12px 0}.approval span{flex:1}\\n.hier{margin:18px 0}.hier h3{margin:0 0 6px}\\n.hier-row{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr) auto;align-items:end;gap:12px;margin:10px 0}\\n.hier-row .field{margin:0}\\n.move-hint{grid-column:1/-1}\\n.pl .history-entry{display:block;border:0;border-bottom:1px solid #e5eaf0;border-radius:0;width:100%;text-align:left;margin-bottom:8px;padding:9px 0;background:transparent}\\n.history-entry strong,.history-entry small{display:block}.history-entry small{font-weight:400;margin-top:4px}\\n.participants h3{margin:18px 0 8px}\\n.inline-field,.org-row{display:flex;align-items:center;gap:8px}\\n.inline-field input,.inline-field select{flex:1;min-width:0;border:1px solid #bcc9d7;padding:9px;border-radius:7px;background:#fff}\\n.org-row{padding:10px 0}.org-row>div{flex:1}.org-row small{display:block}\\n.pl .chip{display:inline-flex;align-items:center;gap:7px;margin:6px 5px 0 0;font-size:.85rem;background:#f4f7fa}\\n.choice-group{margin:20px 0}.choice-group h3{margin-bottom:9px}\\n.newchoices{display:grid;grid-template-columns:1fr;gap:10px}\\n.pl .newchoices button{display:flex;align-items:center;gap:12px;text-align:left;padding:12px;color:#193e67;font-weight:700}\\n.save{display:flex;gap:8px;align-items:center;justify-content:flex-end;flex-wrap:wrap;border-top:1px solid #dce3eb;padding:14px 0;margin-top:20px}\\n.pl .save .danger{color:#97382f;margin-right:auto}\\n.form-error{color:#953329;margin-top:14px}\\n.confirm{background:#fff4f2;border:1px solid #f2c6bf;border-radius:8px;padding:12px;margin-top:14px;display:flex;gap:8px;align-items:center;flex-wrap:wrap}.confirm span{flex:1}\\n.gearform{max-width:550px}\\n@container (max-width:800px){\\n .pl-layout{grid-template-columns:58px minmax(0,1fr)}.pl-rail{padding:16px 6px}\\n .pl-rail button span{display:none}.pl .pl-rail button{justify-content:center}\\n .strip{gap:5px}.card{padding:10px}.grid{grid-template-columns:1fr}\\n}\\n@container (max-width:560px){\\n .pl-layout{grid-template-columns:1fr}\\n .pl-rail{flex-direction:row;overflow-x:auto;padding:6px}.pl .pl-rail button:last-child{margin-top:0}\\n .strip{grid-template-columns:1fr}.hier-row{grid-template-columns:1fr}\\n}\\n\";\nconst We=typeof templateConfiguration==\"object\"&&templateConfiguration?templateConfiguration:{},zt=Array.isArray(templateBindings)?templateBindings:[],L=input||{},Y=L.event||{},p=String(Y.action||\"\"),E=String(Y.kind||\"open\"),u=kit.esc,ge=(e,t)=>!!e&&Object.prototype.hasOwnProperty.call(e,t),g=e=>e==null?\"\":String(e),Z=e=>e===\"\"||e==null||!Number.isFinite(Number(e))?null:Number(e),z=e=>{const t=g(e).slice(0,10);return/^\\d{4}-\\d{2}-\\d{2}$/.test(t)?t:\"\"},T=(e,t)=>g(e).localeCompare(g(t)),re=e=>[...new Set(g(e).split(\",\").map(t=>t.trim()).filter(Boolean))],Me=(e,t)=>{try{const n=JSON.parse(g(e));return n??t}catch{return t}},ee=[\"Program\",\"Milestone\",\"Activity\",\"Decision\"],G=[\"Deliverable\",\"Risk\",\"Change\"],Be=[\"Planned\",\"In progress\",\"Pending\",\"On hold\",\"Completed\",\"Cancelled\"],De=[\"Discovery\",\"Preclinical\",\"Phase 1\",\"Phase 2\",\"Phase 3\"],Oe=[\"Approved\",\"Conditional\",\"No-go\"],Ae=[\"None\",\"Low\",\"Medium\",\"High\"],nt=[\"Decision\",\"Document\",\"Information\",\"Email\",\"Other\"],Ue=[\"EUR\",\"USD\",\"GBP\",\"CHF\",\"CAD\",\"AUD\",\"JPY\"],He=[\"D MMM\",\"DD/MM/YYYY\",\"MM/DD/YYYY\",\"YYYY-MM-DD\"],Je={Program:\"#3354ac\",Milestone:\"#077862\",Activity:\"#7852b2\",Decision:\"#a27605\"},Tt={Program:\"\\u25B0\",Milestone:\"\\u2691\",Activity:\"\\u25AC\",Decision:\"\\u25C6\"},te=e=>e===\"Decision\"||e===\"Milestone\",O=e=>!!e&&G.includes(e.type),Ve={items:[\"name\",\"item_type\",\"parent_id\",\"parent_rule\",\"parent_outcome\",\"description\",\"asset\",\"disease\",\"stage\",\"start_date\",\"end_date\",\"earliest_date\",\"latest_date\",\"owner\",\"status\",\"decision_outcome\",\"budget\",\"spend\",\"reserve\",\"team\",\"organization_ids\",\"files\",\"approved_on\",\"approved_owner\",\"client_ref\",\"archived\"],events:[\"name\",\"event_type\",\"item_ids\",\"description\",\"event_date\",\"owner\",\"team\",\"organization_ids\",\"signoff\",\"format\",\"severity\",\"risk_status\",\"place\",\"forecasts\",\"files\",\"client_ref\",\"archived\"],organizations:[\"name\",\"archived\"],people:[\"name\",\"organization_id\",\"archived\"],digests:[\"title\",\"kind\",\"period_start\",\"period_end\",\"program_id\",\"contents\",\"saved_on\",\"archived\"],settings:[\"currency\",\"date_format\"]},Ft={items:\"pipeline.items\",events:\"pipeline.events\",organizations:\"organizations\",people:\"people\",digests:\"pipeline.digests\",settings:\"pipeline.settings\"};let qe={};try{qe=JSON.parse(We.tableMap||\"{}\")||{}}catch{qe={}}const I={};for(const e of Object.keys(Ve)){const t=qe[Ft[e]],n=t&&zt.find(i=>i.typeId===t.typeId);if(!t||!n)continue;const s={};for(const i of Ve[e]){const a=t.fields&&typeof t.fields[i]==\"string\"?t.fields[i]:i;(n.fields||[]).includes(a)&&(s[i]=a)}I[e]={typeId:t.typeId,fields:s,writable:(Array.isArray(t.writableFields)?t.writableFields:[]).filter(i=>s[i])}}const Ge=L.appRole===void 0||L.appRole===\"owner\",R=e=>!!L.saved&&!!L.writable&&We.readOnly!==!0&&L.appRole!==\"viewer\"&&!!I[e]&&I[e].writable.length>0,B=(e,t)=>{const n=I[e],s={};for(const[i,a]of Object.entries(t))n.fields[i]&&n.writable.includes(i)&&(s[n.fields[i]]=a);return s},c=JSON.parse(JSON.stringify(L.state||{})),Ce=[[\"overview\",\"Overview\"],[\"programs\",\"Programs\"],[\"timeline\",\"Timeline\"],[\"deliverables\",\"Deliverables\"],[\"risks\",\"Risks\"],[\"changes\",\"Changes\"],[\"digest\",\"Digest\"],[\"settings\",\"Settings\"]],he=L.context&&typeof L.context==\"object\"?L.context:{};c.screen||(c.screen=Ce.some(e=>e[0]===he.screen)?he.screen:\"overview\"),(!c.filters||typeof c.filters!=\"object\")&&(c.filters=typeof he.program==\"string\"&&he.program?{program:he.program}:{}),Array.isArray(c.collapsed)||(c.collapsed=[]),(!c.digest||typeof c.digest!=\"object\")&&(c.digest={mode:\"All\",program:\"\",pick:\"\"});let $e=null;const st=(e,t)=>{$e=kit.notice(e,g(t).slice(0,290))},it={deliverables:\"Deliverable\",risks:\"Risk\",changes:\"Change\"};if(p.startsWith(\"nav:\")&&E!==\"command\"){const e=p.slice(4);if(Ce.some(t=>t[0]===e)){const t=[\"programs\",\"timeline\"];t.includes(c.screen)&&t.includes(e)||(c.filters={}),c.screen=e,c.panel=null,c.sel=\"\",c.more=!1}}const Re=100,at=10;let Se=80,ot=!0;const S={};function Lt(e){const t=[];for(let n=0;n<e.length;n+=12){const s=e.slice(n,n+12);let i=null;if(ot&&s.length>1){try{const a=tools.call(\"records.readMany\",{reads:s});a&&Array.isArray(a.results)&&a.results.length===s.length&&(i=a.results)}catch{i=null}i||(ot=!1)}i||(i=s.map(a=>{try{return tools.call(\"records.read\",a)}catch{return{unavailable:!0}}})),t.push(...i)}return t}const rt=e=>({rows:[],total:0,complete:e===\"notRead\",unavailable:!1,unbound:e===\"unbound\",notRead:e===\"notRead\",pending:!1});function Yt(e){const t=[...new Set(e)].filter(i=>!S[i]);for(const i of t)I[i]||(S[i]=rt(\"unbound\"));const n={};for(const i of t.filter(a=>I[a]))n[i]={rows:[],next:0,total:null,pages:0,done:!1,unavailable:!1,pending:!1,truncated:!1};let s=Object.keys(n);for(;s.length;){const i=[];for(const o of s){const r=n[o],l=r.total===null?1:Math.min(Math.ceil((r.total-r.next)/Re),at-r.pages);for(let f=0;f<l;f++)i.push({role:o,offset:r.next+f*Re})}if(i.length>Se){for(const o of i.slice(Se))n[o.role].truncated=!0;i.length=Math.max(0,Se)}if(!i.length)break;Se-=i.length;const a=Lt(i.map(o=>({typeId:I[o.role].typeId,limit:Re,offset:o.offset,filters:{}})));i.forEach((o,r)=>{const l=n[o.role],f=a[r];if(l.done)return;if(f&&f.pending){l.pending=!0,l.done=!0;return}if(!f||f.unavailable){l.unavailable=!0,l.done=!0;return}const m=Array.isArray(f.rows)?f.rows:[],h=I[o.role];l.total=Z(f.total),l.pages++;for(const M of m){const _={};for(const[k,d]of Object.entries(h.fields))if(ge(M.data,d)){const j=M.data[d];if(j!==null&&typeof j==\"object\")continue;_[k]=j}l.rows.push({id:String(M.id),version:M.version,data:_})}l.next=o.offset+m.length,l.total!==null&&l.next>=l.total||m.length<Re?l.done=!0:l.pages>=at&&(l.truncated=!0,l.done=!0)}),s=s.filter(o=>!n[o].done&&!n[o].truncated)}for(const[i,a]of Object.entries(n))S[i]={rows:a.rows.filter(o=>o.data.archived!==!0&&o.data.archived!==\"true\"),total:a.total===null?a.rows.length:a.total,complete:!a.pending&&!a.unavailable&&!a.truncated,unavailable:a.unavailable,unbound:!1,notRead:!1,pending:a.pending}}const Wt=E===\"command\"?!1:!!c.panel||/^(?:rec|new|note|section|add|org)/.test(p)||p===\"form:save\";Yt([\"items\",\"events\",\"settings\"].concat(Wt?[\"organizations\",\"people\"]:[],c.screen===\"digest\"||/^digest/.test(p)||E===\"command\"?[\"digests\"]:[]));for(const e of Object.keys(Ve))S[e]||(S[e]=rt(\"notRead\"));const Pe=[\"items\",\"events\",\"settings\",\"organizations\",\"people\",\"digests\"].some(e=>S[e].pending),$=[];for(const[e,t]of[[\"items\",\"plan item\"],[\"events\",\"event\"]]){const n=S[e];n.pending||(n.unbound?$.push(\"The \"+t+\" table is not connected to this app.\"):n.unavailable?$.push(\"You cannot read the \"+t+\" table.\"):n.complete||$.push(\"Only part of the \"+t+\" table could be read; counts, risk exposure and forecasts may be incomplete.\"))}const ve=S.settings.rows[0]||null,Ie=ve?ve.data:{},K=Ue.includes(Ie.currency)?Ie.currency:\"EUR\",ye=He.includes(Ie.date_format)?Ie.date_format:\"D MMM\",Bt={EUR:\"\\u20AC\",USD:\"US$\",GBP:\"\\xA3\",CHF:\"CHF \",CAD:\"CA$\",AUD:\"A$\",JPY:\"JP\\xA5\"},Ut=[\"Jan\",\"Feb\",\"Mar\",\"Apr\",\"May\",\"Jun\",\"Jul\",\"Aug\",\"Sep\",\"Oct\",\"Nov\",\"Dec\"],Ht=[\"January\",\"February\",\"March\",\"April\",\"May\",\"June\",\"July\",\"August\",\"September\",\"October\",\"November\",\"December\"];function le(e){if(e==null||e===\"\")return\"\\u2014\";const t=Number(e);if(!Number.isFinite(t))return\"\\u2014\";let n=Math.abs(t).toFixed(K===\"JPY\"?0:2);n.includes(\".\")&&(n=n.replace(/0+$/,\"\").replace(/\\.$/,\"\"));const[s,i]=n.split(\".\");return(t<0?\"-\":\"\")+Bt[K]+s.replace(/\\B(?=(\\d{3})+(?!\\d))/g,\",\")+(i?\".\"+i:\"\")}function A(e){const t=z(e);if(!t)return\"\\u2014\";const[n,s,i]=t.split(\"-\");return ye===\"YYYY-MM-DD\"?t:ye===\"DD/MM/YYYY\"?[i,s,n].join(\"/\"):ye===\"MM/DD/YYYY\"?[s,i,n].join(\"/\"):Number(i)+\" \"+Ut[Number(s)-1]}const lt=(()=>{try{return z(new Date().toISOString())}catch{return\"\"}})(),X=z(We.asOfOverride)||lt,de=e=>Math.round(Date.UTC(+e.slice(0,4),+e.slice(5,7)-1,+e.slice(8,10))/864e5),dt=(e,t)=>new Date((de(e)+t)*864e5).toISOString().slice(0,10),ct=e=>{const t=Me(e,[]);return Array.isArray(t)?t.filter(n=>n&&typeof n.v==\"string\").map(n=>({v:n.v,n:g(n.n||\"Document\")})).slice(0,50):[]},pt=S.items.rows.map(e=>{const t=e.data,n=ee.includes(t.item_type)?t.item_type:\"Activity\",s=z(t.end_date);return{id:e.id,version:e.version,type:n,name:g(t.name),parents:t.parent_id&&n!==\"Program\"?[g(t.parent_id)]:[],parentRule:[\"start\",\"finish\"].includes(t.parent_rule)?t.parent_rule:\"\",parentOutcome:Oe.includes(t.parent_outcome)?t.parent_outcome:\"Approved\",description:g(t.description),asset:g(t.asset),disease:g(t.disease),stage:De.includes(t.stage)?t.stage:\"\",start:te(n)?s:z(t.start_date),end:s,early:z(t.earliest_date),late:z(t.latest_date),owner:g(t.owner),status:Be.includes(t.status)?t.status:\"Planned\",decisionResult:Oe.includes(t.decision_outcome)?t.decision_outcome:\"\",budget:Z(t.budget),spend:Z(t.spend),reserve:Z(t.reserve),members:re(t.team),orgIds:re(t.organization_ids),files:ct(t.files),approved:z(t.approved_on)?{by:g(t.approved_owner),date:z(t.approved_on)}:null,ref:g(t.client_ref)}}),Jt=S.events.rows.map(e=>{const t=e.data,n=G.includes(t.event_type)?t.event_type:\"Change\",s=z(t.event_date),i=Me(t.forecasts,{});return{id:e.id,version:e.version,type:n,name:g(t.name),parents:re(t.item_ids),description:g(t.description),start:s,end:s,owner:g(t.owner),members:re(t.team),orgIds:re(t.organization_ids),signoff:g(t.signoff),format:nt.includes(t.format)?t.format:\"\",severity:Ae.slice(1).includes(t.severity)?t.severity:\"\",status:n===\"Risk\"?t.risk_status===\"Closed\"?\"Closed\":\"Open\":\"\",place:g(t.place),forecasts:i&&typeof i==\"object\"&&!Array.isArray(i)?i:{},files:ct(t.files),ref:g(t.client_ref)}});let P=pt.concat(Jt),Ne=new Map(P.map(e=>[e.id,e])),ce=new Map;const y=e=>Ne.get(e);function Ke(e,t){const n=[P,Ne,ce];P=e,Ne=new Map(e.map(s=>[s.id,s])),ce=new Map;try{return t()}finally{[P,Ne,ce]=n}}const b=()=>P.filter(e=>!O(e));function H(e,t=new Set){return!e||t.has(e.id)?[]:(t.add(e.id),[e.id,...e.parents.flatMap(n=>H(y(n),t))])}const ne=e=>H(e).map(y).filter(t=>t&&t.type===\"Program\"),ut=e=>e&&e.id?P.filter(t=>!O(t)&&t.parents[0]===e.id):[],se=e=>ut(e).filter(t=>t.parentRule).map(t=>({id:t.id,to:t.parentRule,outcome:t.parentOutcome||\"Approved\"}));function pe(e){const t=y(e.id);return!!t&&t.status===\"Completed\"&&(t.type!==\"Decision\"||(t.decisionResult||\"Approved\")===(e.outcome||\"Approved\"))}function mt(e){const t=se(e).filter(n=>!pe(n));return t.length?t.every(n=>(y(n.id)||{}).type===\"Decision\"):e.type===\"Decision\"}const ft=e=>P.some(t=>t.type===\"Deliverable\"&&t.parents.includes(e.id)),be=e=>!O(e)&&[\"In progress\",\"Pending\"].includes(e.status)&&ft(e)&&se(e).every(pe);function Vt(e){return P.filter(t=>t.type===\"Change\"&&e.id&&t.parents.includes(e.id)).sort((t,n)=>T(n.end,t.end)||T(n.id,t.id))}function D(e){if(e.id&&ce.has(e.id))return ce.get(e.id);const t={end:e.end,start:e.start,budget:e.budget};if(!O(e)){for(const n of Vt(e).reverse()){const s=n.forecasts&&n.forecasts[e.id];s&&z(s.end)&&(t.end=z(s.end)),s&&Z(s.budget)!==null&&(t.budget=Z(s.budget))}te(e.type)&&(t.start=t.end)}return e.id&&ce.set(e.id,t),t}function qt(e){const t=new Set(e.parents),n=[...t];for(let i=0;i<n.length;i++)for(const a of b())t.has(a.id)||!se(a).some(o=>o.id===n[i])||(t.add(a.id),n.push(a.id));const s=new Set;for(const i of t)for(const a of H(y(i)))s.add(a);return s}const gt=new Map;function je(e){return e.id?P.filter(t=>t.type===\"Risk\"&&t.status!==\"Closed\"&&(gt.get(t.id)||gt.set(t.id,qt(t)).get(t.id)).has(e.id)):[]}const Ee=e=>{const t=je(e);return Ae[Math.max(0,...t.map(n=>Ae.indexOf(n.severity)))]};function we(e,t){return(t===\"Risk\"?je(e):P.filter(n=>e.id&&n.type===t&&H(n).includes(e.id))).sort((n,s)=>T(s.end,n.end))}function Gt(e){if(O(e)||!ft(e)||[\"Completed\",\"Cancelled\",\"On hold\"].includes(e.status))return e.status;const t=se(e).filter(n=>!pe(n));return t.length&&mt(e)?\"Pending\":t.some(n=>n.to===\"start\")?\"Planned\":\"In progress\"}const w=c.filters;function ht(e){const t={...e,...D(e)},n=g(w.search).trim().toLowerCase();return(!n||[e.name,e.owner,e.description,(ne(e)[0]||{}).name].join(\" \").toLowerCase().includes(n))&&(!w.owner||e.owner===w.owner)&&(!w.program||H(e).includes(w.program))&&(!w.type||e.type===w.type)&&(!w.status||e.status===w.status)&&(!w.risk||Ee(e)===w.risk)&&(!w.budget||t.budget!=null&&(w.budget===\"under\"?t.budget<5e4:t.budget>=5e4))&&(!w.from||T(t.end,w.from)>=0)&&(!w.until||T(t.start,w.until)<=0)}function Xe(){const e=b(),t=[],n=Object.entries(w).some(([o,r])=>o!==\"program\"&&r),s=(o,r)=>T(D(o).end||\"9999\",D(r).end||\"9999\")||T(o.name,r.name);function i(o,r,l){if(l.has(o.id))return;l.add(o.id);const f=e.filter(h=>h.parents[0]===o.id).sort((h,M)=>+(M.type===\"Milestone\")-+(h.type===\"Milestone\")||s(h,M));if(!ht(o)&&!e.some(h=>ht(h)&&H(h).includes(o.id)))return;const m=o.type===\"Program\"||!c.collapsed.includes(o.id)||n;if(t.push({r:o,depth:r,open:m,kids:f.length}),m)for(const h of f)i(h,r+1,l)}const a=new Set;return e.filter(o=>!o.parents[0]||!y(o.parents[0])).sort((o,r)=>+(r.type===\"Program\")-+(o.type===\"Program\")||T(o.name,r.name)).forEach(o=>i(o,0,a)),t}const J=(e,t,n)=>({id:e||\"\",to:t||\"\",outcome:n||\"Approved\"});function $t(e){const t=JSON.parse(JSON.stringify(e));if(!O(t)){const n=ut(e).map(s=>J(s.id,s.parentRule,s.parentOutcome));t.links={parents:[J(e.parents[0],e.parentRule,e.parentOutcome)],children:n.length?n:[J(\"\")]}}return t}function vt(e,t){const n=ee.concat(G).includes(e)?e:\"Milestone\",s=t?[t]:!O({type:n})&&n!==\"Program\"&&w.program?[w.program]:[],i={id:\"\",type:n,name:\"\",parents:s,description:\"\",owner:\"\",start:\"\",end:\"\",status:n===\"Risk\"?\"Open\":O({type:n})?\"\":\"Planned\",members:[],orgIds:[],files:[]};return O(i)?Object.assign(i,{signoff:\"\",format:\"\",severity:\"\",place:\"\",forecasts:{}}):(Object.assign(i,{asset:\"\",disease:\"\",stage:\"\",early:\"\",late:\"\",decisionResult:\"\",budget:null,spend:null,reserve:null,approved:null,parentRule:\"\",parentOutcome:\"Approved\"}),i.links={parents:[J(s[0])],children:[J(\"\")]}),i}function x(e,t,n,s){const i=y(e),a=i?$t(i):vt(n,t);c.panel={kind:\"form\",draft:a,base:JSON.stringify(a),error:\"\",confirm:\"\",section:\"\",ret:s||null}}const W=()=>c.panel&&c.panel.kind===\"form\"?c.panel:null;function Kt(e){const t=W();if(!t||!e||e._f!==\"record\")return;const n=t.draft,s=a=>ge(e,a)?g(e[a]):void 0;for(const a of[\"name\",\"description\",\"owner\",\"asset\",\"stage\",\"disease\",\"start\",\"end\",\"early\",\"late\",\"status\",\"decisionResult\",\"signoff\",\"format\",\"severity\",\"place\"]){const o=s(a);o!==void 0&&(n[a]=a===\"name\"||a===\"description\"||a===\"owner\"||a===\"asset\"||a===\"disease\"||a===\"place\"||a===\"signoff\"?o:o.trim())}for(const a of[\"budget\",\"spend\",\"reserve\"]){const o=s(a);o!==void 0&&(n[a]=o.trim()===\"\"?null:Z(o))}if(n.links)for(const a of[\"parents\",\"children\"])n.links[a].forEach((o,r)=>{const l=s(\"h_\"+a+\"_id_\"+r),f=s(\"h_\"+a+\"_rule_\"+r),m=s(\"h_\"+a+\"_out_\"+r);l!==void 0&&(o.id=l),f!==void 0&&(o.to=f),m!==void 0&&(o.outcome=m)});if(n.type===\"Change\"){const a={};for(const o of n.parents){const r=z(s(\"fd_\"+o)),l=s(\"fb_\"+o),f=n.forecasts[o]||{},m=s(\"fd_\"+o)===void 0?f.end:r,h=l===void 0?f.budget:l.trim()===\"\"?\"\":Z(l);(m||h!==\"\"&&h!=null)&&(a[o]={end:m||\"\",budget:h??\"\"})}n.forecasts=a}(te(n.type)||O(n))&&(n.start=n.end);const i=t.org;if(i){const a=s(\"org_name\"),o=s(\"org_contacts\");a!==void 0&&(i.name=a),o!==void 0&&(i.contacts=o)}s(\"member_name\")!==void 0&&(t.member=s(\"member_name\")),s(\"member_pick\")!==void 0&&(t.memberPick=s(\"member_pick\")),s(\"org_pick\")!==void 0&&(t.orgPick=s(\"org_pick\")),t.error=\"\"}const yt=()=>{const e=W();return!!e&&JSON.stringify(e.draft)!==e.base};let bt=null,Xt=!1;function ie(e,t){if(e.length){if(bt){bt.push(...e);return}tools.call(\"records.save\",{changes:e.slice(0,50)}),Xt=!0,c.undoHint=!0,st(\"success\",t||\"Saved\")}}const wt=()=>\"c\"+Date.now().toString(36)+Math.floor(Math.random()*1e9).toString(36);function _t(e){return{name:e.name.trim(),item_type:e.type,parent_id:e.type===\"Program\"?null:e.parents[0]||null,parent_rule:e.type===\"Program\"||!e.parents[0]?null:e.parentRule||null,parent_outcome:e.type===\"Decision\"&&e.parentRule?e.parentOutcome||\"Approved\":null,description:e.description||null,asset:e.type===\"Program\"&&e.asset||null,disease:e.type===\"Program\"&&e.disease||null,stage:e.type===\"Program\"&&e.stage||null,start_date:(te(e.type)?e.end:e.start)||null,end_date:e.end||null,earliest_date:e.early||null,latest_date:e.late||null,owner:e.owner.trim()||null,status:e.status,decision_outcome:e.type===\"Decision\"?e.decisionResult||\"Approved\":null,budget:e.budget,spend:e.spend,reserve:e.reserve,team:e.members.join(\", \")||null,organization_ids:e.orgIds.join(\",\")||null,files:e.files.length?JSON.stringify(e.files):null,approved_on:e.approved?e.approved.date:null,approved_owner:e.approved?e.approved.by:null}}function kt(e){return{name:e.name.trim(),event_type:e.type,item_ids:e.parents.join(\",\")||null,description:e.description||null,event_date:e.end||null,owner:e.owner.trim()||null,team:e.members.join(\", \")||null,organization_ids:e.orgIds.join(\",\")||null,signoff:e.type===\"Deliverable\"&&e.signoff||null,format:e.type===\"Deliverable\"&&e.format||null,severity:e.type===\"Risk\"&&e.severity||null,risk_status:e.type===\"Risk\"?e.status||\"Open\":null,place:e.type===\"Change\"&&e.place||null,forecasts:e.type===\"Change\"&&Object.keys(e.forecasts).length?JSON.stringify(e.forecasts):null,files:e.files.length?JSON.stringify(e.files):null}}function Qt(e,t){const n=new Map(e.map(a=>[a.id,a]));let s=n.get(t),i=new Set;for(;s&&s.parents[0];)if(i.has(s.id)||(i.add(s.id),s=n.get(s.parents[0]),s&&s.id===t))return!0;return!1}function ze(e,t){return se(e).filter(s=>!pe(s)).some(s=>e.status===\"Completed\"||s.to===\"start\"&&e.status===\"In progress\")?\"Resolve the mandatory dependency before changing this status.\":!O(e)&&e.status===\"Completed\"&&(!t||t.status!==\"Completed\")&&(!e.owner.trim()||!e.approved||e.approved.by!==e.owner)?\"Owner approval is required to complete this item.\":!O(e)&&e.status===\"Pending\"&&!mt(e)?\"Pending applies when only a decision remains.\":\"\"}function Zt(){const e=W(),t=e.draft,n=t.name.trim()?t.start&&t.end&&t.start>t.end?\"End date must follow the start.\":t.early&&t.late&&t.early>t.late?\"Latest date must follow earliest date.\":\"\":\"Enter a name.\";if(n)return n;if(O(t)){if(!R(\"events\"))return\"You cannot change events in this app.\";if(t.parents.some(q=>!y(q)))return\"An affected plan item no longer exists.\";const d={...t,members:t.members||[],orgIds:t.orgIds||[]},j=P.filter(q=>q.id!==d.id).concat([{...d,id:d.id||\"__new\"}]),F=Ke(j,()=>Mt()),C=[];if(d.id){if(!y(d.id))return\"This record no longer exists.\";C.push({kind:\"update_record\",recordId:d.id,expectedVersion:d.version??y(d.id).version,data:B(\"events\",kt(d))})}else C.push({kind:\"create_record\",typeId:I.events.typeId,data:B(\"events\",{...kt(d),client_ref:wt()})});return F.length&&!R(\"items\")?\"You cannot update the plan statuses this event changes.\":(C.push(...F.map(Dt)),C.length>50?\"This change touches more than 50 records; save it in smaller steps.\":(ie(C,d.type+\" saved\"),\"\"))}if(!R(\"items\"))return\"You cannot change plan items in this app.\";const s=t.id||\"__new\",i=t.links,a=P;if(Object.values(i).flat().some(d=>!d.id&&d.to))return\"Choose an item for each dependency.\";const o=t.type===\"Program\"?J(\"\"):i.parents[0]||J(\"\"),r={...t,id:s,parents:o.id?[o.id]:[],parentRule:o.id?o.to:\"\",parentOutcome:o.outcome||\"Approved\"};delete r.links,r.type===\"Program\"&&Object.assign(r,{parents:[],parentRule:\"\"});const l=i.children.map(d=>d.id).filter(Boolean),f=new Map,m=a.filter(d=>d.id!==s).map(d=>{if(O(d))return d;if(l.includes(d.id)){const j=i.children.find(C=>C.id===d.id),F={...d,parents:[s],parentRule:j.to||\"\",parentOutcome:j.outcome||\"Approved\"};return(d.parents[0]!==s||d.parentRule!==F.parentRule||F.parentRule&&d.parentOutcome!==F.parentOutcome)&&f.set(d.id,F),F}if(t.id&&d.parents[0]===s){const j={...d,parents:[],parentRule:\"\"};return f.set(d.id,j),j}return d}).concat([r]);r.status!==\"Completed\"&&(r.approved=null);const h=Ke(m,()=>{if(m.some(C=>!O(C)&&Qt(m,C.id)))return\"This would create a parent\\u2013child cycle.\";const d=ze(r,a.find(C=>C.id===s));if(d)return d;for(const C of f.values()){const q=y(C.parents[0]);if(q&&q.id!==s){const Ye=ze(q,a.find(An=>An.id===q.id));if(Ye)return Ye}}const j=a.find(C=>C.id===s),F=j&&j.parents[0]?y(j.parents[0]):null;if(F&&F.id!==r.parents[0]){const C=ze(F,F);if(C)return C}if(r.parents[0]){const C=y(r.parents[0]);if(C){const q=ze(C,a.find(Ye=>Ye.id===C.id));if(q)return q}}return\"\"});if(h)return h;const M=Ke(m,()=>Mt()),_=[],k=M.find(d=>d.recordId===s);if(k&&(r.status=k.status),t.id){if(!y(s))return\"This record no longer exists.\";_.push({kind:\"update_record\",recordId:s,expectedVersion:t.version??y(s).version,data:B(\"items\",_t(r))})}else{const d=wt();_.push({kind:\"create_record\",typeId:I.items.typeId,data:B(\"items\",{..._t(r),client_ref:d})}),c.reopen={ref:d,tries:0}}for(const d of f.values()){const j=M.find(F=>F.recordId===d.id);_.push({kind:\"update_record\",recordId:d.id,expectedVersion:y(d.id).version,data:B(\"items\",{parent_id:d.parents[0]||null,parent_rule:d.parents[0]&&d.parentRule?d.parentRule:null,parent_outcome:d.parentRule&&d.type===\"Decision\"?d.parentOutcome:null,...j?{status:j.status}:{}})})}for(const d of M)d.recordId!==s&&!f.has(d.recordId)&&_.push(Dt(d));return _.length>50?\"This change touches more than 50 records; save it in smaller steps.\":(ie(_,r.type+\" saved\"),\"\")}function Mt(){const e=[];for(const t of b()){if(t.id===\"__new\")continue;const n=Gt(t);n!==t.status&&e.push({recordId:t.id,status:n})}return e}const Dt=e=>({kind:\"update_record\",recordId:e.recordId,expectedVersion:y(e.recordId).version,data:B(\"items\",{status:e.status})}),Qe=Y.form&&typeof Y.form==\"object\"?Y.form:null;E!==\"command\"&&Qe&&Kt(Qe);let Cn=!1;function xt(){const e=W();if(p.startsWith(\"undo:\")&&E===\"click\"){tools.call(\"undo.run\",{undoId:p.slice(5)}),c.undo=null,st(\"success\",\"Undone\");return}if(p.startsWith(\"filter:\")){const n=p.slice(7);[\"search\",\"program\",\"owner\",\"type\",\"status\",\"risk\",\"budget\",\"from\",\"until\"].includes(n)&&(w[n]=g(Y.value),w[n]||delete w[n]);return}if(p===\"filters:reset\"){c.filters={};return}if(p===\"filters:more\"){c.more=!c.more;return}if(p.startsWith(\"toggle:\")){const n=p.slice(7);c.collapsed=c.collapsed.includes(n)?c.collapsed.filter(s=>s!==n):c.collapsed.concat([n]);return}if(p.startsWith(\"open:\")){const n=y(p.slice(5));if(!n)return;if(O(n)){x(n.id);return}c.screen=\"programs\",c.filters={program:(ne(n)[0]||{}).id||\"\"},c.filters.program||(c.filters={}),c.collapsed=c.collapsed.filter(s=>!H(n).includes(s)),c.sel=n.id,c.panel=null;return}if(p===\"add\"){c.panel={kind:\"choose\"};return}if(p.startsWith(\"new:\")){x(\"\",\"\",p.slice(4));return}if(p.startsWith(\"rec:\")){x(p.slice(4));return}if(p.startsWith(\"section:\")){const[,n,s]=p.split(\":\");x(s),W()&&(W().section=n);return}if(p===\"panel:close\"){if(e&&e.ret){c.panel=e.ret;return}c.panel=null;return}if(!e)return;const t=e.draft;if(p===\"draft\"){if(E===\"change\"&&Y.form&&ge(Y.form,\"type\")&&!e.draft.id&&Y.form.type!==t.type){const n=g(Y.form.type);if(ee.concat(G).includes(n)){const s={name:t.name,description:t.description,owner:t.owner,end:t.end,start:t.start,members:t.members,orgIds:t.orgIds,files:t.files},i=vt(n,\"\");Object.assign(i,s),i.parents=O(i)?t.parents.filter(a=>y(a)):[],!O(i)&&i.type!==\"Program\"&&t.parents[0]&&(y(t.parents[0])||{}).type===\"Program\"&&(i.links.parents=[J(t.parents[0])]),e.draft=i}}return}if(p.startsWith(\"pick:\")){const n=g(Y.value);n&&y(n)&&!t.parents.includes(n)&&(t.parents=t.parents.concat([n]));return}if(p.startsWith(\"unpick:\")){const n=p.slice(7);t.parents=t.parents.filter(s=>s!==n),t.forecasts&&delete t.forecasts[n];return}if(p===\"child:add\"&&t.links){t.links.children.push(J(\"\"));return}if(p.startsWith(\"child:rm:\")&&t.links){t.links.children.splice(Number(p.slice(9)),1),t.links.children.length||t.links.children.push(J(\"\"));return}if(p===\"member:add\"){const n=g(e.member).trim()||g(e.memberPick).trim();n&&(t.members=[...new Set(t.members.concat([n]))]),e.member=\"\",e.memberPick=\"\";return}if(p.startsWith(\"member:rm:\")){const n=p.slice(10);t.members=t.members.filter(s=>s!==n);return}if(p===\"org:add\"){const n=g(e.orgPick);n&&!t.orgIds.includes(n)&&(t.orgIds=t.orgIds.concat([n])),e.orgPick=\"\";return}if(p.startsWith(\"org:rm:\")){const n=p.slice(7);t.orgIds=t.orgIds.filter(s=>s!==n);return}if(p===\"org:new\"){e.org={id:\"\",name:\"\",contacts:\"\"};return}if(p.startsWith(\"org:edit:\")){const n=S.organizations.rows.find(s=>s.id===p.slice(9));n&&(e.org={id:n.id,name:g(n.data.name),contacts:Ze(n.id).map(s=>s.name).join(\", \")});return}if(p===\"org:cancel\"){e.org=null;return}if(p===\"org:store\"){en(e);return}if(p.startsWith(\"document:uploaded:\")&&E===\"change\"){const n=g(Y.value);if(!n)return;let s=\"Document\";try{const i=tools.call(\"documents.list\",{limit:200}),a=(i&&Array.isArray(i.documents)?i.documents:Array.isArray(i)?i:i&&Array.isArray(i.versions)?i.versions:[]).find(o=>o.versionId===n);a&&(s=g(a.filename||s))}catch{}t.files=t.files.concat([{v:n,n:s}]);return}if(p.startsWith(\"file:rm:\")){t.files.splice(Number(p.slice(8)),1);return}if(p.startsWith(\"note:\")){const n=p.slice(5);if(!t.id){e.error=\"Save this item first, then add deliverables, risks and changes to it.\";return}const s=JSON.parse(JSON.stringify(e));G.includes(n)?x(\"\",t.id,n,s):x(n,\"\",\"\",s);return}if(p.startsWith(\"disc:\")){const n=p.slice(5),s=e.open||(e.open={});s[n]=!(ge(s,n)?s[n]:St(n));return}if(p===\"duplicate\"){t.links&&(t.links.children=[]),t.id=\"\",t.approved=null,O(t)||(t.status=\"Planned\"),t.name+=\" (copy)\",t.files=[],e.base=\"\",e.confirm=\"\";return}if(p===\"delete\"){e.confirm=\"delete\";return}if(p===\"approve\"){if(!t.owner.trim()){e.error=\"Assign an owner before approving completion.\";return}const n=y(t.id);if(!n||!se(n).every(pe)){e.error=\"Resolve the mandatory dependencies first.\";return}e.confirm=\"approve\";return}if(p===\"confirm:cancel\"){e.confirm=\"\";return}if(p===\"approve:confirm\"){t.approved={by:t.owner.trim(),date:X||lt},t.status=\"Completed\",e.confirm=\"\";return}if(p===\"delete:confirm\"){e.confirm=\"\";const n=t.id,s=y(n);if(!s)return;if(P.some(a=>a.parents.includes(n))){e.error=\"Reassign or remove the child items and events before deleting this record.\";return}const i=O(s)?\"events\":\"items\";if(!R(i)){e.error=\"You cannot delete records in this app.\";return}ie([{kind:\"archive_record\",recordId:n,expectedVersion:s.version}],s.type+\" deleted\"),w.program===n&&(c.filters={}),c.panel=e.ret||null;return}if(p===\"form:save\"&&E===\"submit\"){const n=Zt();if(n){e.error=n;return}c.panel=e.ret||null;return}}function Ze(e){return S.people.rows.filter(t=>g(t.data.organization_id)===e).map(t=>({id:t.id,version:t.version,name:g(t.data.name)}))}function en(e){const t=e.org,n=g(t.name).trim();if(!n){t.error=\"Enter an organization name.\";return}if(!R(\"organizations\")){t.error=\"You cannot change organizations in this app.\";return}const s=S.organizations.rows.find(a=>g(a.data.name).trim().toLowerCase()===n.toLowerCase());if(s&&s.id!==t.id){if(!t.id){e.draft.orgIds.includes(s.id)||(e.draft.orgIds=e.draft.orgIds.concat([s.id])),e.org=null;return}t.error=\"An organization already uses this name.\";return}const i=[];if(t.id){const a=S.organizations.rows.find(o=>o.id===t.id);if(!a){t.error=\"This organization no longer exists.\";return}if(g(a.data.name)!==n&&i.push({kind:\"update_record\",recordId:t.id,expectedVersion:a.version,data:B(\"organizations\",{name:n})}),I.people&&R(\"people\")){const o=re(t.contacts),r=Ze(t.id);for(const l of o)r.some(f=>f.name.toLowerCase()===l.toLowerCase())||i.push({kind:\"create_record\",typeId:I.people.typeId,data:B(\"people\",{name:l,organization_id:t.id})});for(const l of r)o.some(f=>f.toLowerCase()===l.name.toLowerCase())||i.push({kind:\"archive_record\",recordId:l.id,expectedVersion:l.version})}e.draft.orgIds.includes(t.id)||(e.draft.orgIds=e.draft.orgIds.concat([t.id])),ie(i,\"Organization saved\"),e.org=null;return}i.push({kind:\"create_record\",typeId:I.organizations.typeId,data:B(\"organizations\",{name:n})}),ie(i,\"Organization added\"),e.pendingOrg=n,e.org=null}if(E!==\"command\"&&E!==\"open\"&&E!==\"refresh\"&&xt(),p.startsWith(\"mode:\")&&(c.digest.mode=[\"All\",\"Weekly\",\"Monthly\"].includes(p.slice(5))?p.slice(5):\"All\",c.digest.pick=\"\"),p===\"digest:program\"&&(c.digest.program=g(Y.value),c.digest.pick=\"\"),p.startsWith(\"report:\")&&(c.digest.pick=p.slice(7)),p===\"settings:save\"&&E===\"submit\"&&Ge&&R(\"settings\")){const e=Qe||{},t=Ue.includes(e.currency)?e.currency:K,n=He.includes(e.date_format)?e.date_format:ye;ie([ve?{kind:\"update_record\",recordId:ve.id,expectedVersion:ve.version,data:B(\"settings\",{currency:t,date_format:n})}:{kind:\"create_record\",typeId:I.settings.typeId,data:B(\"settings\",{currency:t,date_format:n})}],\"Settings saved\")}if((E===\"refresh\"||E===\"open\")&&!Pe){if(c.reopen){const n=pt.find(s=>s.ref===c.reopen.ref);n?(c.reopen=null,x(n.id)):++c.reopen.tries>2&&(c.reopen=null)}const e=W();if(e&&e.draft.id&&!yt()){const n=y(e.draft.id);if(n&&n.version!==e.draft.version){const s={section:e.section,ret:e.ret,org:e.org,pendingOrg:e.pendingOrg};x(n.id,\"\",\"\",s.ret),Object.assign(W(),s)}}const t=W();if(t&&t.pendingOrg&&!S.organizations.pending){const n=S.organizations.rows.find(s=>g(s.data.name).trim().toLowerCase()===t.pendingOrg.toLowerCase());n&&!t.draft.orgIds.includes(n.id)&&(t.draft.orgIds=t.draft.orgIds.concat([n.id])),t.pendingOrg=\"\"}if(L.saved&&c.undoHint){c.undoHint=!1;try{const n=tools.call(\"undo.list\",{}),s=n&&Array.isArray(n.actions)?n.actions:n&&Array.isArray(n.entries)?n.entries:[];c.undo=s.slice(0,1).map(i=>({undoId:i.undoId,label:g(i.label||\"last change\")}))}catch{c.undo=null}}}p.startsWith(\"nav:\")&&(c.undo=null);function xe(e,t){const n=X,s=e===\"Weekly\"?dt(n,-6):n.slice(0,8)+\"01\",i=dt(n,e===\"Weekly\"?7:30),a=h=>h&&h>=s&&h<=n,o=h=>h&&h>n&&h<=i,l=b().filter(h=>h.type===\"Program\"&&(!t||h.id===t)).sort((h,M)=>T(h.name,M.name)).map(h=>{const M=k=>H(k).includes(h.id),_=[];for(const k of P.filter(d=>d.type===\"Change\"&&M(d)&&a(d.end)))_.push(\"Change \\xB7 \"+k.name+\" (\"+A(k.end)+\")\"+(k.description?\": \"+k.description:\"\"));for(const k of P.filter(d=>d.type===\"Deliverable\"&&M(d)&&a(d.end)))_.push(\"Deliverable received \\xB7 \"+k.name+\" (\"+A(k.end)+\")\"+(k.owner?\", \"+k.owner:\"\"));for(const k of P.filter(d=>d.type===\"Risk\"&&d.status!==\"Closed\"&&M(d)))_.push(\"Open risk \\xB7 \"+k.name+(k.severity?\" (\"+k.severity+\")\":\"\"));for(const k of b().filter(d=>d.type===\"Decision\"&&M(d)&&![\"Completed\",\"Cancelled\"].includes(d.status)&&o(D(d).end)))_.push(\"Decision due \"+A(D(k).end)+\" \\xB7 \"+k.name+(k.owner?\", \"+k.owner:\"\"));for(const k of b().filter(d=>d.type===\"Milestone\"&&M(d)&&![\"Completed\",\"Cancelled\"].includes(d.status)&&o(D(d).end)))_.push(\"Milestone due \"+A(D(k).end)+\" \\xB7 \"+k.name);for(const k of b().filter(d=>M(d)&&d.approved&&a(d.approved.date)))_.push(\"Completed \\xB7 \"+k.name+\" (approved \"+A(k.approved.date)+\")\");return{h:h.name,p:_.length?_:[\"No recorded activity in this period.\"]}}),f=[];if(!t){const h=b().filter(be),M=b().filter(_=>![\"Completed\",\"Cancelled\"].includes(_.status)&&D(_).end&&D(_).end<n);f.push({h:\"Awaiting owner approval\",p:h.length?h.map(_=>_.name+(_.owner?\" \\xB7 \"+_.owner:\"\")):[\"Nothing is waiting for approval.\"]}),f.push({h:\"Past the forecast deadline\",p:M.length?M.map(_=>_.name+\" \\xB7 \"+A(D(_).end)):[\"No open item is past its forecast deadline.\"]})}const m=new Date(de(n)*864e5);return{kind:e,title:e===\"Weekly\"?\"Week of \"+A(s):Ht[m.getUTCMonth()]+\" portfolio digest\",start:s,end:n,program:t||\"\",sections:l,notes:f}}const tn=()=>S.digests.rows.map(e=>({id:e.id,kind:e.data.kind===\"Monthly\"?\"Monthly\":\"Weekly\",title:g(e.data.title),start:z(e.data.period_start),end:z(e.data.period_end),program:g(e.data.program_id),contents:Me(e.data.contents,{})})).sort((e,t)=>T(t.end,e.end));if(p===\"digest:save\"&&E===\"click\"&&R(\"digests\")&&X){const e=g(c.digest.pick),t=e.startsWith(\"live:\")?e===\"live:Monthly\"?\"Monthly\":\"Weekly\":c.digest.mode===\"Monthly\"?\"Monthly\":\"Weekly\",n=xe(t,c.digest.program);ie([{kind:\"create_record\",typeId:I.digests.typeId,data:B(\"digests\",{title:n.title,kind:t,period_start:n.start,period_end:n.end,program_id:n.program||null,contents:JSON.stringify({sections:n.sections,notes:n.notes}),saved_on:X})}],\"Digest saved to the archive\")}if(E===\"command\"){let e,t=null;const n=Me(Y.value,{})||{},s=i=>{const a=D(i);return{id:i.id,type:i.type,name:i.name,parent_id:i.parents[0]||null,program:(ne(i)[0]||{}).name||null,owner:i.owner||null,status:i.status,baseline_start:i.start||null,baseline_end:i.end||null,forecast_start:a.start||null,forecast_end:a.end||null,baseline_budget:i.budget,forecast_budget:a.budget,spend:i.spend,risk:Ee(i),dependency_on_parent:i.parentRule||null,awaiting_approval:be(i),approved_on:i.approved?i.approved.date:null,events:{deliverables:we(i,\"Deliverable\").length,risks:we(i,\"Risk\").length,changes:we(i,\"Change\").length}}};if(Pe)t=\"Data is still loading.\";else if(p===\"overview.read\"){const i=b().filter(a=>a.type===\"Program\");e={as_of:X,currency:K,complete:!$.length,problems:$,programs:i.map(a=>{const o=b().filter(r=>r.type===\"Milestone\"&&![\"Completed\",\"Cancelled\"].includes(r.status)&&H(r).includes(a.id)).sort((r,l)=>T(D(r).end,D(l).end))[0];return{...s(a),asset:a.asset||null,disease:a.disease||null,stage:a.stage||null,next_milestone:o?{id:o.id,name:o.name,forecast_end:D(o).end||null}:null}}),pending_decisions:b().filter(a=>a.type===\"Decision\"&&a.status===\"Pending\").map(s),upcoming_decisions:b().filter(a=>a.type===\"Decision\"&&![\"Completed\",\"Cancelled\"].includes(a.status)).map(s),awaiting_owner_approval:b().filter(be).map(s)}}else p===\"plan.read\"?e={as_of:X,currency:K,complete:!$.length,items:b().filter(i=>!n.program_id||H(i).includes(n.program_id)).map(s)}:p===\"events.read\"?e={complete:!$.length,events:P.filter(i=>O(i)&&(!n.event_type||i.type===n.event_type)).map(i=>({id:i.id,type:i.type,name:i.name,date:i.end||null,responsible:i.owner||null,affected:i.parents.map(a=>({id:a,name:(y(a)||{}).name||null})),description:i.description||null,...i.type===\"Risk\"?{severity:i.severity||null,status:i.status}:{},...i.type===\"Deliverable\"?{signed_off_by:i.signoff||null,format:i.format||null}:{},...i.type===\"Change\"?{forecasts:i.forecasts}:{},files:i.files.length}))}:p===\"digest.read\"?X?e=xe(n.kind===\"Monthly\"?\"Monthly\":\"Weekly\",g(n.program_id)):t=\"No date is available.\":t=\"Unknown command.\";return{html:\"\",state:{command:t?{ok:!1,error:t}:{ok:!0,result:e}}}}const nn={overview:\"M3 4h7v16H3z M14 4h7v6h-7z M14 14h7v6h-7z\",programs:\"M4 21V3m0 1h15l-3 4 3 4H4\",timeline:\"M3 3v17h18 M6 6h7m-3 5h8m-4 5h6\",deliverables:\"M4 5h9l3 3h4v12H4z M8 13l3 3 5-6\",risks:\"M12 3L2 21h20z M12 9v5m0 3v1\",changes:\"M3 5h18v12H9l-5 4v-4H3z M7 9h10m-10 4h7\",digest:\"M5 3h14v18H5z M8 7h8m-8 4h8m-8 4h5\",settings:\"M4 6h7m4 0h5M4 12h2m4 0h10M4 18h10m4 0h2 M11 3v6M7 9v6m8 0v6\",pencil:\"M14 3h7v7m0-7-7 7M10 21H3v-7m0 7 7-7\",decision:\"M12 2l10 10-10 10L2 12z\",activity:\"M4 5h16v14H4z M8 12l3 3 5-6\"},Te=e=>'<svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.7\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"'+nn[e]+'\"/></svg>',sn={Program:\"overview\",Milestone:\"programs\",Activity:\"activity\",Decision:\"decision\",Deliverable:\"deliverables\",Risk:\"risks\",Change:\"changes\"},an=e=>'<span style=\"color:'+(Je[e]||\"#375778\")+'\">'+Te(sn[e])+\"</span>\",ae=e=>[\"Program\",\"Milestone\"].includes(e.type)?'<strong class=\"plan-name\">'+u(e.name)+\"</strong>\":\"<span>\"+u(e.name)+\"</span>\",ue=e=>'<span class=\"tag '+([\"High\",\"At risk\"].includes(e)?\"risk\":[\"Pending\",\"Medium\"].includes(e)?\"warn\":[\"Completed\",\"Low\"].includes(e)?\"good\":\"\")+'\">'+u(e)+\"</span>\",Ot=e=>'<button type=\"button\" class=\"link\" data-action=\"open:'+u(e.id)+'\">'+ae(e)+\"</button>\",Fe=e=>'<span class=\"type'+(e===\"Decision\"?\" decision\":\"\")+'\" style=\"--c:'+(Je[e]||\"#546275\")+'\">'+(Tt[e]||\"\\u2022\")+\" \"+u(e)+\"</span>\",me=e=>'<button type=\"button\" class=\"edit-action\" data-action=\"rec:'+u(e.id)+'\" aria-label=\"Edit '+u(e.name)+'\" title=\"Edit '+u(e.name)+'\">'+Te(\"pencil\")+\"</button>\";function _e(e,t,n){return'<div class=\"scroll\"><table><thead><tr>'+e.map(s=>'<th scope=\"col\">'+s+\"</th>\").join(\"\")+\"</tr></thead><tbody>\"+t.map(s=>\"<tr\"+(n&&s._id===n?' class=\"selected-record\"':\"\")+\">\"+s.map(i=>\"<td>\"+i+\"</td>\").join(\"\")+\"</tr>\").join(\"\")+\"</tbody></table></div>\"}const Q=(e,t)=>'<section class=\"panel\">'+(e?\"<h2>\"+e+\"</h2>\":\"\")+t+\"</section>\",fe=(e,t)=>e.map(n=>\"<option\"+(g(n[0])===g(t)?\" selected\":\"\")+' value=\"'+u(n[0])+'\">'+u(n[1])+\"</option>\").join(\"\"),U=e=>e.map(t=>[t,t]),oe=(e,t,n)=>\"<label>\"+t+'<select data-action=\"filter:'+e+'\" data-ui-state>'+fe([[\"\",\"All\"],...n],w[e])+\"</select></label>\";function on(e){const t=De.indexOf(e);return u(e||\"\\u2014\")+(t<0?\"\":'<span class=\"stage-track\" aria-hidden=\"true\">'+De.map((n,s)=>'<i class=\"'+(s===t?\"current\":s<t?\"past\":\"\")+'\"></i>').join(\"\")+\"</span>\")}function rn(e){const t=D(e).end;if(!t)return\"\\u2014\";if(!X)return A(t);const n=de(t)-de(X);return A(t)+'<small class=\"note\">'+(n===0?\"Due today\":Math.abs(n)+\" days \"+(n<0?\"overdue\":\"left\"))+\"</small>\"}function Le(e){return'<span class=\"signals\">'+G.map(t=>{const n=we(e,t).length;return n?'<button type=\"button\" data-action=\"section:'+t+\":\"+u(e.id)+'\" class=\"sig '+t.toLowerCase()+'\">'+n+\" \"+t.toLowerCase()+(n===1?\"\":\"s\")+\"</button>\":\"\"}).join(\"\")+\"</span>\"}const et=R(\"items\")||R(\"events\");function ln(e,t){return'<div class=\"title\"><h2>'+u(e)+'</h2><div class=\"k-row\">'+(c.undo&&c.undo.length?kit.undo(c.undo):\"\")+(t&&et?'<button type=\"button\" class=\"primary\" data-action=\"add\">\\uFF0B Add record</button>':\"\")+\"</div></div>\"}function At(){const e=b(),t=[...new Set(e.map(i=>i.owner).filter(Boolean))].sort(),n='<label>Search<input type=\"search\" data-action=\"filter:search\" data-ui-state placeholder=\"Search plan items\" value=\"'+u(w.search||\"\")+'\"></label>'+oe(\"program\",\"Program\",e.filter(i=>i.type===\"Program\").map(i=>[i.id,i.name]))+oe(\"owner\",\"Owner\",U(t))+oe(\"type\",\"Record\",U(ee))+oe(\"status\",\"Status\",U(Be)),s=oe(\"risk\",\"Risk\",U([\"High\",\"Medium\",\"Low\",\"None\"]))+oe(\"budget\",\"Budget\",[[\"under\",\"Under \"+le(5e4)],[\"over\",le(5e4)+\" and over\"]])+'<label>From<input type=\"date\" data-action=\"filter:from\" data-ui-state value=\"'+u(w.from||\"\")+'\"></label><label>Through<input type=\"date\" data-action=\"filter:until\" data-ui-state value=\"'+u(w.until||\"\")+'\"></label>';return'<div class=\"filters\">'+n+(c.more?s:\"\")+'<button type=\"button\" data-action=\"filters:more\" aria-expanded=\"'+!!c.more+'\">'+(c.more?\"Fewer filters\":\"More filters\")+'</button><button type=\"button\" data-action=\"filters:reset\">Reset</button></div>'}function dn(){const e=b().filter(r=>r.type===\"Program\"),t='<div class=\"strip\">'+[[e.length,\"Active programs\"],[b().filter(r=>r.type===\"Decision\"&&r.status===\"Pending\").length,\"Pending decisions\"],[e.filter(r=>[\"Medium\",\"High\"].includes(Ee(r))).length,\"Programs at risk\"]].map(([r,l],f)=>'<div class=\"card\" style=\"--c:'+[\"#3354ac\",\"#8538a4\",\"#cd6835\"][f]+'\"><small>'+l+\"</small><strong>\"+($.length?\"\\u2014\":r)+\"</strong></div>\").join(\"\")+\"</div>\";if(!e.length&&!b().length)return t+kit.empty({title:\"No programs yet\",text:\"Add the first program, then its milestones, activities and decisions.\",action:et?{label:\"Add program\",action:\"new:Program\"}:void 0});const n=Q(\"Programs\",e.length?_e([\"Program\",\"Assets\",\"Disease\",\"Stage\",\"Next milestone\",\"Time to deadline\",\"Budget \\xB7 spent / forecast\",\"Health\",\"\"],e.map(r=>{const l=b().filter(f=>f.type===\"Milestone\"&&![\"Completed\",\"Cancelled\"].includes(f.status)&&H(f).includes(r.id)).sort((f,m)=>T(D(f).end||\"9999\",D(m).end||\"9999\"))[0];return[Ot(r),u(r.asset||\"\\u2014\"),u(r.disease||\"\\u2014\"),on(r.stage),l?ae(l):\"\\u2014\",rn(r),le(r.spend)+\" / \"+le(D(r).budget),ue(r.status)+Le(r),me(r)]})):'<p class=\"pad muted\">No programs yet.</p>'),s=b().filter(r=>r.type===\"Decision\"&&![\"Completed\",\"Cancelled\"].includes(r.status)),i=Q(\"Upcoming decisions\",s.length?_e([\"Decision\",\"Due\",\"Approver\",\"\"],s.sort((r,l)=>T(D(r).end||\"9999\",D(l).end||\"9999\")).map(r=>[u(r.name),A(D(r).end),u(r.owner||\"\\u2014\"),Le(r)+me(r)])):'<p class=\"pad muted\">No open decisions.</p>'),a=b().filter(be),o=a.length?Q(\"Awaiting owner approval\",_e([\"Plan item\",\"Owner\",\"\"],a.map(r=>[ae(r),u(r.owner||\"Unassigned\"),'<button type=\"button\" data-action=\"rec:'+u(r.id)+'\">Review completion</button>']))):\"\";return t+n+i+o}function Ct(e){const t=e.r,n=ae(t);return t.type===\"Milestone\"&&e.kids?'<div class=\"tree-label\"><button type=\"button\" class=\"milestone-toggle\" data-action=\"toggle:'+u(t.id)+'\" aria-expanded=\"'+!!e.open+'\"><span class=\"caret\" aria-hidden=\"true\">'+(e.open?\"\\u25BE\":\"\\u25B8\")+\"</span>\"+n+\"</button></div>\":'<div class=\"tree-label\">'+n+\"</div>\"}function cn(e){return e.length?_e([\"Plan item\",\"Type\",\"Deadline\",\"Budget\",\"Owner\",\"Status\",\"Health\",\"\"],e.map(t=>{const n=t.r,s=D(n),i=[Ct(t),Fe(n.type),A(s.end),le(s.budget),u(n.owner||\"\\u2014\"),ue(n.status),Le(n),me(n)];return i._id=n.id,i}),c.sel):'<p class=\"pad\">No plan items.</p>'}function pn(e,t){t&&(e=[{r:t,depth:0}].concat(e));const n=Xe().flatMap(({r:l})=>{const f=D(l);return[f.start,f.end].filter(Boolean).map(de)});if(!e.length)return'<p class=\"pad\">No plan items.</p>';const s=n.length?Math.min(...n):0,i=n.length?Math.max(...n):1,a=Math.max(1,i-s),o=l=>2+94*(de(l)-s)/a;return'<div class=\"scroll\"><div class=\"chart\"><div class=\"chartrow\"><div>Plan item</div><div class=\"ticks\">'+(n.length?[0,.25,.5,.75,1].map(l=>\"<span>\"+A(new Date((s+a*l)*864e5).toISOString().slice(0,10))+\"</span>\").join(\"\"):\"\")+\"</div><div></div></div>\"+e.map(l=>{const f=l.r,m=D(f),h=m.start||m.end,M=m.end||h,_=h?'<span title=\"'+u(A(h)+\" \\u2013 \"+A(M))+'\" class=\"'+(f.type===\"Decision\"?\"diamond\":f.type===\"Milestone\"?\"flag\":\"bar\")+'\" style=\"--c:'+Je[f.type]+\";left:\"+o(h).toFixed(2)+\"%;\"+(te(f.type)?\"\":\"width:\"+Math.max(1,o(M)-o(h)).toFixed(2)+\"%;\")+'\">'+(f.type===\"Milestone\"?\"\\u2691\":\"\")+\"</span>\":\"<small>Unscheduled</small>\";return'<div class=\"chartrow'+(c.sel===f.id?\" selected-record\":\"\")+'\">'+(f===t?\"<div><small>Program duration</small></div>\":Ct(l))+'<div class=\"track\">'+_+\"</div>\"+me(f)+\"</div>\"}).join(\"\")+\"</div></div>\"}function Rt(e){const t=new Map;for(const n of Xe()){const s=ne(n.r)[0]||null;t.has(s)||t.set(s,[]),s!==n.r&&t.get(s).push(n)}return b().length?At()+([...t].map(([n,s])=>'<section class=\"panel\"><div class=\"program-head\"><h2>'+u(n?n.name:\"Unassigned items\")+\"</h2>\"+(n?\"<span><small>\"+A(D(n).start)+\" \\u2013 \"+A(D(n).end)+\"</small>\"+ue(n.status)+Le(n)+me(n)+\"</span>\":\"\")+\"</div>\"+e(s,n)+\"</section>\").join(\"\")||Q(\"\",'<p class=\"pad\">No matching items.</p>')):At()+kit.empty({title:\"No plan items yet\",text:\"Add a program, then its milestones, activities and decisions.\",action:et?{label:\"Add program\",action:\"new:Program\"}:void 0})}const un=()=>Rt(cn),mn=()=>Rt(pn)+(Xe().length?'<div class=\"legend\" aria-label=\"Timeline legend\">'+ee.map(Fe).join(\"\")+\"</div>\":\"\");function fn(e){const t=P.filter(a=>a.type===e),n=[...new Set(t.map(a=>a.owner).filter(Boolean))].sort(),s='<div class=\"filters\">'+oe(\"owner\",\"Responsible person\",U(n))+'<button type=\"button\" data-action=\"filters:reset\">Reset</button></div>',i=t.filter(a=>!w.owner||a.owner===w.owner).sort((a,o)=>T(o.end,a.end));return t.length?s+Q(\"\",i.length?_e([e,\"Affected items\",\"Date\",\"Responsible person\",...e===\"Risk\"?[\"Severity\",\"Status\"]:e===\"Deliverable\"?[\"Signed off by\"]:[],\"Files\",\"\"],i.map(a=>[Ot(a),a.parents.map(y).filter(Boolean).map(o=>e===\"Change\"?u(o.name):ae(o)).join(\"<br>\")||\"\\u2014\",A(a.end),u(a.owner||\"\\u2014\"),...e===\"Risk\"?[a.severity?ue(a.severity):\"\\u2014\",ue(a.status)]:e===\"Deliverable\"?[u(a.signoff||\"\\u2014\")]:[],String(a.files.length),me(a)])):'<p class=\"pad muted\">No '+e.toLowerCase()+\"s for this person.</p>\"):kit.empty({title:\"No \"+e.toLowerCase()+\"s recorded\",text:e===\"Deliverable\"?\"Log the evidence you receive against the plan item it completes.\":e===\"Risk\"?\"Log a risk against the items it affects; it flags them and the work that depends on them.\":\"Log a change with the revised dates or budgets of the items it affects.\",action:R(\"events\")&&b().length?{label:\"Add \"+e.toLowerCase(),action:\"new:\"+e}:void 0})}function gn(e){const t=(e.sections||[]).map(n=>\"<h3>\"+u(n.h)+\"</h3>\"+(n.p||[]).map(s=>\"<p>\"+u(s)+\"</p>\").join(\"\")).join(\"\")+(e.notes||[]).map(n=>\"<h3>\"+u(n.h)+\"</h3>\"+(n.p||[]).map(s=>\"<p>\"+u(s)+\"</p>\").join(\"\")).join(\"\");return'<article class=\"bigreport\"><small>'+u(e.kind)+\" \\xB7 \"+A(e.start)+\" \\u2013 \"+A(e.end)+(e.live?\" \\xB7 built from the records now\":\" \\xB7 saved\")+\"</small><h2>\"+u(e.title)+\"</h2>\"+(t||\"<p>Nothing recorded.</p>\")+\"</article>\"}function hn(){const e=c.digest,t=b().filter(m=>m.type===\"Program\").map(m=>[m.id,m.name]),n='<div class=\"tabs\">'+[\"All\",\"Weekly\",\"Monthly\"].map(m=>'<button type=\"button\" data-action=\"mode:'+m+'\" aria-pressed=\"'+(e.mode===m)+'\">'+m+\"</button>\").join(\"\")+'<label>Program <select data-action=\"digest:program\" data-ui-state>'+fe([[\"\",\"All programs\"],...t],e.program)+\"</select></label></div>\";if(!X)return n+Q(\"\",'<p class=\"pad\">The digest needs today\\u2019s date, which is not available.</p>');const s=[\"Weekly\",\"Monthly\"].filter(m=>e.mode===\"All\"||e.mode===m).map(m=>({...xe(m,e.program),id:\"live:\"+m,live:!0})),i=S.digests.unbound?[]:tn().filter(m=>(e.mode===\"All\"||m.kind===e.mode)&&(!e.program||m.program===e.program)).map(m=>({...m,sections:m.contents.sections,notes:m.contents.notes})),a=s.concat(i),o=a.find(m=>m.id===e.pick)||a[0],r=o&&o.live&&i.some(m=>m.kind===o.kind&&m.end===o.end&&m.program===o.program),l=o&&o.live&&R(\"digests\")?'<div class=\"k-row\" style=\"justify-content:flex-end;margin:-6px 0 12px\">'+(r?\"<small>A digest for this period is already in the archive.</small>\":\"\")+'<button type=\"button\" data-action=\"digest:save\">Save to archive</button></div>':\"\",f=a.filter(m=>m!==o);return n+l+Q(\"\",gn(o))+Q(\"Digest archive\",S.digests.pending?'<p class=\"pad muted\">Loading\\u2026</p>':f.map(m=>'<div class=\"entry line\"><button type=\"button\" class=\"link\" data-action=\"report:'+u(m.id)+'\">'+u(m.title)+\"</button><small>\"+u(m.kind)+\" \\xB7 \"+A(m.end)+(m.live?\" \\xB7 current\":\"\")+\"</small></div>\").join(\"\")||'<p class=\"pad muted\">No earlier digests for this selection.</p>')}function vn(){return Ge?I.settings?'<div class=\"gearform\">'+kit.settings({action:\"settings:save\",fields:[{name:\"currency\",label:\"Budget currency\",options:Ue,value:K},{name:\"date_format\",label:\"Date format\",options:He,value:ye}]},L)+\"</div>\":Q(\"\",'<p class=\"pad\">The settings table is not connected to this app.</p>'):Q(\"\",'<p class=\"pad\">Only the app\\u2019s owners can change its settings.</p>')}const v=(e,t)=>'<label class=\"field\">'+e+t+\"</label>\",St=e=>{const t=W();return e===\"links\"||e===\"forecasts\"&&t.draft.parents.length>0||e.startsWith(\"ev\")&&(!t.section||\"ev\"+t.section===e)};function ke(e,t,n){const s=W(),i=s.open||{},a=ge(i,e)?!!i[e]:St(e);return'<section class=\"disc\"><button type=\"button\" class=\"disc-toggle\" data-action=\"disc:'+e+'\" aria-expanded=\"'+a+'\"><span aria-hidden=\"true\">'+(a?\"\\u25BE\":\"\\u25B8\")+\"</span> \"+u(t)+\"</button>\"+(a?'<div class=\"disc-body\">'+n+\"</div>\":\"\")+\"</section>\"}const N=(e,t,n=\"text\",s=\"\")=>'<input name=\"'+e+'\" type=\"'+n+'\" value=\"'+u(t??\"\")+'\" data-action=\"draft\" data-ui-state '+s+\">\",V=(e,t,n,s=\"\")=>'<select name=\"'+e+'\" data-action=\"draft\" data-ui-state '+s+\">\"+fe(t,n)+\"</select>\",Pt=(e,t,n=3)=>'<textarea name=\"'+e+'\" rows=\"'+n+'\" data-action=\"draft\" data-ui-state>'+u(t||\"\")+\"</textarea>\";function It(e,t,n){const s=t===\"parents\",i=e.links[t].length?e.links[t]:[J(\"\")];return'<section class=\"hier\"><h3>'+(s?\"Parent items\":\"Child items\")+\"</h3><small>\"+(s?\"This item must be complete before the selected parent can start or finish.\":\"The selected child must be complete before this item can start or finish.\")+\" Applies when a dependency is selected.</small>\"+i.map((a,o)=>{const r=n.filter(m=>!i.some((h,M)=>o!==M&&h.id===m.id)),l=y(a.id),f=(s?e.type:(l||{}).type)===\"Decision\";return'<div class=\"hier-row\">'+v(s?\"Belongs to\":\"Child item\",V(\"h_\"+t+\"_id_\"+o,[[\"\",s?\"No parent\":\"Select an item\"],...r.map(m=>[m.id,m.type+\" \\xB7 \"+m.name])],a.id))+v(\"Dependency\",V(\"h_\"+t+\"_rule_\"+o,[[\"\",\"Optional\"],[\"start\",\"Required to start\"],[\"finish\",\"Required to complete\"]],a.to))+(s?\"\":'<button type=\"button\" data-action=\"child:rm:'+o+'\" aria-label=\"Remove child item\">Remove</button>')+(f&&a.to?v(\"Required decision outcome\",V(\"h_\"+t+\"_out_\"+o,U(Oe),a.outcome)):\"\")+(!s&&l&&l.parents[0]&&l.parents[0]!==e.id?'<small class=\"move-hint\">Saving moves this child from '+u((y(l.parents[0])||{}).name||\"its parent\")+\".</small>\":\"\")+\"</div>\"}).join(\"\")+(s?\"\":'<button type=\"button\" data-action=\"child:add\">\\uFF0B Add child item</button>')+\"</section>\"}function yn(e){if(!e.id)return'<p class=\"muted\" style=\"margin-top:12px\">Deliverables, risks and changes can be added once this item is saved.</p>';const t=W();return G.map(n=>{const s=we(e,n);return ke(\"ev\"+n,n+\"s \\xB7 \"+s.length,s.map(i=>'<button type=\"button\" class=\"history-entry\" data-action=\"note:'+u(i.id)+'\"><strong>'+u(i.name)+\"</strong><small>\"+[i.end?A(i.end):\"\",u(i.owner)].filter(Boolean).join(\" \\xB7 \")+\"</small></button>\").join(\"\")+(R(\"events\")?'<button type=\"button\" data-action=\"note:'+n+'\">\\uFF0B Add '+n.toLowerCase()+\"</button>\":\"\"))}).join(\"\")}function bn(e){const t=e.type===\"Decision\"?v(\"Decision outcome\",V(\"decisionResult\",U(Oe),e.decisionResult||\"Approved\")):\"\";if(!e.id||[\"Cancelled\",\"On hold\",\"Completed\"].includes(e.status))return t+(e.approved&&e.status===\"Completed\"?'<section class=\"approval\"><span>Completion approved for '+u(e.approved.by)+\" \\xB7 \"+A(e.approved.date)+\"</span></section>\":\"\");const n=y(e.id);return n&&se(n).every(pe)?t+'<section class=\"approval\"><span>'+u(e.owner||\"Unassigned owner\")+(be(n)?\" \\xB7 Deliverable received. Ready for completion review.\":\" \\xB7 Completion review\")+\"</span>\"+(R(\"items\")?'<button type=\"button\" data-action=\"approve\">Approve completion</button>':\"\")+\"</section>\":t}function Nt(e){const t=S.organizations.rows,n=W(),s=n.org;if(S.organizations.unbound)return\"\";if(S.organizations.pending)return'<section class=\"participants\"><h3>Organizations</h3><p class=\"muted\">Loading\\u2026</p></section>';let a='<section class=\"participants\"><h3>Organizations</h3>'+e.orgIds.map(r=>t.find(l=>l.id===r)).filter(Boolean).map(r=>'<div class=\"org-row\"><div><span>'+u(r.data.name)+\"</span><small>\"+u(Ze(r.id).map(l=>l.name).join(\" \\xB7 \"))+\"</small></div>\"+(R(\"organizations\")?'<button type=\"button\" class=\"edit-action\" data-action=\"org:edit:'+u(r.id)+'\" aria-label=\"Edit '+u(r.data.name)+'\" title=\"Edit organization\">'+Te(\"pencil\")+\"</button>\":\"\")+'<button type=\"button\" aria-label=\"Remove organization\" data-action=\"org:rm:'+u(r.id)+'\">\\xD7</button></div>').join(\"\");const o=t.filter(r=>!e.orgIds.includes(r.id)).sort((r,l)=>T(r.data.name,l.data.name));return a+='<div class=\"inline-field\"><select name=\"org_pick\" aria-label=\"Select organization\" data-action=\"draft\" data-ui-state>'+fe([[\"\",\"Select an organization\"],...o.map(r=>[r.id,g(r.data.name)])],n.orgPick||\"\")+'</select><button type=\"button\" data-action=\"org:add\">Add</button></div>',s?a+='<div class=\"risk-summary\"><strong>'+(s.id?\"Edit organization\":\"Add organization\")+\"</strong>\"+v(\"Organization name\",'<input name=\"org_name\" value=\"'+u(s.name)+'\" data-action=\"draft\" data-ui-state>')+(s.id&&I.people?v(\"Contact persons\",'<input name=\"org_contacts\" value=\"'+u(s.contacts)+'\" placeholder=\"Names, separated by commas\" data-action=\"draft\" data-ui-state>'):\"<small>\"+(I.people?\"Contact persons can be added once the organization is saved.\":\"\")+\"</small>\")+(s.error?'<p class=\"form-error\" role=\"alert\">'+u(s.error)+\"</p>\":\"\")+'<div class=\"k-row\" style=\"margin-top:10px\"><button type=\"button\" data-action=\"org:cancel\">Cancel</button><button type=\"button\" class=\"primary\" data-action=\"org:store\">Use organization</button></div></div>':R(\"organizations\")&&(a+='<p><button type=\"button\" data-action=\"org:new\" style=\"margin-top:8px\">\\uFF0B Add organization</button></p>'),a+\"</section>\"}function jt(e){const t=W(),n=[...new Set(b().concat(P.filter(O)).flatMap(s=>[s.owner,...s.members]).filter(Boolean))].sort();return'<section class=\"participants\"><h3>Team members</h3>'+e.members.map(s=>'<button class=\"chip\" type=\"button\" data-action=\"member:rm:'+u(s)+'\">'+u(s)+\" \\xD7</button>\").join(\" \")+'<div class=\"inline-field\"><select name=\"member_pick\" aria-label=\"Team member\" data-action=\"draft\" data-ui-state>'+fe([[\"\",\"Find a person\"],...n.filter(s=>!e.members.includes(s)).map(s=>[s,s])],t.memberPick||\"\")+'</select><input name=\"member_name\" aria-label=\"Or add a new name\" placeholder=\"Or add a name\" value=\"'+u(t.member||\"\")+'\" data-action=\"draft\" data-ui-state><button type=\"button\" data-action=\"member:add\">Add</button></div></section>'}function Et(e){const t=L.saved&&(O(e)?R(\"events\"):R(\"items\"));return'<section class=\"participants\"><h3>Files</h3>'+e.files.map((n,s)=>'<div class=\"line\"><span>'+u(n.n)+'</span><button type=\"button\" data-action=\"file:rm:'+s+'\">Remove</button></div>').join(\"\")+(t?'<button type=\"button\" data-trialy-document=\"upload draft\">Upload a file</button>':\"<small>\"+(L.saved?\"You cannot add files here.\":\"Files can be added once the app is saved.\")+\"</small>\")+(e.files.length?\"<p><small>Files are kept in TrialAgents Documents.</small></p>\":\"\")+\"</section>\"}function wn(e,t){const n=e.confirm===\"delete\"?'<div class=\"confirm\"><span>Delete this record? It is archived with its history.</span><button type=\"button\" data-action=\"confirm:cancel\">Keep</button><button type=\"button\" class=\"primary\" data-action=\"delete:confirm\">Delete</button></div>':e.confirm===\"approve\"?'<div class=\"confirm\"><span>Record completion approval by '+u(t.owner)+'?</span><button type=\"button\" data-action=\"confirm:cancel\">Cancel</button><button type=\"button\" class=\"primary\" data-action=\"approve:confirm\">Approve</button></div>':\"\",s=O(t)?R(\"events\"):R(\"items\"),i=yt();return(e.error?'<p class=\"form-error\" role=\"alert\">'+u(e.error)+\"</p>\":\"\")+n+'<div class=\"save\">'+(t.id&&s?'<button type=\"button\" class=\"danger\" data-action=\"delete\">Delete</button><button type=\"button\" data-action=\"duplicate\">Duplicate</button>':\"\")+'<button type=\"button\" data-action=\"panel:close\">'+(i?\"Ignore changes\":\"Cancel\")+\"</button>\"+(s&&i?'<button class=\"primary\" type=\"submit\">Save</button>':\"\")+\"</div>\"}function _n(e,t){const n=t.type,s=n===\"Program\"?[]:n===\"Milestone\"?[\"Program\"]:[\"Program\",\"Milestone\"],i=b().filter(l=>s.includes(l.type)&&l.id!==t.id),a=b().filter(l=>l.id!==t.id&&l.type!==\"Program\"&&(n===\"Program\"||n===\"Milestone\"&&l.type!==\"Milestone\")),o=t.id?y(t.id):null,r=o?D(o):null;return v(\"Record type\",V(\"type\",ee.concat(G).map(l=>[l,l]),n,t.id?\"disabled\":\"\"))+v(\"Name *\",N(\"name\",t.name,\"text\",([\"Program\",\"Milestone\"].includes(n)?'class=\"plan-name\" ':\"\")+\"required\"))+v(\"Description\",Pt(\"description\",t.description))+(n===\"Program\"?'<div class=\"grid\">'+v(\"Assets\",N(\"asset\",t.asset))+v(\"Stage\",V(\"stage\",[[\"\",\"\\u2014\"],...U(De)],t.stage))+\"</div>\"+v(\"Disease\",N(\"disease\",t.disease)):\"\")+'<div class=\"grid\">'+(te(n)?\"\":v(\"Start date\",N(\"start\",t.start,\"date\")))+v(te(n)?\"Baseline target date\":\"Baseline end date\",N(\"end\",t.end,\"date\"))+\"</div>\"+ke(\"tolerance\",\"Timeline tolerance\",'<div class=\"grid\">'+v(\"Earliest date\",N(\"early\",t.early,\"date\"))+v(\"Latest date\",N(\"late\",t.late,\"date\"))+\"</div>\")+'<div class=\"grid\">'+v(\"Owner\",N(\"owner\",t.owner))+v(n===\"Decision\"?\"Decision status\":\"Status\",V(\"status\",U(Be),t.status))+\"</div>\"+(o?'<div class=\"risk-summary\"><strong>Current forecast</strong>\\u3000'+A(r.end)+\" \\xB7 \"+le(r.budget)+'</div><section class=\"risk-summary\"><strong>Risk exposure</strong> '+ue(Ee(o))+(je(o).length?\"<p>\"+je(o).map(l=>u(l.name)).join(\" \\xB7 \")+\"</p>\":\"\")+\"</section>\":\"\")+bn(t)+ke(\"links\",\"Linked items\",(n===\"Program\"?\"\":It(t,\"parents\",i))+([\"Program\",\"Milestone\"].includes(n)?t.id?It(t,\"children\",a):'<p class=\"muted\">Child items can be added once this item is saved.</p>':\"\"))+yn(t)+ke(\"budget\",\"Budget\",'<div class=\"grid\">'+v(\"Approved budget (\"+K+\")\",N(\"budget\",t.budget,\"number\",'min=\"0\" step=\"any\"'))+v(\"Spend to date (\"+K+\")\",N(\"spend\",t.spend,\"number\",'min=\"0\" step=\"any\"'))+v(\"Contingency (\"+K+\")\",N(\"reserve\",t.reserve,\"number\",'min=\"0\" step=\"any\"'))+\"</div>\")+Nt(t)+jt(t)+Et(t)}function kn(e,t){const n=t.type===\"Risk\",s=t.type===\"Deliverable\",i=b().filter(a=>!t.parents.includes(a.id));return(t.id?\"\":v(\"Record type\",V(\"type\",ee.concat(G).map(a=>[a,a]),t.type)))+v(\"Name *\",N(\"name\",t.name,\"text\",\"required\"))+'<div class=\"field\">Affected plan items'+t.parents.map(a=>{const o=y(a);return o?'<button class=\"chip\" type=\"button\" data-action=\"unpick:'+u(a)+'\" aria-label=\"Remove '+u(o.name)+'\">'+Fe(o.type)+\" \"+ae(o)+\" \\xD7</button>\":\"\"}).join(\"\")+'<select data-action=\"pick:item\" aria-label=\"Add an affected plan item\" data-ui-state>'+fe([[\"\",\"Add an item\\u2026\"],...i.map(a=>[a.id,a.type+\" \\xB7 \"+a.name+(ne(a)[0]&&ne(a)[0]!==a?\" (\"+ne(a)[0].name+\")\":\"\")])],\"\")+\"</select></div>\"+v(n?\"Risk and mitigation\":s?\"Content\":\"What changed\",Pt(\"description\",t.description,4))+'<div class=\"grid\">'+v(\"Date\",N(\"end\",t.end,\"date\"))+v(\"Responsible person\",N(\"owner\",t.owner))+\"</div>\"+(s?'<div class=\"grid\">'+v(\"Signed off by\",N(\"signoff\",t.signoff))+v(\"Format\",V(\"format\",U([\"\",...nt]),t.format))+\"</div>\":\"\")+(n?'<div class=\"grid\">'+v(\"Severity\",V(\"severity\",U([\"\",...Ae.slice(1)]),t.severity))+v(\"Status\",V(\"status\",U([\"Open\",\"Closed\"]),t.status||\"Open\"))+\"</div>\":\"\")+(t.type===\"Change\"?v(\"Location or workstream\",N(\"place\",t.place))+ke(\"forecasts\",\"Forecast changes by item\",t.parents.length?t.parents.map(a=>{const o=y(a);if(!o)return\"\";const r=t.forecasts[a]||{};return'<div class=\"entry\">'+Fe(o.type)+\" \"+ae(o)+'<div class=\"grid\">'+v(\"Revised date\",N(\"fd_\"+a,r.end,\"date\"))+v(\"Revised budget (\"+K+\")\",N(\"fb_\"+a,r.budget,\"number\",'min=\"0\" step=\"any\"'))+\"</div></div>\"}).join(\"\"):'<p class=\"muted\">Add the affected plan items first.</p>'):\"\")+Nt(t)+jt(t)+Et(t)}function Mn(){const e=c.panel;if(!e)return\"\";if(e.kind===\"choose\")return kit.panel({title:\"Add record\",close:\"panel:close\",body:[[\"Plan\",[\"Program\",\"Milestone\",\"Decision\",\"Activity\"],R(\"items\")],[\"Events\",G,R(\"events\")&&b().length>0]].filter(n=>n[2]).map(([n,s])=>'<section class=\"choice-group\"><h3>'+n+'</h3><div class=\"newchoices\">'+s.map(i=>'<button type=\"button\" data-action=\"new:'+i+'\">'+an(i)+u(i)+\"</button>\").join(\"\")+\"</div></section>\").join(\"\")||\"<p>You cannot add records in this app.</p>\"});const t=e.draft;return kit.panel({title:(t.id?\"Edit \":\"Add \")+t.type.toLowerCase(),close:\"panel:close\",body:'<form class=\"pl-form\" data-action=\"form:save\"><input type=\"hidden\" name=\"_f\" value=\"record\">'+(O(t)?kn(e,t):_n(e,t))+wn(e,t)+\"</form>\"})}const Dn=Object.fromEntries(Ce),On='<nav class=\"pl-rail\" aria-label=\"Pipeline screens\">'+Ce.filter(e=>e[0]!==\"settings\"||Ge).map(([e,t])=>'<button type=\"button\" data-action=\"nav:'+e+'\"'+(c.screen===e?' aria-current=\"page\"':\"\")+' aria-label=\"'+t+'\" title=\"'+t+'\">'+Te(e)+\"<span>\"+t+\"</span></button>\").join(\"\")+\"</nav>\";let tt;if(Pe&&!b().length)tt='<p class=\"muted\">Loading\\u2026</p>';else{const e=c.screen;tt=ln(e===\"overview\"?\"Pipeline Overview\":Dn[e]||\"Overview\",![\"digest\",\"settings\"].includes(e))+($.length?'<div class=\"warnbox\">'+$.map(u).join(\" \")+\"</div>\":\"\")+(Pe?'<p class=\"muted\">Loading\\u2026</p>':\"\")+(e===\"programs\"?un():e===\"timeline\"?mn():it[e]?fn(it[e]):e===\"digest\"?hn():e===\"settings\"?vn():dn())}return{html:'<div class=\"k-app pl\"><div class=\"pl-layout\"'+(c.panel?\" inert\":\"\")+\">\"+On+'<main class=\"pl-main\">'+tt+\"</main></div>\"+Mn()+\"</div>\",css:PIPELINE_CSS,state:c,context:{screen:c.screen,program:w.program||\"\"},...$e?{notice:$e}:{}}\n";
+const demo={
+ "note": "Fictional sample portfolio (the prototype’s NorthTherapeutics data). Used only by the gallery preview; never installed.",
+ "records": [
+  {
+   "role": "organizations",
+   "id": "00000000-0000-4000-8000-000000000001",
+   "version": 1,
+   "data": {
+    "name": "Clinical supply CDMO",
+    "org_type": "cdmo"
+   }
+  },
+  {
+   "role": "organizations",
+   "id": "00000000-0000-4000-8000-000000000002",
+   "version": 1,
+   "data": {
+    "name": "Preclinical CRO",
+    "org_type": "cro"
+   }
+  },
+  {
+   "role": "people",
+   "id": "00000000-0000-4000-8000-000000000003",
+   "version": 1,
+   "data": {
+    "name": "Elena Rossi",
+    "organization_id": "00000000-0000-4000-8000-000000000001"
+   }
+  },
+  {
+   "role": "people",
+   "id": "00000000-0000-4000-8000-000000000004",
+   "version": 1,
+   "data": {
+    "name": "Jon Ward",
+    "organization_id": "00000000-0000-4000-8000-000000000002"
+   }
+  },
+  {
+   "role": "pipeline.items",
+   "id": "00000000-0000-4000-8000-000000000005",
+   "version": 1,
+   "data": {
+    "status": "Planned",
+    "name": "Lung cancer development",
+    "item_type": "Program",
+    "asset": "NT-101",
+    "disease": "Lung cancer",
+    "stage": "Phase 1",
+    "start_date": "2027-02-01",
+    "end_date": "2027-02-26",
+    "owner": "Maya Chen",
+    "budget": 380000,
+    "spend": 114000
+   }
+  },
+  {
+   "role": "pipeline.items",
+   "id": "00000000-0000-4000-8000-000000000006",
+   "version": 1,
+   "data": {
+    "status": "Pending",
+    "name": "Clinical supply released",
+    "item_type": "Milestone",
+    "parent_id": "00000000-0000-4000-8000-000000000005",
+    "start_date": "2027-02-18",
+    "end_date": "2027-02-18",
+    "owner": "Maya Chen",
+    "budget": 80000
+   }
+  },
+  {
+   "role": "pipeline.items",
+   "id": "00000000-0000-4000-8000-000000000007",
+   "version": 1,
+   "data": {
+    "status": "In progress",
+    "name": "Complete batch review",
+    "item_type": "Activity",
+    "parent_id": "00000000-0000-4000-8000-000000000006",
+    "start_date": "2027-02-08",
+    "end_date": "2027-02-17",
+    "owner": "Maya Chen",
+    "budget": 23000,
+    "organization_ids": "00000000-0000-4000-8000-000000000001"
+   }
+  },
+  {
+   "role": "pipeline.items",
+   "id": "00000000-0000-4000-8000-000000000008",
+   "version": 1,
+   "data": {
+    "status": "Pending",
+    "name": "Release batch for clinical use",
+    "item_type": "Decision",
+    "parent_id": "00000000-0000-4000-8000-000000000006",
+    "parent_rule": "finish",
+    "parent_outcome": "Approved",
+    "start_date": "2027-02-17",
+    "end_date": "2027-02-17",
+    "owner": "Maya Chen",
+    "decision_outcome": "Approved"
+   }
+  },
+  {
+   "role": "pipeline.items",
+   "id": "00000000-0000-4000-8000-000000000009",
+   "version": 1,
+   "data": {
+    "status": "Planned",
+    "name": "Gastric cancer development",
+    "item_type": "Program",
+    "asset": "NT-101",
+    "disease": "Gastric cancer",
+    "stage": "Preclinical",
+    "start_date": "2027-02-02",
+    "end_date": "2027-02-25",
+    "owner": "Alex Reed",
+    "budget": 240000
+   }
+  },
+  {
+   "role": "pipeline.items",
+   "id": "00000000-0000-4000-8000-000000000010",
+   "version": 1,
+   "data": {
+    "status": "Planned",
+    "name": "Preclinical study ready",
+    "item_type": "Milestone",
+    "parent_id": "00000000-0000-4000-8000-000000000009",
+    "start_date": "2027-02-22",
+    "end_date": "2027-02-22",
+    "owner": "Alex Reed",
+    "budget": 92000
+   }
+  },
+  {
+   "role": "pipeline.items",
+   "id": "00000000-0000-4000-8000-000000000011",
+   "version": 1,
+   "data": {
+    "status": "Planned",
+    "name": "Finalize CRO scope",
+    "item_type": "Activity",
+    "parent_id": "00000000-0000-4000-8000-000000000010",
+    "parent_rule": "finish",
+    "start_date": "2027-02-09",
+    "end_date": "2027-02-16",
+    "owner": "Alex Reed",
+    "budget": 12000,
+    "organization_ids": "00000000-0000-4000-8000-000000000002"
+   }
+  },
+  {
+   "role": "pipeline.items",
+   "id": "00000000-0000-4000-8000-000000000012",
+   "version": 1,
+   "data": {
+    "status": "Pending",
+    "name": "Authorize study start",
+    "item_type": "Decision",
+    "parent_id": "00000000-0000-4000-8000-000000000010",
+    "start_date": "2027-02-19",
+    "end_date": "2027-02-19",
+    "owner": "Alex Reed",
+    "decision_outcome": "Approved"
+   }
+  },
+  {
+   "role": "pipeline.items",
+   "id": "00000000-0000-4000-8000-000000000013",
+   "version": 1,
+   "data": {
+    "status": "Planned",
+    "name": "Discovery lead selection",
+    "item_type": "Program",
+    "asset": "NT-301",
+    "stage": "Discovery",
+    "start_date": "2027-02-03",
+    "end_date": "2027-02-26",
+    "owner": "Sam Bell",
+    "budget": 110000
+   }
+  },
+  {
+   "role": "pipeline.items",
+   "id": "00000000-0000-4000-8000-000000000014",
+   "version": 1,
+   "data": {
+    "status": "Planned",
+    "name": "Lead nominated",
+    "item_type": "Milestone",
+    "parent_id": "00000000-0000-4000-8000-000000000013",
+    "start_date": "2027-02-26",
+    "end_date": "2027-02-26",
+    "owner": "Sam Bell",
+    "budget": 35000
+   }
+  },
+  {
+   "role": "pipeline.items",
+   "id": "00000000-0000-4000-8000-000000000015",
+   "version": 1,
+   "data": {
+    "status": "Planned",
+    "name": "Review assay readout",
+    "item_type": "Activity",
+    "parent_id": "00000000-0000-4000-8000-000000000014",
+    "start_date": "2027-02-12",
+    "end_date": "2027-02-23",
+    "owner": "Sam Bell",
+    "budget": 9000
+   }
+  },
+  {
+   "role": "pipeline.items",
+   "id": "00000000-0000-4000-8000-000000000016",
+   "version": 1,
+   "data": {
+    "status": "Completed",
+    "name": "Confirm nomination criteria",
+    "item_type": "Decision",
+    "parent_id": "00000000-0000-4000-8000-000000000013",
+    "start_date": "2027-02-12",
+    "end_date": "2027-02-12",
+    "owner": "Sam Bell",
+    "decision_outcome": "Approved"
+   }
+  },
+  {
+   "role": "pipeline.events",
+   "id": "00000000-0000-4000-8000-000000000017",
+   "version": 1,
+   "data": {
+    "name": "Documentation review added to release plan",
+    "event_type": "Change",
+    "item_ids": "00000000-0000-4000-8000-000000000007",
+    "event_date": "2027-02-16",
+    "owner": "Maya Chen",
+    "description": "An additional documentation review was added before release."
+   }
+  },
+  {
+   "role": "pipeline.events",
+   "id": "00000000-0000-4000-8000-000000000018",
+   "version": 1,
+   "data": {
+    "name": "CRO signature pending",
+    "event_type": "Risk",
+    "item_ids": "00000000-0000-4000-8000-000000000011",
+    "event_date": "2027-02-15",
+    "owner": "Alex Reed",
+    "severity": "Medium",
+    "risk_status": "Open"
+   }
+  },
+  {
+   "role": "pipeline.events",
+   "id": "00000000-0000-4000-8000-000000000019",
+   "version": 1,
+   "data": {
+    "name": "Release date and budget revised",
+    "event_type": "Change",
+    "item_ids": "00000000-0000-4000-8000-000000000007,00000000-0000-4000-8000-000000000006",
+    "event_date": "2027-02-17",
+    "owner": "Maya Chen",
+    "description": "Review completed. Release documentation is awaiting confirmation from the CDMO.",
+    "forecasts": "{\"00000000-0000-4000-8000-000000000006\":{\"end\":\"2027-02-20\",\"budget\":82000}}"
+   }
+  },
+  {
+   "role": "pipeline.events",
+   "id": "00000000-0000-4000-8000-000000000020",
+   "version": 1,
+   "data": {
+    "name": "CRO scope revised",
+    "event_type": "Change",
+    "item_ids": "00000000-0000-4000-8000-000000000010",
+    "event_date": "2027-02-15",
+    "owner": "Alex Reed",
+    "description": "The team requested the final CRO signature."
+   }
+  },
+  {
+   "role": "pipeline.events",
+   "id": "00000000-0000-4000-8000-000000000021",
+   "version": 1,
+   "data": {
+    "name": "Batch review memo",
+    "event_type": "Deliverable",
+    "item_ids": "00000000-0000-4000-8000-000000000007",
+    "event_date": "2027-02-17",
+    "owner": "Maya Chen",
+    "signoff": "Maya Chen",
+    "format": "Email",
+    "organization_ids": "00000000-0000-4000-8000-000000000001",
+    "description": "Batch review findings received from the supply partner."
+   }
+  },
+  {
+   "role": "pipeline.settings",
+   "id": "00000000-0000-4000-8000-000000000022",
+   "version": 1,
+   "data": {
+    "currency": "EUR",
+    "date_format": "D MMM"
+   }
+  }
+ ]
+}
+;const metadata={
+  "id": "life.pipeline",
+  "version": "1.0.0",
+  "name": "Pipeline",
+  "description": "Portfolio planner for a biotech team: programs, milestones, activities and decisions connected with their deliverables, risks and changes. An overview of every program (asset, disease, stage, next milestone, time to deadline, spend against forecast budget, health), program cards with expandable milestones, a shared timeline, deliverable, risk and change registers, completion review by the item owner, and weekly or monthly digests built from the records. Risks flag the items they affect, the work that depends on them and their programs; changes revise forecast dates and budgets item by item; dependencies gate when an item can start or complete.",
+  "tags": [
+    "biotech",
+    "portfolio",
+    "pipeline",
+    "programs",
+    "milestones",
+    "decisions",
+    "risks",
+    "deliverables",
+    "timeline",
+    "planning"
+  ],
+  "whenToUse": "A biotech team plans its development portfolio as programs with milestones, activities and decisions, wants to see the next milestone, deadline, budget and risk exposure per program, log deliverables, risks and changes against the plan, gate work on dependencies and decision outcomes, have the owner approve completion when evidence is in, and read a weekly or monthly digest.",
+  "whenNotToUse": "Competitor assets (Pipeline Radar), cash forecasts and runway (Runway), the full program office with function lanes, critical path, RAID scoring, monthly updates and leadership reports (Programs), resource or capacity planning, timesheets, task boards for day-to-day work, regulatory submissions, and sending email or notifications.",
+  "engine": "frontend-js",
+  "defaults": {
+    "tableMap": "{}",
+    "readOnly": false,
+    "asOfOverride": ""
+  },
+  "options": {
+    "tableMap": {
+      "type": "string",
+      "description": "JSON object keyed by stable role key: core data contract v1 role organizations (required) and people (optional, contacts of organizations); app roles pipeline.items, pipeline.events, pipeline.digests and pipeline.settings (contract pipeline.v1). Each value is {typeId:<authorized table UUID>, fields:{<logical key>:<real field key>}, writableFields:[<logical keys>]}. Real keys are lowercase snake_case.",
+      "default": "{}"
+    },
+    "readOnly": {
+      "type": "boolean",
+      "description": "When true, the app saves no records even for users who may edit.",
+      "default": false
+    },
+    "asOfOverride": {
+      "type": "string",
+      "description": "Optional fixed as-of date (YYYY-MM-DD) for previews and tests only. Leave empty: the app uses today’s date from the app runtime.",
+      "default": ""
+    }
+  },
+  "instructions": "Pipeline 1.0.0 is a frontend-js portfolio planner on the v2 app contract and the kit (it declares 'use trialagents v2'). It is the platform version of the standalone Pipeline prototype: the same screens, records and rules, with records in TrialAgents tables, files as TrialAgents documents, completion approval through the platform account, and only app settings. Install it with prepare_app_from_template (pin life.pipeline 1.0.0 and its digest, one requestKey); the installation popup creates or connects organizations (core v1), optionally people, and creates pipeline.items, pipeline.events, pipeline.digests and pipeline.settings. Never add sample records: the app starts empty and every empty screen offers the first action. Plan items: item_type Program, Milestone, Activity or Decision; a milestone’s parent_id is a program, an activity’s or decision’s a program or a milestone; programs have no parent. parent_rule start or finish makes the item a mandatory prerequisite of its parent (parent_outcome is the decision outcome the parent needs). Status values Planned, In progress, Pending, On hold, Completed and Cancelled; Completed needs approved_on and approved_owner equal to owner, set only by the app’s Approve completion action, never by an assistant. Events: event_type Deliverable, Risk or Change; item_ids lists affected plan item IDs separated by commas; a change’s forecasts JSON revises dates and budgets per affected item. Read the plan with the app commands overview.read, plan.read, events.read and digest.read. Record changes are made in the app by a person, or by the user’s assistant through the Database with the same rules.",
+  "documentation": {
+    "quickStart": [
+      "Read the guide, the reference and this template’s documentation; pin life.pipeline 1.0.0 and its digest with one requestKey.",
+      "Overview → Add program, then Add record → Milestone, Activity or Decision under it (Linked items → Belongs to). Pick a dependency (Required to start or Required to complete) where the child gates its parent.",
+      "Log deliverables, risks and changes from Add record, a register, or the plan item’s own form. A change revises forecast dates and budgets item by item.",
+      "When a deliverable is attached to an item whose prerequisites are met, it appears under Overview → Awaiting owner approval; open it and choose Approve completion, then Save.",
+      "Owners may set the budget currency and date format in Settings."
+    ],
+    "dataContract": "Stable role keys. Core data contract v1: organizations (name text*, org_type, country, website, archived) and people (optional: name text*, organization_id text record ID of organizations, title, email, archived), used as the organizations on plan items and events and their contact persons. App contract pipeline.v1: pipeline.items (name text*, item_type select Program/Milestone/Activity/Decision*, parent_id text record ID of the parent item, parent_rule select start/finish, parent_outcome select Approved/Conditional/No-go, description, asset, disease, stage select Discovery/Preclinical/Phase 1/Phase 2/Phase 3, start_date, end_date (target date for milestones and decisions), earliest_date, latest_date, owner text, status select Planned/In progress/Pending/On hold/Completed/Cancelled*, decision_outcome select, budget, spend, reserve numbers, team text (names separated by commas), organization_ids text (record IDs separated by commas), files text (JSON list of {v: document version ID, n: file name}), approved_on date, approved_owner text, client_ref text, archived); pipeline.events (name text*, event_type select Deliverable/Risk/Change*, item_ids text (plan item IDs separated by commas), description, event_date, owner, team, organization_ids, signoff, format select Decision/Document/Information/Email/Other, severity select Low/Medium/High, risk_status select Open/Closed, place, forecasts text (JSON {<item ID>:{end, budget}}), files, client_ref, archived); pipeline.digests (title*, kind select Weekly/Monthly*, period_start, period_end, program_id, contents JSON, saved_on, archived); pipeline.settings (one row: currency select EUR/USD/GBP/CHF/CAD/AUD/JPY, date_format select D MMM/DD/MM/YYYY/MM/DD/YYYY/YYYY-MM-DD). Derived, never stored: forecast dates and budgets (baseline plus dated changes in order, later values superseding earlier ones field by field), risk exposure (the highest open severity over affected items, downstream prerequisite chains and ancestors), event counts and the approval queue.",
+    "interactionContract": "Eight screens in the app’s own side navigation, which folds to icons and then to a row on narrow screens: Overview (active programs, pending decisions, programs at risk; the programs table; upcoming decisions; awaiting owner approval), Programs (program cards with expandable milestones), Timeline (the same structure on a shared scale: bars for durations, flags for milestones, diamonds for decisions), Deliverables, Risks, Changes (registers filtered by responsible person), Digest (All, Weekly or Monthly, per program, archive) and Settings (owners only, input.appRole). Programs and Timeline share their filters (search, program, owner, record, status, and under More filters risk, budget and deadline bounds). The screen and program filter are remembered per person (output.context). Add record opens a side panel; the pencil reopens a record. Save appears when the form has changes; Ignore changes discards them; Duplicate starts a new draft; Delete asks for confirmation and is refused while another record names the item as a parent or affected item. A new plan item reopens after its first save so child items, events and files can be added. Event counts open the item at that history. Files are uploaded through the platform upload and kept in TrialAgents Documents.",
+    "lifecycle": "Unsaved previews never write. Saved apps read their tables on each screen and keep them in the frame for screen changes and filters. Record changes save directly from the person’s own click or form (records.save, at most 50 changes, expectedVersion captured when editing started); a refused save keeps the form open with the platform’s message; Undo is offered for the person’s last action. Saving a record also saves the statuses that deliverable evidence implies (an item with a deliverable moves to In progress, Pending when only decisions remain, or Planned while another start prerequisite is open). Completion approval records the owner’s name and date on the item; the platform’s record history shows who approved it.",
+    "limitations": [
+      "The app sends no email or notifications; the prototype’s per-person email preferences are not part of the platform version.",
+      "Approval is recorded for the item owner by name; owners are text, not workspace members, so the app does not check that the person pressing Approve is the owner. The record history shows who did.",
+      "Organizations are the shared organizations table; a new organization’s contact persons can be added once it is saved.",
+      "Child items, events and files can be added to a new plan item once it has been saved; the app reopens it right after the first save.",
+      "Budgets are shown in the one currency chosen in Settings; amounts are not converted.",
+      "Reads cover up to 1,000 plan items and 1,000 events; beyond that the app says the data is partial."
+    ],
+    "examples": [
+      {
+        "prompt": "What needs my attention in Pipeline this week?",
+        "expectedBehavior": "Runs digest.read with kind Weekly and overview.read, and summarizes changes and deliverables logged this week, open risks, decisions and milestones due in the next seven days, items awaiting owner approval and items past their forecast deadline, by program."
+      },
+      {
+        "prompt": "Which programs are at risk and why?",
+        "expectedBehavior": "Runs plan.read and events.read, lists programs with Medium or High risk exposure and names the open risks and the affected items they come from."
+      },
+      {
+        "prompt": "When is the clinical supply milestone now expected?",
+        "expectedBehavior": "Runs plan.read, finds the milestone and reports its baseline and forecast dates and budgets and the changes that revised them."
+      }
+    ],
+    "tasks": {
+      "mode": "none",
+      "whenUseful": "Pipeline declares no automations: deadlines, decisions, risks and approvals are on Overview, and the Digest is built from the records whenever it is opened.",
+      "readRequirements": "None.",
+      "outputContract": "None: no automation output.",
+      "promptExample": "Show me the weekly Pipeline digest."
+    }
+  }
+}
+;const schema={
+  "organizations": {
+    "name": "Organizations",
+    "contract": "core.v1",
+    "fields": [
+      {
+        "key": "name",
+        "name": "Name",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "org_type",
+        "name": "Type",
+        "kind": "select",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "options": [
+          "company",
+          "investor",
+          "cro",
+          "cdmo",
+          "site",
+          "funder",
+          "partner",
+          "agency",
+          "other"
+        ]
+      },
+      {
+        "key": "country",
+        "name": "Country",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "website",
+        "name": "Website",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "archived",
+        "name": "Archived",
+        "kind": "boolean",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      }
+    ],
+    "logicalFields": {
+      "name": "name",
+      "org_type": "org_type",
+      "country": "country",
+      "website": "website",
+      "archived": "archived"
+    }
+  },
+  "people": {
+    "name": "People",
+    "contract": "core.v1",
+    "optional": true,
+    "description": "Professional contacts only.",
+    "fields": [
+      {
+        "key": "name",
+        "name": "Name",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "organization_id",
+        "name": "Organization",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true,
+        "description": "Record ID of an organizations record."
+      },
+      {
+        "key": "title",
+        "name": "Title",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "email",
+        "name": "Email",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "archived",
+        "name": "Archived",
+        "kind": "boolean",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      }
+    ],
+    "logicalFields": {
+      "name": "name",
+      "organization_id": "organization_id",
+      "title": "title",
+      "email": "email",
+      "archived": "archived"
+    }
+  },
+  "pipeline.items": {
+    "name": "Plan items",
+    "description": "Programs, milestones, activities and decisions. A milestone belongs to a program; activities and decisions belong to a program or a milestone.",
+    "contract": "pipeline.v1",
+    "fields": [
+      {
+        "key": "name",
+        "name": "Name",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "item_type",
+        "name": "Record type",
+        "kind": "select",
+        "required": true,
+        "multiple": false,
+        "options": [
+          "Program",
+          "Milestone",
+          "Activity",
+          "Decision"
+        ],
+        "ai": true
+      },
+      {
+        "key": "parent_id",
+        "name": "Parent item",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "description": "Record ID of the parent plan item (a program, or for activities and decisions a program or a milestone). Empty for programs.",
+        "ai": true
+      },
+      {
+        "key": "parent_rule",
+        "name": "Dependency on parent",
+        "kind": "select",
+        "required": false,
+        "multiple": false,
+        "options": [
+          "start",
+          "finish"
+        ],
+        "description": "start: this item must complete before the parent can start; finish: before the parent can complete. Empty: optional.",
+        "ai": true
+      },
+      {
+        "key": "parent_outcome",
+        "name": "Required decision outcome",
+        "kind": "select",
+        "required": false,
+        "multiple": false,
+        "options": [
+          "Approved",
+          "Conditional",
+          "No-go"
+        ],
+        "description": "For a decision with a dependency rule: the outcome the parent needs.",
+        "ai": true
+      },
+      {
+        "key": "description",
+        "name": "Description",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "asset",
+        "name": "Assets",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "description": "Programs only.",
+        "ai": true
+      },
+      {
+        "key": "disease",
+        "name": "Disease",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "description": "Programs only.",
+        "ai": true
+      },
+      {
+        "key": "stage",
+        "name": "Stage",
+        "kind": "select",
+        "required": false,
+        "multiple": false,
+        "options": [
+          "Discovery",
+          "Preclinical",
+          "Phase 1",
+          "Phase 2",
+          "Phase 3"
+        ],
+        "description": "Programs only.",
+        "ai": true
+      },
+      {
+        "key": "start_date",
+        "name": "Baseline start date",
+        "kind": "date",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "end_date",
+        "name": "Baseline end or target date",
+        "kind": "date",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "earliest_date",
+        "name": "Earliest date",
+        "kind": "date",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "latest_date",
+        "name": "Latest date",
+        "kind": "date",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "owner",
+        "name": "Owner",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "status",
+        "name": "Status",
+        "kind": "select",
+        "required": true,
+        "multiple": false,
+        "options": [
+          "Planned",
+          "In progress",
+          "Pending",
+          "On hold",
+          "Completed",
+          "Cancelled"
+        ],
+        "ai": true
+      },
+      {
+        "key": "decision_outcome",
+        "name": "Decision outcome",
+        "kind": "select",
+        "required": false,
+        "multiple": false,
+        "options": [
+          "Approved",
+          "Conditional",
+          "No-go"
+        ],
+        "ai": true
+      },
+      {
+        "key": "budget",
+        "name": "Approved budget",
+        "kind": "number",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "spend",
+        "name": "Spend to date",
+        "kind": "number",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "reserve",
+        "name": "Contingency",
+        "kind": "number",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "team",
+        "name": "Team members",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "description": "Names, separated by commas.",
+        "ai": true
+      },
+      {
+        "key": "organization_ids",
+        "name": "Organizations",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "description": "Record IDs of organizations records, separated by commas.",
+        "ai": true
+      },
+      {
+        "key": "files",
+        "name": "Files",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "description": "JSON list of TrialAgents document versions: [{\"v\":\"<document version ID>\",\"n\":\"<file name>\"}].",
+        "ai": true
+      },
+      {
+        "key": "approved_on",
+        "name": "Completion approved on",
+        "kind": "date",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "approved_owner",
+        "name": "Completion approved for owner",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "description": "The owner named on the item when completion was approved; the record history shows who approved it.",
+        "ai": true
+      },
+      {
+        "key": "client_ref",
+        "name": "Client reference",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "description": "Set by the app when it creates the record, to reopen it after saving.",
+        "ai": true
+      },
+      {
+        "key": "archived",
+        "name": "Archived",
+        "kind": "boolean",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      }
+    ],
+    "logicalFields": {
+      "name": "name",
+      "item_type": "item_type",
+      "parent_id": "parent_id",
+      "parent_rule": "parent_rule",
+      "parent_outcome": "parent_outcome",
+      "description": "description",
+      "asset": "asset",
+      "disease": "disease",
+      "stage": "stage",
+      "start_date": "start_date",
+      "end_date": "end_date",
+      "earliest_date": "earliest_date",
+      "latest_date": "latest_date",
+      "owner": "owner",
+      "status": "status",
+      "decision_outcome": "decision_outcome",
+      "budget": "budget",
+      "spend": "spend",
+      "reserve": "reserve",
+      "team": "team",
+      "organization_ids": "organization_ids",
+      "files": "files",
+      "approved_on": "approved_on",
+      "approved_owner": "approved_owner",
+      "client_ref": "client_ref",
+      "archived": "archived"
+    }
+  },
+  "pipeline.events": {
+    "name": "Events",
+    "description": "Deliverables, risks and changes logged against plan items.",
+    "contract": "pipeline.v1",
+    "fields": [
+      {
+        "key": "name",
+        "name": "Name",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "event_type",
+        "name": "Event type",
+        "kind": "select",
+        "required": true,
+        "multiple": false,
+        "options": [
+          "Deliverable",
+          "Risk",
+          "Change"
+        ],
+        "ai": true
+      },
+      {
+        "key": "item_ids",
+        "name": "Affected plan items",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "description": "Record IDs of pipeline.items records, separated by commas.",
+        "ai": true
+      },
+      {
+        "key": "description",
+        "name": "Description",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "description": "Deliverable content, risk and mitigation, or what changed.",
+        "ai": true
+      },
+      {
+        "key": "event_date",
+        "name": "Date",
+        "kind": "date",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "owner",
+        "name": "Responsible person",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "team",
+        "name": "Team members",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "description": "Names, separated by commas.",
+        "ai": true
+      },
+      {
+        "key": "organization_ids",
+        "name": "Organizations",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "description": "Record IDs of organizations records, separated by commas.",
+        "ai": true
+      },
+      {
+        "key": "signoff",
+        "name": "Signed off by",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "description": "Deliverables only.",
+        "ai": true
+      },
+      {
+        "key": "format",
+        "name": "Format",
+        "kind": "select",
+        "required": false,
+        "multiple": false,
+        "options": [
+          "Decision",
+          "Document",
+          "Information",
+          "Email",
+          "Other"
+        ],
+        "description": "Deliverables only.",
+        "ai": true
+      },
+      {
+        "key": "severity",
+        "name": "Severity",
+        "kind": "select",
+        "required": false,
+        "multiple": false,
+        "options": [
+          "Low",
+          "Medium",
+          "High"
+        ],
+        "description": "Risks only.",
+        "ai": true
+      },
+      {
+        "key": "risk_status",
+        "name": "Risk status",
+        "kind": "select",
+        "required": false,
+        "multiple": false,
+        "options": [
+          "Open",
+          "Closed"
+        ],
+        "description": "Risks only.",
+        "ai": true
+      },
+      {
+        "key": "place",
+        "name": "Location or workstream",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "description": "Changes only.",
+        "ai": true
+      },
+      {
+        "key": "forecasts",
+        "name": "Forecast changes",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "description": "Changes only. JSON object keyed by affected plan item ID: {\"<item ID>\":{\"end\":\"YYYY-MM-DD\",\"budget\":12345}}; either value may be empty.",
+        "ai": true
+      },
+      {
+        "key": "files",
+        "name": "Files",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "description": "JSON list of TrialAgents document versions: [{\"v\":\"<document version ID>\",\"n\":\"<file name>\"}].",
+        "ai": true
+      },
+      {
+        "key": "client_ref",
+        "name": "Client reference",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "description": "Set by the app when it creates the record.",
+        "ai": true
+      },
+      {
+        "key": "archived",
+        "name": "Archived",
+        "kind": "boolean",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      }
+    ],
+    "logicalFields": {
+      "name": "name",
+      "event_type": "event_type",
+      "item_ids": "item_ids",
+      "description": "description",
+      "event_date": "event_date",
+      "owner": "owner",
+      "team": "team",
+      "organization_ids": "organization_ids",
+      "signoff": "signoff",
+      "format": "format",
+      "severity": "severity",
+      "risk_status": "risk_status",
+      "place": "place",
+      "forecasts": "forecasts",
+      "files": "files",
+      "client_ref": "client_ref",
+      "archived": "archived"
+    }
+  },
+  "pipeline.digests": {
+    "name": "Digests",
+    "description": "Weekly and monthly digests saved to the archive, frozen as they were built.",
+    "contract": "pipeline.v1",
+    "fields": [
+      {
+        "key": "title",
+        "name": "Title",
+        "kind": "text",
+        "required": true,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "kind",
+        "name": "Kind",
+        "kind": "select",
+        "required": true,
+        "multiple": false,
+        "options": [
+          "Weekly",
+          "Monthly"
+        ],
+        "ai": true
+      },
+      {
+        "key": "period_start",
+        "name": "Period start",
+        "kind": "date",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "period_end",
+        "name": "Period end",
+        "kind": "date",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "program_id",
+        "name": "Program",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "description": "Record ID of a program plan item when the digest covers one program.",
+        "ai": true
+      },
+      {
+        "key": "contents",
+        "name": "Contents",
+        "kind": "text",
+        "required": false,
+        "multiple": false,
+        "description": "JSON {sections:[{h,p:[...]}],notes:[{h,p:[...]}]}.",
+        "ai": true
+      },
+      {
+        "key": "saved_on",
+        "name": "Saved on",
+        "kind": "date",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      },
+      {
+        "key": "archived",
+        "name": "Archived",
+        "kind": "boolean",
+        "required": false,
+        "multiple": false,
+        "ai": true
+      }
+    ],
+    "logicalFields": {
+      "title": "title",
+      "kind": "kind",
+      "period_start": "period_start",
+      "period_end": "period_end",
+      "program_id": "program_id",
+      "contents": "contents",
+      "saved_on": "saved_on",
+      "archived": "archived"
+    }
+  },
+  "pipeline.settings": {
+    "name": "Pipeline settings",
+    "description": "App settings, one row, changed by the app’s owners.",
+    "contract": "pipeline.v1",
+    "fields": [
+      {
+        "key": "currency",
+        "name": "Budget currency",
+        "kind": "select",
+        "required": false,
+        "multiple": false,
+        "options": [
+          "EUR",
+          "USD",
+          "GBP",
+          "CHF",
+          "CAD",
+          "AUD",
+          "JPY"
+        ],
+        "ai": true
+      },
+      {
+        "key": "date_format",
+        "name": "Date format",
+        "kind": "select",
+        "required": false,
+        "multiple": false,
+        "options": [
+          "D MMM",
+          "DD/MM/YYYY",
+          "MM/DD/YYYY",
+          "YYYY-MM-DD"
+        ],
+        "ai": true
+      }
+    ],
+    "logicalFields": {
+      "currency": "currency",
+      "date_format": "date_format"
+    }
+  }
+}
+;
+const roles=Object.keys(schema);
+const map=Object.fromEntries(roles.map(role=>[role,{typeId:role,fields:schema[role].logicalFields,writableFields:schema[role].readOnly?[]:Object.keys(schema[role].logicalFields)}]));
+const bindings=roles.map(role=>({typeId:role,fields:Object.values(schema[role].logicalFields)}));
+const config={...metadata.defaults,asOfOverride:'2027-02-15',tableMap:JSON.stringify(map)};
+const render=new Function('input','tools','templateConfiguration','templateBindings',source);
+let state={},context=null,rows=demo.records.map(r=>({...r,data:{...r.data}})),next=1;
+const read=v=>{const all=rows.filter(r=>r.role===v.typeId&&!r.archived);return {rows:all.slice(v.offset,v.offset+v.limit),total:all.length};};
+function apply(changes){for(const c of changes){if(c.kind==='create_record')rows.push({role:c.typeId,id:'00000000-0000-4000-9000-'+String(next++).padStart(12,'0'),version:0,data:c.data});else{const r=rows.find(r=>r.id===c.recordId);if(!r)throw Error('This record no longer exists.');if(c.kind==='archive_record')r.archived=true;else r.data={...r.data,...c.data};r.version++;}}}
+function dispatch(event){let saves=[];
+ const out=render({saved:true,writable:true,appRole:'owner',context,viewport:{width:innerWidth<560?'phone':innerWidth<900?'panel':'wide'},state,event},{call:(name,v)=>{if(name==='records.read')return read(v);if(name==='records.readMany')return {results:v.reads.map(read)};if(name==='records.save'){saves.push(...v.changes);return {status:'saving'};}if(name==='undo.list')return {actions:[]};throw Error('Not available in this preview');}},config,bindings);
+ state=out.state;context=out.context??context;if(out.notice||event.kind!=='refresh')document.getElementById('message').textContent=out.notice?out.notice.message:'';
+ if(saves.length){try{apply(saves);}catch(e){document.getElementById('message').textContent=e.message;}return dispatch({kind:'refresh',action:''});}
+ document.getElementById('surface').innerHTML=out.html;}
+function eventFor(kind,target){const trigger=target.closest('[data-action]');if(!trigger)return;const form=trigger.closest('form');dispatch({kind,action:trigger.dataset.action,value:target.type==='checkbox'?target.checked:target.value??null,form:form?Object.fromEntries(new FormData(form)):{}});}
+document.addEventListener('click',e=>{const b=e.target.closest('button');if(!b||b.disabled)return;if(b.type==='submit'){e.preventDefault();eventFor('submit',b);return;}if(b.closest('[data-action]'))eventFor('click',b);});
+document.addEventListener('submit',e=>{e.preventDefault();eventFor('submit',e.target);});
+document.addEventListener('change',e=>{if(!e.target.matches('input[data-ui-state]:not([type=date]),textarea[data-ui-state]'))eventFor('change',e.target);});
+document.addEventListener('input',e=>{if(e.target.matches('input[data-ui-state]:not([type=date]),textarea[data-ui-state]')){const n=e.target.name,pos=e.target.selectionStart;eventFor('change',e.target);const again=n?document.querySelector('[name="'+n+'"]'):document.querySelector('[data-action="'+e.target.dataset.action+'"]');if(again){again.focus();try{again.setSelectionRange(pos,pos);}catch(x){}}}});
+dispatch({kind:'open',action:''});
+</script></body></html>
